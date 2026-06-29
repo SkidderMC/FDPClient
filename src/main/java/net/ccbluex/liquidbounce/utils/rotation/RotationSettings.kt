@@ -115,6 +115,10 @@ open class RotationSettings(val moduleOwner: Module, generalApply: () -> Boolean
         useModernRotations && modernAngleSmooth in arrayOf("Interpolation", "AI") && generalApply()
     }
 
+    open val modernAiOutputMultiplierValue = float("AIOutputMultiplier", 1f, 0.1f..2f) {
+        useModernRotations && modernAngleSmooth == "AI" && generalApply()
+    }
+
     open val modernYawAccelerationValue = floatRange(
         "YawAcceleration", 20f..25f, 1f..180f
     ) { useModernRotations && modernAngleSmooth == "Acceleration" && generalApply() }
@@ -238,6 +242,7 @@ open class RotationSettings(val moduleOwner: Module, generalApply: () -> Boolean
     val modernInterpolationVerticalSpeed by modernInterpolationVerticalSpeedValue
     val modernInterpolationDirectionChangeFactor by modernInterpolationDirectionChangeFactorValue
     val modernInterpolationMidpoint by modernInterpolationMidpointValue
+    val modernAiOutputMultiplier by modernAiOutputMultiplierValue
     val modernYawAcceleration by modernYawAccelerationValue
     val modernPitchAcceleration by modernPitchAccelerationValue
     val modernAccelerationError by modernAccelerationErrorValue

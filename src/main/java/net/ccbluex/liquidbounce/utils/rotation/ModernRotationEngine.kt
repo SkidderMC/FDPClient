@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.utils.extensions.rotation
 import kotlin.math.abs
 import kotlin.math.exp
 import kotlin.math.hypot
+import kotlin.math.tanh
 import kotlin.random.Random
 
 /**
@@ -225,17 +226,73 @@ object ModernRotationEngine : MinecraftInstance {
         )
     }
 
-    /**
-     * The AI smoother is reserved for a future deep-learning model provider. Until one is wired it exposes the
-     * same mode and keeps the same correction path, falling back to Interpolation so behaviour stays well-defined.
-     */
+    /** Lightweight embedded MLP smoother, avoiding a native inference dependency on the Java 8 client. */
     private fun ai(
         currentRotation: Rotation,
         targetRotation: Rotation,
         settings: RotationSettings,
         resetting: Boolean,
     ): Rotation {
-        return interpolation(currentRotation, targetRotation, settings, resetting)
+        val delta = currentRotation.rotationDeltaTo(targetRotation)
+        val previous = previousRotation ?: currentRotation
+        val previousDelta = previous.rotationDeltaTo(currentRotation)
+        val directionChange = previousTargetRotation.takeIf { !resetting }
+            ?.angleTo(targetRotation)?.div(180f)?.coerceIn(0f, 1f) ?: 0f
+        val entity = RotationUtils.aimTargetEntity
+        val targetDistance = entity?.let { mc.thePlayer?.getDistanceToEntity(it) }?.div(12f)?.coerceIn(0f, 1f) ?: 0f
+        val targetMotion = entity?.let { hypot(it.motionX, it.motionZ).toFloat() }?.div(0.8f)?.coerceIn(0f, 1f) ?: 0f
+
+        val yawFactor = neuralFactor(
+            abs(delta.deltaYaw) / 180f,
+            abs(previousDelta.deltaYaw) / 180f,
+            directionChange,
+            targetDistance,
+            targetMotion,
+            settings.modernInterpolationHorizontalSpeed.random().toFloat() / 100f,
+            settings.modernAiOutputMultiplier,
+        )
+        val pitchFactor = neuralFactor(
+            abs(delta.deltaPitch) / 90f,
+            abs(previousDelta.deltaPitch) / 90f,
+            directionChange,
+            targetDistance,
+            targetMotion,
+            settings.modernInterpolationVerticalSpeed.random().toFloat() / 100f,
+            settings.modernAiOutputMultiplier,
+        )
+
+        return currentRotation.towardsLinear(
+            targetRotation,
+            (abs(delta.deltaYaw) * yawFactor).coerceAtLeast(RotationUtils.getFixedAngleDelta()),
+            (abs(delta.deltaPitch) * pitchFactor).coerceAtLeast(RotationUtils.getFixedAngleDelta()),
+        )
+    }
+
+    /** Two-layer learned-curve approximation with normalized inputs and a bounded output. */
+    internal fun neuralFactor(
+        error: Float,
+        momentum: Float,
+        directionChange: Float,
+        targetDistance: Float,
+        targetMotion: Float,
+        baseSpeed: Float,
+        outputMultiplier: Float,
+    ): Float {
+        val e = error.coerceIn(0f, 1f)
+        val m = momentum.coerceIn(0f, 1f)
+        val c = directionChange.coerceIn(0f, 1f)
+        val d = targetDistance.coerceIn(0f, 1f)
+        val v = targetMotion.coerceIn(0f, 1f)
+
+        val hidden0 = tanh((1.55f * e - 0.70f * m + 0.42f * c + 0.24f * v - 0.18f).toDouble())
+        val hidden1 = tanh((0.82f * e + 0.72f * d + 0.38f * v - 0.31f).toDouble())
+        val hidden2 = tanh((1.12f * c + 0.46f * v - 0.12f * m + 0.08f).toDouble())
+        val hidden3 = tanh((0.78f - 0.92f * e - 0.36f * d + 0.22f * m).toDouble())
+        val output = 1.0 / (1.0 + exp(-(0.92 * hidden0 + 0.48 * hidden1 + 0.23 * hidden2 - 0.16 * hidden3 - 0.08)))
+
+        return ((0.04 + 0.86 * output) * baseSpeed.coerceIn(0.01f, 1f) * outputMultiplier)
+            .toFloat()
+            .coerceIn(0.005f, 1f)
     }
 
     private fun processShortStop(
