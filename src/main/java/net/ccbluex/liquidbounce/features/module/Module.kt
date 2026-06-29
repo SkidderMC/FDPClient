@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.FDPClient.isStarting
 import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.config.ConfigSystem
 import net.ccbluex.liquidbounce.event.Listenable
+import net.ccbluex.liquidbounce.event.EventManager
 import net.ccbluex.liquidbounce.event.ClientChange
 import net.ccbluex.liquidbounce.event.ClientChangeBus
 import net.ccbluex.liquidbounce.features.module.modules.client.GameDetector
@@ -31,6 +32,11 @@ import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextFloat
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils
 import net.ccbluex.liquidbounce.utils.timing.TickedActions.clearTicked
 import org.lwjgl.input.Keyboard
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 private val SPLIT_REGEX = "(?<=[a-z])(?=[A-Z])".toRegex()
 
@@ -52,6 +58,9 @@ open class Module(
     defaultHidden: Boolean = false,
     legacyNames: Array<String> = emptyArray(),
 ) : Configurable(name), MinecraftInstance, Listenable {
+
+    private val enabledEffects = mutableListOf<Pair<CoroutineDispatcher, suspend CoroutineScope.() -> Unit>>()
+    private val enabledEffectJobs = mutableListOf<Job>()
 
     init {
         aliases(*legacyNames)
@@ -153,7 +162,11 @@ open class Module(
 
                 if (canBeEnabled)
                     field = true
+
+                startEnabledEffects()
             } else {
+                enabledEffectJobs.forEach(Job::cancel)
+                enabledEffectJobs.clear()
                 onDisable()
                 RotationUtils.cancelTargetRotation(this)
                 field = false
@@ -208,6 +221,22 @@ open class Module(
      * Called when module unregistered (for scripts)
      */
     open fun onUnregister() {}
+
+    /** Registers a coroutine that starts on every enable and is cancelled on disable. */
+    protected fun enabledEffect(
+        dispatcher: CoroutineDispatcher = Dispatchers.Unconfined,
+        effect: suspend CoroutineScope.() -> Unit,
+    ) {
+        enabledEffects += dispatcher to effect
+    }
+
+    private fun startEnabledEffects() {
+        enabledEffectJobs.forEach(Job::cancel)
+        enabledEffectJobs.clear()
+        enabledEffects.mapTo(enabledEffectJobs) { (dispatcher, effect) ->
+            EventManager.launch(dispatcher, block = effect)
+        }
+    }
 
     /**
      * Get value by [valueName]

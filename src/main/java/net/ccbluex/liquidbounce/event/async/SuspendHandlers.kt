@@ -16,6 +16,7 @@ import java.util.ArrayDeque
 
 enum class SuspendHandlerBehavior {
     PARALLEL,
+    SUSPEND,
     QUEUE,
     CANCEL_PREVIOUS,
     DISCARD_LATEST
@@ -42,6 +43,7 @@ internal class SuspendEventController<T : Event>(
             SuspendHandlerBehavior.DISCARD_LATEST -> {
                 if (activeJob?.isActive != true) activeJob = launch(event)
             }
+            SuspendHandlerBehavior.SUSPEND,
             SuspendHandlerBehavior.QUEUE -> enqueue(event)
         }
     }
