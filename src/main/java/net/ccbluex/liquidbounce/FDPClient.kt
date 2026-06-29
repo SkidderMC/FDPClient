@@ -291,6 +291,12 @@ object FDPClient {
             // Set is starting status
             isStarting = false
 
+            // Startup config load is done. Without this the flag stays true for the whole session
+            // (only a config-profile switch via FileManager.load ever cleared it), which suppressed
+            // every live ValueState notification - so in-game changes (binds, settings) never reached
+            // the NextGen web ClickGUI until a full reload.
+            isLoadingConfig = false
+
             if (!FileManager.firstStart && FileManager.backedup) {
                 SharedScopes.IO.launch {
                     MiscUtils.showMessageDialog("Warning: backup triggered", "Client update detected! Please check the config folder.")

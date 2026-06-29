@@ -168,6 +168,12 @@ object UiEventSocket : Listenable {
     }
 
     private fun onChange(change: ClientChange) {
+        // Nothing to push when no web UI is attached; also avoids building module settings JSON
+        // for every value change during config loads when the menu is closed.
+        if (clients.isEmpty()) {
+            return
+        }
+
         when (change) {
             is ClientChange.ModuleState -> publish("moduleToggle", JsonObject().apply {
                 addProperty("moduleName", change.moduleName)
@@ -175,9 +181,19 @@ object UiEventSocket : Listenable {
                 addProperty("hidden", change.hidden)
             })
 
-            is ClientChange.ValueState -> publish("clickGuiValueChange", JsonObject().apply {
-                add("configurable", NextGenClickGuiBridge.moduleSettings(change.ownerName))
-            })
+            is ClientChange.ValueState -> {
+                publish("clickGuiValueChange", JsonObject().apply {
+                    add("configurable", NextGenClickGuiBridge.moduleSettings(change.ownerName))
+                })
+                // The module-list cards read each module's bind. The SPA refreshes them on a
+                // "valueChanged" event whose value name is "Bind", so emit it for bind changes -
+                // that is how a bind set via the .bind command shows up without reopening the menu.
+                if (change.valueName == "Bind") {
+                    publish("valueChanged", JsonObject().apply {
+                        add("value", JsonObject().apply { addProperty("name", change.valueName) })
+                    })
+                }
+            }
 
             is ClientChange.Configuration -> publish("configurationChanged", JsonObject().apply {
                 addProperty("name", change.name)

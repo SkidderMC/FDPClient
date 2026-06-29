@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.features.module
 import net.ccbluex.liquidbounce.FDPClient.isLoadingConfig
 import net.ccbluex.liquidbounce.FDPClient.isStarting
 import net.ccbluex.liquidbounce.config.Configurable
+import net.ccbluex.liquidbounce.config.ConfigSystem
 import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.event.ClientChange
 import net.ccbluex.liquidbounce.event.ClientChangeBus
@@ -74,6 +75,7 @@ open class Module(
             field = keyBind
 
             saveConfig(modulesConfig)
+            notifyBindChanged()
         }
 
     var bindAction = ModuleBindAction.TOGGLE
@@ -81,6 +83,7 @@ open class Module(
             field = action
 
             saveConfig(modulesConfig)
+            notifyBindChanged()
         }
 
     var bindModifiers: Set<ModuleBindModifier> = emptySet()
@@ -88,7 +91,18 @@ open class Module(
             field = modifiers
 
             saveConfig(modulesConfig)
+            notifyBindChanged()
         }
+
+    // Tell the NextGen web ClickGUI a bind changed so its module list/cards refresh. The bind is a
+    // plain field (not a Value), so it skips Value's change notification; without this, binds set in
+    // game (e.g. via the .bind command) show as "None" until the menu is fully reloaded. Suppressed
+    // during bulk config loading, matching Value.changeValue.
+    private fun notifyBindChanged() {
+        if (!ConfigSystem.isLoadingConfig) {
+            ClientChangeBus.publish(ClientChange.ValueState(name, "Bind"))
+        }
+    }
 
     var isHidden: Boolean by boolean("Hide", defaultHidden).subjective().onChanged {
         saveConfig(modulesConfig)
