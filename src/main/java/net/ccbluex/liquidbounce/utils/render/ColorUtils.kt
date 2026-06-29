@@ -30,11 +30,10 @@ object ColorUtils {
 
     val COLOR_PATTERN = Pattern.compile("(?i)§[0-9A-FK-OR]")
 
-    // Cache for HSB to RGB conversions (frequently called in rainbow effects)
-    private val hsbToRgbCache = mutableMapOf<Int, Int>()
-
-    // Cache for rainbow colors based on offset
-    private val rainbowCache = mutableMapOf<Long, Color>()
+    private const val RAINBOW_CACHE_MAX = 256
+    private val rainbowCache = object : LinkedHashMap<Long, Color>(RAINBOW_CACHE_MAX, 0.75f, true) {
+        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<Long, Color>?): Boolean = size > RAINBOW_CACHE_MAX
+    }
 
     val hexColors = IntArray(16) { i ->
         val baseColor = (i shr 3 and 1) * 85
@@ -154,13 +153,15 @@ object ColorUtils {
         val timeBucket = (System.nanoTime() + offset) / 100000000L
         val cacheKey = (timeBucket shl 16) or (offset and 0xFFFF)
 
-        return rainbowCache.getOrPut(cacheKey) {
-            val currentColor = Color(Color.HSBtoRGB((System.nanoTime() + offset) / 10000000000F % 1, 1F, 1F))
-            Color(currentColor.red / 255F, currentColor.green / 255F, currentColor.blue / 255F, alpha)
-        }.let {
-            // If alpha differs, create new color with requested alpha
-            if (it.alpha / 255f != alpha) Color(it.red / 255f, it.green / 255f, it.blue / 255f, alpha) else it
+        val cached = synchronized(rainbowCache) {
+            rainbowCache.getOrPut(cacheKey) {
+                val currentColor = Color(Color.HSBtoRGB((System.nanoTime() + offset) / 10000000000F % 1, 1F, 1F))
+                Color(currentColor.red / 255F, currentColor.green / 255F, currentColor.blue / 255F, alpha)
+            }
         }
+        return if (cached.alpha / 255f != alpha)
+            Color(cached.red / 255f, cached.green / 255f, cached.blue / 255f, alpha)
+        else cached
     }
 
     fun interpolateColor(start: Color, end: Color, ratio: Float): Color {
