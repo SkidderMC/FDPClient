@@ -11,10 +11,8 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.client.AntiBot.isBot
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
-import net.ccbluex.liquidbounce.utils.extensions.center
 import net.ccbluex.liquidbounce.utils.extensions.currPos
 import net.ccbluex.liquidbounce.utils.extensions.eyes
-import net.ccbluex.liquidbounce.utils.extensions.getDistanceToBox
 import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
 import net.ccbluex.liquidbounce.utils.extensions.getPing
 import net.ccbluex.liquidbounce.utils.extensions.hitBox
@@ -25,6 +23,7 @@ import net.ccbluex.liquidbounce.utils.extensions.offset
 import net.ccbluex.liquidbounce.utils.extensions.plus
 import net.ccbluex.liquidbounce.utils.extensions.times
 import net.ccbluex.liquidbounce.utils.extensions.Vec3_ZERO
+import net.ccbluex.liquidbounce.utils.extensions.getNearestPointBB
 import net.ccbluex.liquidbounce.utils.extensions.isLookingOn
 import net.ccbluex.liquidbounce.utils.extensions.toTicks
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextInt
@@ -41,10 +40,10 @@ import net.minecraft.potion.Potion
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.MovingObjectPosition
 import net.minecraft.util.Vec3
-import kotlin.math.abs
 import kotlin.math.acos
 import kotlin.math.atan2
 import kotlin.math.max
+import kotlin.math.sqrt
 
 /**
  * HitSelect — Latency-aware click filter that reduces average CPS while preserving DPS.
@@ -63,11 +62,11 @@ object HitSelect : Module("HitSelect", Category.COMBAT, Category.SubCategory.COM
     private val fakeSwing           by choices("FakeSwing", arrayOf("Off", "Client", "Server"), "Off")
         .describe("Whether to fake swing animations for cancelled clicks.")
     private val useServerAttackTime by boolean("UseServerAttackTime", false)
-        .describe("Whether to use the server's attack cooldown instead of prediction.")
+        .describe("Whether to use the server information instead of prediction.")
     private val pingCompensation    by boolean("PingCompensation", true) { !useServerAttackTime }
-        .describe("Whether to predict filtering based on the player ping.")
+        .describe("Whether to predict based on the player ping.")
     private val extraPingBuffer     by int("PingBuffer", 0, 0..5) { !useServerAttackTime }
-        .describe("Extra ticks to add to the filtering prediction. Or compensate instead when ping compensation is disabled.")
+        .describe("Extra ticks to add to the prediction. Or compensate instead when ping compensation is disabled.")
     private val burstCount          by int("BurstCount", 1, 1..10)
         .describe("Number of consecutive clicks to allow through when a click is predicted to deal damage.")
     private val pauseDuration       by int("PauseDuration", 10, 0..20)
@@ -80,8 +79,6 @@ object HitSelect : Module("HitSelect", Category.COMBAT, Category.SubCategory.COM
         .describe("Delay the next attack for this many milliseconds after being hit in a trade.")
 
     // ── Criticals ─────────────────────────────────────────────────────────────
-    private val predictCritWindow      by boolean("PredictCritWindow", true)       { mode == "Criticals" }
-        .describe("Whether to predict the critical window instead of static check.")
     private val disableDuringKnockback by boolean("DisableDuringKnockback", false) { mode == "Criticals" }
         .describe("Whether to disable filtering while the player is in knockback.")
 
@@ -92,21 +89,21 @@ object HitSelect : Module("HitSelect", Category.COMBAT, Category.SubCategory.COM
         .describe("Percentage chance to cancel a click that is missed.")
 
     // ── Miss guard ────────────────────────────────────────────────────────────
-    private val missGuard  by boolean("MissGuard", true)
+    private val missGuard  by boolean("MissGuard", true)                       { !useServerAttackTime }
         .describe("Whether to cancel clicks that are predicted to miss due to knockback.")
-    private val missBuffer by float("MissBuffer", 0.15f, 0f..0.5f) { missGuard }
+    private val missBuffer by float("MissBuffer", 0.15f, 0f..0.5f) { !useServerAttackTime && missGuard }
         .describe("Extra reach buffer to allow for missed clicks due to knockback.")
 
     // ── Click Prediction ──────────────────────────────────────────────────────
-    private val clickPredMode         by choices("ClickPredMode", arrayOf("Static", "Prediction", "Adaptive", "Smart", "Semi", "Angular", "Strict"), "Smart")
+    private val clickPredMode         by choices("ClickPredMode", arrayOf("Static", "Prediction", "Adaptive", "Smart", "Semi", "Angular", "Strict"), "Smart") { !useServerAttackTime }
         .describe("Mode to use for 'will hit land actually' prediction.")
-    private val clickPredRange        by float("ClickPredRange", 3.2f, 0.5f..6.0f)          { clickPredMode != "Static" }
+    private val clickPredRange        by float("ClickPredRange", 3.2f, 0.5f..6.0f)          { !useServerAttackTime && clickPredMode != "Static" }
         .describe("Reach distance to use for click prediction.")
-    private val angularTolerance      by float("AngularTolerance", 3.0f, 0.5f..15.0f)       { clickPredMode == "Angular" }
+    private val angularTolerance      by float("AngularTolerance", 3.0f, 0.5f..15.0f)       { !useServerAttackTime && clickPredMode == "Angular" }
         .describe("Extra degrees of tolerance to allow for angular prediction.")
-    private val adaptiveBaseLevel     by int("AdaptiveBase", 50, 0..100)                    { clickPredMode == "Adaptive" }
+    private val adaptiveBaseLevel     by int("AdaptiveBase", 50, 0..100)                    { !useServerAttackTime && clickPredMode == "Adaptive" }
         .describe("Base level of adaptive prediction. Higher values mean more aggressive prediction.")
-    private val semiVelocityThreshold by float("SemiVelocityThreshold", 0.06f, 0.01f..0.3f) { clickPredMode == "Semi" }
+    private val semiVelocityThreshold by float("SemiVelocityThreshold", 0.06f, 0.01f..0.3f) { !useServerAttackTime && clickPredMode == "Semi" }
         .describe("Velocity threshold to use for semi prediction. Entities moving slower than this are always considered hittable.")
 
     // ────────────────────────────────────────────────────────────────────────────
@@ -114,114 +111,124 @@ object HitSelect : Module("HitSelect", Category.COMBAT, Category.SubCategory.COM
     // ────────────────────────────────────────────────────────────────────────────
 
     /**
-     * Records per-entity combat state for the last 24 ticks.
+     * Records per-entity combat state, tick-driven with no ring buffers.
      */
     private class EntitySnapshot {
 
-        private val hurtTimeRing   = IntArray(24)
-        private val pos            = arrayOfNulls<Vec3>(10)
-        private val mot            = arrayOfNulls<Vec3>(10)
-        private val del            = arrayOfNulls<Vec3>(10)
-        private val kbAbsorbedRing = BooleanArray(10) { true }
+        private var lastPos    = Vec3_ZERO
+        private var lastMotion = Vec3_ZERO
+        private var lastDelta  = Vec3_ZERO
 
-        private var head = 0
-        var count        = 0; private set
-
-        var lastObservedHT       = 0;  private set
-        var knockbackTimestampMs = -1L; private set
+        var lastObservedHT       = 0;     private set
         var swingStartedThisTick = false; private set
         private var prevSwingProgress = 0f
+
         var lastKbAbsorbed   = true; private set
-        var kbPendingTicks   = 0;    private set
+        var remainingKbTicks = 0;    private set
+
         var avgSpeedEma      = 0.0; private set
         var speedVarianceEma = 0.0; private set
+        var lastSpeed        = 0.0; private set
+
+        var hasData = false; private set
+
+        // Tick counter — never wall-clock time
+        private var ticksSinceKb = Int.MAX_VALUE / 2
+
+        val recentlyKnockedBack: Boolean
+            get() = ticksSinceKb <= 3
 
         fun record(e: EntityLivingBase) {
-            val i          = head % 10
-            val currentPos = e.currPos
-            val currentMot = Vec3(e.motionX, 0.0, e.motionZ)
-            val tickDelta  = currentPos - e.lastTickPos
+            val currentPos    = e.currPos
+            val rawDelta      = currentPos - e.lastTickPos
+            val currentMotion =
+                if (recentlyKnockedBack)
+                    Vec3(e.motionX, 0.0, e.motionZ)
+                else
+                    lastMotion
 
-            val delta = Vec3(
-                tickDelta.xCoord.coerceIn(-4.0, 4.0),
-                0.0,
-                tickDelta.zCoord.coerceIn(-4.0, 4.0)
-            )
+            // Teleport / server correction: reset instead of clamping.
+            // Clamping silently manufactures fake motion; detecting and zeroing
+            // is always preferable.
+            val hDelta = Vec3(rawDelta.xCoord, 0.0, rawDelta.zCoord)
+            lastDelta = if (horizontalLength(hDelta) > 3.0) Vec3_ZERO else hDelta
 
-            del[i] = delta
-            pos[i] = currentPos
-            mot[i] = currentMot
-            hurtTimeRing[head % 24] = e.hurtResistantTime
-
-            val isKbFrame = e.hurtResistantTime > lastObservedHT + 5 && lastObservedHT <= 3
-            if (isKbFrame) {
-                knockbackTimestampMs = System.currentTimeMillis()
-                val impulseMag = horizontalLength(currentMot)
-                val deltaMag   = horizontalLength(delta)
+            // KB detection: vanilla 1.8.9 sets hurtResistantTime to exactly 20
+            // immediately on a successful hit, so >= 19 is deterministic and
+            // immune to skipped client ticks.
+            val kbStarted = e.hurtResistantTime >= 19 && lastObservedHT <= 3
+            if (kbStarted) {
+                ticksSinceKb = 0
+                val impulseMag = horizontalLength(currentMotion)
+                val deltaMag   = horizontalLength(lastDelta)
                 val absorbed   = impulseMag < 0.02 || deltaMag >= impulseMag * 0.30
-                kbAbsorbedRing[i] = absorbed
-                lastKbAbsorbed    = absorbed
-                kbPendingTicks    = if (absorbed) 0 else 1
+                lastKbAbsorbed   = absorbed
+                remainingKbTicks = if (absorbed) 0 else 3
             } else {
-                kbAbsorbedRing[i] = true
-                if (kbPendingTicks > 0) {
-                    kbPendingTicks++
-                    if (kbPendingTicks >= 4) { kbPendingTicks = 0; lastKbAbsorbed = true }
+                if (remainingKbTicks > 0) {
+                    remainingKbTicks--
+                    if (remainingKbTicks == 0) lastKbAbsorbed = true
                 }
             }
+
+            // Increment after potential reset so the KB frame itself counts as tick 1.
+            if (ticksSinceKb != Int.MAX_VALUE) ticksSinceKb++
 
             lastObservedHT       = e.hurtResistantTime
             swingStartedThisTick = e.swingProgress > 0.06f && prevSwingProgress <= 0.06f
             prevSwingProgress    = e.swingProgress
 
-            val speed = horizontalLength(delta)
+            val speed = horizontalLength(lastDelta)
             val diff  = speed - avgSpeedEma
-            avgSpeedEma     += diff * 0.15
-            speedVarianceEma = speedVarianceEma * 0.85 + diff * diff * 0.15
+            avgSpeedEma      += diff * 0.15
+            speedVarianceEma  = speedVarianceEma * 0.85 + diff * diff * 0.15
 
-            head++
-            if (count < 24) count++
+            lastPos    = currentPos
+            lastMotion = currentMotion
+            lastSpeed  = speed
+            hasData    = true
         }
 
-        fun predictHurtTime(ticks: Int): Int =
-            max(0, hurtTimeRing[(head - 1 + 24) % 24] - ticks)
-
         fun predictPosition(ticks: Int): Vec3 {
-            val i = (head - 1 + 10) % 10
-            var position = pos[i] ?: Vec3_ZERO
-            var velocity: Vec3
+            var position = lastPos
+            val velocity: Vec3
 
             when {
-                recentlyKnockedBack && !lastKbAbsorbed && kbPendingTicks > 0 -> {
-                    val pending = kbPendingTicks.toDouble()
-                    val motion = mot[i] ?: Vec3_ZERO
-                    position += (motion * (pending * 0.5))
-                    velocity = motion * 0.65
+                // Active knockback that wasn't absorbed: project forward with the
+                // remaining KB impulse, then hand lastMotion to the predictor and
+                // let it decay naturally via the 0.91 multiplier.
+                recentlyKnockedBack && !lastKbAbsorbed && remainingKbTicks > 0 -> {
+                    position += lastMotion * (remainingKbTicks.toDouble() * 0.5)
+                    velocity  = lastMotion
                 }
+                // KB was absorbed (strafed / blocked): motion still reflects the
+                // player's intent, so use it directly.
                 recentlyKnockedBack && lastKbAbsorbed -> {
-                    velocity = mot[i] ?: Vec3_ZERO
+                    velocity = lastMotion
                 }
-                else -> velocity = del[i] ?: Vec3_ZERO
+                // Default: actual displacement is the most reliable predictor
+                // because it already accounts for collisions, friction, webs,
+                // water, and anti-cheat corrections.
+                else -> velocity = lastDelta
             }
 
             return positionPredictor
-                .predict(HorizontalPredictionState(position, velocity), ticks.coerceIn(0, positionPredictor.maximumTicks))
+                .predict(
+                    HorizontalPredictionState(position, velocity),
+                    ticks.coerceIn(0, positionPredictor.maximumTicks)
+                )
                 .finalState
                 .position
         }
 
-        fun latestSpeed(): Double {
-            val idx = (head - 1 + 10) % 10
-            return horizontalLength(del[idx] ?: Vec3_ZERO)
-        }
-
-        val recentlyKnockedBack: Boolean
-            get() = knockbackTimestampMs >= 0 &&
-                    System.currentTimeMillis() - knockbackTimestampMs < 200L
+        fun latestSpeed(): Double = lastSpeed
 
         private data class HorizontalPredictionState(val position: Vec3, val velocity: Vec3)
 
         companion object {
+            // 0.91 models inertia rather than simulating full vanilla movement
+            // (which multiplies by slipperiness * 0.91 then re-adds acceleration).
+            // For extrapolation purposes this is intentional.
             private val positionPredictor = PredictFeature(16) { state: HorizontalPredictionState ->
                 HorizontalPredictionState(
                     state.position + state.velocity,
@@ -229,7 +236,8 @@ object HitSelect : Module("HitSelect", Category.COMBAT, Category.SubCategory.COM
                 )
             }
 
-            private fun horizontalLength(vec: Vec3): Double = distance(0.0, 0.0, vec.xCoord, vec.zCoord)
+            private fun horizontalLength(vec: Vec3): Double =
+                distance(0.0, 0.0, vec.xCoord, vec.zCoord)
         }
     }
 
@@ -237,7 +245,7 @@ object HitSelect : Module("HitSelect", Category.COMBAT, Category.SubCategory.COM
     // Module state
     // ────────────────────────────────────────────────────────────────────────────
 
-    private val snapshots = HashMap<Int, EntitySnapshot>()
+    private val snapshots = HashMap<EntityLivingBase, EntitySnapshot>()
     private val ping: Int
         get() = mc.thePlayer?.run { getPing().toTicks() } ?: 1
 
@@ -290,16 +298,12 @@ object HitSelect : Module("HitSelect", Category.COMBAT, Category.SubCategory.COM
         for (obj in world.loadedEntityList) {
             val entity = obj as? EntityLivingBase ?: continue
             if (entity == player || entity.isDead || isBot(entity))  continue
-            if (entity.getDistanceToEntityBox(player) > 12.0) continue
-            snapshots.getOrPut(entity.entityId) { EntitySnapshot() }.record(entity)
+            if (entity.getDistanceToEntityBox(player) > 6) continue
+            snapshots.getOrPut(entity) { EntitySnapshot() }.record(entity)
         }
 
-        val iter = snapshots.iterator()
-        while (iter.hasNext()) {
-            val (id, _) = iter.next()
-            val e = world.getEntityByID(id) as? EntityLivingBase
-            if (e == null || e.isDead) { iter.remove(); continue }
-            if (player.getDistanceToEntityBox(e) > 12.0) iter.remove()
+        snapshots.entries.removeIf { (entity, _) ->
+            entity.isDead || player.getDistanceToEntityBox(entity) > 6
         }
     }
 
@@ -326,7 +330,7 @@ object HitSelect : Module("HitSelect", Category.COMBAT, Category.SubCategory.COM
             objectMouseOver.entityHit as? EntityLivingBase
         else null
 
-        if (clickPredMode == "Static") {
+        if (useServerAttackTime || clickPredMode == "Static") {
             return if (hint == null) shouldCancelAirClick()
                    else shouldCancelEntityClick(hint)
         }
@@ -338,15 +342,14 @@ object HitSelect : Module("HitSelect", Category.COMBAT, Category.SubCategory.COM
     fun shouldCancelEntityClick(target: EntityLivingBase): Boolean {
         val player = mc.thePlayer ?: return true
         handleTargetSwitch(target)
-        val snap = snapshots[target.entityId]
 
-        if (missGuard && snap != null && willMissDueToKnockback(target, snap)) {
+        if (!useServerAttackTime && missGuard && willMissDueToKnockback(target)) {
             performFakeSwing(); return true
         }
 
         val cancel = when (mode) {
-            "Burst"      -> decideBurst(target, player, snap)
-            "Criticals"  -> decideCriticals(target, player, snap)
+            "Burst"      -> decideBurst(target, player)
+            "Criticals"  -> decideCriticals(target, player)
             else         -> false
         }
 
@@ -374,11 +377,9 @@ object HitSelect : Module("HitSelect", Category.COMBAT, Category.SubCategory.COM
      * Candidates are sorted by distance; the nearest confirmed hit is returned.
      */
     private fun scanWithMode(): EntityLivingBase? {
-        val world  = mc.theWorld  ?: return null
         val player = mc.thePlayer ?: return null
 
         return snapshots.keys
-            .mapNotNull { world.getEntityByID(it) as? EntityLivingBase }
             .filter     { !it.isDead && it != player }
             .sortedBy   { player.getDistanceToEntityBox(it) }
             .firstOrNull { entity ->
@@ -404,16 +405,18 @@ object HitSelect : Module("HitSelect", Category.COMBAT, Category.SubCategory.COM
 
     private fun positionPredictionHelper(entity: EntityLivingBase, reach: Double): Boolean {
         val renderView = mc.renderViewEntity ?: return true
-        val snap       = snapshots[entity.entityId] ?: return true
-        return isAimIntersecting(renderView.eyes, predictedHitBox(entity, snap, ping), reach)
+        val snap = snapshots[entity] ?: return true
+        if (!snap.hasData) return true
+        return isAimIntersecting(renderView.eyes, predictedHitBox(entity, snap, effectivePingTicks()), reach)
     }
 
     private fun clickPredPrediction(entity: EntityLivingBase): Boolean =
         positionPredictionHelper(entity, clickPredRange.toDouble())
 
     private fun clickPredAdaptive(entity: EntityLivingBase): Boolean {
-        val snap = snapshots[entity.entityId] ?: return true
-        val variancePenalty = (snap.speedVarianceEma * 20.0).coerceIn(0.0, 0.5)
+        val snap = snapshots[entity] ?: return true
+        if (!snap.hasData) return true
+        val variancePenalty = sqrt(snap.speedVarianceEma).coerceIn(0.0, 0.25)
         val baselineShift   = (adaptiveBaseLevel - 50) / 100.0 * 0.25 * clickPredRange
         val adaptiveReach   = (clickPredRange * (1.0 - variancePenalty) + baselineShift).coerceAtLeast(0.5)
         return positionPredictionHelper(entity, adaptiveReach)
@@ -433,21 +436,24 @@ object HitSelect : Module("HitSelect", Category.COMBAT, Category.SubCategory.COM
     }
 
     private fun clickPredSemi(entity: EntityLivingBase): Boolean {
-        val snap = snapshots[entity.entityId] ?: return true
+        val snap = snapshots[entity] ?: return true
+        if (!snap.hasData) return true
         return if (snap.latestSpeed() < semiVelocityThreshold) true
         else clickPredPrediction(entity)
     }
 
     private fun clickPredAngular(entity: EntityLivingBase): Boolean {
         val renderView      = mc.renderViewEntity ?: return true
-        val snap            = snapshots[entity.entityId] ?: return true
-        val predictedCenter = predictedHitBox(entity, snap, ping).center
+        val snap = snapshots[entity] ?: return true
+        if (!snap.hasData) return true
+        val predictedHitbox = predictedHitBox(entity, snap, effectivePingTicks())
         val eyePos          = renderView.eyes
+        val nearestPoint    = getNearestPointBB(eyePos, predictedHitbox)
         val lookVec         = getVectorForRotation(serverRotation)
-        val cx              = predictedCenter.xCoord - eyePos.xCoord
-        val cy              = predictedCenter.yCoord - eyePos.yCoord
-        val cz              = predictedCenter.zCoord - eyePos.zCoord
-        val dist            = eyePos.distanceTo(predictedCenter)
+        val cx              = nearestPoint.xCoord - eyePos.xCoord
+        val cy              = nearestPoint.yCoord - eyePos.yCoord
+        val cz              = nearestPoint.zCoord - eyePos.zCoord
+        val dist            = eyePos.distanceTo(nearestPoint)
 
         if (dist < 0.001) return true
         val cosAngle = ((lookVec.xCoord * cx + lookVec.yCoord * cy + lookVec.zCoord * cz) / dist).coerceIn(-1.0, 1.0)
@@ -458,7 +464,8 @@ object HitSelect : Module("HitSelect", Category.COMBAT, Category.SubCategory.COM
 
     private fun clickPredStrict(entity: EntityLivingBase): Boolean {
         val renderView = mc.renderViewEntity ?: return true
-        val snap       = snapshots[entity.entityId] ?: return true
+        val snap = snapshots[entity] ?: return true
+        if (!snap.hasData) return true
         val eyePos     = renderView.eyes
         if (!isAimIntersecting(eyePos, entity.hitBox)) return false
         return isAimIntersecting(eyePos, predictedHitBox(entity, snap, ping))
@@ -476,7 +483,7 @@ object HitSelect : Module("HitSelect", Category.COMBAT, Category.SubCategory.COM
     // Mode: Burst — true per-click immunity prediction
     // ────────────────────────────────────────────────────────────────────────────
 
-    private fun decideBurst(target: EntityLivingBase, player: EntityPlayerSP, snap: EntitySnapshot?): Boolean {
+    private fun decideBurst(target: EntityLivingBase, player: EntityPlayerSP): Boolean {
         // Gate 1: WaitForFirstHit — hold all attacks until player is hit first
         if (waitForFirstHit && isWorthWaiting(target, player)) return true
 
@@ -486,7 +493,7 @@ object HitSelect : Module("HitSelect", Category.COMBAT, Category.SubCategory.COM
             isHitLaterActive = false
         }
 
-        return evaluateBurstClick(target, snap)
+        return evaluateBurstClick(target)
     }
 
     /**
@@ -503,10 +510,10 @@ object HitSelect : Module("HitSelect", Category.COMBAT, Category.SubCategory.COM
      *         50%  = probabilistic pass-through (more legit CPS appearance)
      *         0%   = never cancel (module effectively disabled in combat)
      */
-    private fun evaluateBurstClick(target: EntityLivingBase, snap: EntitySnapshot?): Boolean {
+    private fun evaluateBurstClick(target: EntityLivingBase): Boolean {
         val canDamage =
-            if (useServerAttackTime || snap == null) canTargetTakeDamageSimple(target)
-            else canHitWithPrediction(target, snap)
+            if (useServerAttackTime) canTargetTakeDamageSimple(target)
+            else canHitWithPrediction(target)
 
         return if (canDamage || isBursting) {
             // ── Damage hit — always let through ──────────────────────────────
@@ -525,48 +532,65 @@ object HitSelect : Module("HitSelect", Category.COMBAT, Category.SubCategory.COM
     // Mode: Criticals
     // ────────────────────────────────────────────────────────────────────────────
 
-    private fun decideCriticals(target: EntityLivingBase, player: EntityPlayerSP, snap: EntitySnapshot?): Boolean {
+    private fun decideCriticals(target: EntityLivingBase, player: EntityPlayerSP): Boolean {
         if (disableDuringKnockback && player.hurtResistantTime > 0) return false
         if (waitForFirstHit && isWorthWaiting(target, player)) return true
 
-        val inCrit = if (predictCritWindow)
+        val inCrit = if (!useServerAttackTime)
             willBeInCriticalPosition(player, effectivePingTicks())
         else
             isInCriticalPosition(player)
 
         if (inCrit) return false
 
-        return evaluateBurstClick(target, snap) // Not in critical position, so evaluate burst logic
+        return evaluateBurstClick(target) // Not in critical position, so evaluate burst logic
     }
 
     // ────────────────────────────────────────────────────────────────────────────
     // Shared prediction helpers
     // ────────────────────────────────────────────────────────────────────────────
 
-    private fun canHitWithPrediction(target: EntityLivingBase, snap: EntitySnapshot): Boolean =
-        snap.predictHurtTime(effectivePingTicks()) <= max(0, target.maxHurtResistantTime - pauseDuration)
+    private fun canHitWithPrediction(target: EntityLivingBase): Boolean =
+        target.hurtResistantTime - effectivePingTicks() <= max(0, target.maxHurtResistantTime - pauseDuration)
 
     private fun canTargetTakeDamageSimple(target: EntityLivingBase): Boolean =
         target.hurtResistantTime <= max(0, target.maxHurtResistantTime - pauseDuration)
 
-    private fun willMissDueToKnockback(target: EntityLivingBase, snap: EntitySnapshot): Boolean {
-        if (!snap.recentlyKnockedBack) return false
-        val player    = mc.thePlayer ?: return false
-        val reach     = 3.0 + missBuffer
-        val predicted = predictedHitBox(target, snap, max(1, effectivePingTicks() / 2))
-        return player.getDistanceToBox(predicted) > reach
+    private fun willMissDueToKnockback(target: EntityLivingBase): Boolean {
+        val snap = snapshots[target] ?: return false
+        if (!snap.hasData || !snap.recentlyKnockedBack) return false
+
+        val player = mc.thePlayer ?: return false
+        val ticks  = effectivePingTicks()
+
+        val predictedTarget = predictedHitBox(target, snap, ticks)
+
+        val predictedEyePos = player.eyes + Vec3(
+            player.motionX * ticks,
+            0.0,
+            player.motionZ * ticks
+        )
+
+        return predictedEyePos.distanceTo(getNearestPointBB(predictedEyePos, predictedTarget)) >
+                3.0 + missBuffer
     }
 
     private fun willBeInCriticalPosition(player: EntityPlayerSP, ticks: Int): Boolean {
-        if (player.isInLiquid || player.isRiding || player.isOnLadder || player.onGround) return false
-        var motionY  = player.motionY
-        var grounded = false
+        if (player.onGround ||
+            player.isInLiquid ||
+            player.isOnLadder ||
+            player.isRiding)
+            return false
+
+        var motionY = player.motionY
+
         repeat(ticks) {
-            if (grounded) return@repeat
             motionY = (motionY - 0.08) * 0.98
-            if (abs(motionY) < 0.003) grounded = true
+            if (motionY < 0.0)
+                return true
         }
-        return !grounded && motionY < -0.005
+
+        return false
     }
 
     private fun isInCriticalPosition(player: EntityPlayerSP): Boolean =
