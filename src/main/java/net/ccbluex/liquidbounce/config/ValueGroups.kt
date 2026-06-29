@@ -111,7 +111,12 @@ open class ModeValueGroup(
     private val isSupported: (() -> Boolean)? = null,
 ) : Configurable(name) {
 
-    val modeValue = choices("Mode", modes, defaultMode) { isSupported?.invoke() ?: true }
+    private val modeChoices = linkedMapOf<String, ModeChoice>()
+    private var activeChoice: ModeChoice? = null
+
+    val modeValue = choices("Mode", modes, defaultMode) { isSupported?.invoke() ?: true }.apply {
+        onChanged(::activateChoice)
+    }
 
     var mode by modeValue
 
@@ -123,6 +128,32 @@ open class ModeValueGroup(
 
     private fun gate(modes: Array<String>, extra: (() -> Boolean)?): () -> Boolean = {
         modes.any { isMode(it) } && (extra?.invoke() ?: true)
+    }
+
+    /** Registers a mode-owned configurable with selection lifecycle callbacks. */
+    fun mode(
+        name: String,
+        onSelected: () -> Unit = {},
+        onDeselected: () -> Unit = {},
+        configure: ModeChoice.() -> Unit = {},
+    ): ModeChoice {
+        require(modeValue.values.any { it.equals(name, true) }) { "Unknown mode $name in ${this.name}" }
+        val choice = ModeChoice(name, onSelected, onDeselected).apply {
+            setSupport { isMode(name) }
+            configure()
+        }
+        modeChoices[name.lowercase()] = choice
+        addValue(choice)
+        if (isMode(name)) activateChoice(modeValue.get())
+        return choice
+    }
+
+    private fun activateChoice(selected: String) {
+        val next = modeChoices[selected.lowercase()]
+        if (next === activeChoice) return
+        activeChoice?.deselect()
+        activeChoice = next
+        next?.select()
     }
 
     fun gatedInt(name: String, value: Int, range: IntRange, suffix: String? = null, modes: Array<String>, isSupported: (() -> Boolean)? = null) =
@@ -157,4 +188,25 @@ open class ModeValueGroup(
 
     fun gatedColor(name: String, value: Int, rainbow: Boolean = false, modes: Array<String>, isSupported: (() -> Boolean)? = null) =
         super.color(name, value, rainbow, gate(modes, isSupported))
+}
+
+class ModeChoice(
+    name: String,
+    private val onSelected: () -> Unit,
+    private val onDeselected: () -> Unit,
+) : Configurable(name) {
+    var selected: Boolean = false
+        private set
+
+    internal fun select() {
+        if (selected) return
+        selected = true
+        onSelected()
+    }
+
+    internal fun deselect() {
+        if (!selected) return
+        selected = false
+        onDeselected()
+    }
 }

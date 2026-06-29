@@ -13,15 +13,21 @@ import net.ccbluex.liquidbounce.config.CurveValue
 import net.ccbluex.liquidbounce.config.FileValue
 import net.ccbluex.liquidbounce.config.FloatRangeValue
 import net.ccbluex.liquidbounce.config.FloatValue
+import net.ccbluex.liquidbounce.config.DoubleRangeValue
+import net.ccbluex.liquidbounce.config.DoubleValue
 import net.ccbluex.liquidbounce.config.FontValue
 import net.ccbluex.liquidbounce.config.IntRangeValue
 import net.ccbluex.liquidbounce.config.IntValue
 import net.ccbluex.liquidbounce.config.KeyBindValue
 import net.ccbluex.liquidbounce.config.ListValue
+import net.ccbluex.liquidbounce.config.LongRangeValue
+import net.ccbluex.liquidbounce.config.LongValue
 import net.ccbluex.liquidbounce.config.MultiSelectValue
+import net.ccbluex.liquidbounce.config.MutableListValue
 import net.ccbluex.liquidbounce.config.TextValue
 import net.ccbluex.liquidbounce.config.Value
 import net.ccbluex.liquidbounce.config.Vec3Value
+import net.ccbluex.liquidbounce.config.Vec2Value
 
 /**
  * Style-independent classification of every concrete value type, so a style can
@@ -31,16 +37,22 @@ enum class ValueKind {
     BOOL,
     INT,
     INT_RANGE,
+    LONG,
+    LONG_RANGE,
     FLOAT,
     FLOAT_RANGE,
+    DOUBLE,
+    DOUBLE_RANGE,
     TEXT,
     FILE,
     FONT,
     BLOCK,
     LIST,
+    MUTABLE_LIST,
     COLOR,
     MULTI_SELECT,
     KEY_BIND,
+    VEC2,
     VEC3,
     CURVE,
     OTHER
@@ -54,16 +66,22 @@ fun Value<*>.kind(): ValueKind = when (this) {
     is BoolValue -> ValueKind.BOOL
     is IntValue -> ValueKind.INT
     is IntRangeValue -> ValueKind.INT_RANGE
+    is LongValue -> ValueKind.LONG
+    is LongRangeValue -> ValueKind.LONG_RANGE
     is FloatValue -> ValueKind.FLOAT
     is FloatRangeValue -> ValueKind.FLOAT_RANGE
+    is DoubleValue -> ValueKind.DOUBLE
+    is DoubleRangeValue -> ValueKind.DOUBLE_RANGE
     is TextValue -> ValueKind.TEXT
     is FileValue -> ValueKind.FILE
     is FontValue -> ValueKind.FONT
     is BlockValue -> ValueKind.BLOCK
     is ListValue -> ValueKind.LIST
+    is MutableListValue -> ValueKind.MUTABLE_LIST
     is ColorValue -> ValueKind.COLOR
     is MultiSelectValue -> ValueKind.MULTI_SELECT
     is KeyBindValue -> ValueKind.KEY_BIND
+    is Vec2Value -> ValueKind.VEC2
     is Vec3Value -> ValueKind.VEC3
     is CurveValue -> ValueKind.CURVE
     else -> ValueKind.OTHER

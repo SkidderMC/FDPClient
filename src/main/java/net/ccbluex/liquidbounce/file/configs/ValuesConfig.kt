@@ -24,6 +24,7 @@ import net.ccbluex.liquidbounce.handler.payload.ClientFixes
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.io.readJson
 import net.ccbluex.liquidbounce.utils.io.writeTextAtomic
+import net.ccbluex.liquidbounce.config.ConfigMigration
 import java.io.File
 import java.io.IOException
 
@@ -36,7 +37,9 @@ class ValuesConfig(file: File) : FileConfig(file) {
      */
     @Throws(IOException::class)
     override fun loadConfig() {
-        val json = file.readJson() as? JsonObject ?: return
+        val rawJson = file.readJson() as? JsonObject ?: return
+        val sourceVersion = rawJson["ConfigVersion"]?.asInt ?: 0
+        val json = ConfigMigration.migrate(rawJson, sourceVersion)
 
         val prevVersion = json["ClientVersion"]?.asString ?: "unknown"
         // Compare versions
@@ -97,7 +100,7 @@ class ValuesConfig(file: File) : FileConfig(file) {
                     val jsonModule = value as? JsonObject ?: return@runCatching
                     val module = moduleManager[key] ?: return@runCatching
                     for (moduleValue in module.values) {
-                        (jsonModule[moduleValue.name] ?: moduleValue.aliases.mapNotNull { jsonModule[it] }.firstOrNull())?.let { element ->
+                        ConfigMigration.findValue(jsonModule, moduleValue)?.let { element ->
                             runCatching { moduleValue.fromJson(element) }
                                 .onFailure { LOGGER.warn("[Cfg] ${module.name}.${moduleValue.name} skipped: ${it.message}") }
                         }
@@ -117,6 +120,7 @@ class ValuesConfig(file: File) : FileConfig(file) {
         val jsonObject = JsonObject().apply {
             addProperty("CommandPrefix", commandManager.prefix)
             addProperty("ClientVersion", FDPClient.clientVersionText)
+            addProperty("ConfigVersion", ConfigMigration.CURRENT_VERSION)
         }
 
         // Revert to old "targets" approach

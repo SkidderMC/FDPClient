@@ -8,6 +8,8 @@ package net.ccbluex.liquidbounce.ui.client.clickgui.style.core
 import net.ccbluex.liquidbounce.config.BlockValue
 import net.ccbluex.liquidbounce.config.FloatValue
 import net.ccbluex.liquidbounce.config.IntValue
+import net.ccbluex.liquidbounce.config.DoubleValue
+import net.ccbluex.liquidbounce.config.LongValue
 import net.ccbluex.liquidbounce.config.Value
 
 /**
@@ -49,6 +51,8 @@ object SliderMath {
     fun bounds(value: Value<*>): Pair<Double, Double>? = when (value) {
         is IntValue -> value.minimum.toDouble() to value.maximum.toDouble()
         is FloatValue -> value.minimum.toDouble() to value.maximum.toDouble()
+        is DoubleValue -> value.minimum to value.maximum
+        is LongValue -> value.minimum.toDouble() to value.maximum.toDouble()
         is BlockValue -> value.minimum.toDouble() to value.maximum.toDouble()
         else -> null
     }

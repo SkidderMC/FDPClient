@@ -5,6 +5,8 @@
  */
 package net.ccbluex.liquidbounce.config
 import net.ccbluex.liquidbounce.utils.input.safeKeyName
+import net.ccbluex.liquidbounce.event.ClientChange
+import net.ccbluex.liquidbounce.event.ClientChangeBus
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
@@ -120,6 +122,44 @@ class IntValue(
     val maximum = range.last
 }
 
+class LongValue(
+    name: String,
+    value: Long,
+    val range: LongRange,
+    suffix: String? = null,
+) : Value<Long>(name, value, suffix) {
+    override fun describe(text: String): LongValue = apply { descriptionField = text }
+    override fun validate(newValue: Long) = coerceUnlessUnlimited(newValue) { it.coerceIn(range) }
+    override fun toJson() = JsonPrimitive(value)
+    override fun fromJsonF(element: JsonElement) = runCatching { element.asLong }.getOrNull()
+    override fun fromTextF(text: String) = text.toLongOrNull()
+    val minimum = range.first
+    val maximum = range.last
+}
+
+class LongRangeValue(
+    name: String,
+    value: LongRange,
+    val range: LongRange,
+    suffix: String? = null,
+) : Value<LongRange>(name, value, suffix) {
+    override fun describe(text: String): LongRangeValue = apply { descriptionField = text }
+    override fun validate(newValue: LongRange): LongRange = coerceUnlessUnlimited(newValue) {
+        it.first.coerceIn(range)..it.last.coerceIn(range)
+    }
+    override fun toJson(): JsonElement = jsonArray { +JsonPrimitive(value.first); +JsonPrimitive(value.last) }
+    override fun fromJsonF(element: JsonElement): LongRange? {
+        val array = (element as? JsonArray)?.takeIf { it.size() == 2 } ?: return null
+        return array[0].asLong..array[1].asLong
+    }
+    override fun fromTextF(text: String): LongRange? {
+        val parts = text.split("..").takeIf { it.size == 2 } ?: return null
+        return (parts[0].toLongOrNull() ?: return null)..(parts[1].toLongOrNull() ?: return null)
+    }
+    val minimum = range.first
+    val maximum = range.last
+}
+
 class IntRangeValue(
     name: String,
     value: IntRange,
@@ -186,6 +226,45 @@ class FloatValue(
     fun isMinimal() = value <= minimum
     fun isMaximal() = value >= maximum
 
+    val minimum = range.start
+    val maximum = range.endInclusive
+}
+
+class DoubleValue(
+    name: String,
+    value: Double,
+    val range: ClosedFloatingPointRange<Double>,
+    suffix: String? = null,
+) : Value<Double>(name, value, suffix) {
+    override fun describe(text: String): DoubleValue = apply { descriptionField = text }
+    override fun validate(newValue: Double) = coerceUnlessUnlimited(newValue) { it.coerceIn(range) }
+    override fun toJson() = JsonPrimitive(value)
+    override fun fromJsonF(element: JsonElement) = runCatching { element.asDouble }.getOrNull()
+    override fun fromTextF(text: String) = text.toDoubleOrNull()
+    val minimum = range.start
+    val maximum = range.endInclusive
+}
+
+class DoubleRangeValue(
+    name: String,
+    value: ClosedFloatingPointRange<Double>,
+    val range: ClosedFloatingPointRange<Double>,
+    suffix: String? = null,
+) : Value<ClosedFloatingPointRange<Double>>(name, value, suffix) {
+    override fun describe(text: String): DoubleRangeValue = apply { descriptionField = text }
+    override fun validate(newValue: ClosedFloatingPointRange<Double>): ClosedFloatingPointRange<Double> =
+        coerceUnlessUnlimited(newValue) {
+            it.start.coerceIn(range)..it.endInclusive.coerceIn(range)
+        }
+    override fun toJson(): JsonElement = jsonArray { +JsonPrimitive(value.start); +JsonPrimitive(value.endInclusive) }
+    override fun fromJsonF(element: JsonElement): ClosedFloatingPointRange<Double>? {
+        val array = (element as? JsonArray)?.takeIf { it.size() == 2 } ?: return null
+        return array[0].asDouble..array[1].asDouble
+    }
+    override fun fromTextF(text: String): ClosedFloatingPointRange<Double>? {
+        val parts = text.split("..").takeIf { it.size == 2 } ?: return null
+        return (parts[0].toDoubleOrNull() ?: return null)..(parts[1].toDoubleOrNull() ?: return null)
+    }
     val minimum = range.start
     val maximum = range.endInclusive
 }
@@ -444,6 +523,27 @@ class ListValue(
     }
 }
 
+/** An ordered, directly editable list of strings. */
+class MutableListValue(
+    name: String,
+    value: List<String> = emptyList(),
+) : Value<List<String>>(name, value.toList()) {
+    override fun describe(text: String): MutableListValue = apply { descriptionField = text }
+    override fun validate(newValue: List<String>) = newValue.toList()
+    fun add(entry: String, saveImmediately: Boolean = true) = set(value + entry, saveImmediately)
+    fun removeAt(index: Int, saveImmediately: Boolean = true) =
+        if (index in value.indices) set(value.filterIndexed { i, _ -> i != index }, saveImmediately) else false
+    fun update(index: Int, entry: String, saveImmediately: Boolean = true): Boolean {
+        if (index !in value.indices) return false
+        return set(value.toMutableList().apply { this[index] = entry }, saveImmediately)
+    }
+    override fun toJson(): JsonElement = jsonArray { value.forEach { +JsonPrimitive(it) } }
+    override fun fromJsonF(element: JsonElement): List<String>? =
+        (element as? JsonArray)?.mapNotNull { it.asStringOrNull() }
+    override fun toText() = value.joinToString("\n")
+    override fun fromTextF(text: String) = text.lines()
+}
+
 class ColorValue(
     name: String, defaultColor: Color, var rainbow: Boolean = false
 ) : Value<Color>(name, defaultColor) {
@@ -564,7 +664,7 @@ class ColorValue(
 /**
  * Multi select value represents a set of chosen options out of a fixed list of [choices].
  */
-class MultiSelectValue(
+open class MultiSelectValue(
     name: String,
     value: Set<String>,
     val choices: Array<String>,
@@ -606,22 +706,60 @@ class MultiSelectValue(
         validate(text.split(",").map { it.trim() }.filter { it.isNotEmpty() }.toSet())
 }
 
+/** Multi-select backed by a stable string id -> game registry object map. */
+class RegistryMultiSelectValue<T : Any>(
+    name: String,
+    default: Set<String>,
+    val registry: Map<String, T>,
+) : MultiSelectValue(name, default, registry.keys.toTypedArray()) {
+
+    val selectedEntries: Map<String, T>
+        get() = get().mapNotNull { selected ->
+            registry.entries.firstOrNull { it.key.equals(selected, true) }?.let { it.key to it.value }
+        }.toMap()
+
+    fun resolve(id: String): T? = registry.entries.firstOrNull { it.key.equals(id, true) }?.value
+}
+
 /**
  * Key bind value represents a single bound keyboard key.
  */
 class KeyBindValue(
     name: String,
     value: Int = Keyboard.KEY_NONE,
+    action: KeyBindActionMode = KeyBindActionMode.TOGGLE,
 ) : Value<Int>(name, value) {
+
+    var actionMode: KeyBindActionMode = action
+        private set
 
     override fun describe(text: String): KeyBindValue = apply { descriptionField = text }
 
     val keyName: String
         get() = (safeKeyName(value) ?: "None") ?: "None"
 
-    override fun toJson(): JsonElement = JsonPrimitive(value)
+    fun setActionMode(action: KeyBindActionMode): Boolean {
+        if (actionMode == action) return false
+        actionMode = action
+        net.ccbluex.liquidbounce.file.FileManager.saveConfig(net.ccbluex.liquidbounce.file.FileManager.valuesConfig)
+        owner?.let { ClientChangeBus.publish(ClientChange.ValueState(it.name, name)) }
+        return true
+    }
 
-    override fun fromJsonF(element: JsonElement): Int? = element.asIntOrNull()
+    override fun toJson(): JsonElement = json {
+        "key" to value
+        "action" to actionMode.name
+    }
+
+    override fun fromJsonF(element: JsonElement): Int? = when (element) {
+        is JsonObject -> {
+            element["action"]?.asStringOrNull()?.let { action ->
+                KeyBindActionMode.values().firstOrNull { it.name.equals(action, true) }?.let { actionMode = it }
+            }
+            element["key"]?.asIntOrNull()
+        }
+        else -> element.asIntOrNull()
+    }
 
     override fun toText(): String = keyName
 
@@ -635,9 +773,50 @@ class KeyBindValue(
 /**
  * Vec3 value represents three doubles (x, y, z).
  */
+class Vec2Value(
+    name: String,
+    value: DoubleArray,
+    val useLocateButton: Boolean = false,
+) : Value<DoubleArray>(name, value) {
+
+    override fun describe(text: String): Vec2Value = apply { descriptionField = text }
+
+    init {
+        require(value.size == 2) { "Vec2Value requires exactly 2 components" }
+    }
+
+    override fun validate(newValue: DoubleArray): DoubleArray = if (newValue.size == 2) newValue else value
+
+    var x: Double
+        get() = value[0]
+        set(new) { set(doubleArrayOf(new, value[1])) }
+
+    var y: Double
+        get() = value[1]
+        set(new) { set(doubleArrayOf(value[0], new)) }
+
+    override fun toJson(): JsonElement = jsonArray {
+        +JsonPrimitive(value[0])
+        +JsonPrimitive(value[1])
+    }
+
+    override fun fromJsonF(element: JsonElement): DoubleArray? {
+        val array = (element as? JsonArray)?.takeIf { it.size() == 2 } ?: return null
+        return doubleArrayOf(array[0].asDouble, array[1].asDouble)
+    }
+
+    override fun toText(): String = "${value[0]},${value[1]}"
+
+    override fun fromTextF(text: String): DoubleArray? {
+        val parts = text.split(",").map(String::trim).takeIf { it.size == 2 } ?: return null
+        return doubleArrayOf(parts[0].toDoubleOrNull() ?: return null, parts[1].toDoubleOrNull() ?: return null)
+    }
+}
+
 class Vec3Value(
     name: String,
     value: DoubleArray,
+    val useLocateButton: Boolean = false,
 ) : Value<DoubleArray>(name, value) {
 
     override fun describe(text: String): Vec3Value = apply { descriptionField = text }
@@ -746,3 +925,5 @@ class CurveValue(
 enum class RangeSlider { LEFT, RIGHT }
 
 enum class FileDialogMode { OPEN_FILE, SAVE_FILE, SELECT_FOLDER }
+
+enum class KeyBindActionMode { HOLD, TOGGLE }

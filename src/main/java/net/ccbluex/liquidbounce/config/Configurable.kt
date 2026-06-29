@@ -25,13 +25,33 @@ open class Configurable(
         get() = this.get()
 
     fun addValue(value: Value<*>) = apply {
+        value.owner?.takeIf { it !== this }?.removeValue(value)
         get().add(value)
         value.owner = this
     }
 
     fun addValues(values: Collection<Value<*>>) = apply {
-        get().addAll(values)
-        values.forEach { it.owner = this }
+        values.toList().forEach(::addValue)
+    }
+
+    fun removeValue(value: Value<*>): Boolean {
+        val removed = get().remove(value)
+        if (removed && value.owner === this) value.owner = null
+        return removed
+    }
+
+    fun moveValueTo(value: Value<*>, target: Configurable): Boolean {
+        if (value.owner !== this || !removeValue(value)) return false
+        target.addValue(value)
+        return true
+    }
+
+    fun findDeep(valueName: String): Value<*>? {
+        for (value in values) {
+            if (value.matchesKey(valueName)) return value
+            if (value is Configurable) value.findDeep(valueName)?.let { return it }
+        }
+        return null
     }
 
     operator fun <T, V : Value<T>> V.unaryPlus() = apply(::addValue)
@@ -81,6 +101,18 @@ open class Configurable(
     fun float(
         name: String, value: Float, range: ClosedFloatingPointRange<Float> = 0f..Float.MAX_VALUE, suffix: String? = null, isSupported: (() -> Boolean)? = null
     ) = +FloatValue(name, value, range, suffix).apply {
+        if (isSupported != null) setSupport { isSupported.invoke() }
+    }
+
+    fun double(
+        name: String, value: Double, range: ClosedFloatingPointRange<Double>, suffix: String? = null, isSupported: (() -> Boolean)? = null
+    ) = +DoubleValue(name, value, range, suffix).apply {
+        if (isSupported != null) setSupport { isSupported.invoke() }
+    }
+
+    fun long(
+        name: String, value: Long, range: LongRange, suffix: String? = null, isSupported: (() -> Boolean)? = null
+    ) = +LongValue(name, value, range, suffix).apply {
         if (isSupported != null) setSupport { isSupported.invoke() }
     }
 
@@ -134,6 +166,19 @@ open class Configurable(
         if (isSupported != null) setSupport { isSupported.invoke() }
     }
 
+    fun doubleRange(
+        name: String, value: ClosedFloatingPointRange<Double>, range: ClosedFloatingPointRange<Double>,
+        suffix: String? = null, isSupported: (() -> Boolean)? = null
+    ) = +DoubleRangeValue(name, value, range, suffix).apply {
+        if (isSupported != null) setSupport { isSupported.invoke() }
+    }
+
+    fun longRange(
+        name: String, value: LongRange, range: LongRange, suffix: String? = null, isSupported: (() -> Boolean)? = null
+    ) = +LongRangeValue(name, value, range, suffix).apply {
+        if (isSupported != null) setSupport { isSupported.invoke() }
+    }
+
     fun refreshableRange(
         name: String, value: ClosedFloatingPointRange<Float>, range: ClosedFloatingPointRange<Float> = 0f..Float.MAX_VALUE,
         suffix: String? = null, isSupported: (() -> Boolean)? = null
@@ -157,15 +202,37 @@ open class Configurable(
         if (isSupported != null) setSupport { isSupported.invoke() }
     }
 
+    fun <T : Any> registryMultiSelect(
+        name: String, registry: Map<String, T>, default: Set<String> = emptySet(),
+        isSupported: (() -> Boolean)? = null,
+    ) = +RegistryMultiSelectValue(name, default, registry).apply {
+        if (isSupported != null) setSupport { isSupported.invoke() }
+    }
+
+    fun mutableList(
+        name: String, value: List<String> = emptyList(), isSupported: (() -> Boolean)? = null
+    ) = +MutableListValue(name, value).apply {
+        if (isSupported != null) setSupport { isSupported.invoke() }
+    }
+
     fun keybind(
-        name: String, default: Int = org.lwjgl.input.Keyboard.KEY_NONE, isSupported: (() -> Boolean)? = null
-    ) = +KeyBindValue(name, default).apply {
+        name: String, default: Int = org.lwjgl.input.Keyboard.KEY_NONE,
+        action: KeyBindActionMode = KeyBindActionMode.TOGGLE, isSupported: (() -> Boolean)? = null
+    ) = +KeyBindValue(name, default, action).apply {
         if (isSupported != null) setSupport { isSupported.invoke() }
     }
 
     fun vec3(
-        name: String, x: Double, y: Double, z: Double, isSupported: (() -> Boolean)? = null
-    ) = +Vec3Value(name, doubleArrayOf(x, y, z)).apply {
+        name: String, x: Double, y: Double, z: Double, useLocateButton: Boolean = false,
+        isSupported: (() -> Boolean)? = null
+    ) = +Vec3Value(name, doubleArrayOf(x, y, z), useLocateButton).apply {
+        if (isSupported != null) setSupport { isSupported.invoke() }
+    }
+
+    fun vec2(
+        name: String, x: Double, y: Double, useLocateButton: Boolean = false,
+        isSupported: (() -> Boolean)? = null
+    ) = +Vec2Value(name, doubleArrayOf(x, y), useLocateButton).apply {
         if (isSupported != null) setSupport { isSupported.invoke() }
     }
 
