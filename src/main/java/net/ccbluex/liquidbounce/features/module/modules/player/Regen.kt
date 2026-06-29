@@ -16,7 +16,12 @@ import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.potion.Potion
 
-object Regen : Module("Regen", Category.PLAYER, Category.SubCategory.PLAYER_COUNTER) {
+object TimeShift : Module(
+    "TimeShift",
+    Category.EXPLOIT,
+    Category.SubCategory.EXPLOIT_EXTRAS,
+    legacyNames = arrayOf("Regen", "Zoot"),
+) {
 
     private val mode by choices("Mode", arrayOf("Vanilla", "Spartan"), "Vanilla")
         .describe("Regen exploit method to use.")
