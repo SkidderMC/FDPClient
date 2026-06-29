@@ -30,18 +30,29 @@ public class MixinMcefUtil {
         try {
             File dir = Minecraft.getMinecraft().mcDataDir;
             File localConfig = new File(dir, "mcef2.json");
-            if (!new File(dir, "libcef.dll").isFile() || !localConfig.isFile()) {
+            // Already installed: serve the local config so the engine reads it as a normal success and
+            // never re-probes the dead mirror (no SSL/PKIX spam, no local-fallback warning). Any other
+            // resource is already on disk, so null - exactly what a failed download returns.
+            if (new File(dir, "libcef.dll").isFile() && localConfig.isFile()) {
+                if (name != null && name.contains("mcef2")) {
+                    cir.setReturnValue(new SizedInputStream(new FileInputStream(localConfig), localConfig.length()));
+                } else {
+                    cir.setReturnValue(null);
+                }
                 return;
             }
 
-            // The only remote fetch performed once the runtime is on disk is the config manifest.
-            // Serve the local copy so the engine reads it as a normal success (no dead-mirror probe,
-            // no SSL/PKIX spam, not even the local-fallback warning). Anything else yields null, which
-            // is exactly what a failed download returns, since every resource is already present.
-            if (name != null && name.contains("mcef2")) {
-                cir.setReturnValue(new SizedInputStream(new FileInputStream(localConfig), localConfig.length()));
-            } else {
-                cir.setReturnValue(null);
+            // Fresh install: the old Java 8 bundled by most launchers lacks the ISRG root certificate,
+            // so the mirror's HTTPS cert fails PKIX validation and the whole runtime download dies
+            // before it starts (even the config-manifest fetch, which ignores FORCE_MIRROR). The mirror
+            // serves the exact same files over plain HTTP, so downgrade the fetch to HTTP and stream it
+            // directly - no TLS, no cert chain, works on every runtime. Scoped to the MCEF mirror only.
+            if (url != null && url.startsWith("https://")) {
+                String httpUrl = "http://" + url.substring(8);
+                java.net.URLConnection conn = new java.net.URL(httpUrl).openConnection();
+                conn.setConnectTimeout(15000);
+                conn.setReadTimeout(15000);
+                cir.setReturnValue(new SizedInputStream(conn.getInputStream(), conn.getContentLengthLong()));
             }
         } catch (Throwable ignored) {
         }
