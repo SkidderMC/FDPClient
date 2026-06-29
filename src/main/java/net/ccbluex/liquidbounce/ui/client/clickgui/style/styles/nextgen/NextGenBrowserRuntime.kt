@@ -78,6 +78,10 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
     private const val REMOTE_CONFIG_CLASS = "net.montoyo.mcef.remote.RemoteConfig"
     private const val PROGRESS_LISTENER_CLASS = "net.montoyo.mcef.utilities.IProgressListener"
 
+    /** Set while a deliberate (re)install runs so MixinMcefUtil never short-circuits a resource fetch.
+     *  Keep in sync with the same constant in MixinMcefUtil. */
+    const val MCEF_INSTALLING_PROPERTY = "fdp.mcef.installing"
+
     private var setFocus: Method? = null
     private var initializationAttempted = false
 
@@ -178,28 +182,38 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
                         return@Thread
                     }
 
-                    resetMcefVirtualState()
-                    configureMcefDownload()
+                    // Tell MixinMcefUtil a deliberate (re)install is running so it never short-circuits a
+                    // resource fetch to "already on disk" - it would otherwise null out every native after
+                    // libcef.dll lands and leave a broken half-install. Cleared in finally so steady-state
+                    // launches keep skipping the dead mirror. Property is JVM-global; all MCEF openStream
+                    // calls for this download happen on this thread inside the lock.
+                    System.setProperty(MCEF_INSTALLING_PROPERTY, "true")
+                    try {
+                        resetMcefVirtualState()
+                        configureMcefDownload()
 
-                    if (forceRedownload) {
-                        purgeNativeRuntime()
-                    }
+                        if (forceRedownload) {
+                            purgeNativeRuntime()
+                        }
 
-                    val nativesPresent = hasNativeRuntime()
-                    MCEF.ENABLE_EXAMPLE = false
-                    // The montoyo mirror is frequently unreachable, and a failed remote update check forces
-                    // MCEF into virtual mode even when valid native files are already on disk. When the
-                    // runtime is present locally and we are not explicitly re-downloading, skip the remote
-                    // check entirely and load it directly.
-                    MCEF.SKIP_UPDATES = nativesPresent && !forceRedownload
-                    MCEF.WARN_UPDATES = false
-                    MCEF.USE_FORGE_SPLASH = false
+                        val nativesPresent = hasNativeRuntime()
+                        MCEF.ENABLE_EXAMPLE = false
+                        // The montoyo mirror is frequently unreachable, and a failed remote update check forces
+                        // MCEF into virtual mode even when valid native files are already on disk. When the
+                        // runtime is present locally and we are not explicitly re-downloading, skip the remote
+                        // check entirely and load it directly.
+                        MCEF.SKIP_UPDATES = nativesPresent && !forceRedownload
+                        MCEF.WARN_UPDATES = false
+                        MCEF.USE_FORGE_SPLASH = false
 
-                    if (nativesPresent && !forceRedownload) {
-                        detail = "Starting in-game browser..."
-                    } else {
-                        downloadNatives()
-                        Thread.sleep(250L)
+                        if (nativesPresent && !forceRedownload) {
+                            detail = "Starting in-game browser..."
+                        } else {
+                            downloadNatives()
+                            Thread.sleep(250L)
+                        }
+                    } finally {
+                        System.clearProperty(MCEF_INSTALLING_PROPERTY)
                     }
                 }
 
@@ -368,7 +382,10 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
         targets += remoteResourceFiles()
         REQUIRED_NATIVE_FILES.mapTo(targets) { File(rootDir, it) }
         EXTRA_NATIVE_TARGETS.mapTo(targets) { File(rootDir, it) }
+        // Drop the cached config too, so a clean reinstall re-fetches a fresh manifest instead of
+        // letting a stale mcef2.json be served back as a "success".
         targets += File(rootDir, "mcef2.new")
+        targets += File(rootDir, "mcef2.json")
 
         targets.forEach { deleteNativeTarget(rootDir, it) }
         deleteNativeTarget(rootDir, File(File(rootDir, "config"), "mcefFiles.lst"))
