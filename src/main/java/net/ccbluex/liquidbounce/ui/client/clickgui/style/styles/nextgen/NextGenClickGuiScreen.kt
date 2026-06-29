@@ -17,7 +17,9 @@ import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.GL11
 
-class NextGenClickGuiScreen : GuiScreen() {
+class NextGenClickGuiScreen(
+    private val virtualRoute: String = "clickgui",
+) : GuiScreen() {
 
     private var currentUrl = ""
 
@@ -35,7 +37,9 @@ class NextGenClickGuiScreen : GuiScreen() {
         Keyboard.enableRepeatEvents(true)
         pressedButtonMask = 0
         focusApplied = false
-        currentUrl = NextGenClickGuiServer.start()
+        NextGenClickGuiServer.start()
+        currentUrl = ThemeManager.url(virtualRoute)
+        ThemeManager.open(virtualRoute)
         layoutButtons()
 
         browserMode = ClickGUIModule.nextGenInBrowser
@@ -273,6 +277,7 @@ class NextGenClickGuiScreen : GuiScreen() {
     }
 
     override fun onGuiClosed() {
+        ThemeManager.close(virtualRoute)
         NextGenBrowserRuntime.detach()
         Keyboard.enableRepeatEvents(false)
         if (ClickGUIModule.lastScale > 0) {

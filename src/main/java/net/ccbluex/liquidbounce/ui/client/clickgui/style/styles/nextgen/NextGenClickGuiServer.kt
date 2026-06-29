@@ -28,7 +28,10 @@ object NextGenClickGuiServer {
         get() = serverPort
 
     val url: String
-        get() = "http://localhost:$serverPort/?port=$serverPort&wsPort=${UiEventSocket.port}&static#/clickgui"
+        get() = screenUrl("clickgui")
+
+    fun screenUrl(screen: String): String =
+        "http://localhost:$serverPort/?port=$serverPort&wsPort=${UiEventSocket.port}&static#/${screen.trimStart('/')}"
 
     /** URL of the standalone Spotify player page (served from a sibling resource folder). */
     val spotifyUrl: String
