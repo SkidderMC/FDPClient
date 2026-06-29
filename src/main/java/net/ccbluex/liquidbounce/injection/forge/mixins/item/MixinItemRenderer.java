@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.features.module.modules.client.Animation;
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.visual.AntiBlind;
 import net.ccbluex.liquidbounce.features.module.modules.visual.Chams;
+import net.ccbluex.liquidbounce.features.module.modules.visual.ItemChams;
 import net.ccbluex.liquidbounce.features.module.modules.visual.SilentHotbarModule;
 import net.ccbluex.liquidbounce.utils.inventory.SilentHotbar;
 import net.minecraft.client.Minecraft;
@@ -170,7 +171,9 @@ public abstract class MixinItemRenderer {
                 transformFirstPersonItem(f, f1);
             }
 
+            ItemChams.beginRender();
             renderItem(abstractclientplayer, itemToRender, ItemCameraTransforms.TransformType.FIRST_PERSON);
+            ItemChams.endRender();
         } else if (!abstractclientplayer.isInvisible()) {
             this.renderPlayerArm(abstractclientplayer, f, f1);
         }

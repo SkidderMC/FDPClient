@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.features.module.modules.combat.Criticals;
 import net.ccbluex.liquidbounce.features.module.modules.exploit.GhostHand;
 import net.ccbluex.liquidbounce.features.module.modules.player.DelayRemover;
 import net.ccbluex.liquidbounce.features.module.modules.player.NoFall;
+import net.ccbluex.liquidbounce.features.module.modules.player.NoSlowBreak;
 import net.ccbluex.liquidbounce.features.module.modules.visual.XRay;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -102,16 +103,18 @@ public abstract class MixinBlock {
 
         // NoSlowBreak
         final DelayRemover delayRemover = DelayRemover.INSTANCE;
-        if (delayRemover.handleEvents()) {
-            if (delayRemover.getWater() && playerIn.isInsideOfMaterial(Material.water) && !EnchantmentHelper.getAquaAffinityModifier(playerIn)) {
+        if (delayRemover.handleEvents() || NoSlowBreak.INSTANCE.handleEvents()) {
+            if ((delayRemover.handleEvents() && delayRemover.getWater() || NoSlowBreak.INSTANCE.getUnderwater()) &&
+                    playerIn.isInsideOfMaterial(Material.water) && !EnchantmentHelper.getAquaAffinityModifier(playerIn)) {
                 f *= 5f;
             }
 
-            if (delayRemover.getAir() && !playerIn.onGround) {
+            if ((delayRemover.handleEvents() && delayRemover.getAir() || NoSlowBreak.INSTANCE.getOnAir()) && !playerIn.onGround) {
                 f *= 5f;
             }
 
-            if (delayRemover.getMiningFatigue() && playerIn.isPotionActive(Potion.digSlowdown)) {
+            if ((delayRemover.handleEvents() && delayRemover.getMiningFatigue() || NoSlowBreak.INSTANCE.getMiningFatigue()) &&
+                    playerIn.isPotionActive(Potion.digSlowdown)) {
                 final int amplifier = playerIn.getActivePotionEffect(Potion.digSlowdown).getAmplifier();
                 final float slowdown;
                 switch (amplifier) {

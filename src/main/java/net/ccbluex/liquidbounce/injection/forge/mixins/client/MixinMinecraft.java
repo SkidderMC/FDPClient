@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.client;
 
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.features.module.modules.combat.HitSelect;
+import net.ccbluex.liquidbounce.features.module.modules.combat.NoMissCooldown;
 import net.ccbluex.liquidbounce.features.module.modules.combat.TickBase;
 import net.ccbluex.liquidbounce.features.module.modules.other.FastPlace;
 import net.ccbluex.liquidbounce.file.configs.models.ClientConfiguration;
@@ -244,6 +245,12 @@ public abstract class MixinMinecraft {
 
     @Inject(method = "clickMouse", at = @At("HEAD"), cancellable = true)
     private void clickMouse(CallbackInfo callbackInfo) {
+        final boolean missed = objectMouseOver == null || objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.MISS;
+        if (missed && NoMissCooldown.INSTANCE.getCancelAttackOnMiss()) {
+            callbackInfo.cancel();
+            return;
+        }
+
         if (HitSelect.shouldCancelClick(objectMouseOver)) {
             callbackInfo.cancel();
             return;
@@ -255,6 +262,14 @@ public abstract class MixinMinecraft {
 
         if (leftClickCounter <= 0) {
             CPSCounter.INSTANCE.registerClick(CPSCounter.MouseButton.LEFT);
+        }
+    }
+
+    @Inject(method = "clickMouse", at = @At("RETURN"))
+    private void removeMissCooldown(CallbackInfo callbackInfo) {
+        if (NoMissCooldown.INSTANCE.getRemoveAttackCooldown() &&
+                (objectMouseOver == null || objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.MISS)) {
+            leftClickCounter = 0;
         }
     }
 

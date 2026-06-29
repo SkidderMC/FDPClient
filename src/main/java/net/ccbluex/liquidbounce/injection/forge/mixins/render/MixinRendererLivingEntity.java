@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.features.module.modules.client.Rotations;
 import net.ccbluex.liquidbounce.features.module.modules.visual.*;
 import net.ccbluex.liquidbounce.utils.client.ClientUtils;
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils;
+import net.ccbluex.liquidbounce.utils.rotation.Rotation;
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
@@ -162,6 +163,13 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
         {
             float f = this.interpolateRotation(entity.prevRenderYawOffset, entity.renderYawOffset, partialTicks);
             float f1 = this.interpolateRotation(entity.prevRotationYawHead, entity.rotationYawHead, partialTicks);
+            Rotation visibleRotation = entity instanceof net.minecraft.client.entity.EntityPlayerSP
+                    ? Rotations.INSTANCE.getRenderRotation(partialTicks)
+                    : null;
+
+            if (visibleRotation != null) {
+                f1 = visibleRotation.getYaw();
+            }
             float f2 = f1 - f;
 
             if (entity.isRiding() && entity.ridingEntity instanceof EntityLivingBase)
@@ -190,6 +198,9 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
             }
 
             float f7 = entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks;
+            if (visibleRotation != null) {
+                f7 = visibleRotation.getPitch();
+            }
             this.renderLivingAt(entity, x, y, z);
             float f8 = this.handleRotationFloat(entity, partialTicks);
             this.rotateCorpse(entity, f8, f, partialTicks);

@@ -424,7 +424,13 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
 
         EventManager.INSTANCE.call(PostSprintUpdateEvent.INSTANCE);
 
-        sprint.correctSprintState(modifiedInput, isUsingItem);
+        final boolean modernSilentCorrection = settings != null && settings.getUseModernRotations()
+                && ("Strict".equals(settings.getModernMovementCorrection())
+                || "Silent".equals(settings.getModernMovementCorrection()));
+
+        // Silent rotation correction must not make the sprint controller interpret the remapped
+        // server-side input as the player's physical direction.
+        sprint.correctSprintState(modernSilentCorrection ? movementInput : modifiedInput, isUsingItem);
 
         if (capabilities.allowFlying) {
             if (mc.playerController.isSpectatorMode()) {

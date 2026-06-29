@@ -12,6 +12,8 @@ import net.ccbluex.liquidbounce.event.StrafeEvent;
 import net.ccbluex.liquidbounce.features.module.modules.combat.HitBox;
 import net.ccbluex.liquidbounce.features.module.modules.exploit.NoPitchLimit;
 import net.ccbluex.liquidbounce.features.module.modules.movement.NoFluid;
+import net.ccbluex.liquidbounce.features.module.modules.movement.NoPush;
+import net.ccbluex.liquidbounce.features.module.modules.movement.PushSource;
 import net.ccbluex.liquidbounce.features.module.modules.visual.FreeCam;
 import net.ccbluex.liquidbounce.injection.implementations.IMixinEntity;
 import net.minecraft.block.Block;
@@ -256,6 +258,36 @@ public abstract class MixinEntity implements IMixinEntity {
         EventManager.INSTANCE.call(strafeEvent);
 
         if (strafeEvent.isCancelled()) callbackInfo.cancel();
+    }
+
+    @Inject(method = "applyEntityCollision", at = @At("HEAD"), cancellable = true)
+    private void suppressConfiguredEntityPush(Entity entityIn, CallbackInfo callbackInfo) {
+        if (((Object) this == mc.thePlayer || entityIn == mc.thePlayer)
+                && !NoPush.canPush(PushSource.ENTITIES)) {
+            callbackInfo.cancel();
+        }
+    }
+
+    @Redirect(
+            method = "handleWaterMovement",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/World;handleMaterialAcceleration(Lnet/minecraft/util/AxisAlignedBB;Lnet/minecraft/block/material/Material;Lnet/minecraft/entity/Entity;)Z"
+            )
+    )
+    private boolean suppressConfiguredLiquidPush(World world, AxisAlignedBB box, Material material, Entity entity) {
+        final double previousMotionX = entity.motionX;
+        final double previousMotionY = entity.motionY;
+        final double previousMotionZ = entity.motionZ;
+        final boolean result = world.handleMaterialAcceleration(box, material, entity);
+
+        if (entity == mc.thePlayer && !NoPush.canPush(PushSource.LIQUIDS)) {
+            entity.motionX = previousMotionX;
+            entity.motionY = previousMotionY;
+            entity.motionZ = previousMotionZ;
+        }
+
+        return result;
     }
 
     @Inject(method = "isInWater", at = @At("HEAD"), cancellable = true)
