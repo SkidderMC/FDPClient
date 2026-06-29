@@ -183,6 +183,14 @@ object PacketUtils : MinecraftInstance, Listenable {
     fun sendPackets(vararg packets: Packet<*>, triggerEvents: Boolean = true) =
         packets.forEach { sendPacket(it, triggerEvents) }
 
+    /** Sends directly through the network manager without invoking the client's packet event bus. */
+    @JvmStatic
+    fun sendPacketSilently(packet: Packet<*>) = sendPacket(packet, triggerEvent = false)
+
+    /** Silent batch counterpart of [sendPacketSilently]. */
+    @JvmStatic
+    fun sendPacketsSilently(vararg packets: Packet<*>) = packets.forEach(::sendPacketSilently)
+
     @JvmStatic
     fun handlePackets(vararg packets: Packet<*>) =
         packets.forEach { handlePacket(it) }
@@ -227,12 +235,12 @@ var S12PacketEntityVelocity.realMotionX
 var S12PacketEntityVelocity.realMotionY
     get() = motionY / 8000.0
     set(value) {
-        motionX = (value * 8000.0).roundToInt()
+        motionY = (value * 8000.0).roundToInt()
     }
 var S12PacketEntityVelocity.realMotionZ
     get() = motionZ / 8000.0
     set(value) {
-        motionX = (value * 8000.0).roundToInt()
+        motionZ = (value * 8000.0).roundToInt()
     }
 
 val S14PacketEntity.realMotionX
