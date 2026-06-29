@@ -6,6 +6,17 @@
 package net.ccbluex.liquidbounce.utils
 
 import net.ccbluex.liquidbounce.config.RefreshableRangeValue
+import net.ccbluex.liquidbounce.config.ConfigMigration
+import net.ccbluex.liquidbounce.config.Configurable
+import net.ccbluex.liquidbounce.config.DoubleRangeValue
+import net.ccbluex.liquidbounce.config.DoubleValue
+import net.ccbluex.liquidbounce.config.KeyBindActionMode
+import net.ccbluex.liquidbounce.config.KeyBindValue
+import net.ccbluex.liquidbounce.config.LongRangeValue
+import net.ccbluex.liquidbounce.config.LongValue
+import net.ccbluex.liquidbounce.config.ModeValueGroup
+import net.ccbluex.liquidbounce.config.MutableListValue
+import net.ccbluex.liquidbounce.config.Vec2Value
 import net.ccbluex.liquidbounce.features.command.builder.ParameterBuilder
 import net.ccbluex.liquidbounce.features.command.builder.buildCommand
 import net.ccbluex.liquidbounce.file.gson.Exclude
@@ -19,6 +30,10 @@ import net.ccbluex.liquidbounce.utils.math.geometry.Ray
 import net.ccbluex.liquidbounce.utils.math.geometry.approximatelyEquals
 import net.ccbluex.liquidbounce.utils.render.Color4b
 import net.ccbluex.liquidbounce.utils.render.DynamicAtlasAllocator
+import net.ccbluex.liquidbounce.utils.sorting.ComparatorChain
+import net.ccbluex.liquidbounce.utils.rotation.ModernRotationEngine
+import com.google.gson.JsonObject
+import com.google.gson.JsonPrimitive
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.Vec3
 import kotlin.math.abs
@@ -34,6 +49,10 @@ object FoundationVerification {
         verifyCommandDsl()
         verifyAtlasAllocator()
         verifyChangeBus()
+        verifyValueTypes()
+        verifyModeChoices()
+        verifyComparatorChain()
+        verifyNeuralSmoother()
         println("Foundation verification passed")
     }
 
@@ -122,6 +141,76 @@ object FoundationVerification {
         unsubscribe()
         ClientChangeBus.publish(ClientChange.Configuration("ignored"))
         check(received == listOf(ClientChange.Configuration("verification")))
+    }
+
+    private fun verifyValueTypes() {
+        val double = DoubleValue("Double", 1.25, 0.0..2.0)
+        check(double.set(3.0, saveImmediately = false) && double.get() == 2.0)
+        double.fromJson(JsonPrimitive(0.75))
+        check(double.get() == 0.75)
+
+        val long = LongValue("Long", 5L, 0L..10L)
+        long.fromJson(JsonPrimitive(9L))
+        check(long.get() == 9L)
+
+        val doubles = DoubleRangeValue("DoubleRange", 1.0..2.0, 0.0..5.0)
+        doubles.fromText("3.0..4.0")
+        check(doubles.get().start == 3.0 && doubles.get().endInclusive == 4.0)
+
+        val longs = LongRangeValue("LongRange", 1L..2L, 0L..5L)
+        longs.fromJson(longs.toJson())
+        check(longs.get() == (1L..2L))
+
+        val list = MutableListValue("Entries", listOf("one"))
+        list.add("two", saveImmediately = false)
+        list.update(0, "first", saveImmediately = false)
+        check(list.get() == listOf("first", "two"))
+        list.removeAt(1, saveImmediately = false)
+        check(list.get() == listOf("first"))
+
+        val bind = KeyBindValue("Bind", 12, KeyBindActionMode.HOLD)
+        val restored = KeyBindValue("Bind")
+        restored.fromJson(bind.toJson())
+        check(restored.get() == 12 && restored.actionMode == KeyBindActionMode.HOLD)
+
+        val vector = Vec2Value("Position", doubleArrayOf(2.0, 4.0), useLocateButton = true)
+        vector.fromText("6.5,8.5")
+        check(vector.x == 6.5 && vector.y == 8.5 && vector.useLocateButton)
+
+        val root = Configurable("Root")
+        val nested = Configurable("Nested")
+        val child = nested.int("Child", 0, 0..10)
+        root.addValue(nested)
+        val legacy = JsonObject().apply { addProperty("Child", 7) }
+        val migrated = ConfigMigration.findValue(legacy, nested)!!.asJsonObject
+        child.fromJson(migrated["Child"])
+        check(child.get() == 7)
+    }
+
+    private fun verifyModeChoices() {
+        val lifecycle = mutableListOf<String>()
+        val group = ModeValueGroup("Mode", arrayOf("A", "B"), "A")
+        val first = group.mode("A", { lifecycle += "A+" }, { lifecycle += "A-" }) {
+            int("Amount", 1, 0..5)
+        }
+        val second = group.mode("B", { lifecycle += "B+" }, { lifecycle += "B-" })
+        check(first.selected && !second.selected && lifecycle == listOf("A+"))
+        group.modeValue.set("B", saveImmediately = false)
+        check(!first.selected && second.selected && lifecycle == listOf("A+", "A-", "B+"))
+    }
+
+    private fun verifyComparatorChain() {
+        data class Candidate(val group: Int, val score: Int)
+        val comparator = ComparatorChain<Candidate>(compareBy { it.group }, compareBy { it.score })
+        val sorted = listOf(Candidate(1, 3), Candidate(0, 9), Candidate(1, 1)).sortedWith(comparator)
+        check(sorted == listOf(Candidate(0, 9), Candidate(1, 1), Candidate(1, 3)))
+    }
+
+    private fun verifyNeuralSmoother() {
+        val calm = ModernRotationEngine.neuralFactor(0.05f, 0.02f, 0f, 0.1f, 0f, 0.8f, 1f)
+        val tracking = ModernRotationEngine.neuralFactor(0.8f, 0.1f, 0.5f, 0.8f, 0.7f, 0.8f, 1f)
+        check(calm in 0.005f..1f && tracking in 0.005f..1f)
+        check(tracking > calm)
     }
 
     private class SerializationProbe(

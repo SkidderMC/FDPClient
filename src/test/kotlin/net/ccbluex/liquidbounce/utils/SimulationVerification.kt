@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.utils
 import net.ccbluex.liquidbounce.utils.simulation.PredictFeature
 import net.ccbluex.liquidbounce.utils.simulation.ProjectileArc
 import net.ccbluex.liquidbounce.utils.simulation.ProjectileSolver
+import net.ccbluex.liquidbounce.utils.simulation.ProjectileStrategy
 import net.minecraft.util.Vec3
 import kotlin.math.sqrt
 
@@ -32,6 +33,17 @@ object SimulationVerification {
         check(solution.speedError <= 1.0E-5)
         check(solver.positionAt(origin, solution.velocity, solution.flightTicks).squareDistanceTo(target) <= 1.0E-8)
         check(solver.solve(origin, Vec3(1_000.0, 2.0, 3.0), 0.1) == null)
+
+        val vacuum = ProjectileSolver(gravity = 0.0, drag = 1.0)
+        val polynomial = vacuum.solve(
+            Vec3(0.0, 0.0, 0.0),
+            Vec3(6.0, 3.0, 0.0),
+            1.5,
+            strategy = ProjectileStrategy.POLYNOMIAL,
+        )
+        check(polynomial?.strategy == ProjectileStrategy.POLYNOMIAL)
+        check(vacuum.positionAt(Vec3(0.0, 0.0, 0.0), polynomial.velocity, polynomial.flightTicks)
+            .squareDistanceTo(Vec3(6.0, 3.0, 0.0)) <= 1.0E-8)
     }
 
     private fun verifyPredictionBounds() {
