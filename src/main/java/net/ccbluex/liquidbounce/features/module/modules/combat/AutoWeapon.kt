@@ -13,12 +13,21 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.inventory.SilentHotbar
 import net.ccbluex.liquidbounce.utils.inventory.attackDamage
+import net.ccbluex.liquidbounce.utils.inventory.totalDurability
+import net.ccbluex.liquidbounce.utils.item.EnchantmentValueEstimator
+import net.minecraft.enchantment.Enchantment
 import net.minecraft.item.ItemSword
 import net.minecraft.item.ItemTool
 import net.minecraft.network.play.client.C02PacketUseEntity
 import net.minecraft.network.play.client.C02PacketUseEntity.Action.ATTACK
 
 object AutoWeapon : Module("AutoWeapon", Category.COMBAT, Category.SubCategory.COMBAT_LEGIT, subjective = true) {
+
+    private val enchantmentEstimator = EnchantmentValueEstimator(
+        EnchantmentValueEstimator.WeightedEnchantment(Enchantment.fireAspect, 0.35F),
+        EnchantmentValueEstimator.WeightedEnchantment(Enchantment.knockback, 0.15F),
+        EnchantmentValueEstimator.WeightedEnchantment(Enchantment.unbreaking, 0.05F),
+    )
 
     private val onlySword by boolean("OnlySword", false)
         .describe("Only switch to swords, ignore tools.")
@@ -47,7 +56,12 @@ object AutoWeapon : Module("AutoWeapon", Category.COMBAT, Category.SubCategory.C
                     it.second != null && ((onlySword && it.second.item is ItemSword)
                             || (!onlySword && (it.second.item is ItemSword || it.second.item is ItemTool)))
                 }
-                .maxByOrNull { it.second.attackDamage } ?: return@handler
+                .maxWithOrNull(
+                    compareBy<Pair<Int, net.minecraft.item.ItemStack>> { it.second.attackDamage }
+                        .thenBy { enchantmentEstimator.estimateValue(it.second) }
+                        .thenBy { it.second.totalDurability }
+                        .thenBy { it.first == player.inventory.currentItem }
+                ) ?: return@handler
 
             if (slot == mc.thePlayer.inventory.currentItem) // If in hand no need to swap
                 return@handler

@@ -23,11 +23,14 @@ import net.ccbluex.liquidbounce.utils.attack.CPSCounter
 import net.ccbluex.liquidbounce.utils.attack.CooldownHelper.getAttackCooldownProgress
 import net.ccbluex.liquidbounce.utils.attack.CooldownHelper.resetLastAttackedTicks
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isSelected
+import net.ccbluex.liquidbounce.utils.attack.TargetPriority
+import net.ccbluex.liquidbounce.utils.attack.TargetTracker
 import net.ccbluex.liquidbounce.utils.client.BlinkUtils
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.runTimeTicks
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPackets
 import net.ccbluex.liquidbounce.utils.extensions.*
+import net.ccbluex.liquidbounce.utils.entity.PositionExtrapolation
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.serverOpenInventory
 import net.ccbluex.liquidbounce.utils.inventory.ItemUtils.isConsumingItem
 import net.ccbluex.liquidbounce.utils.inventory.SilentHotbar
@@ -141,6 +144,16 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
     private val maxSwitchFOV by float("MaxSwitchFOV", 90f, 30f..180f) { targetMode == "Switch" }
         .describe("Max angle to switch to another target.")
 
+    private val targetTracker = TargetTracker(
+        range = { maxRange },
+        fov = { fov },
+        distance = { entity ->
+            Backtrack.runWithNearestTrackedDistance(entity) {
+                mc.thePlayer?.getDistanceToEntityBox(entity) ?: Double.MAX_VALUE
+            }
+        },
+    )
+
     // Delay
     private val switchDelay by int("SwitchDelay", 15, 1..1000) { targetMode == "Switch" }
         .describe("Delay before switching targets.")
@@ -251,7 +264,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
 
     // Rotations
     private val options = RotationSettings(this).withoutKeepRotation().withRequestPriority(RotationPriority.HIGH)
-    private val pointTracker = PointTracker().also { addValues(it.values) }
+    private val pointTracker = PointTracker().also { addValue(it) }
 
     // Raycast
     private val raycastValue = boolean("RayCast", true) { options.rotationsActive }
@@ -376,6 +389,73 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
         .describe("Color of the aim point box.")
     private val aimPointBoxSize by float("AimPointBoxSize", 0.1f, 0f..0.2F) { renderAimPointBox }.subjective()
         .describe("Size of the aim point box.")
+
+    private val clickerGroup = Configurable("Clicker")
+    private val rangeGroup = Configurable("Range")
+    private val targetGroup = Configurable("Target")
+    private val targetFiltersGroup = Configurable("Filters")
+    private val rotationsGroup = Configurable("Rotations")
+    private val aimPointGroup = Configurable("AimPoint")
+    private val raycastGroup = Configurable("Raycast")
+    private val autoBlockingGroup = Configurable("AutoBlocking")
+    private val smartAutoBlockingGroup = Configurable("SmartAutoBlock")
+    private val failSwingGroup = Configurable("FailSwing")
+    private val targetRenderingGroup = Configurable("TargetRendering")
+
+    init {
+        moveValues(clickerGroup,
+            "SimulateCooldown", "SimulateDoubleClicking", "CPS", "HurtTime", "ClickOnly",
+            "GenerateClicksBasedOnDistance", "CPS-Multiplier", "DistanceFactor", "UseHitDelay",
+            "HitDelayTicks", "ForceFirstHit", "RespectMissCooldown", "PostRotationAttack")
+
+        moveValues(rangeGroup,
+            "Range", "ScanRange", "ThroughWallsRange", "RangeSprintReduction", "RangeChance", "FOV")
+
+        moveValues(targetFiltersGroup,
+            "OnSwording", "OnScaffold", "OnDestroyBlock", "NoScaffold", "NoFly", "NoEat",
+            "NoBlocking", "BlinkCheck")
+        targetGroup.addValue(targetFiltersGroup)
+        moveValues(targetGroup,
+            "TargetMode", "LimitedMultiTargets", "MaxSwitchFOV", "SwitchDelay", "Priority",
+            "ActivationSlot", "PreferredSlot")
+
+        options.nestInto(rotationsGroup)
+        randomization.nestInto(rotationsGroup)
+        rotationsGroup.addValue(pointTracker)
+        moveValues(rotationsGroup,
+            "GenerateSpotBasedOnDistance", "StickyAim", "OutBorder", "PredictClientMovement",
+            "PredictOnlyWhenOutOfRange", "PredictEnemyPosition", "UsePointTracker")
+
+        moveValues(aimPointGroup,
+            "HighestBodyPointToTarget", "LowestBodyPointToTarget", "HorizontalBodySearchRange")
+        moveValues(raycastGroup, "RayCast", "RayCastIgnored", "LivingRayCast", "Raytrace")
+
+        moveValues(smartAutoBlockingGroup,
+            "SmartAutoBlock", "ForceBlockWhenStill", "CheckEnemyWeapon", "BlockRange",
+            "MaxOwnHurtTime", "MaxOpponentDirectionDiff", "MaxOpponentSwingProgress")
+        autoBlockingGroup.addValue(smartAutoBlockingGroup)
+        moveValues(autoBlockingGroup,
+            "AutoBlock", "BlockMaxRange", "UnblockMode", "ReleaseAutoBlock", "ForceBlockRender",
+            "IgnoreTickRule", "BlockRate", "UpdatedNCPAutoBlock", "SwitchStartBlock",
+            "InteractAutoBlock", "BlinkAutoBlock", "BlinkBlockTicks")
+
+        moveValues(failSwingGroup,
+            "Swing", "FailSwing", "SwingOnlyInAir", "MaxRotationDifferenceToSwing",
+            "SwingWhenTicksLate", "TicksLateToSwing", "RenderBoxOnSwingFail", "RenderBoxColor",
+            "RenderBoxFadeSeconds")
+        moveValues(targetRenderingGroup, "RenderAimPointBox", "AimPointBoxColor", "AimPointBoxSize")
+
+        addValues(listOf(
+            clickerGroup, rangeGroup, targetGroup, rotationsGroup, aimPointGroup, raycastGroup,
+            autoBlockingGroup, failSwingGroup, targetRenderingGroup,
+        ))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.firstOrNull { it.matchesKey(name) }?.let(group::addValue)
+        }
+    }
 
     /**
      * MODULE
@@ -822,77 +902,33 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
     /**
      * Update current target
      */
-    // Cache for distance calculations
-    private var lastDistanceCheck = 0L
-    private var cachedDistance = 0f
-    
     private fun updateTarget() {
         if (shouldPrioritize()) return
-
-        // Only check distances every 3 ticks 
-        val currentTick = System.currentTimeMillis()
-        if (currentTick - lastDistanceCheck > 50) {
-            lastDistanceCheck = currentTick
-            cachedDistance = (mc.thePlayer?.getDistanceToEntityBox(target ?: return) ?: 0f).toFloat()
-        }
 
         // Reset fixed target to null
         target = null
 
         val switchMode = targetMode == "Switch"
 
-        val theWorld = mc.theWorld ?: return
         val thePlayer = mc.thePlayer ?: return
 
-        var bestTarget: EntityLivingBase? = null
-        var bestValue: Double? = null
+        val selectedPriority = TargetPriority.fromName(priority) ?: TargetPriority.ARMOR
+        targetTracker.priorities(TargetPriority.TYPE, selectedPriority, TargetPriority.DISTANCE)
 
-        for (entity in theWorld.loadedEntityList) {
-            if (entity !is EntityLivingBase || !isSelected(
-                    entity, true
-                ) || switchMode && entity.entityId in prevTargetEntities
-            ) continue
-
-            val distance = Backtrack.runWithNearestTrackedDistance(entity) { thePlayer.getDistanceToEntityBox(entity) }
-
-            if (switchMode && distance > range && prevTargetEntities.isNotEmpty()) continue
-
-            val entityFov = rotationDifference(entity)
-
-            if (distance > maxRange || fov != 180F && entityFov > fov) continue
-
-            if (switchMode && !thePlayer.isLookingOn(entity, maxSwitchFOV.toDouble())) continue
-
-            val currentValue = when (priority.lowercase()) {
-                "distance" -> distance
-                "direction" -> entityFov.toDouble()
-                "health" -> entity.health.toDouble()
-                "livingtime" -> -entity.ticksExisted.toDouble()
-                "armor" -> entity.totalArmorValue.toDouble()
-                "hurtresistance" -> entity.hurtResistantTime.toDouble()
-                "hurttime" -> entity.hurtTime.toDouble()
-                "healthabsorption" -> (entity.health + entity.absorptionAmount).toDouble()
-                "regenamplifier" -> if (entity.isPotionActive(Potion.regeneration)) {
-                    entity.getActivePotionEffect(Potion.regeneration).amplifier.toDouble()
-                } else -1.0
-
-                "inweb" -> if (entity.isInWeb) -1.0 else Double.MAX_VALUE
-                "onladder" -> if (entity.isOnLadder) -1.0 else Double.MAX_VALUE
-                "inliquid" -> if (entity.isInWater || entity.isInLava) -1.0 else Double.MAX_VALUE
-                else -> null
-            } ?: continue
-
-            if (bestValue == null || currentValue < bestValue) {
-                bestValue = currentValue
-                bestTarget = entity
+        targetTracker.select(
+            predicate = { entity ->
+                val distance = Backtrack.runWithNearestTrackedDistance(entity) {
+                    thePlayer.getDistanceToEntityBox(entity)
+                }
+                (!switchMode || entity.entityId !in prevTargetEntities) &&
+                    (!switchMode || distance <= range || prevTargetEntities.isEmpty()) &&
+                    (!switchMode || thePlayer.isLookingOn(entity, maxSwitchFOV.toDouble()))
             }
-        }
-
-        if (bestTarget != null) {
-            if (Backtrack.runWithNearestTrackedDistance(bestTarget) { updateRotations(bestTarget) }) {
-                target = bestTarget
-                return
-            }
+        ) { candidate ->
+            if (Backtrack.runWithNearestTrackedDistance(candidate) { updateRotations(candidate) }) candidate else null
+        }?.let { selected ->
+            target = selected
+            return
         }
 
         if (prevTargetEntities.isNotEmpty()) {
@@ -967,7 +1003,9 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
             return player.getDistanceToEntityBox(entity) <= range
         }
 
-        val prediction = entity.currPos.subtract(entity.prevPos).times(2 + predictEnemyPosition.toDouble())
+        val predictedPosition = PositionExtrapolation.getBestForEntity(entity)
+            .getPositionInTicks(predictEnemyPosition.toDouble())
+        val prediction = predictedPosition.subtract(entity.currPos)
 
         val boundingBox = entity.hitBox.offset(prediction)
         val (currPos, oldPos) = player.currPos to player.prevPos

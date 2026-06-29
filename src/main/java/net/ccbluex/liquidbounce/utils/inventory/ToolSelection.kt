@@ -8,14 +8,22 @@ package net.ccbluex.liquidbounce.utils.inventory
 import net.minecraft.block.Block
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.item.ItemStack
+import net.ccbluex.liquidbounce.utils.item.EnchantmentValueEstimator
 
 data class ToolCandidate(
     val slot: Int,
     val effectiveSpeed: Float,
-    val remainingDurability: Int
+    val remainingDurability: Int,
+    val enchantmentValue: Float,
 )
 
 object ToolSelection {
+    private val enchantmentEstimator = EnchantmentValueEstimator(
+        EnchantmentValueEstimator.WeightedEnchantment(Enchantment.silkTouch, 1F),
+        EnchantmentValueEstimator.WeightedEnchantment(Enchantment.fortune, 0.33F),
+        EnchantmentValueEstimator.WeightedEnchantment(Enchantment.unbreaking, 0.2F),
+    )
+
     fun bestHotbarTool(
         stacks: List<ItemStack?>,
         block: Block,
@@ -35,8 +43,9 @@ object ToolSelection {
             } else {
                 baseSpeed
             }
-            ToolCandidate(slot, effectiveSpeed, remaining)
+            ToolCandidate(slot, effectiveSpeed, remaining, enchantmentEstimator.estimateValue(stack))
         }.maxWithOrNull(compareBy<ToolCandidate> { it.effectiveSpeed }
+            .thenBy { it.enchantmentValue }
             .thenBy { it.slot == currentSlot }
             .thenBy { it.remainingDurability }
             .thenBy { -it.slot })
