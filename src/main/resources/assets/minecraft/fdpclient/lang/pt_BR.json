@@ -325,5 +325,13 @@
     "module.betterTitle.description": "Personaliza como titulos e subtitulos do servidor sao exibidos, incluindo o tempo.",
     "module.hitFX.description": "Gera efeitos de particula nativos na entidade que voce acerta.",
     "module.easyPearl.description": "Mira a perola jogada a mao para cair onde voce esta olhando.",
-    "module.debugRecorder.description": "Grava dados de mira, combate e cliques por tick em um arquivo JSON para analise offline."
+    "module.debugRecorder.description": "Grava dados de mira, combate e cliques por tick em um arquivo JSON para analise offline.",
+    "module.timeShift.description": "Acelera mecanicas legadas por rajadas controladas de pacotes de movimento.",
+    "module.noMissCooldown.description": "Remove ou impede o atraso vanilla causado por ataques errados.",
+    "module.noSlowBreak.description": "Restaura a velocidade de mineracao no ar, na agua e sob fadiga.",
+    "module.handDerp.description": "Aleatoriza a animacao local da mao em primeira pessoa.",
+    "module.itemChams.description": "Aplica cor e renderizacao atraves de paredes ao item na mao.",
+    "module.betterChat.description": "Adiciona horario, filtros regex e agrupamento de mensagens repetidas.",
+    "module.hideAppearance.description": "Oculta temporariamente o HUD e menus do cliente para stream ou emergencia.",
+    "module.debugOverlay.description": "Mostra diagnosticos de movimento, rotacao, rede e servidor em tempo real."
 }
