@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.utils.block.toVec
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance.Companion.mc
 import net.ccbluex.liquidbounce.utils.inventory.SilentHotbar
 import net.ccbluex.liquidbounce.utils.movement.MovementUtils
+import net.ccbluex.liquidbounce.utils.movement.isCloseToEdge
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
 import net.ccbluex.liquidbounce.utils.rotation.Rotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.getFixedSensitivityAngle
@@ -49,23 +50,7 @@ fun Entity.getDistanceToEntityBox(entity: Entity) = eyes.distanceTo(getNearestPo
 fun Entity.getDistanceToBox(box: AxisAlignedBB) = eyes.distanceTo(getNearestPointBB(eyes, box))
 
 fun EntityPlayerSP.isNearEdge(threshold: Float): Boolean {
-    val playerPos = Vec3(posX, posY, posZ)
-    val blockPos = BlockPos(playerPos)
-
-    val mutable = BlockPos.MutableBlockPos()
-    for (x in -3..3) {
-        for (z in -3..3) {
-            val checkPos = mutable.set(blockPos, x, -1, z)
-            if (worldObj.isAirBlock(checkPos)) {
-                val checkPosCenter = Vec3(checkPos.x + 0.5, checkPos.y.toDouble(), checkPos.z + 0.5)
-                val distance = playerPos.distanceTo(checkPosCenter)
-                if (distance <= threshold) {
-                    return true
-                }
-            }
-        }
-    }
-    return false
+    return isCloseToEdge(threshold.toDouble())
 }
 
 fun getNearestPointBB(eye: Vec3, box: AxisAlignedBB): Vec3 {

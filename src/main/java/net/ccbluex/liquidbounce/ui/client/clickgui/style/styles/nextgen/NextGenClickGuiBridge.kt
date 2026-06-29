@@ -23,18 +23,25 @@ import net.ccbluex.liquidbounce.config.CurveValue
 import net.ccbluex.liquidbounce.config.FileValue
 import net.ccbluex.liquidbounce.config.FloatRangeValue
 import net.ccbluex.liquidbounce.config.FloatValue
+import net.ccbluex.liquidbounce.config.DoubleRangeValue
+import net.ccbluex.liquidbounce.config.DoubleValue
 import net.ccbluex.liquidbounce.config.FontValue
 import net.ccbluex.liquidbounce.config.IntRangeValue
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.font.GameFontRenderer
 import net.minecraft.client.gui.FontRenderer
 import net.ccbluex.liquidbounce.config.IntValue
+import net.ccbluex.liquidbounce.config.KeyBindActionMode
 import net.ccbluex.liquidbounce.config.KeyBindValue
 import net.ccbluex.liquidbounce.config.ListValue
+import net.ccbluex.liquidbounce.config.LongRangeValue
+import net.ccbluex.liquidbounce.config.LongValue
 import net.ccbluex.liquidbounce.config.MultiSelectValue
+import net.ccbluex.liquidbounce.config.MutableListValue
 import net.ccbluex.liquidbounce.config.TextValue
 import net.ccbluex.liquidbounce.config.Value
 import net.ccbluex.liquidbounce.config.Vec3Value
+import net.ccbluex.liquidbounce.config.Vec2Value
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleBindAction
@@ -378,7 +385,7 @@ object NextGenClickGuiBridge : MinecraftInstance {
     }
 
     fun virtualScreen(): JsonObject = JsonObject().apply {
-        addProperty("name", "clickgui")
+        addProperty("name", ThemeManager.activeScreen)
     }
 
     fun printableKey(key: String): JsonObject = JsonObject().apply {
@@ -474,6 +481,18 @@ object NextGenClickGuiBridge : MinecraftInstance {
                 addProperty("suffix", value.suffix ?: "")
             }
 
+            is LongValue -> settingBase("INT", value.name).apply {
+                addProperty("value", value.get())
+                add("range", range(value.minimum, value.maximum))
+                addProperty("suffix", value.suffix ?: "")
+            }
+
+            is LongRangeValue -> settingBase("INT_RANGE", value.name).apply {
+                add("value", range(value.get().first, value.get().last))
+                add("range", range(value.minimum, value.maximum))
+                addProperty("suffix", value.suffix ?: "")
+            }
+
             is FloatValue -> settingBase("FLOAT", value.name).apply {
                 addProperty("value", value.get())
                 add("range", range(value.minimum, value.maximum))
@@ -481,6 +500,18 @@ object NextGenClickGuiBridge : MinecraftInstance {
             }
 
             is FloatRangeValue -> settingBase("FLOAT_RANGE", value.name).apply {
+                add("value", range(value.get().start, value.get().endInclusive))
+                add("range", range(value.minimum, value.maximum))
+                addProperty("suffix", value.suffix ?: "")
+            }
+
+            is DoubleValue -> settingBase("FLOAT", value.name).apply {
+                addProperty("value", value.get())
+                add("range", range(value.minimum, value.maximum))
+                addProperty("suffix", value.suffix ?: "")
+            }
+
+            is DoubleRangeValue -> settingBase("FLOAT_RANGE", value.name).apply {
                 add("value", range(value.get().start, value.get().endInclusive))
                 add("range", range(value.minimum, value.maximum))
                 addProperty("suffix", value.suffix ?: "")
@@ -502,6 +533,11 @@ object NextGenClickGuiBridge : MinecraftInstance {
                 })
                 addProperty("canBeNone", true)
                 addProperty("isOrderSensitive", false)
+            }
+
+            is MutableListValue -> settingBase("MUTABLE_LIST", value.name).apply {
+                add("value", JsonArray().apply { value.get().forEach { add(JsonPrimitive(it)) } })
+                addProperty("innerValueType", "TEXT")
             }
 
             is ColorValue -> settingBase("COLOR", value.name).apply {
@@ -531,8 +567,25 @@ object NextGenClickGuiBridge : MinecraftInstance {
                 })
             }
 
-            is KeyBindValue -> settingBase("KEY", value.name).apply {
-                addProperty("value", toMinecraftKey(value.get()))
+            is KeyBindValue -> settingBase("BIND", value.name).apply {
+                val bind = inputBind(
+                    value.get(),
+                    if (value.actionMode == KeyBindActionMode.HOLD) ModuleBindAction.HOLD else ModuleBindAction.TOGGLE,
+                )
+                add("value", bind)
+                add("defaultValue", inputBind(
+                    value.get(),
+                    if (value.actionMode == KeyBindActionMode.HOLD) ModuleBindAction.HOLD else ModuleBindAction.TOGGLE,
+                ))
+            }
+
+            is Vec2Value -> settingBase("VECTOR2_D", value.name).apply {
+                val vec = value.get()
+                add("value", JsonObject().apply {
+                    addProperty("x", vec[0])
+                    addProperty("y", vec[1])
+                })
+                addProperty("useLocateButton", value.useLocateButton)
             }
 
             is Vec3Value -> settingBase("VECTOR3_D", value.name).apply {
@@ -542,7 +595,7 @@ object NextGenClickGuiBridge : MinecraftInstance {
                     addProperty("y", vec[1])
                     addProperty("z", vec[2])
                 })
-                addProperty("useLocateButton", false)
+                addProperty("useLocateButton", value.useLocateButton)
             }
 
             is CurveValue -> settingBase("CURVE", value.name).apply {
@@ -639,14 +692,31 @@ object NextGenClickGuiBridge : MinecraftInstance {
                 is IntValue -> value.set(element.asInt)
                 is BlockValue -> value.set(element.asInt)
                 is IntRangeValue -> value.set(element.asJsonObject.get("from").asInt..element.asJsonObject.get("to").asInt)
+                is LongValue -> value.set(element.asLong)
+                is LongRangeValue -> value.set(element.asJsonObject.get("from").asLong..element.asJsonObject.get("to").asLong)
                 is FloatValue -> value.set(element.asFloat)
                 is FloatRangeValue -> value.set(element.asJsonObject.get("from").asFloat..element.asJsonObject.get("to").asFloat)
+                is DoubleValue -> value.set(element.asDouble)
+                is DoubleRangeValue -> value.set(element.asJsonObject.get("from").asDouble..element.asJsonObject.get("to").asDouble)
                 is ListValue -> value.set(element.asString)
                 is MultiSelectValue -> value.set(element.asJsonArray.mapNotNull { it.asString }.toSet())
+                is MutableListValue -> value.set(element.asJsonArray.map { it.asString })
                 is ColorValue -> value.set(Color(element.asInt, true))
                 is TextValue -> value.set(element.asString)
                 is FileValue -> value.set(element.asString)
-                is KeyBindValue -> value.set(fromMinecraftKey(element.asString))
+                is KeyBindValue -> {
+                    val bind = element.asJsonObject
+                    value.set(fromMinecraftKey(bind.get("boundKey")?.asString ?: UNKNOWN_KEY))
+                    value.setActionMode(
+                        if (bind.get("action")?.asString.equals(ModuleBindAction.HOLD.displayName, true)) {
+                            KeyBindActionMode.HOLD
+                        } else KeyBindActionMode.TOGGLE
+                    )
+                }
+                is Vec2Value -> {
+                    val vector = element.asJsonObject
+                    value.set(doubleArrayOf(vector.get("x").asDouble, vector.get("y").asDouble))
+                }
                 is Vec3Value -> {
                     val vector = element.asJsonObject
                     value.set(doubleArrayOf(

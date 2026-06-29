@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element.Companion.MAX_GRADIENT_COLORS
 import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils
+import net.ccbluex.liquidbounce.utils.client.ServerObserver
 import net.ccbluex.liquidbounce.utils.render.*
 import net.minecraft.client.gui.GuiChat
 import net.minecraft.util.ResourceLocation
@@ -85,26 +86,11 @@ object HUDModule : Module("HUD", Category.CLIENT, Category.SubCategory.CLIENT_GE
             ClientThemesUtils.getColor().rgb
         }
 
-    private var tickCount = 0
-    private var lastSecond = System.currentTimeMillis()
-    private val tpsSamples = ArrayDeque<Int>(5)
-    var tps: Float = 20.0f
-
-    val onTick = handler<GameTickEvent> {
-        tickCount++
-        val currentTime = System.currentTimeMillis()
-        if (currentTime - lastSecond >= 1000) {
-            tpsSamples.add(tickCount)
-            if (tpsSamples.size > 5) {
-                tpsSamples.removeFirst()
-            }
-            tps = tpsSamples.average().toFloat().coerceIn(0.0f, 20.0f)
-            tickCount = 0
-            lastSecond = currentTime
-        }
-    }
+    val tps: Float
+        get() = ServerObserver.tps.takeIf(Double::isFinite)?.toFloat() ?: 20f
 
     val onRender2D = handler<Render2DEvent> {
+        if (HideAppearance.handleEvents()) return@handler
         if (mc.currentScreen is GuiHudDesigner)
             return@handler
 
