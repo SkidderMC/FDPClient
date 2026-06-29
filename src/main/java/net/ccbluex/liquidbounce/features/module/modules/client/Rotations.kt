@@ -17,6 +17,7 @@ import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.serverRotation
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.utils.render.Render3D
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.getVectorForRotation
+import net.minecraft.util.MathHelper
 import java.awt.Color
 
 object Rotations : Module("Rotations", Category.CLIENT, Category.SubCategory.CLIENT_GENERAL, gameDetecting = false) {
@@ -62,7 +63,8 @@ object Rotations : Module("Rotations", Category.CLIENT, Category.SubCategory.CLI
     var prevHeadPitch = 0f
     var headPitch = 0f
 
-    private var lastRotation: Rotation? = null
+    private var previousVisibleRotation: Rotation? = null
+    private var currentVisibleRotation: Rotation? = null
 
     private val specialCases
         get() = arrayListOf(FreeCam.shouldDisableRotations()).any { it }
@@ -72,7 +74,15 @@ object Rotations : Module("Rotations", Category.CLIENT, Category.SubCategory.CLI
             return@handler
 
         val thePlayer = mc.thePlayer ?: return@handler
-        val targetRotation = getRotation() ?: serverRotation
+        val sourceRotation = sourceRotation() ?: serverRotation
+        val targetRotation = if (smoothRotations) {
+            smoothRotation(currentVisibleRotation ?: sourceRotation, sourceRotation)
+        } else {
+            sourceRotation
+        }
+
+        previousVisibleRotation = currentVisibleRotation ?: targetRotation
+        currentVisibleRotation = targetRotation
 
         prevHeadPitch = headPitch
         headPitch = targetRotation.pitch
@@ -81,8 +91,6 @@ object Rotations : Module("Rotations", Category.CLIENT, Category.SubCategory.CLI
         if (shouldRotate() && body && !realistic) {
             thePlayer.renderYawOffset = thePlayer.rotationYawHead
         }
-
-        lastRotation = targetRotation
     }
 
     val onRender3D = handler<Render3DEvent> { event ->
@@ -114,7 +122,7 @@ object Rotations : Module("Rotations", Category.CLIENT, Category.SubCategory.CLI
      * Smooth out rotations between two points
      */
     private fun smoothRotation(from: Rotation, to: Rotation): Rotation {
-        val diffYaw = to.yaw - from.yaw
+        val diffYaw = MathHelper.wrapAngleTo180_float(to.yaw - from.yaw)
         val diffPitch = to.pitch - from.pitch
 
         val smoothedYaw = from.yaw + diffYaw * smoothingFactor
@@ -132,12 +140,23 @@ object Rotations : Module("Rotations", Category.CLIENT, Category.SubCategory.CLI
      * Which rotation should the module use?
      */
     fun getRotation(): Rotation? {
-        val currRotation = if (specialCases) serverRotation else currentRotation
-
-        return if (smoothRotations && currRotation != null) {
-            smoothRotation(lastRotation ?: return currRotation, currRotation)
-        } else {
-            currRotation
-        }
+        val source = sourceRotation() ?: return null
+        return currentVisibleRotation ?: source
     }
+
+    /** Rotation used exclusively by rendering, interpolated between simulation ticks. */
+    fun getRenderRotation(partialTicks: Float): Rotation? {
+        if (!shouldRotate()) return null
+        val current = currentVisibleRotation ?: sourceRotation() ?: return null
+        val previous = previousVisibleRotation ?: current
+        val progress = partialTicks.coerceIn(0f, 1f)
+        val yawDifference = MathHelper.wrapAngleTo180_float(current.yaw - previous.yaw)
+
+        return Rotation(
+            previous.yaw + yawDifference * progress,
+            lerp(progress, previous.pitch, current.pitch),
+        )
+    }
+
+    private fun sourceRotation() = if (specialCases) serverRotation else currentRotation
 }

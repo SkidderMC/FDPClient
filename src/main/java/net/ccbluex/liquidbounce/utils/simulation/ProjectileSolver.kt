@@ -7,6 +7,9 @@ package net.ccbluex.liquidbounce.utils.simulation
 
 import net.minecraft.util.Vec3
 import kotlin.math.abs
+import kotlin.math.atan
+import kotlin.math.cos
+import kotlin.math.sin
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -15,11 +18,18 @@ enum class ProjectileArc {
     HIGH
 }
 
+enum class ProjectileStrategy {
+    SITUATIONAL,
+    DRAG_EXACT,
+    POLYNOMIAL
+}
+
 data class ProjectileSolution(
     val velocity: Vec3,
     val flightTicks: Double,
     val arc: ProjectileArc,
-    val speedError: Double
+    val speedError: Double,
+    val strategy: ProjectileStrategy = ProjectileStrategy.DRAG_EXACT,
 )
 
 /** Solves a drag-affected ballistic path without depending on a combat module. */
@@ -42,13 +52,28 @@ class ProjectileSolver(
         origin: Vec3,
         target: Vec3,
         launchSpeed: Double,
-        arc: ProjectileArc = ProjectileArc.LOW
+        arc: ProjectileArc = ProjectileArc.LOW,
+        strategy: ProjectileStrategy = ProjectileStrategy.SITUATIONAL,
     ): ProjectileSolution? {
         require(launchSpeed.isFinite() && launchSpeed > 0.0) { "Launch speed must be positive" }
         require(origin.xCoord.isFinite() && origin.yCoord.isFinite() && origin.zCoord.isFinite())
         require(target.xCoord.isFinite() && target.yCoord.isFinite() && target.zCoord.isFinite())
 
         val displacement = target.subtract(origin)
+        return when (strategy) {
+            ProjectileStrategy.DRAG_EXACT -> solveDragExact(displacement, launchSpeed, arc)
+            ProjectileStrategy.POLYNOMIAL -> solvePolynomial(origin, target, launchSpeed, arc)
+            ProjectileStrategy.SITUATIONAL ->
+                solveDragExact(displacement, launchSpeed, arc)
+                    ?: solvePolynomial(origin, target, launchSpeed, arc)
+        }
+    }
+
+    private fun solveDragExact(
+        displacement: Vec3,
+        launchSpeed: Double,
+        arc: ProjectileArc,
+    ): ProjectileSolution? {
         val roots = ArrayList<Double>(2)
         val samples = (maximumFlightTicks * 8.0).toInt().coerceIn(128, 4_096)
         var previousTime = MINIMUM_TIME
@@ -73,7 +98,75 @@ class ProjectileSolver(
             velocity = velocity,
             flightTicks = selectedTime,
             arc = arc,
-            speedError = abs(length(velocity) - launchSpeed)
+            speedError = abs(length(velocity) - launchSpeed),
+            strategy = ProjectileStrategy.DRAG_EXACT,
+        )
+    }
+
+    /**
+     * Closed-form vacuum approximation used only when the drag-exact root finder has no solution.
+     * A candidate is retained only when replaying it through the real discrete drag model still
+     * lands close to the requested point, preventing the fallback from inventing impossible shots.
+     */
+    private fun solvePolynomial(
+        origin: Vec3,
+        target: Vec3,
+        launchSpeed: Double,
+        arc: ProjectileArc,
+    ): ProjectileSolution? {
+        val displacement = target.subtract(origin)
+        val horizontal = sqrt(displacement.xCoord * displacement.xCoord + displacement.zCoord * displacement.zCoord)
+
+        if (gravity <= 1.0E-12) {
+            val distance = length(displacement)
+            if (distance <= 1.0E-9) return null
+            val flightTicks = distance / launchSpeed
+            val velocity = Vec3(
+                displacement.xCoord / distance * launchSpeed,
+                displacement.yCoord / distance * launchSpeed,
+                displacement.zCoord / distance * launchSpeed,
+            )
+            return validatedPolynomial(origin, target, velocity, flightTicks, arc, launchSpeed)
+        }
+        if (horizontal <= 1.0E-9) return null
+
+        val speedSquared = launchSpeed * launchSpeed
+        val discriminant = speedSquared * speedSquared - gravity *
+            (gravity * horizontal * horizontal + 2.0 * displacement.yCoord * speedSquared)
+        if (discriminant < 0.0) return null
+
+        val sign = if (arc == ProjectileArc.LOW) -1.0 else 1.0
+        val tangent = (speedSquared + sign * sqrt(discriminant)) / (gravity * horizontal)
+        val pitch = atan(tangent)
+        val horizontalSpeed = launchSpeed * cos(pitch)
+        if (abs(horizontalSpeed) <= 1.0E-9) return null
+
+        val velocity = Vec3(
+            displacement.xCoord / horizontal * horizontalSpeed,
+            launchSpeed * sin(pitch),
+            displacement.zCoord / horizontal * horizontalSpeed,
+        )
+        return validatedPolynomial(origin, target, velocity, horizontal / horizontalSpeed, arc, launchSpeed)
+    }
+
+    private fun validatedPolynomial(
+        origin: Vec3,
+        target: Vec3,
+        velocity: Vec3,
+        flightTicks: Double,
+        arc: ProjectileArc,
+        launchSpeed: Double,
+    ): ProjectileSolution? {
+        if (!flightTicks.isFinite() || flightTicks <= 0.0 || flightTicks > maximumFlightTicks) return null
+        val missDistanceSquared = positionAt(origin, velocity, flightTicks).squareDistanceTo(target)
+        if (missDistanceSquared > POLYNOMIAL_MAXIMUM_MISS * POLYNOMIAL_MAXIMUM_MISS) return null
+
+        return ProjectileSolution(
+            velocity,
+            flightTicks,
+            arc,
+            abs(length(velocity) - launchSpeed),
+            ProjectileStrategy.POLYNOMIAL,
         )
     }
 
@@ -143,5 +236,6 @@ class ProjectileSolver(
     companion object {
         private const val MINIMUM_TIME = 1.0E-3
         private const val ROOT_TIME_TOLERANCE = 1.0E-4
+        private const val POLYNOMIAL_MAXIMUM_MISS = 0.75
     }
 }

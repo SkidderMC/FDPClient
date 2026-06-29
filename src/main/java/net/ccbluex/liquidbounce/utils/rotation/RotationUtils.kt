@@ -621,6 +621,10 @@ object RotationUtils : MinecraftInstance, Listenable {
             return false
         }
 
+        if (abs(angleDifference(rotation.yaw, serverRotation.yaw)) > options.maximumRotationDifference) {
+            return false
+        }
+
         val requestPriority = options.effectiveRequestPriority
 
         if (!requestArbiter.canAcquire(options, requestPriority)) {
@@ -911,9 +915,17 @@ object RotationUtils : MinecraftInstance, Listenable {
             return@handler
         }
 
-        if (!packet.rotating) {
+        val forceQueuedRotation = currentRotation != null && PostRotationExecutor.hasPostMoveTasks
+
+        if (!packet.rotating && !forceQueuedRotation) {
             activeSettings?.resetSimulateShortStopData()
             return@handler
+        }
+
+        // An idle C03 normally omits yaw/pitch. A queued post-move action still needs the server to
+        // process the requested rotation first, so promote that packet to its rotating form.
+        if (forceQueuedRotation) {
+            packet.rotating = true
         }
 
         currentRotation?.let {

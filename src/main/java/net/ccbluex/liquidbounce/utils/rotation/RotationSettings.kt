@@ -24,6 +24,8 @@ class AlwaysRotationSettings(owner: Module, generalApply: () -> Boolean = { true
 @Suppress("MemberVisibilityCanBePrivate")
 open class RotationSettings(val moduleOwner: Module, generalApply: () -> Boolean = { true }) : Configurable("RotationSettings") {
 
+    private lateinit var flattenedValues: List<net.ccbluex.liquidbounce.config.Value<*>>
+
     open val rotationsValue = boolean("Rotations", true) { generalApply() }
     open val applyServerSideValue = boolean("ApplyServerSide", true) { rotationsActive && generalApply() }
     open val simulateShortStopValue = boolean("SimulateShortStop", false) { rotationsActive && generalApply() }
@@ -51,6 +53,10 @@ open class RotationSettings(val moduleOwner: Module, generalApply: () -> Boolean
 
     open val minRotationDifferenceValue = float(
         "MinRotationDifference", 2f, 0f..4f
+    ) { rotationsActive && generalApply() }
+
+    open val maximumRotationDifferenceValue = float(
+        "MaximumRotationDifference", 180f, 1f..180f, "°"
     ) { rotationsActive && generalApply() }
 
     open val minRotationDifferenceResetTimingValue = choices(
@@ -217,6 +223,7 @@ open class RotationSettings(val moduleOwner: Module, generalApply: () -> Boolean
     val verticalAngleChange by verticalAngleChangeValue
     val angleResetDifference by angleResetDifferenceValue
     val minRotationDifference by minRotationDifferenceValue
+    val maximumRotationDifference by maximumRotationDifferenceValue
     val minRotationDifferenceResetTiming by minRotationDifferenceResetTimingValue
     val rotationEngine by rotationEngineValue
     val modernAngleSmooth by modernAngleSmoothValue
@@ -293,6 +300,12 @@ open class RotationSettings(val moduleOwner: Module, generalApply: () -> Boolean
         requestPriority = priority
     }
 
+    /** Restores this legacy-flat settings bundle as a real nested configurable. */
+    fun nestInto(parent: Configurable) = apply {
+        addValues(flattenedValues)
+        parent.addValue(this)
+    }
+
     fun updateSimulateShortStopData(diff: Float) {
         rotDiffBuildUp += diff
     }
@@ -314,7 +327,8 @@ open class RotationSettings(val moduleOwner: Module, generalApply: () -> Boolean
     }
 
     init {
-        moduleOwner.addValues(this.values)
+        flattenedValues = values.toList()
+        moduleOwner.addValues(flattenedValues)
     }
 }
 

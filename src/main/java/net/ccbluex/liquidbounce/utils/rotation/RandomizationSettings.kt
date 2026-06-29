@@ -20,6 +20,8 @@ import kotlin.random.Random
 
 class RandomizationSettings(owner: Module, val generalApply: () -> Boolean = { true }) : Configurable("Randomization") {
 
+    private lateinit var flattenedValues: List<net.ccbluex.liquidbounce.config.Value<*>>
+
     private val randomizationPattern by choices(
         "RandomizationPattern", arrayOf("None", "Zig-Zag", "LazyFlick"), "None"
     ) { generalApply() }
@@ -84,7 +86,14 @@ class RandomizationSettings(owner: Module, val generalApply: () -> Boolean = { t
         }
     }
 
+    /** Restores this legacy-flat settings bundle as a real nested configurable. */
+    fun nestInto(parent: Configurable) = apply {
+        addValues(flattenedValues)
+        parent.addValue(this)
+    }
+
     init {
-        owner.addValues(this.values)
+        flattenedValues = values.toList()
+        owner.addValues(flattenedValues)
     }
 }
