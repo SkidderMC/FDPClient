@@ -1124,25 +1124,7 @@ object RenderUtils : MinecraftInstance {
     }
 
     fun drawRect(x: Float, y: Float, x2: Float, y2: Float, color: Int) {
-        glPushMatrix()
-        glEnable(GL_BLEND)
-        glDisable(GL_TEXTURE_2D)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        glEnable(GL_LINE_SMOOTH)
-        glColor(color)
-        drawWithTessellatorWorldRenderer {
-            begin(GL_QUADS, DefaultVertexFormats.POSITION)
-            pos(x2.toDouble(), y.toDouble(), 0.0).endVertex()
-            pos(x.toDouble(), y.toDouble(), 0.0).endVertex()
-            pos(x.toDouble(), y2.toDouble(), 0.0).endVertex()
-            pos(x2.toDouble(), y2.toDouble(), 0.0).endVertex()
-        }
-        glColor(Color.WHITE)
-
-        glEnable(GL_TEXTURE_2D)
-        glDisable(GL_BLEND)
-        glDisable(GL_LINE_SMOOTH)
-        glPopMatrix()
+        RenderPrimitives.drawRect(x, y, x2, y2, color)
     }
 
     @Deprecated("Use RenderPrimitives.drawRect", ReplaceWith("RenderPrimitives.drawRect(x, y, x2, y2, color)"))
@@ -1411,6 +1393,11 @@ object RenderUtils : MinecraftInstance {
         radius: Float,
         cornersToRound: RoundedCorners = RoundedCorners.ALL
     ) {
+        if (cornersToRound == RoundedCorners.ALL) {
+            RenderPrimitives.drawRoundedRect(x1, y1, x2, y2, radius, color)
+            return
+        }
+
         val (alpha, red, green, blue) = ColorUtils.unpackARGBFloatValue(color)
 
         val (newX1, newY1, newX2, newY2) = orderPoints(x1, y1, x2, y2)

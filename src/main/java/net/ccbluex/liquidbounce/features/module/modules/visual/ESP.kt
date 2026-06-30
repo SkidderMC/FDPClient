@@ -26,13 +26,14 @@ import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
 import org.lwjgl.opengl.GL11.*
-import org.lwjgl.util.vector.Vector3f
 import java.awt.Color
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
 
 object ESP : Module("ESP", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY) {
+
+    private val projectedPoint = FloatArray(3)
 
     val mode by choices(
         "Mode",
@@ -70,8 +71,7 @@ object ESP : Module("ESP", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY)
         if (entities.isEmpty())
             return@handler
 
-        val mvMatrix = WorldToScreen.getMatrix(GL_MODELVIEW_MATRIX)
-        val projectionMatrix = WorldToScreen.getMatrix(GL_PROJECTION_MATRIX)
+        val projection = WorldToScreen.capture()
         val real2d = mode == "Real2D"
 
         if (real2d) {
@@ -107,35 +107,24 @@ object ESP : Module("ESP", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY)
 
                 "Real2D" -> {
                     val bb = entity.hitBox.offset(-entity.currPos + pos)
-                    val boxVertices = arrayOf(
-                        doubleArrayOf(bb.minX, bb.minY, bb.minZ),
-                        doubleArrayOf(bb.minX, bb.maxY, bb.minZ),
-                        doubleArrayOf(bb.maxX, bb.maxY, bb.minZ),
-                        doubleArrayOf(bb.maxX, bb.minY, bb.minZ),
-                        doubleArrayOf(bb.minX, bb.minY, bb.maxZ),
-                        doubleArrayOf(bb.minX, bb.maxY, bb.maxZ),
-                        doubleArrayOf(bb.maxX, bb.maxY, bb.maxZ),
-                        doubleArrayOf(bb.maxX, bb.minY, bb.maxZ)
-                    )
                     var minX = Float.MAX_VALUE
                     var minY = Float.MAX_VALUE
                     var maxX = -1f
                     var maxY = -1f
-                    for (boxVertex in boxVertices) {
-                        val screenPos = WorldToScreen.worldToScreen(
-                            Vector3f(
-                                boxVertex[0].toFloat(),
-                                boxVertex[1].toFloat(),
-                                boxVertex[2].toFloat()
-                            ), mvMatrix, projectionMatrix, mc.displayWidth, mc.displayHeight
-                        )
-                            ?: continue
-                        minX = min(screenPos.x, minX)
-                        minY = min(screenPos.y, minY)
-                        maxX = max(screenPos.x, maxX)
-                        maxY = max(screenPos.y, maxY)
+                    for (corner in 0 until 8) {
+                        val x = if (corner and 1 == 0) bb.minX else bb.maxX
+                        val y = if (corner and 2 == 0) bb.minY else bb.maxY
+                        val z = if (corner and 4 == 0) bb.minZ else bb.maxZ
+                        if (!projection.project(x.toFloat(), y.toFloat(), z.toFloat(), projectedPoint)) continue
+                        minX = min(projectedPoint[0], minX)
+                        minY = min(projectedPoint[1], minY)
+                        maxX = max(projectedPoint[0], maxX)
+                        maxY = max(projectedPoint[1], maxY)
                     }
-                    if (minX > 0 || minY > 0 || maxX <= mc.displayWidth || maxY <= mc.displayWidth) {
+                    // Draw only when at least one corner projected (minX<=maxX rules out the all-failed
+                    // sentinels) and the box actually overlaps the screen rect [0,w] x [0,h].
+                    if (minX <= maxX && minY <= maxY &&
+                        maxX >= 0f && minX <= mc.displayWidth && maxY >= 0f && minY <= mc.displayHeight) {
                         glColor4f(color.red / 255f, color.green / 255f, color.blue / 255f, 1f)
                         glBegin(GL_LINE_LOOP)
                         glVertex2f(minX, minY)

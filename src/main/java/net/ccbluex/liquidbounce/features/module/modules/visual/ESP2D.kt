@@ -46,7 +46,6 @@ import net.minecraft.client.renderer.RenderHelper.disableStandardItemLighting
 import net.minecraft.client.renderer.RenderHelper.enableStandardItemLighting
 import net.minecraft.item.ItemStack
 import net.minecraft.potion.Potion
-import net.minecraft.util.AxisAlignedBB
 import org.lwjgl.opengl.Display
 import org.lwjgl.opengl.GL11
 import org.lwjgl.util.glu.GLU
@@ -55,14 +54,13 @@ import java.awt.Color.getHSBColor
 import java.nio.FloatBuffer
 import java.nio.IntBuffer
 import java.text.DecimalFormat
-import javax.vecmath.Vector3d
-import javax.vecmath.Vector4d
 import kotlin.math.max
 import kotlin.math.min
-import kotlin.math.pow
 import kotlin.random.Random
 
 object ESP2D : Module("ESP2D", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY) {
+
+    private val projectedPoint = DoubleArray(3)
 
     val outline by boolean("Outline", true)
         .describe("Draw a 2D box around entities.")
@@ -186,21 +184,31 @@ object ESP2D : Module("ESP2D", Category.VISUAL, Category.SubCategory.RENDER_OVER
             val partialTicks = event.partialTicks
             val scaledResolution = ScaledResolution(mc)
             val scaleFactor = scaledResolution.scaleFactor
-            val scaling = scaleFactor.toDouble() / scaleFactor.toDouble().pow(2.0)
-
-            GL11.glScaled(scaling, scaling, scaling)
 
             val fr = minecraftFont
             val renderMng = mc.renderManager
             val entityRenderer = mc.entityRenderer
 
+            // Projection state is identical for every entity in a frame. Capturing it once avoids
+            // rebuilding the camera and reading three GL matrices for every entity.
+            try {
+                entityRenderer.setupCameraTransform(partialTicks, 0)
+                captureProjectionMatrices()
+                entityRenderer.setupOverlayRendering()
+            } catch (_: Exception) {
+                return@handler
+            }
+
+            // project2D already maps into overlay-resolution coordinates (it divides the gluProject
+            // pixels by scaleFactor), and setupOverlayRendering set up the matching ortho. Applying an
+            // extra glScaled here would double-scale every box/healthbar/text (half size at GUI scale 2).
+
             val doOutline = outline
             val doHealthBar = healthBar
             val doArmorBar = armorBar
 
-            val entities = collectedEntities.toList()
-            for (i in entities.indices) {
-                val entity = entities.getOrNull(i) ?: continue
+            for (i in collectedEntities.indices) {
+                val entity = collectedEntities.getOrNull(i) ?: continue
 
                 if (entity.isDead || !entity.isEntityAlive) continue
 
@@ -213,65 +221,45 @@ object ESP2D : Module("ESP2D", Category.VISUAL, Category.SubCategory.RENDER_OVER
 
                     val width = entity.width.toDouble() / 1.5
                     val height = entity.height.toDouble() + if (entity.isSneaking) -0.3 else 0.2
-                    val aabb = AxisAlignedBB(
-                        x - width, y, z - width,
-                        x + width, y + height, z + width
-                    )
-                    val corners = listOf(
-                        Vector3d(aabb.minX, aabb.minY, aabb.minZ),
-                        Vector3d(aabb.minX, aabb.maxY, aabb.minZ),
-                        Vector3d(aabb.maxX, aabb.minY, aabb.minZ),
-                        Vector3d(aabb.maxX, aabb.maxY, aabb.minZ),
-                        Vector3d(aabb.minX, aabb.minY, aabb.maxZ),
-                        Vector3d(aabb.minX, aabb.maxY, aabb.maxZ),
-                        Vector3d(aabb.maxX, aabb.minY, aabb.maxZ),
-                        Vector3d(aabb.maxX, aabb.maxY, aabb.maxZ)
-                    )
+                    val minWorldX = x - width
+                    val maxWorldX = x + width
+                    val minWorldY = y
+                    val maxWorldY = y + height
+                    val minWorldZ = z - width
+                    val maxWorldZ = z + width
+                    var minScreenX = Double.POSITIVE_INFINITY
+                    var minScreenY = Double.POSITIVE_INFINITY
+                    var maxScreenX = Double.NEGATIVE_INFINITY
+                    var maxScreenY = Double.NEGATIVE_INFINITY
 
-                    try {
-                        entityRenderer.setupCameraTransform(partialTicks, 0)
-                    } catch (e: Exception) {
-                        continue
+                    for (corner in 0 until 8) {
+                        val pointX = if (corner and 1 == 0) minWorldX else maxWorldX
+                        val pointY = if (corner and 2 == 0) minWorldY else maxWorldY
+                        val pointZ = if (corner and 4 == 0) minWorldZ else maxWorldZ
+                        if (!project2D(
+                                scaleFactor,
+                                pointX - renderMng.viewerPosX,
+                                pointY - renderMng.viewerPosY,
+                                pointZ - renderMng.viewerPosZ,
+                                projectedPoint
+                            ) || projectedPoint[2] !in 0.0..1.0
+                        ) continue
+
+                        minScreenX = min(projectedPoint[0], minScreenX)
+                        minScreenY = min(projectedPoint[1], minScreenY)
+                        maxScreenX = max(projectedPoint[0], maxScreenX)
+                        maxScreenY = max(projectedPoint[1], maxScreenY)
                     }
 
-                    captureProjectionMatrices()
-
-                    var bbScreen: Vector4d? = null
-
-                    for (corner in corners) {
-                        val vec = project2D(
-                            scaleFactor,
-                            corner.x - renderMng.viewerPosX,
-                            corner.y - renderMng.viewerPosY,
-                            corner.z - renderMng.viewerPosZ
-                        ) ?: continue
-
-                        if (vec.z in 0.0..1.0) {
-                            if (bbScreen == null) {
-                                bbScreen = Vector4d(vec.x, vec.y, vec.z, 0.0)
-                            }
-                            bbScreen.x = min(vec.x, bbScreen.x)
-                            bbScreen.y = min(vec.y, bbScreen.y)
-                            bbScreen.z = max(vec.x, bbScreen.z)
-                            bbScreen.w = max(vec.y, bbScreen.w)
-                        }
-                    }
-
-                    bbScreen?.let { pos ->
-                        try {
-                            entityRenderer.setupOverlayRendering()
-                        } catch (e: Exception) {
-                            return@let
-                        }
-
-                        val minX = pos.x
-                        val minY = pos.y
-                        val maxX = pos.z
-                        val maxY = pos.w
+                    if (minScreenX.isFinite()) run bounds@ {
+                        val minX = minScreenX
+                        val minY = minScreenY
+                        val maxX = maxScreenX
+                        val maxY = maxScreenY
 
                         if (minX.isNaN() || minY.isNaN() || maxX.isNaN() || maxY.isNaN() ||
                             minX == maxX || minY == maxY) {
-                            return@let
+                            return@bounds
                         }
 
                         if (doOutline) {
@@ -308,7 +296,7 @@ object ESP2D : Module("ESP2D", Category.VISUAL, Category.SubCategory.RENDER_OVER
                             if (hp > maxHp) hp = maxHp
 
                             if (maxHp <= 0 || hp.isNaN() || maxHp.isNaN()) {
-                                return@let
+                                return@bounds
                             }
 
                             val ratio = hp / maxHp
@@ -579,16 +567,16 @@ object ESP2D : Module("ESP2D", Category.VISUAL, Category.SubCategory.RENDER_OVER
         GL11.glGetInteger(GL11.GL_VIEWPORT, viewport)
     }
 
-    private fun project2D(scaleFactor: Int, x: Double, y: Double, z: Double): Vector3d? {
-        return if (GLU.gluProject(
+    private fun project2D(scaleFactor: Int, x: Double, y: Double, z: Double, out: DoubleArray): Boolean {
+        if (!GLU.gluProject(
                 x.toFloat(), y.toFloat(), z.toFloat(),
                 modelview, projection, viewport, vector
             )
-        ) Vector3d(
-            (vector.get(0) / scaleFactor).toDouble(),
-            ((Display.getHeight().toFloat() - vector.get(1)) / scaleFactor).toDouble(),
-            vector.get(2).toDouble()
-        ) else null
+        ) return false
+        out[0] = (vector.get(0) / scaleFactor).toDouble()
+        out[1] = ((Display.getHeight().toFloat() - vector.get(1)) / scaleFactor).toDouble()
+        out[2] = vector.get(2).toDouble()
+        return out[0].isFinite() && out[1].isFinite() && out[2].isFinite()
     }
 
     fun getColor(entity: Entity?): Color {

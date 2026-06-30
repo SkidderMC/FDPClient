@@ -11,7 +11,10 @@ import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import org.lwjgl.opengl.GL11.*
 import java.awt.Color
+import kotlin.math.PI
+import kotlin.math.ceil
 import kotlin.math.cos
+import kotlin.math.min
 import kotlin.math.sin
 
 /**
@@ -21,45 +24,28 @@ import kotlin.math.sin
  */
 object RenderPrimitives {
 
+    private var batchDepth = 0
+
+    /**
+     * Groups primitive-only drawing into one Tessellator submission. The block must
+     * not invoke font, texture or other Tessellator rendering while the batch is open.
+     */
+    fun batch(block: () -> Unit) {
+        val outermost = batchDepth == 0
+        if (outermost) beginBatch()
+        batchDepth++
+
+        try {
+            block()
+        } finally {
+            batchDepth--
+            if (outermost) endBatch()
+        }
+    }
+
     fun drawRect(x: Float, y: Float, x2: Float, y2: Float, color: Int) {
-        var xx = x
-        var yy = y
-        var xx2 = x2
-        var yy2 = y2
-
-        if (xx < xx2) {
-            val temp = xx
-            xx = xx2
-            xx2 = temp
-        }
-
-        if (yy < yy2) {
-            val temp = yy
-            yy = yy2
-            yy2 = temp
-        }
-
-        val f = (color shr 24 and 0xFF) / 255.0f
-        val f1 = (color shr 16 and 0xFF) / 255.0f
-        val f2 = (color shr 8 and 0xFF) / 255.0f
-        val f3 = (color and 0xFF) / 255.0f
-        val tessellator = Tessellator.getInstance()
-        val worldrenderer = tessellator.worldRenderer
-
-        GlStateManager.enableBlend()
-        GlStateManager.disableTexture2D()
-        GlStateManager.tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO)
-        GlStateManager.color(f1, f2, f3, f)
-
-        worldrenderer.begin(GL_QUADS, DefaultVertexFormats.POSITION)
-        worldrenderer.pos(xx.toDouble(), yy2.toDouble(), 0.0).endVertex()
-        worldrenderer.pos(xx2.toDouble(), yy2.toDouble(), 0.0).endVertex()
-        worldrenderer.pos(xx2.toDouble(), yy.toDouble(), 0.0).endVertex()
-        worldrenderer.pos(xx.toDouble(), yy.toDouble(), 0.0).endVertex()
-        tessellator.draw()
-
-        GlStateManager.enableTexture2D()
-        GlStateManager.disableBlend()
+        if (batchDepth > 0) appendRect(x, y, x2, y2, color)
+        else batch { appendRect(x, y, x2, y2, color) }
     }
 
     fun drawRect(x: Float, y: Float, x2: Float, y2: Float, color: Color) = drawRect(x, y, x2, y2, color.rgb)
@@ -69,28 +55,104 @@ object RenderPrimitives {
     }
 
     fun drawBorderedRect(x: Float, y: Float, x2: Float, y2: Float, width: Float, borderColor: Int, rectColor: Int) {
-        drawRect(x, y, x2, y2, rectColor)
-        drawBorder(x, y, x2, y2, width, borderColor)
+        batch {
+            drawRect(x, y, x2, y2, rectColor)
+            drawBorder(x, y, x2, y2, width, borderColor)
+        }
     }
 
     fun drawBorder(x: Float, y: Float, x2: Float, y2: Float, width: Float, color: Int) {
-        drawRect(x - width, y, x, y2, color)
-        drawRect(x2, y, x2 + width, y2, color)
-        drawRect(x - width, y - width, x2 + width, y, color)
-        drawRect(x - width, y2, x2 + width, y2 + width, color)
+        batch {
+            drawRect(x - width, y, x, y2, color)
+            drawRect(x2, y, x2 + width, y2, color)
+            drawRect(x - width, y - width, x2 + width, y, color)
+            drawRect(x - width, y2, x2 + width, y2 + width, color)
+        }
     }
 
     fun drawRoundedRect(
         x: Float, y: Float, x2: Float, y2: Float,
         round: Float, color: Int
     ) {
-        drawRect(x + round, y, x2 - round, y2, color)
-        drawRect(x, y + round, x + round, y2 - round, color)
-        drawRect(x2 - round, y + round, x2, y2 - round, color)
-        drawCircleCorner(x + round, y + round, round, 0, color)
-        drawCircleCorner(x2 - round, y + round, round, 1, color)
-        drawCircleCorner(x2 - round, y2 - round, round, 2, color)
-        drawCircleCorner(x + round, y2 - round, round, 3, color)
+        if (batchDepth > 0) appendRoundedRect(x, y, x2, y2, round, color)
+        else batch { appendRoundedRect(x, y, x2, y2, round, color) }
+    }
+
+    private fun beginBatch() {
+        GlStateManager.enableBlend()
+        GlStateManager.disableTexture2D()
+        GlStateManager.tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO)
+        GlStateManager.color(1f, 1f, 1f, 1f)
+        Tessellator.getInstance().worldRenderer.begin(GL_TRIANGLES, DefaultVertexFormats.POSITION_COLOR)
+    }
+
+    private fun endBatch() {
+        Tessellator.getInstance().draw()
+        GlStateManager.color(1f, 1f, 1f, 1f)
+        GlStateManager.enableTexture2D()
+        GlStateManager.disableBlend()
+    }
+
+    private fun appendRect(x: Float, y: Float, x2: Float, y2: Float, color: Int) {
+        val left = minOf(x, x2)
+        val top = minOf(y, y2)
+        val right = maxOf(x, x2)
+        val bottom = maxOf(y, y2)
+
+        vertex(left, top, color)
+        vertex(left, bottom, color)
+        vertex(right, bottom, color)
+        vertex(left, top, color)
+        vertex(right, bottom, color)
+        vertex(right, top, color)
+    }
+
+    private fun appendRoundedRect(x: Float, y: Float, x2: Float, y2: Float, radius: Float, color: Int) {
+        val left = minOf(x, x2)
+        val top = minOf(y, y2)
+        val right = maxOf(x, x2)
+        val bottom = maxOf(y, y2)
+        val safeRadius = radius.coerceIn(0f, min(right - left, bottom - top) / 2f)
+
+        if (safeRadius <= 0f) {
+            appendRect(left, top, right, bottom, color)
+            return
+        }
+
+        appendRect(left + safeRadius, top, right - safeRadius, bottom, color)
+        appendRect(left, top + safeRadius, left + safeRadius, bottom - safeRadius, color)
+        appendRect(right - safeRadius, top + safeRadius, right, bottom - safeRadius, color)
+
+        val segments = ceil(safeRadius / 2f).toInt().coerceIn(4, 16)
+        appendCorner(left + safeRadius, top + safeRadius, safeRadius, PI, segments, color)
+        appendCorner(right - safeRadius, top + safeRadius, safeRadius, PI * 1.5, segments, color)
+        appendCorner(right - safeRadius, bottom - safeRadius, safeRadius, 0.0, segments, color)
+        appendCorner(left + safeRadius, bottom - safeRadius, safeRadius, PI * 0.5, segments, color)
+    }
+
+    private fun appendCorner(
+        centerX: Float,
+        centerY: Float,
+        radius: Float,
+        startAngle: Double,
+        segments: Int,
+        color: Int
+    ) {
+        val angleStep = (PI / 2.0) / segments
+        for (segment in 0 until segments) {
+            val angle = startAngle + angleStep * segment
+            val nextAngle = angle + angleStep
+            vertex(centerX, centerY, color)
+            vertex(centerX + radius * cos(angle).toFloat(), centerY + radius * sin(angle).toFloat(), color)
+            vertex(centerX + radius * cos(nextAngle).toFloat(), centerY + radius * sin(nextAngle).toFloat(), color)
+        }
+    }
+
+    private fun vertex(x: Float, y: Float, color: Int) {
+        Tessellator.getInstance().worldRenderer
+            .pos(x.toDouble(), y.toDouble(), 0.0)
+            .color(color shr 16 and 0xFF, color shr 8 and 0xFF, color and 0xFF, color ushr 24)
+            .endVertex()
     }
 
     fun drawCircle(x: Float, y: Float, radius: Float, color: Int) {

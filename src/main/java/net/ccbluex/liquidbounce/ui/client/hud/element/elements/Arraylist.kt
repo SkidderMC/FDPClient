@@ -28,6 +28,7 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawImage
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedRect
 import net.ccbluex.liquidbounce.utils.animations.AnimationUtil
+import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextFloat
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.GradientFontShader
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.GradientShader
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.RainbowFontShader
@@ -35,6 +36,7 @@ import net.ccbluex.liquidbounce.utils.render.shader.shaders.RainbowShader
 import net.minecraft.client.renderer.GlStateManager.resetColor
 import net.minecraft.util.ResourceLocation
 import java.awt.Color
+import java.util.WeakHashMap
 import kotlin.Pair
 
 /**
@@ -169,6 +171,10 @@ class Arraylist(
     private lateinit var tagSuffix: String
 
     private var modules = emptyList<Module>()
+    private val presentationStates = WeakHashMap<Module, ModulePresentationState>()
+
+    private fun presentation(module: Module): ModulePresentationState =
+        presentationStates.getOrPut(module) { ModulePresentationState() }
 
     private val inactiveColor = Color(255, 255, 255, 100).rgb
 
@@ -195,9 +201,9 @@ class Arraylist(
 
     private fun getDisplayString(module: Module): String {
         val moduleName = when (moduleCase) {
-            "Uppercase" -> module.getName().uppercase()
-            "Lowercase" -> module.getName().lowercase()
-            else -> module.getName()
+            "Uppercase" -> module.getName(spacedModules).uppercase()
+            "Lowercase" -> module.getName(spacedModules).lowercase()
+            else -> module.getName(spacedModules)
         }
 
         var tag = module.tag ?: ""
@@ -222,8 +228,9 @@ class Arraylist(
 
             for (module in moduleManager) {
                 val shouldShow = (!module.isHidden && module.state && (inactiveStyle != "Hide" || module.isActive))
+                val presentation = presentation(module)
 
-                if (!shouldShow && module.slide <= 0f) continue
+                if (!shouldShow && presentation.slide <= 0f) continue
 
                 val displayString = getDisplayString(module)
 
@@ -232,23 +239,23 @@ class Arraylist(
                 when (animation) {
                     "Slide" -> {
                         // If modules become inactive because they only work when in game, animate them as if they got disabled
-                        module.slideStep += if (shouldShow) delta / 4F else -delta / 4F
+                        presentation.slideStep += if (shouldShow) delta / 4F else -delta / 4F
                         if (shouldShow) {
-                            if (module.slide < width) {
-                                module.slide = AnimationUtils.easeOut(module.slideStep, width.toFloat()) * width
+                            if (presentation.slide < width) {
+                                presentation.slide = AnimationUtils.easeOut(presentation.slideStep, width.toFloat()) * width
                             }
                         } else {
-                            module.slide = AnimationUtils.easeOut(module.slideStep, width.toFloat()) * width
+                            presentation.slide = AnimationUtils.easeOut(presentation.slideStep, width.toFloat()) * width
                         }
 
-                        module.slide = module.slide.coerceIn(0F, width.toFloat())
-                        module.slideStep = module.slideStep.coerceIn(0F, width.toFloat())
+                        presentation.slide = presentation.slide.coerceIn(0F, width.toFloat())
+                        presentation.slideStep = presentation.slideStep.coerceIn(0F, width.toFloat())
                     }
 
                     "Smooth" -> {
                         val target = if (shouldShow) width.toDouble() else -width / 5.0
-                        module.slide =
-                            AnimationUtil.base(module.slide.toDouble(), target, animationSpeed.toDouble()).toFloat()
+                        presentation.slide =
+                            AnimationUtil.base(presentation.slide.toDouble(), target, animationSpeed.toDouble()).toFloat()
                     }
                 }
             }
@@ -267,22 +274,24 @@ class Arraylist(
             val gradientY = 1f safeDiv gradientY
 
             modules.forEachIndexed { index, module ->
+                val presentation = presentation(module)
                 val themeColor = getColor(index).rgb
                 var yPos =
                     (if (side.vertical == Vertical.DOWN) -textSpacer else textSpacer) * if (side.vertical == Vertical.DOWN) index + 1 else index
                 if (animation == "Smooth") {
-                    module.yAnim = AnimationUtil.base(module.yAnim.toDouble(), yPos.toDouble(), 0.2).toFloat()
-                    yPos = module.yAnim
+                    presentation.y = AnimationUtil.base(presentation.y.toDouble(), yPos.toDouble(), 0.2).toFloat()
+                    yPos = presentation.y
                 }
-                val moduleColor = Color.getHSBColor(module.hue, saturation, brightness).rgb
+                val moduleColor = Color.HSBtoRGB(presentation.hue, saturation, brightness)
 
                 val bgAlphaFactor = if (alphaBlendRange <= 0f || modules.lastIndex <= 0) 1f
                 else 1f - alphaBlendRange * (index.toFloat() / modules.lastIndex.toFloat())
 
                 fun applyBgAlpha(rgb: Int): Int {
                     if (bgAlphaFactor >= 1f) return rgb
-                    val base = Color(rgb, true)
-                    return base.withAlpha((base.alpha * bgAlphaFactor).toInt().coerceIn(0, 255)).rgb
+                    val alpha = rgb ushr 24
+                    return (rgb and 0x00FFFFFF) or
+                        ((alpha * bgAlphaFactor).toInt().coerceIn(0, 255) shl 24)
                 }
 
                 val textFadeColor = fade(textFadeColors, index * textFadeDistance, 100).rgb
@@ -300,7 +309,7 @@ class Arraylist(
 
                 when (side.horizontal) {
                     Horizontal.RIGHT, Horizontal.MIDDLE -> {
-                        val xPos = -module.slide - if (displayIcons) 2 else 3
+                        val xPos = -presentation.slide - if (displayIcons) 2 else 3
 
                         GradientShader.begin(
                             !markAsInactive && backgroundMode == "Gradient",
@@ -413,25 +422,27 @@ class Arraylist(
                                         )
 
                                         "Outline" -> {
-                                            drawRect(-1F, yPos - 1F, 0F, yPos + textSpacer, rectColor)
-                                            drawRect(xPos - 3, yPos, xPos - 2, yPos + textSpacer, rectColor)
+                                            RenderPrimitives.batch {
+                                                drawRect(-1F, yPos - 1F, 0F, yPos + textSpacer, rectColor)
+                                                drawRect(xPos - 3, yPos, xPos - 2, yPos + textSpacer, rectColor)
 
-                                            if (module == modules.first()) {
-                                                drawRect(xPos - 3, yPos - 1F, 0F, yPos, rectColor)
-                                            }
+                                                if (module == modules.first()) {
+                                                    drawRect(xPos - 3, yPos - 1F, 0F, yPos, rectColor)
+                                                }
 
-                                            drawRect(
-                                                xPos - 3 - (previousDisplayStringWidth - displayStringWidth),
-                                                yPos,
-                                                xPos - 2,
-                                                yPos + 1,
-                                                rectColor
-                                            )
-
-                                            if (module == modules.last()) {
                                                 drawRect(
-                                                    xPos - 3, yPos + textSpacer, 0F, yPos + textSpacer + 1, rectColor
+                                                    xPos - 3 - (previousDisplayStringWidth - displayStringWidth),
+                                                    yPos,
+                                                    xPos - 2,
+                                                    yPos + 1,
+                                                    rectColor
                                                 )
+
+                                                if (module == modules.last()) {
+                                                    drawRect(
+                                                        xPos - 3, yPos + textSpacer, 0F, yPos + textSpacer + 1, rectColor
+                                                    )
+                                                }
                                             }
                                         }
 
@@ -457,7 +468,7 @@ class Arraylist(
 
                     Horizontal.LEFT -> {
                         val width = font.getStringWidth(displayString)
-                        val xPos = -(width - module.slide) + if (rectMode == "Left") 6 else 3
+                        val xPos = -(width - presentation.slide) + if (rectMode == "Left") 6 else 3
 
                         GradientShader.begin(
                             !markAsInactive && backgroundMode == "Gradient",
@@ -566,44 +577,45 @@ class Arraylist(
                                         )
 
                                         "Outline" -> {
-                                            drawRect(-1F, yPos - 1F, 0F, yPos + textSpacer, rectColor)
-                                            drawRect(
-                                                xPos + width + 1,
-                                                yPos - 1F,
-                                                xPos + width + 2,
-                                                yPos + textSpacer,
-                                                rectColor
-                                            )
-
-                                            if (module == modules.first()) {
-                                                drawRect(xPos + width + 2, yPos - 1, xPos + width + 2, yPos, rectColor)
-                                                drawRect(-1F, yPos - 1, xPos + width + 2, yPos, rectColor)
-                                            }
-
-
-                                            drawRect(
-                                                xPos + width + 1,
-                                                yPos - 1,
-                                                xPos + width + 2 + (previousDisplayStringWidth - displayStringWidth),
-                                                yPos,
-                                                rectColor
-                                            )
-
-                                            if (module == modules.last()) {
+                                            RenderPrimitives.batch {
+                                                drawRect(-1F, yPos - 1F, 0F, yPos + textSpacer, rectColor)
                                                 drawRect(
                                                     xPos + width + 1,
-                                                    yPos + textSpacer,
+                                                    yPos - 1F,
                                                     xPos + width + 2,
-                                                    yPos + textSpacer + 1,
+                                                    yPos + textSpacer,
                                                     rectColor
                                                 )
+
+                                                if (module == modules.first()) {
+                                                    drawRect(xPos + width + 2, yPos - 1, xPos + width + 2, yPos, rectColor)
+                                                    drawRect(-1F, yPos - 1, xPos + width + 2, yPos, rectColor)
+                                                }
+
                                                 drawRect(
-                                                    -1F,
-                                                    yPos + textSpacer,
-                                                    xPos + width + 2,
-                                                    yPos + textSpacer + 1,
+                                                    xPos + width + 1,
+                                                    yPos - 1,
+                                                    xPos + width + 2 + (previousDisplayStringWidth - displayStringWidth),
+                                                    yPos,
                                                     rectColor
                                                 )
+
+                                                if (module == modules.last()) {
+                                                    drawRect(
+                                                        xPos + width + 1,
+                                                        yPos + textSpacer,
+                                                        xPos + width + 2,
+                                                        yPos + textSpacer + 1,
+                                                        rectColor
+                                                    )
+                                                    drawRect(
+                                                        -1F,
+                                                        yPos + textSpacer,
+                                                        xPos + width + 2,
+                                                        yPos + textSpacer + 1,
+                                                        rectColor
+                                                    )
+                                                }
                                             }
                                         }
 
@@ -631,9 +643,9 @@ class Arraylist(
                     val width = font.getStringWidth(displayString)
 
                     val side = if (side.horizontal == Side.Horizontal.LEFT) {
-                        (-width + module.slide) / 6 + if (rectMode == "Left") 3 else 0
+                        (-width + presentation.slide) / 6 + if (rectMode == "Left") 3 else 0
                     } else {
-                        -module.slide - 2 + width + if (rectMode == "Right") 0 else 2
+                        -presentation.slide - 2 + width + if (rectMode == "Right") 0 else 2
                     }
 
                     val resource = module.category.iconResourceLocation
@@ -666,14 +678,15 @@ class Arraylist(
                 }
 
                 for (module in modules) {
+                    val presentation = presentation(module)
                     when (side.horizontal) {
                         Horizontal.RIGHT, Horizontal.MIDDLE -> {
-                            val xPos = -module.slide.toInt() - 2
+                            val xPos = -presentation.slide.toInt() - 2
                             if (x2 == Int.MIN_VALUE || xPos < x2) x2 = xPos
                         }
 
                         Horizontal.LEFT -> {
-                            val xPos = module.slide.toInt() + 16
+                            val xPos = presentation.slide.toInt() + 16
                             if (x2 == Int.MIN_VALUE || xPos > x2) x2 = xPos
                         }
                     }
@@ -690,7 +703,14 @@ class Arraylist(
     }
 
     override fun updateElement() {
-        modules = moduleManager.filter { it.slide > 0 && !it.isHidden }
+        modules = moduleManager.filter { presentation(it).slide > 0 && !it.isHidden }
             .sortedBy { -font.getStringWidth(getDisplayString(it)) }
     }
 }
+
+private data class ModulePresentationState(
+    val hue: Float = nextFloat(),
+    var slide: Float = 0f,
+    var slideStep: Float = 0f,
+    var y: Float = 0f
+)
