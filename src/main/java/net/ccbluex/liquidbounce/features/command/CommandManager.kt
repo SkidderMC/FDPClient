@@ -7,12 +7,17 @@ package net.ccbluex.liquidbounce.features.command
 
 import net.ccbluex.liquidbounce.event.ClientChange
 import net.ccbluex.liquidbounce.event.ClientChangeBus
+import net.ccbluex.liquidbounce.features.command.builder.BuilderCommand
+import net.ccbluex.liquidbounce.features.command.builder.CommandBuilder
+import net.ccbluex.liquidbounce.features.command.builder.ParameterBuilder
 import net.ccbluex.liquidbounce.utils.client.ClassUtils
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.client.chat
+import java.util.IdentityHashMap
 
 object CommandManager {
     val commands = mutableListOf<Command>()
+    private val runtimes = IdentityHashMap<Command, BuilderCommand>()
     var latestAutoComplete = emptyArray<String>()
 
     var prefix = "."
@@ -37,7 +42,7 @@ object CommandManager {
 
         for (command in commands) {
             if (args[0].equals(command.command, ignoreCase = true)) {
-                CommandUtils.runSafe(command.command) { command.execute(args) }
+                CommandUtils.runSafe(command.command) { runtime(command).execute(args) }
                 ClientChangeBus.publish(ClientChange.Command(command.command))
                 return
             }
@@ -46,7 +51,7 @@ object CommandManager {
                 if (!args[0].equals(alias, ignoreCase = true))
                     continue
 
-                CommandUtils.runSafe(command.command) { command.execute(args) }
+                CommandUtils.runSafe(command.command) { runtime(command).execute(args) }
                 ClientChangeBus.publish(ClientChange.Command(command.command))
                 return
             }
@@ -87,7 +92,7 @@ object CommandManager {
         return if (args.size > 1) {
             val command = getCommand(args[0])
             val tabCompletions = try {
-                command?.tabComplete(args.copyOfRange(1, args.size))
+                command?.let { runtime(it).tabComplete(args.copyOfRange(1, args.size)) }
             } catch (throwable: Throwable) {
                 LOGGER.error("Tab-complete failed for command '${args[0]}'", throwable)
                 null
@@ -117,6 +122,7 @@ object CommandManager {
      * Register [command] by just adding it to the commands registry
      */
     fun registerCommand(command: Command) {
+        runtimes[command] = if (command is BuilderCommand) command else adaptLegacy(command)
         commands.add(command)
     }
 
@@ -139,6 +145,38 @@ object CommandManager {
      * Unregister [command] by just removing it from the commands registry
      */
     fun unregisterCommand(command: Command) {
+        runtimes.remove(command)
         commands.removeIf { it == command }
+    }
+
+    private fun runtime(command: Command): BuilderCommand =
+        runtimes[command] ?: error("Command '${command.command}' is not registered")
+
+    /**
+     * Wraps classic execute/tabComplete commands in the same typed command-tree dispatcher used by
+     * native DSL commands. This removes the second runtime while preserving legacy implementations
+     * as leaf handlers that can be migrated incrementally without changing user-visible syntax.
+     */
+    private fun adaptLegacy(legacy: Command): BuilderCommand {
+        val arguments = ParameterBuilder.begin<String>("arguments")
+            .verifiedBy(ParameterBuilder.STRING_VALIDATOR)
+            .autocompletedWith { _, args -> legacy.tabComplete(args.toTypedArray()) }
+            .optional()
+            .vararg()
+            .build()
+
+        val treeBuilder = CommandBuilder.begin(legacy.command)
+        legacy.alias.forEach { treeBuilder.alias(it) }
+
+        val tree = treeBuilder
+            .parameter(arguments)
+            .handler { _, values ->
+                @Suppress("UNCHECKED_CAST")
+                val rawArguments = values[0] as? List<String> ?: emptyList()
+                legacy.execute((listOf(legacy.command) + rawArguments).toTypedArray())
+            }
+            .build()
+
+        return object : BuilderCommand(tree) {}
     }
 }

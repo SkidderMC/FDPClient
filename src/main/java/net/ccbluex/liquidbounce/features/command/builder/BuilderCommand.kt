@@ -12,9 +12,8 @@ import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 /**
  * Adapter that exposes a builder [BuiltCommand] tree as a classic FDPClient [Command].
  *
- * This is the bridge that makes the new builder layer purely additive: [CommandManager] still only
- * knows about [Command] objects with [execute] / [tabComplete], and this class implements those by
- * walking the built tree. The 37 existing commands are untouched.
+ * [CommandManager] routes every command through this tree runtime. Classic commands are wrapped as
+ * leaf handlers, while migrated commands expose typed parameters and subcommands directly.
  *
  * Subclass it with a no-arg constructor so the classpath scanner in [CommandManager] can
  * instantiate it, OR register an instance manually via `commandManager.registerCommand(...)`.
