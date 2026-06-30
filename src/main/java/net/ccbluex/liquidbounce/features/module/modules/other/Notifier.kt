@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.other
 
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
@@ -106,6 +107,48 @@ object Notifier : Module("Notifier", Category.OTHER, Category.SubCategory.MISCEL
         .describe("Notify when one player attacks another.")
     private val drinkAlert by boolean("DrinkAlert", false)
         .describe("Notify when a nearby player drinks a potion.")
+
+    private val combatGroup = Configurable("Combat")
+    private val connectionGroup = Configurable("Connection")
+    private val clientGroup = Configurable("Client")
+    private val bedWarsGroup = Configurable("BedWars")
+    private val trackedItemsGroup = Configurable("TrackedItems")
+    private val armorAndInvisGroup = Configurable("ArmorAndInvisibility")
+
+    init {
+        moveValues(combatGroup,
+            "Death", "HeldExplosive", "HeldTools", "PlayerCombat", "DrinkAlert", "WarnDelay")
+
+        moveValues(connectionGroup,
+            "Join", "Left", "Join Messages", "Leave Messages")
+
+        moveValues(clientGroup,
+            "Held Item Messages", "Item Consumption Messages", "Game Mode Messages")
+
+        moveValues(bedWarsGroup,
+            "BedWarsHelp", "Item-Checker")
+
+        moveValues(trackedItemsGroup,
+            "Stone-Sword", "Iron-Sword", "Diamond-Sword", "Iron-Pickaxe", "Diamond-Pickaxe",
+            "Gold-Pickaxe", "FireBall", "EnderPearl", "TNT", "Obsidian", "InvisibilityPotion",
+            "EnchantedSword")
+
+        moveValues(armorAndInvisGroup,
+            "DiamondArmor", "ChainArmor", "IronArmor", "EnchantedArmor", "InvisibleCheck",
+            "PotionInvis")
+
+        addValues(listOf(
+            combatGroup, connectionGroup, clientGroup, bedWarsGroup, trackedItemsGroup,
+            armorAndInvisGroup,
+        ))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.firstOrNull { it.matchesKey(name) }?.let(group::addValue)
+        }
+    }
+
     private val alertTimer = MSTimer()
     private val drinkers = arrayListOf<EntityLivingBase>()
 

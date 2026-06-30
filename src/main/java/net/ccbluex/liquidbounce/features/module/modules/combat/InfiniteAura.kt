@@ -9,6 +9,7 @@ import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.event.async.loopSequence
 import net.ccbluex.liquidbounce.event.handler
@@ -130,7 +131,7 @@ object InfiniteAura : Module(name = "InfiniteAura", category = Category.COMBAT, 
         .describe("Color of the rendered path.")
 
     private val options = RotationSettings(this).withoutKeepRotation().withRequestPriority(RotationPriority.HIGH)
-    private val pointTracker = PointTracker().also { addValues(it.values) }
+    private val pointTracker = PointTracker()
     private val usePointTracker by boolean("UsePointTracker", false) { options.rotationsActive }
     private val randomization = RandomizationSettings(this) { options.rotationsActive }
 
@@ -163,6 +164,57 @@ object InfiniteAura : Module(name = "InfiniteAura", category = Category.COMBAT, 
 
     private val displayDebug by boolean("Debug", false)
         .describe("Show on-screen target and reach debug info.")
+
+    private val modeGroup = Configurable("Mode")
+    private val targetGroup = Configurable("Target")
+    private val teleportGroup = Configurable("Teleport")
+    private val rotationsGroup = Configurable("Rotations")
+    private val aimPointGroup = Configurable("AimPoint")
+    private val predictionGroup = Configurable("Prediction")
+    private val swingGroup = Configurable("Swing")
+    private val renderGroup = Configurable("Render")
+
+    init {
+        moveValues(modeGroup, "Mode", "CPS", "HurtTime")
+
+        moveValues(targetGroup,
+            "TargetMode", "LimitedMultiTargets", "MaxSwitchFOV", "SwitchDelay", "Targets",
+            "Priority", "FOV")
+
+        moveValues(teleportGroup,
+            "PacketMode", "DoTeleportBackPacket", "Distance", "MoveDistance", "AllowDiagonal",
+            "MaxPathSearch", "NoRegen", "NoLagback")
+
+        options.nestInto(rotationsGroup)
+        randomization.nestInto(rotationsGroup)
+        rotationsGroup.addValue(pointTracker)
+        moveValues(rotationsGroup, "UsePointTracker")
+
+        moveValues(aimPointGroup,
+            "HighestBodyPointToTarget", "LowestBodyPointToTarget", "HorizontalBodySearchRange")
+
+        moveValues(predictionGroup,
+            "PredictClientMovement", "PredictOnlyWhenOutOfRange", "PredictEnemyPosition")
+
+        moveValues(swingGroup,
+            "Swing", "SwingAura", "FailSwing", "MaxRotationDifferenceToSwing",
+            "RenderBoxOnSwingFail", "RenderBoxColor", "RenderBoxFadeSeconds")
+
+        moveValues(renderGroup,
+            "PathRender", "PathColor", "RenderAimPointBox", "AimPointBoxColor", "AimPointBoxSize",
+            "Debug")
+
+        addValues(listOf(
+            modeGroup, targetGroup, teleportGroup, rotationsGroup, aimPointGroup, predictionGroup,
+            swingGroup, renderGroup,
+        ))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.firstOrNull { it.matchesKey(name) }?.let(group::addValue)
+        }
+    }
 
     var target: EntityLivingBase? = null
     private var hittable = false

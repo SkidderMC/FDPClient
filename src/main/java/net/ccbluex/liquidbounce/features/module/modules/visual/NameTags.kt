@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Module
@@ -123,6 +124,45 @@ object NameTags : Module("NameTags", Category.VISUAL, Category.SubCategory.RENDE
 
     private val thruBlocks by boolean("ThruBlocks", true)
         .describe("Show tags even when blocked by terrain.")
+
+    private val textGroup = Configurable("Text")
+    private val healthGroup = Configurable("Health")
+    private val itemsGroup = Configurable("Items")
+    private val backgroundGroup = Configurable("Background")
+    private val borderGroup = Configurable("Border")
+    private val renderGroup = Configurable("Render")
+
+    init {
+        moveValues(textGroup,
+            "Font", "Scale", "Shadow", "Distance", "Ping", "Indicator")
+
+        moveValues(healthGroup,
+            "Health", "HealthFromScoreboard", "Absorption", "RoundedHealth",
+            "HealthPrefix", "HealthPrefixText", "HealthSuffix", "HealthSuffixText", "Bar")
+
+        moveValues(itemsGroup,
+            "Armor", "Armor Durability", "Enchant", "Potions")
+
+        moveValues(backgroundGroup,
+            "Background", "BackgroundColor", "Background Radius")
+
+        moveValues(borderGroup,
+            "Border", "BorderColor", "Border Width")
+
+        moveValues(renderGroup,
+            "Mode", "RenderSelf", "Bots", "ClearNames", "MaxRenderDistance",
+            "OnLook", "MaxAngleDifference", "ThruBlocks")
+
+        addValues(listOf(
+            textGroup, healthGroup, itemsGroup, backgroundGroup, borderGroup, renderGroup,
+        ))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.firstOrNull { it.matchesKey(name) }?.let(group::addValue)
+        }
+    }
 
     private var maxRenderDistanceSq = 0.0
         set(value) {

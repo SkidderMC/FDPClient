@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.Render2DEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
@@ -141,6 +142,42 @@ object ESP2D : Module("ESP2D", Category.VISUAL, Category.SubCategory.RENDER_OVER
     private val dFormat = DecimalFormat("0.0")
 
     val collectedEntities: MutableList<Entity?> = mutableListOf()
+
+    private val boxGroup = Configurable("Box")
+    private val colorGroup = Configurable("Color")
+    private val healthGroup = Configurable("Health")
+    private val textGroup = Configurable("Text")
+    private val itemsGroup = Configurable("Items")
+    private val renderGroup = Configurable("Render")
+
+    init {
+        moveValues(boxGroup, "Outline", "Mode")
+
+        moveValues(colorGroup, "Color Mode", "Color", "Team")
+
+        moveValues(healthGroup,
+            "Health-bar", "HBar-Mode", "Render-Absorption", "Armor-bar", "ABar-Mode",
+            "HealthNumber", "HP-Mode")
+
+        moveValues(textGroup,
+            "Details-HoverOnly", "Tags", "Tags-Background", "Item-Tags", "OutlineFont",
+            "Use-Clear-Name", "Font-Scale")
+
+        moveValues(itemsGroup, "ItemArmorNumber", "ArmorItems", "ArmorDurability")
+
+        moveValues(renderGroup,
+            "Local-Player", "Dropped-Items", "Background", "BackgroundColor")
+
+        addValues(listOf(
+            boxGroup, colorGroup, healthGroup, textGroup, itemsGroup, renderGroup,
+        ))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.firstOrNull { it.matchesKey(name) }?.let(group::addValue)
+        }
+    }
 
     override fun onDisable() {
         collectedEntities.clear()

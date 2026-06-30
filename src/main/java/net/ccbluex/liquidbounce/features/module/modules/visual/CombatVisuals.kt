@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
 import net.ccbluex.liquidbounce.FDPClient.CLIENT_NAME
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.AttackEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
@@ -173,6 +174,47 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, Category.SubCate
         .describe("Volume of the hit sound.")
     private val pitch by float("Pitch", 1f, 0.1f..5f) { sound != "None" }
         .describe("Pitch of the hit sound.")
+
+    private val markerGroup = Configurable("Marker")
+    private val circleGroup = Configurable("Circle")
+    private val pointsGroup = Configurable("Points")
+    private val imageGroup = Configurable("Image")
+    private val hitParticlesGroup = Configurable("HitParticles")
+    private val hitSoundGroup = Configurable("HitSound")
+
+    init {
+        moveValues(markerGroup,
+            "MarkMode", "Color Primary", "Color Secondary", "FilterEntityType",
+            "Mark-RainBow", "Mark-HurtTime", "Outline", "FakeSharp")
+
+        moveValues(circleGroup,
+            "CircleStartColor", "CircleEndColor", "FillInnerCircle", "WithHeight",
+            "AnimateHeight", "HeightRange", "ExtraWidth", "AnimateCircleY",
+            "CircleYRange", "Duration")
+
+        moveValues(pointsGroup,
+            "PointsSpeed", "PointsRadius", "PointsScale", "PointsLayers", "PointsAdditive")
+
+        moveValues(imageGroup,
+            "ImageMode", "ImageScale", "ImageXOffset", "ImageYOffset", "ImageAdditive",
+            "ImageSpin", "ImageSpinSpeed", "ImageBillboard",
+            "ImageColor1", "ImageColor2", "ImageColor3", "ImageColor4")
+
+        moveValues(hitParticlesGroup, "Particle", "ParticleAmount")
+
+        moveValues(hitSoundGroup, "Sound", "Volume", "Pitch")
+
+        addValues(listOf(
+            markerGroup, circleGroup, pointsGroup, imageGroup,
+            hitParticlesGroup, hitSoundGroup,
+        ))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.filter { it.matchesKey(name) }.forEach(group::addValue)
+        }
+    }
 
     // variables
     private val targetList = HashMap<EntityLivingBase, Long>()

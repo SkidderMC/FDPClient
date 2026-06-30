@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
 import net.ccbluex.liquidbounce.FDPClient.hud
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
@@ -152,6 +153,46 @@ object TimerRange : Module("TimerRange", Category.COMBAT, Category.SubCategory.C
                 }
             }
         }
+
+    private val modesGroup = Configurable("Modes")
+    private val rangeGroup = Configurable("Range")
+    private val timerGroup = Configurable("Timer")
+    private val predictionGroup = Configurable("Prediction")
+    private val lagbackGroup = Configurable("Lagback")
+    private val conditionsGroup = Configurable("Conditions")
+    private val renderGroup = Configurable("Render")
+
+    init {
+        moveValues(modesGroup, "TimerMode", "UsePointTracker", "Ticks")
+
+        moveValues(rangeGroup,
+            "Range", "CooldownTick", "ScanRange", "TickDelay", "MaxAngleDifference")
+
+        moveValues(timerGroup,
+            "TimerBoost", "BoostDelay", "TimerCharged", "ChargedDelay",
+            "DistanceToStartWorking", "DistanceToSpeedUp", "InRangeSpeed", "NormalSpeed")
+
+        moveValues(predictionGroup,
+            "PredictClientMovement", "PredictEnemyPosition", "Extrapolation", "Resolution")
+
+        moveValues(lagbackGroup,
+            "Blink", "ResetOnLagback", "ResetOnKnockback", "ChatDebug", "NotificationDebug")
+
+        moveValues(conditionsGroup, "OnWeb", "onLiquid", "OnForwardOnly")
+
+        moveValues(renderGroup, "Mark", "Outline")
+
+        addValues(listOf(
+            modesGroup, rangeGroup, timerGroup, predictionGroup, lagbackGroup,
+            conditionsGroup, renderGroup,
+        ))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.filter { it.matchesKey(name) }.forEach(group::addValue)
+        }
+    }
 
     override fun onDisable() {
         shouldResetTimer()

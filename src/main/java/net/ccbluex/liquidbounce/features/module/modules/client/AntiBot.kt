@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.client
 
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
@@ -95,6 +96,43 @@ object AntiBot : Module("AntiBot", Category.CLIENT, Category.SubCategory.CLIENT_
     private val behindRotDiffToIgnore by float("BehindRotationDiffToIgnore", 90f, 1f..180f)
     { alwaysBehind }
         .describe("Angle difference above which a player counts as behind.")
+
+    private val tabGroup = Configurable("Tab")
+    private val nameGroup = Configurable("Name")
+    private val movementGroup = Configurable("Movement")
+    private val combatGroup = Configurable("Combat")
+    private val lifetimeGroup = Configurable("Lifetime")
+    private val positionGroup = Configurable("Position")
+
+    init {
+        moveValues(tabGroup,
+            "Tab", "TabMode", "EntityID", "InvalidUUID", "DuplicateInTab",
+            "DuplicateProfile", "Properties")
+
+        moveValues(nameGroup, "Color", "Name", "DuplicateInWorld")
+
+        moveValues(movementGroup,
+            "Ground", "Air", "InvalidGround", "InvalidSpeed", "Swing")
+
+        moveValues(combatGroup,
+            "Capabilities", "Health", "Derp", "WasInvisible", "Armor", "Ping", "NeedHit")
+
+        moveValues(lifetimeGroup, "LivingTime", "LivingTimeTicks")
+
+        moveValues(positionGroup,
+            "AlwaysInRadius", "AlwaysInRadiusBlocks", "AlwaysInRadiusTick", "AlwaysBehind",
+            "AlwaysBehindInRadiusBlocks", "BehindRotationDiffToIgnore")
+
+        addValues(listOf(
+            tabGroup, nameGroup, movementGroup, combatGroup, lifetimeGroup, positionGroup,
+        ))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.firstOrNull { it.matchesKey(name) }?.let(group::addValue)
+        }
+    }
 
     private val groundList = mutableSetOf<Int>()
     private val airList = mutableSetOf<Int>()
