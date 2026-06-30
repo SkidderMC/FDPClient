@@ -1,0 +1,1442 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues></ManuallySuppressedIssues>
+  <CurrentIssues>
+    <ID>ClassNaming:yzyCategory.kt$yzyCategory</ID>
+    <ID>ComplexCondition:AACHop3313.kt$AACHop3313$!thePlayer.isMoving || thePlayer.isInLiquid || thePlayer.isOnLadder || thePlayer.isRiding || thePlayer.hurtTime &gt; 0</ID>
+    <ID>ComplexCondition:AACHop350.kt$AACHop350$event.eventState == EventState.POST &amp;&amp; thePlayer.isMoving &amp;&amp; !thePlayer.isInLiquid &amp;&amp; !mc.thePlayer.isSneaking</ID>
+    <ID>ComplexCondition:AACHop4.kt$AACHop4$!thePlayer.isMoving || thePlayer.isInLiquid || thePlayer.isOnLadder || thePlayer.isRiding</ID>
+    <ID>ComplexCondition:AACHop5.kt$AACHop5$!thePlayer.isMoving || thePlayer.isInLiquid || thePlayer.isOnLadder || thePlayer.isRiding</ID>
+    <ID>ComplexCondition:Aimbot.kt$Aimbot$onClick &amp;&amp; (clickTimer.hasTimePassed(150) || !mc.gameSettings.keyBindAttack.isKeyDown &amp;&amp; AutoClicker.handleEvents())</ID>
+    <ID>ComplexCondition:AntiBot.kt$AntiBot$capabilities &amp;&amp; (entity.isSpectator || entity.capabilities.isFlying || entity.capabilities.allowFlying || entity.capabilities.disableDamage || entity.capabilities.isCreativeMode)</ID>
+    <ID>ComplexCondition:AntiBot.kt$AntiBot$entity != null &amp;&amp; entity is EntityLivingBase &amp;&amp; packet.animationType == 0 &amp;&amp; entity.entityId !in swingList</ID>
+    <ID>ComplexCondition:AntiBot.kt$AntiBot$speed in 0.45..0.46 &amp;&amp; (!entity.isSprinting || !entity.isMoving || entity.getActivePotionEffect(Potion.moveSpeed) == null)</ID>
+    <ID>ComplexCondition:AntiVoid.kt$AntiVoid$simPlayer.isOnLadder() || simPlayer.inWater || simPlayer.isInLava() || simPlayer.isInWeb || simPlayer.isSneaking()</ID>
+    <ID>ComplexCondition:ArmorSwap.kt$ArmorSwap$requireOpenInventory &amp;&amp; mc.currentScreen !is GuiInventory &amp;&amp; !openInventory &amp;&amp; !serverOpenInventory</ID>
+    <ID>ComplexCondition:AutoArmor.kt$AutoArmor$!event.pressed || !manualSwap || event.key == Keyboard.KEY_NONE || event.key == keyBind</ID>
+    <ID>ComplexCondition:AutoBow.kt$AutoBow$thePlayer.isUsingItem &amp;&amp; thePlayer.heldItem?.item is ItemBow &amp;&amp; thePlayer.itemInUseDuration &gt; 20 &amp;&amp; (!waitForBowAimbot || !ProjectileAimbot.handleEvents() || ProjectileAimbot.hasTarget())</ID>
+    <ID>ComplexCondition:AutoClicker.kt$AutoClicker$jitter &amp;&amp; ((left &amp;&amp; canClick &amp;&amp; shouldJitter) || (right &amp;&amp; !thePlayer.isUsingItem &amp;&amp; mc.gameSettings.keyBindUseItem.isKeyDown &amp;&amp; ((onlyBlocks &amp;&amp; thePlayer.heldItem.item is ItemBlock) || !onlyBlocks)))</ID>
+    <ID>ComplexCondition:AutoClicker.kt$AutoClicker$left &amp;&amp; mc.gameSettings.keyBindAttack.isKeyDown &amp;&amp; !mc.gameSettings.keyBindUseItem.isKeyDown &amp;&amp; canClick &amp;&amp; time - leftLastSwing &gt;= leftDelay &amp;&amp; (!onlyBlock || mc.objectMouseOver.typeOfHit.isBlock) &amp;&amp; heldLongEnough(leftHeldSince, time) &amp;&amp; canClickWhileUsing(thePlayer, time)</ID>
+    <ID>ComplexCondition:AutoClicker.kt$AutoClicker$requiresNoInput &amp;&amp; left &amp;&amp; canClick &amp;&amp; time - leftLastSwing &gt;= leftDelay &amp;&amp; (!onlyBlock || mc.objectMouseOver.typeOfHit.isBlock) &amp;&amp; heldLongEnough(leftHeldSince, time) &amp;&amp; canClickWhileUsing(thePlayer, time)</ID>
+    <ID>ComplexCondition:AutoClicker.kt$AutoClicker$right &amp;&amp; mc.gameSettings.keyBindUseItem.isKeyDown &amp;&amp; time - rightLastSwing &gt;= rightDelay &amp;&amp; (!onlyBlocks || thePlayer.heldItem?.item is ItemBlock) &amp;&amp; heldLongEnough(rightHeldSince, time) &amp;&amp; canClickWhileUsing(thePlayer, time)</ID>
+    <ID>ComplexCondition:AutoDodge.kt$AutoDodge$plan.shouldJump &amp;&amp; allowRotation &amp;&amp; allowJump &amp;&amp; player.onGround</ID>
+    <ID>ComplexCondition:AutoFish.kt$AutoFish$rodOutTimer.hasTimePassed(500) &amp;&amp; fishEntity == null || (fishEntity != null &amp;&amp; fishEntity.motionX == 0.0 &amp;&amp; fishEntity.motionZ == 0.0 &amp;&amp; fishEntity.motionY != 0.0)</ID>
+    <ID>ComplexCondition:Backtrack.kt$Backtrack$trueDist &lt;= 6f &amp;&amp; (!smart || trueDist &gt;= dist) &amp;&amp; (style == "Smooth" || !globalTimer.hasTimePassed( supposedDelay ))</ID>
+    <ID>ComplexCondition:BedProtectionESP.kt$BedProtectionESP$breakableBlockIDs.contains(currBlockID) || (currBlockID == targetBlockID) || (allLayers &amp;&amp; currBlockID == 0)</ID>
+    <ID>ComplexCondition:BedProtectionESP.kt$BedProtectionESP$currentLayerBlocks.isEmpty() &amp;&amp; (allLayers || nextLayerAirBlocks.isEmpty()) &amp;&amp; currentLayer &lt; maxLayers</ID>
+    <ID>ComplexCondition:BetterInventory.kt$BetterInventory$(leftDown &amp;&amp; !leftHeld) || (rightDown &amp;&amp; !rightHeld)</ID>
+    <ID>ComplexCondition:BlackStyle.kt$BlackStyle$mouseButton == 0 &amp;&amp; (inColorPicker || inHueSlider || inOpacitySlider) || sliderValueHeld == value &amp;&amp; value.lastChosenSlider != null</ID>
+    <ID>ComplexCondition:BlackStyle.kt$BlackStyle$mouseButton == 0 &amp;&amp; mouseX in graphX..graphRight &amp;&amp; mouseY in graphTop..graphBottom || sliderValueHeld == value</ID>
+    <ID>ComplexCondition:BlackStyle.kt$BlackStyle$mouseButton == 0 &amp;&amp; mouseX in minX..maxX &amp;&amp; mouseY in y - 2..y + 5 || sliderValueHeld == value</ID>
+    <ID>ComplexCondition:BlackStyle.kt$BlackStyle$mouseButton == 0 &amp;&amp; mouseX in x..endX &amp;&amp; mouseY in y - 2..y + 5 || sliderValueHeld == value</ID>
+    <ID>ComplexCondition:Blink.kt$Blink$(checkFallDist &amp;&amp; simPlayer.fallDistance &gt; fallDist.start) || !checkFallDist &amp;&amp; fallingPlayer.findCollision(60) != null &amp;&amp; simPlayer.motionY &lt; 0</ID>
+    <ID>ComplexCondition:Blink.kt$Blink$simPlayer.isOnLadder() || simPlayer.inWater || simPlayer.isInLava() || simPlayer.isInWeb || simPlayer.isCollided</ID>
+    <ID>ComplexCondition:BlockUtils.kt$BlockUtils$supportPartialBlocks &amp;&amp; (box.maxY - box.minY &lt; 1.0 || box.maxX - box.minX &lt; 1.0 || box.maxZ - box.minZ &lt; 1.0)</ID>
+    <ID>ComplexCondition:ClickGui.kt$ClickGui$element.isVisible &amp;&amp; element.hoverText.isNotBlank() &amp;&amp; element.isHovered( mouseX, mouseY ) &amp;&amp; element.y &lt;= panel.y + panel.fade</ID>
+    <ID>ComplexCondition:Collide.kt$Collide$!event.block.material.blocksMovement() &amp;&amp; event.block.material != Material.carpet &amp;&amp; event.block.material != Material.vine &amp;&amp; event.block.material != Material.snow &amp;&amp; event.block !is BlockLadder</ID>
+    <ID>ComplexCondition:ColorElement.kt$ColorElement$button == 0 &amp;&amp; (inColorPicker || inHueSlider || inOpacitySlider)</ID>
+    <ID>ComplexCondition:ColorElement.kt$ColorElement$button == 1 &amp;&amp; mouseX &gt;= hexTextX &amp;&amp; mouseX &lt;= hexTextX + hexTextWidth &amp;&amp; mouseY &gt;= hexTextY &amp;&amp; mouseY &lt;= hexTextY + 12</ID>
+    <ID>ComplexCondition:ColorElement.kt$ColorElement$mouseX &gt;= rgbaTextX &amp;&amp; mouseX &lt;= rgbaTextX + maxWidth &amp;&amp; mouseY &gt;= rgbaTextY &amp;&amp; mouseY &lt;= rgbaTextY + rgbaTextHeight</ID>
+    <ID>ComplexCondition:CombatVisuals.kt$CombatVisuals$thePlayer.fallDistance &gt; 0F &amp;&amp; !thePlayer.onGround &amp;&amp; !thePlayer.isOnLadder &amp;&amp; !thePlayer.isInWater &amp;&amp; !thePlayer.isPotionActive( Potion.blindness ) &amp;&amp; thePlayer.ridingEntity == null || Criticals.handleEvents() &amp;&amp; Criticals.msTimer.hasTimePassed( Criticals.delay ) &amp;&amp; !thePlayer.isInWater &amp;&amp; !thePlayer.isInLava &amp;&amp; !thePlayer.isInWeb</ID>
+    <ID>ComplexCondition:Configurable.kt$Configurable$value.excluded || (!include.subjectiveValues &amp;&amp; value.subjective) || (!include.hiddenValues &amp;&amp; value.hidden) || (!include.keyBindings &amp;&amp; value is KeyBindValue) || (!include.filePaths &amp;&amp; value is FileValue)</ID>
+    <ID>ComplexCondition:Criticals.kt$Criticals$!thePlayer.onGround || thePlayer.isOnLadder || thePlayer.isInWeb || thePlayer.isInLiquid || thePlayer.ridingEntity != null || entity.hurtTime &gt; hurtTime || Flight.handleEvents() || !msTimer.hasTimePassed(delay)</ID>
+    <ID>ComplexCondition:CustomSpeed.kt$CustomSpeed$notOnVoid &amp;&amp; fallingPlayer.findCollision(500) == null || notOnFalling &amp;&amp; player.fallDistance &gt; 2.5f || notOnConsuming &amp;&amp; player.isUsingItem &amp;&amp; (heldItem.item is ItemFood || heldItem.item is ItemPotion || heldItem.item is ItemBucketMilk)</ID>
+    <ID>ComplexCondition:Damage.kt$Damage$packet is S19PacketEntityStatus &amp;&amp; event.eventType == EventState.RECEIVE &amp;&amp; packet.opCode == 2.toByte() &amp;&amp; packet.entityId == player.entityId</ID>
+    <ID>ComplexCondition:Disabler.kt$Disabler$cancelC03 &amp;&amp; !(packet is C04PacketPlayerPosition || packet is C05PacketPlayerLook || packet is C06PacketPlayerPosLook)</ID>
+    <ID>ComplexCondition:ESP.kt$ESP$minX &gt; 0 || minY &gt; 0 || maxX &lt;= mc.displayWidth || maxY &lt;= mc.displayWidth</ID>
+    <ID>ComplexCondition:ESP2D.kt$ESP2D$armorNumber &amp;&amp; (!hover || entity.entityItem == mc.thePlayer!!.heldItem || isHovering(minX, maxX, minY, maxY, scaledResolution))</ID>
+    <ID>ComplexCondition:ESP2D.kt$ESP2D$e != null &amp;&amp; !e.isDead &amp;&amp; (EntityUtils.isSelected(e, false) || (localPlayer &amp;&amp; e is EntityPlayerSP &amp;&amp; mc.gameSettings.thirdPersonView != 0) || (droppedItems &amp;&amp; e is EntityItem))</ID>
+    <ID>ComplexCondition:ESP2D.kt$ESP2D$healthNumber &amp;&amp; (!hover || entity === mc.thePlayer || isHovering(minX, maxX, minY, maxY, scaledResolution))</ID>
+    <ID>ComplexCondition:ESP2D.kt$ESP2D$isLiving &amp;&amp; armorItems &amp;&amp; (!hover || entity === mc.thePlayer || isHovering(minX, maxX, minY, maxY, scaledResolution))</ID>
+    <ID>ComplexCondition:ESP2D.kt$ESP2D$minX.isNaN() || minY.isNaN() || maxX.isNaN() || maxY.isNaN() || minX == maxX || minY == maxY</ID>
+    <ID>ComplexCondition:EditorPanel.kt$EditorPanel$((Mouse.isButtonDown(0) &amp;&amp; !mouseDown) || (Mouse.isButtonDown(1) &amp;&amp; !rightMouseDown)) &amp;&amp; mouseX in x..x + width &amp;&amp; mouseY in y + height..y + height + 10</ID>
+    <ID>ComplexCondition:EditorPanel.kt$EditorPanel$Mouse.isButtonDown(0) &amp;&amp; !mouseDown &amp;&amp; mouseX in deleteWidth..x + width &amp;&amp; mouseY in y..y + 10</ID>
+    <ID>ComplexCondition:EditorPanel.kt$EditorPanel$Mouse.isButtonDown(0) &amp;&amp; !mouseDown &amp;&amp; mouseX in stringWidth..x + width &amp;&amp; mouseY in y..y + 10</ID>
+    <ID>ComplexCondition:EditorPanel.kt$EditorPanel$Mouse.isButtonDown(0) &amp;&amp; !mouseDown &amp;&amp; mouseX in x..x + width &amp;&amp; mouseY &gt;= y + height &amp;&amp; mouseY &lt;= y + height + 10</ID>
+    <ID>ComplexCondition:EditorPanel.kt$EditorPanel$Mouse.isButtonDown(0) &amp;&amp; !mouseDown &amp;&amp; mouseX in x..x + width &amp;&amp; mouseY in y + height..y + height + 10</ID>
+    <ID>ComplexCondition:EditorPanel.kt$EditorPanel$Mouse.isButtonDown(0) &amp;&amp; !mouseDown &amp;&amp; mouseX in x..x + width &amp;&amp; mouseY in y..y + 12</ID>
+    <ID>ComplexCondition:EditorPanel.kt$EditorPanel$leftClickPressed &amp;&amp; (inColorPicker || inHueSlider || inOpacitySlider) || value.lastChosenSlider != null</ID>
+    <ID>ComplexCondition:EntityUtils.kt$EntityUtils$entity is EntityLivingBase &amp;&amp; (deadValue || entity.isEntityAlive) &amp;&amp; entity != mc.thePlayer</ID>
+    <ID>ComplexCondition:EspPreviewComponent.kt$EspPreviewComponent$isHovering(previewX.toFloat(), previewY.toFloat(), previewWidth, previewHeight, mouseX, mouseY) &amp;&amp; mouseButton == 0 &amp;&amp; !managingElements &amp;&amp; !controlsBandHover &amp;&amp; !manageButtonHover</ID>
+    <ID>ComplexCondition:FDPClassicTH.kt$FDPClassicTH$entity != lastTarget || easingHealth &lt; 0 || easingHealth &gt; entity.maxHealth || abs(easingHealth - entity.health) &lt; 0.01</ID>
+    <ID>ComplexCondition:FakeLag.kt$FakeLag$!handleEvents() || player.isDead || event.isCancelled || allowedDistToEnemy.endInclusive &gt; 0.0 &amp;&amp; wasNearEnemy || ignoreWholeTick</ID>
+    <ID>ComplexCondition:FastClimb.kt$FastClimb$mc.thePlayer != null &amp;&amp; (event.block is BlockLadder || event.block is BlockVine) &amp;&amp; mode == "AAC3.0.5" &amp;&amp; mc.thePlayer.isOnLadder</ID>
+    <ID>ComplexCondition:FlagCheck.kt$FlagCheck$!rubberbandCheck || (player.capabilities.isFlying &amp;&amp; player.capabilities.disableDamage &amp;&amp; !player.onGround)</ID>
+    <ID>ComplexCondition:FlagCheck.kt$FlagCheck$ghostBlockCheck &amp;&amp; (!Disabler.handleEvents() || (Disabler.handleEvents() &amp;&amp; !Disabler.verusFly))</ID>
+    <ID>ComplexCondition:FlagCheck.kt$FlagCheck$player.isDead || (player.capabilities.isFlying &amp;&amp; player.capabilities.disableDamage &amp;&amp; !player.onGround)</ID>
+    <ID>ComplexCondition:Flight.kt$Flight$!mode.startsWith("AAC") &amp;&amp; mode != "Hypixel" &amp;&amp; mode != "VerusGlide" &amp;&amp; mode != "SmoothVanilla" &amp;&amp; mode != "Vanilla" &amp;&amp; mode != "Rewinside" &amp;&amp; mode != "Fireball" &amp;&amp; mode != "Collide" &amp;&amp; mode != "Jump"</ID>
+    <ID>ComplexCondition:Fucker.kt$Fucker$it.block?.id != targetID || distSq &gt; rangeSq || distSq &gt; nearestBlockDistanceSq || !isHittable(it) &amp;&amp; !surroundings &amp;&amp; !hypixel</ID>
+    <ID>ComplexCondition:GameDetector.kt$GameDetector$this@GameDetector.capabilities &amp;&amp; (!capabilities.allowEdit || capabilities.allowFlying || capabilities.isFlying || capabilities.disableDamage)</ID>
+    <ID>ComplexCondition:Gapple.kt$Gapple$(groundCheck &amp;&amp; !mc.thePlayer.onGround) || (invCheck &amp;&amp; mc.currentScreen is GuiContainer) || (absorp &gt; 0 &amp;&amp; absorpCheck)</ID>
+    <ID>ComplexCondition:GrimBHop.kt$GrimBHop$player.isInLiquid || player.isInWeb || player.isOnLadder || !player.isMoving</ID>
+    <ID>ComplexCondition:GrimLowHop.kt$GrimLowHop$player.isInLiquid || player.isInWeb || player.isOnLadder || !player.isMoving</ID>
+    <ID>ComplexCondition:HUD.kt$HUD$(element.renderX + minX + moveX &gt;= 0.0 || moveX &gt; 0) &amp;&amp; (element.renderX + maxX + moveX &lt;= width || moveX &lt; 0)</ID>
+    <ID>ComplexCondition:HUD.kt$HUD$(element.renderY + minY + moveY &gt;= 0.0 || moveY &gt; 0) &amp;&amp; (element.renderY + maxY + moveY &lt;= height || moveY &lt; 0)</ID>
+    <ID>ComplexCondition:HUDModule.kt$HUDModule$state &amp;&amp; blur &amp;&amp; !mc.entityRenderer.isShaderActive &amp;&amp; event.guiScreen != null &amp;&amp; !(event.guiScreen is GuiChat || event.guiScreen is GuiHudDesigner)</ID>
+    <ID>ComplexCondition:HitSelect.kt$HitSelect$player.onGround || player.isInLiquid || player.isOnLadder || player.isRiding</ID>
+    <ID>ComplexCondition:HylexGround.kt$HylexGround$player.isInLiquid || player.isInWeb || player.isOnLadder || !player.isMoving</ID>
+    <ID>ComplexCondition:HylexLowHop.kt$HylexLowHop$player.isInLiquid || player.isInWeb || player.isOnLadder || !player.isMoving</ID>
+    <ID>ComplexCondition:InfiniteAura.kt$InfiniteAura$entity !is EntityLivingBase || !isSelected(entity, true) || (switchMode &amp;&amp; entity.entityId in prevTargetEntities)</ID>
+    <ID>ComplexCondition:IntaveHop14.kt$IntaveHop14$!player.isMoving || player.isInLiquid || player.isInWeb || player.isOnLadder</ID>
+    <ID>ComplexCondition:IntaveTimer14.kt$IntaveTimer14$!thePlayer.isMoving || thePlayer.isInLiquid || thePlayer.isOnLadder || thePlayer.isRiding</ID>
+    <ID>ComplexCondition:InvMove.kt$InvMove$undetectable &amp;&amp; (screen != null &amp;&amp; screen !is GuiHudDesigner &amp;&amp; screen !is ClickGui)</ID>
+    <ID>ComplexCondition:InventoryCleaner.kt$InventoryCleaner$(isOtherSorted &amp;&amp; !isSorted) || (isOtherSorted == isSorted &amp;&amp; otherIndex &lt; index)</ID>
+    <ID>ComplexCondition:InventoryUtils.kt$InventoryUtils$heldItem != null &amp;&amp; heldItem == stack || block !in BLOCK_BLACKLIST &amp;&amp; block !is BlockBush</ID>
+    <ID>ComplexCondition:Jump.kt$Jump$(!event.block.material.blocksMovement() &amp;&amp; event.block.material != Material.carpet &amp;&amp; event.block.material != Material.vine &amp;&amp; event.block.material != Material.snow &amp;&amp; event.block !is BlockLadder) &amp;&amp; jumpYCondition</ID>
+    <ID>ComplexCondition:KeyBindManager.kt$KeyBindManager$scaledMouseX &lt; 0 || scaledMouseY &lt; 0 || scaledMouseX &gt; baseWidth || scaledMouseY &gt; baseHeight</ID>
+    <ID>ComplexCondition:KeyBindManager.kt$KeyBindManager$scaledMouseX &gt; key.posX &amp;&amp; scaledMouseY &gt; key.posY &amp;&amp; scaledMouseX &lt; (key.posX + key.width) &amp;&amp; scaledMouseY &lt; (key.posY + key.height)</ID>
+    <ID>ComplexCondition:KeyInfo.kt$KeyInfo$scaledMouseX &lt;0 || scaledMouseY &lt;0 || scaledMouseX&gt; baseTabWidth || scaledMouseY&gt; baseTabHeight</ID>
+    <ID>ComplexCondition:KeySelectUI.kt$KeySelectUI$mouseX &lt;8 || mouseX&gt; (baseWidth - 8) || mouseY &lt;height || mouseY&gt; (baseHeight - singleHeight)</ID>
+    <ID>ComplexCondition:Kick.kt$Kick$mc.isSingleplayer || mc.currentServerData == null || thePlayer == null || theWorld == null</ID>
+    <ID>ComplexCondition:KillAura.kt$KillAura$!prevHittable &amp;&amp; hittable &amp;&amp; maxClicks == 0 &amp;&amp; forceFirstHit</ID>
+    <ID>ComplexCondition:KillAura.kt$KillAura$autoBlock != "Off" &amp;&amp; (thePlayer.isBlocking || canBlock) &amp;&amp; (!blinkAutoBlock &amp;&amp; isLastClick || blinkAutoBlock &amp;&amp; (!blinked || !BlinkUtils.isBlinking))</ID>
+    <ID>ComplexCondition:KillAura.kt$KillAura$blockStatus &amp;&amp; (!uncpAutoBlock || !blinkAutoBlock) || shouldPrioritize()</ID>
+    <ID>ComplexCondition:KillAura.kt$KillAura$blockStatus &amp;&amp; autoBlock == "Packet" &amp;&amp; releaseAutoBlock &amp;&amp; !ignoreTickRule</ID>
+    <ID>ComplexCondition:KillAura.kt$KillAura$cancelRun || (noInventoryAttack &amp;&amp; (mc.currentScreen is GuiContainer || System.currentTimeMillis() - containerOpen &lt; noInventoryDelay))</ID>
+    <ID>ComplexCondition:KillAura.kt$KillAura$raycastEntity != null &amp;&amp; raycastEntity is EntityLivingBase &amp;&amp; (!(raycastEntity is EntityPlayer &amp;&amp; raycastEntity.isClientFriend()))</ID>
+    <ID>ComplexCondition:KillAura.kt$KillAura$thePlayer.isBlocking &amp;&amp; (autoBlock == "Off" &amp;&amp; blockStatus || autoBlock == "Packet" &amp;&amp; releaseAutoBlock)</ID>
+    <ID>ComplexCondition:KillAura.kt$KillAura$wasBlocking &amp;&amp; !blockStatus &amp;&amp; (releaseAutoBlock &amp;&amp; !ignoreTickRule || autoBlock == "Off")</ID>
+    <ID>ComplexCondition:LAAC.kt$LAAC$!jumped &amp;&amp; !thePlayer.onGround &amp;&amp; !thePlayer.isOnLadder &amp;&amp; !thePlayer.isInWater &amp;&amp; !thePlayer.isInWeb &amp;&amp; thePlayer.motionY &lt; 0.0</ID>
+    <ID>ComplexCondition:LAAC.kt$LAAC$!jumped &amp;&amp; thePlayer.onGround &amp;&amp; !thePlayer.isOnLadder &amp;&amp; !thePlayer.isInWater &amp;&amp; !thePlayer.isInWeb</ID>
+    <ID>ComplexCondition:LiquidBounceLegacyTH.kt$LiquidBounceLegacyTH$fadeMode &amp;&amp; shouldRender || smoothMode &amp;&amp; shouldRender &amp;&amp; width == width || delayCounter &lt; vanishDelay</ID>
+    <ID>ComplexCondition:LiquidBounceLegacyTH.kt$LiquidBounceLegacyTH$target != lastTarget || easingHealth &lt; 0 || easingHealth &gt; maxHealth || abs(easingHealth - targetHealth) &lt; 0.01</ID>
+    <ID>ComplexCondition:LongJump.kt$LongJump$autoJumpValue &amp;&amp; player.onGround &amp;&amp; player.isMoving &amp;&amp; airTick &lt; 2</ID>
+    <ID>ComplexCondition:MatrixSlowHop.kt$MatrixSlowHop$player.isInWater || player.isInLava || player.isInWeb || player.isOnLadder</ID>
+    <ID>ComplexCondition:MultiSelectSetting.kt$MultiSelectSetting$mouseButton == 0 &amp;&amp; setting.openList &amp;&amp; mouseX &gt;= gui.x + 170 + x &amp;&amp; mouseX &lt;= gui.x + 170 + x + 80</ID>
+    <ID>ComplexCondition:NCPYPort.kt$NCPYPort$mc.thePlayer.isOnLadder || mc.thePlayer.isInLiquid || mc.thePlayer.isInWeb || !mc.thePlayer.isMoving || mc.thePlayer.isInWater</ID>
+    <ID>ComplexCondition:NextGenBrowserRuntime.kt$NextGenBrowserRuntime$rootPath == null || targetPath == null || targetPath == rootPath || !targetPath.startsWith(rootPath)</ID>
+    <ID>ComplexCondition:NoSlow.kt$NoSlow$!consumeFoodOnly &amp;&amp; heldItem is ItemFood || !consumeDrinkOnly &amp;&amp; (heldItem is ItemPotion || heldItem is ItemBucketMilk)</ID>
+    <ID>ComplexCondition:NoSlow.kt$NoSlow$(consumeMode == "UpdatedNCP" &amp;&amp; ( packet.stack.item is ItemFood || packet.stack.item is ItemPotion || packet.stack.item is ItemBucketMilk)) || (bowPacket == "UpdatedNCP" &amp;&amp; packet.stack.item is ItemBow)</ID>
+    <ID>ComplexCondition:NoSlow.kt$NoSlow$(swordMode == "Grim2371" &amp;&amp; heldItem is ItemSword) || (consumeMode == "Grim2371" &amp;&amp; (heldItem is ItemFood || heldItem is ItemPotion || heldItem is ItemBucketMilk)) || (bowPacket == "Grim2371" &amp;&amp; heldItem is ItemBow)</ID>
+    <ID>ComplexCondition:NoSlow.kt$NoSlow$(swordMode == "Matrix" || swordMode == "GrimAC") &amp;&amp; (lastBlockingState || blockingSword)</ID>
+    <ID>ComplexCondition:NoSlow.kt$NoSlow$(swordMode == "Matrix" || swordMode == "GrimAC") &amp;&amp; matrixBuffering &amp;&amp; event.eventType == EventState.SEND</ID>
+    <ID>ComplexCondition:NoSlow.kt$NoSlow$antiSwitchItem &amp;&amp; packet is S09PacketHeldItemChange &amp;&amp; event.eventType == EventState.RECEIVE &amp;&amp; usingItemFunc()</ID>
+    <ID>ComplexCondition:NoSlow.kt$NoSlow$heldItem.item !is ItemSword &amp;&amp; heldItem.item !is ItemBow &amp;&amp; (consumeFoodOnly &amp;&amp; heldItem.item is ItemFood || consumeDrinkOnly &amp;&amp; (heldItem.item is ItemPotion || heldItem.item is ItemBucketMilk))</ID>
+    <ID>ComplexCondition:NoSlow.kt$NoSlow$packet is C03PacketPlayer || packet is C0APacketAnimation || packet is C0BPacketEntityAction || packet is C02PacketUseEntity || packet is C07PacketPlayerDigging || packet is C08PacketPlayerBlockPlacement</ID>
+    <ID>ComplexCondition:NoSlow.kt$NoSlow$shouldBlink &amp;&amp; BlinkTimer.hasTimePassed(reblinkTicks) &amp;&amp; (BlinkUtils.packetsReceived.isNotEmpty() || BlinkUtils.packets.isNotEmpty())</ID>
+    <ID>ComplexCondition:Notifier.kt$Notifier$entity !in drinkers &amp;&amp; entity != player &amp;&amp; entity.isUsingItem &amp;&amp; entity.heldItem?.item is ItemPotion</ID>
+    <ID>ComplexCondition:PacketDebugger.kt$PacketDebugger$lower.contains("failed") || lower.contains("grim") || lower.contains("vl:") || lower.contains("flag")</ID>
+    <ID>ComplexCondition:Panel.kt$Panel$newX &gt;= 0 &amp;&amp; newX &lt;= parent.width - width &amp;&amp; newY &gt;= 0 &amp;&amp; newY &lt;= parent.height - height</ID>
+    <ID>ComplexCondition:Parkour.kt$Parkour$thePlayer.isMoving &amp;&amp; thePlayer.onGround &amp;&amp; !thePlayer.isSneaking &amp;&amp; !mc.gameSettings.keyBindSneak.isKeyDown &amp;&amp; !simPlayer.onGround</ID>
+    <ID>ComplexCondition:Phase.kt$Phase$mc.thePlayer != null &amp;&amp; collideBlockIntersects(mc.thePlayer.entityBoundingBox) { block: Block? -&gt; block !== air } &amp;&amp; event.boundingBox != null &amp;&amp; event.boundingBox!!.maxY &gt; mc.thePlayer.entityBoundingBox.minY</ID>
+    <ID>ComplexCondition:Phase.kt$Phase$mc.thePlayer.onGround &amp;&amp; tickTimer.hasTimePassed(2) &amp;&amp; mc.thePlayer.isCollidedHorizontally &amp;&amp; (!isInsideBlock || mc.thePlayer.isSneaking)</ID>
+    <ID>ComplexCondition:Phase.kt$Phase$tickTimer.hasTimePassed(2) &amp;&amp; mc.thePlayer.isCollidedHorizontally &amp;&amp; (!isInsideBlock || mc.thePlayer.isSneaking)</ID>
+    <ID>ComplexCondition:PingSpoof.kt$PingSpoof$packet is S32PacketConfirmTransaction || packet is S00PacketKeepAlive || packet is S19PacketEntityStatus || (packet is S12PacketEntityVelocity &amp;&amp; !Velocity.delayMode) || packet is S08PacketPlayerPosLook || packet is C0CPacketInput</ID>
+    <ID>ComplexCondition:PlayerExtension.kt$(!isSneaking || item == null || item.doesSneakBypassUse(worldObj, clickPos, this)) &amp;&amp; blockState?.block?.onBlockActivated( worldObj, clickPos, blockState, this, side, facingX, facingY, facingZ ) == true</ID>
+    <ID>ComplexCondition:Plugins.kt$Plugins$notifyOnSuspicious &amp;&amp; showSuspicious &amp;&amp; suspicious.isNotEmpty() &amp;&amp; suspicious != lastPrintedSuspicious</ID>
+    <ID>ComplexCondition:Plugins.kt$Plugins$saveLog &amp;&amp; (shouldPrintPlugins || shouldPrintGuesses || shouldPrintChannels || shouldPrintSuspicious)</ID>
+    <ID>ComplexCondition:PolarSpeed.kt$PolarSpeed$player.isInLiquid || player.isInWeb || player.isOnLadder || !player.isMoving</ID>
+    <ID>ComplexCondition:PopUI.kt$PopUI$scaledMouseX&gt; 0 &amp;&amp; scaledMouseY&gt; 0 &amp;&amp; scaledMouseX &lt;baseWidth &amp;&amp; scaledMouseY &lt;baseHeight</ID>
+    <ID>ComplexCondition:PopupScreen.kt$PopupScreen$mouseX &gt;= rect.x &amp;&amp; mouseX &lt;= rect.x + rect.width &amp;&amp; mouseY &gt;= rect.y &amp;&amp; mouseY &lt;= rect.y + rect.height</ID>
+    <ID>ComplexCondition:ProjectileAimbot.kt$ProjectileAimbot$!otherItems &amp;&amp; !player.heldItem.isEmpty() || (!egg &amp;&amp; item is ItemEgg || !snowball &amp;&amp; item is ItemSnowball || !pearl &amp;&amp; item is ItemEnderPearl)</ID>
+    <ID>ComplexCondition:Regen.kt$TimeShift$!mc.playerController.gameIsSurvivalOrAdventure() || noAir &amp;&amp; !serverOnGround || noMove &amp;&amp; thePlayer.isMoving || pauseOnDamage &amp;&amp; thePlayer.hurtTime &gt; 0 || thePlayer.foodStats.foodLevel &lt;= food || !thePlayer.isEntityAlive || (!lowHealth &amp;&amp; !onFire &amp;&amp; !badEffect) || (potionEffect &amp;&amp; !thePlayer.isPotionActive(Potion.regeneration)) || !timer.hasTimePassed(delay)</ID>
+    <ID>ComplexCondition:Rotation.kt$Rotation$yaw.isNaN() || pitch.isNaN() || pitch &gt; 90 || pitch &lt; -90</ID>
+    <ID>ComplexCondition:RotationUtils.kt$RotationUtils$diffAbs.withGCD() &lt;= min &amp;&amp; (timing == "Always" || timing == "OnSlowDown" &amp;&amp; isSlowingDown || timing == "OnStart" &amp;&amp; lastTick1 == 0F)</ID>
+    <ID>ComplexCondition:RotationUtils.kt$RotationUtils$raycast != null &amp;&amp; raycast.blockPos == blockPos &amp;&amp; (!targetUpperFace || raycast.sideHit == EnumFacing.UP)</ID>
+    <ID>ComplexCondition:Scaffold.kt$Scaffold$!currentRotationsActive || it != null &amp;&amp; it.typeOfHit.isBlock &amp;&amp; it.blockPos == target.blockPos &amp;&amp; (!raycastProperly || it.sideHit == target.enumFacing)</ID>
+    <ID>ComplexCondition:Scaffold.kt$Scaffold$!delayTimer.hasTimePassed() || shouldKeepLaunchPosition &amp;&amp; launchY - 1 != placeInfo.vec3.yCoord.toInt() &amp;&amp; scaffoldMode != "Expand"</ID>
+    <ID>ComplexCondition:Scaffold.kt$Scaffold$autoJump &amp;&amp; !Tower.isTowering &amp;&amp; !shouldGoDown &amp;&amp; player.onGround &amp;&amp; player.isMoving</ID>
+    <ID>ComplexCondition:Scaffold.kt$Scaffold$fracX &lt; edge || fracX &gt; 1.0 - edge || fracZ &lt; edge || fracZ &gt; 1.0 - edge</ID>
+    <ID>ComplexCondition:Scaffold.kt$Scaffold$options.useModernRotations &amp;&amp; rotationConsiderInventory &amp;&amp; (InventoryUtils.serverOpenContainer || InventoryUtils.serverOpenInventory)</ID>
+    <ID>ComplexCondition:Scaffold.kt$Scaffold$placedBlocksWithoutEagle &lt; blocksToEagle.random() &amp;&amp; !alreadySneaking &amp;&amp; !blockSneaking &amp;&amp; !eagleSneaking &amp;&amp; !requestedStopSneak</ID>
+    <ID>ComplexCondition:Scaffold.kt$Scaffold$raytrace.typeOfHit.isBlock &amp;&amp; raytrace.blockPos == offsetPos &amp;&amp; (!raycast || raytrace.sideHit == side.opposite)</ID>
+    <ID>ComplexCondition:Scaffold.kt$Scaffold$raytrace.typeOfHit.isBlock &amp;&amp; raytrace.blockPos == offsetPos &amp;&amp; (!raycast || raytrace.sideHit == side.opposite) &amp;&amp; canUpdateRotation( currRotation, rotationForPlacement, multiplier )</ID>
+    <ID>ComplexCondition:Scaffold.kt$Scaffold$scaffoldMode == "Jump" &amp;&amp; player.onGround &amp;&amp; player.isMoving &amp;&amp; !shouldGoDown</ID>
+    <ID>ComplexCondition:Scaffold.kt$Scaffold$scaffoldMode == "Telly" &amp;&amp; player.onGround &amp;&amp; player.isMoving &amp;&amp; currRotation == player.rotation &amp;&amp; ticksUntilJump &gt;= jumpTicks</ID>
+    <ID>ComplexCondition:Scaffold.kt$Scaffold$shouldUseModernOnTickRotation &amp;&amp; rotationConsiderInventory &amp;&amp; (InventoryUtils.serverOpenContainer || InventoryUtils.serverOpenInventory)</ID>
+    <ID>ComplexCondition:SentinelSpeed.kt$SentinelSpeed$player.isInLiquid || player.isInWeb || player.isOnLadder || !player.isMoving</ID>
+    <ID>ComplexCondition:ServerLag.kt$ServerLag$renderBreadcrumbs &amp;&amp; packet is C03PacketPlayer &amp;&amp; packet.isMoving &amp;&amp; isOutbound</ID>
+    <ID>ComplexCondition:SettingComponents.kt$SettingComponents$!typedChar.isISOControl() &amp;&amp; (typedChar.isDigit() || typedChar == '.' || typedChar == '-')</ID>
+    <ID>ComplexCondition:SettingComponents.kt$SettingComponents$(type == GuiEvents.CLICK &amp;&amp; button == 0 &amp;&amp; (inColorPicker || inHueSlider || inOpacitySlider)) || (sliderValueHeld == setting &amp;&amp; setting.lastChosenSlider != null)</ID>
+    <ID>ComplexCondition:SettingComponents.kt$SettingComponents$type == GuiEvents.CLICK &amp;&amp; button == 0 &amp;&amp; mouseX.toFloat() &gt;= rgbaTextX &amp;&amp; mouseX.toFloat() &lt;= rgbaTextX + rgbaTextWidth &amp;&amp; mouseY.toFloat() &gt;= rgbaTextY &amp;&amp; mouseY.toFloat() &lt;= rgbaTextY + rgbaTextHeight</ID>
+    <ID>ComplexCondition:SideGui.kt$SideGui$(keyCode == Keyboard.KEY_V &amp;&amp; ctrlDown) || (keyCode == Keyboard.KEY_INSERT &amp;&amp; shiftDown)</ID>
+    <ID>ComplexCondition:SimulatedPlayer.kt$SimulatedPlayer$!isSprinting() &amp;&amp; movementInput.moveForward &gt;= f &amp;&amp; flag3 &amp;&amp; !player.isUsingItem &amp;&amp; !isPotionActive(Potion.blindness) &amp;&amp; shouldSprint</ID>
+    <ID>ComplexCondition:SimulatedPlayer.kt$SimulatedPlayer$isSprinting() &amp;&amp; (movementInput.moveForward &lt; 0.8 || isCollidedHorizontally || !flag3)</ID>
+    <ID>ComplexCondition:SimulatedPlayer.kt$SimulatedPlayer$onGround &amp;&amp; movementInput.moveForward &gt;= f &amp;&amp; !isSprinting() &amp;&amp; flag3 &amp;&amp; !player.isUsingItem &amp;&amp; !isPotionActive( Potion.blindness ) &amp;&amp; shouldSprint</ID>
+    <ID>ComplexCondition:SimulatedPlayer.kt$SimulatedPlayer$stepHeight &gt; 0.0f &amp;&amp; flag1 &amp;&amp; (d3 != velocityX || d5 != velocityZ)</ID>
+    <ID>ComplexCondition:SmartEat.kt$SmartEat$eatGoldenApples &amp;&amp; eatNotchApples &amp;&amp; preferNotchHealth &gt; 0f &amp;&amp; player.health &lt;= preferNotchHealth</ID>
+    <ID>ComplexCondition:SmartEat.kt$SmartEat$isEating &amp;&amp; !silent &amp;&amp; (packet is S09PacketHeldItemChange || packet is C09PacketHeldItemChange)</ID>
+    <ID>ComplexCondition:SnakeGame.kt$SnakeGame$(key == KEY_RIGHT|| key == KEY_LEFT || key == KEY_UP || key == KEY_DOWN) &amp;&amp; !isOppositeDirection(lastKey, key)</ID>
+    <ID>ComplexCondition:SnakeGame.kt$SnakeGame$(ox == snake[0].x &amp;&amp; oy == snake[0].y) || obstacles.any { it.x == ox &amp;&amp; it.y == oy } || snake.any { it.x == ox &amp;&amp; it.y == oy }</ID>
+    <ID>ComplexCondition:SnakeGame.kt$SnakeGame$headPixelX &gt;= sx + FIELD_WIDTH || headPixelX &lt; sx || headPixelY &lt; sy || headPixelY &gt;= sy + FIELD_HEIGHT</ID>
+    <ID>ComplexCondition:SnakeGame.kt$SnakeGame$snake.any { it.x == px &amp;&amp; it.y == py } || obstacles.any { it.x == px &amp;&amp; it.y == py }</ID>
+    <ID>ComplexCondition:Speed.kt$Speed$avoidCornerBump &amp;&amp; SpeedAntiCornerBump.shouldDelayJump() || preventDeadlyJump &amp;&amp; SpeedPreventDeadlyJump.wouldJumpToDeath(maximumSafeFall.toDouble())</ID>
+    <ID>ComplexCondition:Sprint.kt$Sprint$!handleEvents() || onlyOnSprintPress &amp;&amp; !player.isSprinting &amp;&amp; !mc.gameSettings.keyBindSprint.isKeyDown &amp;&amp; !SuperKnockback.startSprint() &amp;&amp; !isSprinting</ID>
+    <ID>ComplexCondition:Sprint.kt$Sprint$(blindness || isLegitModeActive) &amp;&amp; player.isPotionActive(Potion.blindness) &amp;&amp; !player.isSprinting</ID>
+    <ID>ComplexCondition:Sprint.kt$Sprint$(food || isLegitModeActive) &amp;&amp; !(player.foodStats.foodLevel &gt; 6f || player.capabilities.allowFlying)</ID>
+    <ID>ComplexCondition:Sprint.kt$Sprint$(usingItem || isLegitModeActive) &amp;&amp; !NoSlow.handleEvents() &amp;&amp; isUsingItem</ID>
+    <ID>ComplexCondition:Sprint.kt$Sprint$Scaffold.eagle == "Normal" &amp;&amp; player.isMoving &amp;&amp; player.onGround &amp;&amp; Scaffold.eagleSneaking &amp;&amp; Scaffold.eagleSprint</ID>
+    <ID>ComplexCondition:Strafe.kt$Strafe$mc.thePlayer.onGround &amp;&amp; mc.gameSettings.keyBindJump.isKeyDown &amp;&amp; allDirectionsJump &amp;&amp; mc.thePlayer.isMoving &amp;&amp; !(mc.thePlayer.isInLiquid || mc.thePlayer.isOnLadder || mc.thePlayer.isInWeb)</ID>
+    <ID>ComplexCondition:SuperKnockback.kt$SuperKnockback$event.targetEntity.hurtTime &gt; hurtTime || !timer.hasTimePassed(delay) || onlyGround &amp;&amp; !player.onGround || RandomUtils.nextInt( endExclusive = 100 ) &gt; chance</ID>
+    <ID>ComplexCondition:SuperKnockback.kt$SuperKnockback$onlyMove &amp;&amp; (!player.isMoving || onlyMoveForward &amp;&amp; player.movementInput.moveStrafe != 0f)</ID>
+    <ID>ComplexCondition:SuperKnockback.kt$SuperKnockback$player.isSprinting &amp;&amp; player.serverSprintState &amp;&amp; !blockInput &amp;&amp; !startWaiting</ID>
+    <ID>ComplexCondition:TargetFocus.kt$TargetFocus$lockedTargetName.isEmpty() || currentTarget == null || !isRenderableCandidate(currentTarget) || HideClans.isAlly(currentTarget)</ID>
+    <ID>ComplexCondition:TargetStrafe.kt$TargetStrafe$!doStrafe || (ongroundValue &amp;&amp; !mc.thePlayer.onGround) || !canStrafe()</ID>
+    <ID>ComplexCondition:Teams.kt$Teams$scoreboard &amp;&amp; thePlayer.team != null &amp;&amp; entity.team != null &amp;&amp; thePlayer.team.isSameTeam(entity.team)</ID>
+    <ID>ComplexCondition:Teleport.kt$Teleport$endPos != null &amp;&amp; (player.isSneaking || !needSneak || mode in noSneakModes)</ID>
+    <ID>ComplexCondition:Text.kt$Text$(Scaffold.handleEvents() &amp;&amp; onScaffold) || !onScaffold || mc.currentScreen is GuiHudDesigner</ID>
+    <ID>ComplexCondition:TickBase.kt$TickBase$RandomUtils.nextInt(endExclusive = 100) &gt; change || onlyOnKillAura &amp;&amp; (!state || KillAura.target == null)</ID>
+    <ID>ComplexCondition:TimerRange.kt$TimerRange$playerTicks &lt;= 0 || confirmStop || (targetDistance != null &amp;&amp; targetDistance &gt; distanceToStartWorking)</ID>
+    <ID>ComplexCondition:TimerRange.kt$TimerRange$shouldReturn || (player.isInWeb &amp;&amp; !onWeb) || (player.isInLiquid &amp;&amp; !onLiquid)</ID>
+    <ID>ComplexCondition:Tower.kt$Tower$towerModeValues.get() == "None" || notOnMoveValues.get() &amp;&amp; player.isMoving || onJumpValues.get() &amp;&amp; !mc.gameSettings.keyBindJump.isKeyDown</ID>
+    <ID>ComplexCondition:Tower.kt$Tower$towerModeValues.get() == "Vulcan2.9.0" &amp;&amp; packet is C04PacketPlayerPosition &amp;&amp; !player.isMoving &amp;&amp; player.ticksExisted % 2 == 0</ID>
+    <ID>ComplexCondition:UNCPHopNew.kt$UNCPHopNew$!player.isMoving || player.isInLiquid || player.isInWeb || player.isOnLadder</ID>
+    <ID>ComplexCondition:Velocity.kt$Velocity$!delayedBlink &amp;&amp; delayedDelayTransaction &amp;&amp; packet is S32PacketConfirmTransaction &amp;&amp; delayedVelocityTick == player.ticksExisted</ID>
+    <ID>ComplexCondition:Velocity.kt$Velocity$!force &amp;&amp; delayedBlink &amp;&amp; delayedBlinkActive &amp;&amp; !delayedBlinkTimer.hasTimePassed(delayedDelay.toLong())</ID>
+    <ID>ComplexCondition:Velocity.kt$Velocity$!player.isJumping &amp;&amp; nextInt(endExclusive = 100) &lt; chance &amp;&amp; shouldJump() &amp;&amp; player.isSprinting &amp;&amp; player.onGround &amp;&amp; player.hurtTime == 9</ID>
+    <ID>ComplexCondition:Velocity.kt$Velocity$(packet is S12PacketEntityVelocity &amp;&amp; thePlayer.entityId == packet.entityID &amp;&amp; packet.motionY &gt; 0 &amp;&amp; (packet.motionX != 0 || packet.motionZ != 0)) || (packet is S27PacketExplosion &amp;&amp; (thePlayer.motionY + packet.field_149153_g) &gt; 0.0 &amp;&amp; ((thePlayer.motionX + packet.field_149152_f) != 0.0 || (thePlayer.motionZ + packet.field_149159_h) != 0.0))</ID>
+    <ID>ComplexCondition:Velocity.kt$Velocity$Disabler.handleEvents() &amp;&amp; Disabler.verusCombat &amp;&amp; (!Disabler.onlyCombat || Disabler.isOnCombat)</ID>
+    <ID>ComplexCondition:Velocity.kt$Velocity$delayedBlink &amp;&amp; delayedBlinkActive &amp;&amp; packet.javaClass.simpleName.startsWith("S", ignoreCase = true) &amp;&amp; player.ticksExisted &gt; 10</ID>
+    <ID>ComplexCondition:Velocity.kt$Velocity$mode != "Click" || thePlayer.hurtTime != hurtTimeToClick || ignoreBlocking &amp;&amp; (thePlayer.isBlocking || KillAura.blockStatus)</ID>
+    <ID>ComplexCondition:Velocity.kt$Velocity$packet.motionX == 0 &amp;&amp; packet.motionZ == 0 || mc.thePlayer == null || mc.theWorld.getEntityByID(packet.entityID) != mc.thePlayer</ID>
+    <ID>ComplexCondition:Velocity.kt$Velocity$pauseOnExplosion &amp;&amp; packet is S27PacketExplosion &amp;&amp; (thePlayer.motionY + packet.field_149153_g) &gt; 0.0 &amp;&amp; ((thePlayer.motionX + packet.field_149152_f) != 0.0 || (thePlayer.motionZ + packet.field_149159_h) != 0.0)</ID>
+    <ID>ComplexCondition:Velocity.kt$Velocity$thePlayer.hurtTime &gt; 0 &amp;&amp; !thePlayer.onGround &amp;&amp; velocityInput &amp;&amp; velocityTimer.hasTimePassed(80L)</ID>
+    <ID>ComplexCondition:Velocity.kt$Velocity$velocityInput &amp;&amp; (thePlayer.hurtTime &lt; 4 || thePlayer.onGround) &amp;&amp; velocityTimer.hasTimePassed(120L)</ID>
+    <ID>ComplexCondition:Velocity.kt$Velocity$velocityInput &amp;&amp; (thePlayer.hurtTime &lt; 5 || thePlayer.onGround) &amp;&amp; velocityTimer.hasTimePassed(120L)</ID>
+    <ID>ComplexCondition:VulcanGhost.kt$VulcanGhost$!event.block.material.blocksMovement() &amp;&amp; event.block.material != Material.carpet &amp;&amp; event.block.material != Material.vine &amp;&amp; event.block.material != Material.snow &amp;&amp; event.block !is BlockLadder</ID>
+    <ID>ComplexCondition:VulcanLongJumpMode.kt$VulcanLongJumpMode$LongJump.vulcanOnlyDamage &amp;&amp; player.hurtTime == 0 &amp;&amp; !waitFlag &amp;&amp; !isFlagged &amp;&amp; LongJump.airTick &lt; 888</ID>
+    <ID>ComplexCondition:WallClimb.kt$WallClimb$event.block == Blocks.air &amp;&amp; event.y &lt; thePlayer.posY &amp;&amp; thePlayer.isCollidedHorizontally &amp;&amp; !thePlayer.isOnLadder &amp;&amp; !thePlayer.isInLiquid</ID>
+    <ID>ConstructorParameterNaming:Fonts.kt$Fonts.LegacyIconFont$val nlfont_18: SimpleFontRenderer</ID>
+    <ID>ConstructorParameterNaming:Fonts.kt$Fonts.LegacyIconFont$val nlfont_20: SimpleFontRenderer</ID>
+    <ID>ConstructorParameterNaming:Fonts.kt$Fonts.LegacyIconFont$val nlfont_24: SimpleFontRenderer</ID>
+    <ID>ConstructorParameterNaming:Fonts.kt$Fonts.LegacyIconFont$val nlfont_28: SimpleFontRenderer</ID>
+    <ID>ConstructorParameterNaming:Fonts.kt$Fonts.LegacyNlFont$val Nl_16: SimpleFontRenderer</ID>
+    <ID>ConstructorParameterNaming:Fonts.kt$Fonts.LegacyNlFont$val Nl_18: SimpleFontRenderer</ID>
+    <ID>ConstructorParameterNaming:Fonts.kt$Fonts.LegacyNlFont$val Nl_19: SimpleFontRenderer</ID>
+    <ID>ConstructorParameterNaming:Fonts.kt$Fonts.LegacyNlFont$val Nl_20: SimpleFontRenderer</ID>
+    <ID>ConstructorParameterNaming:Fonts.kt$Fonts.LegacyNlFont$val Nl_22: SimpleFontRenderer? = null</ID>
+    <ID>ConstructorParameterNaming:NlModule.kt$NlModule$var NlSub: NlSub</ID>
+    <ID>ConstructorParameterNaming:Pair.kt$Pair$private var _key: K</ID>
+    <ID>ConstructorParameterNaming:Pair.kt$Pair$private var _value: V</ID>
+    <ID>CyclomaticComplexMethod:Aimbot.kt$Aimbot$private fun findRotation(entity: Entity, random: Random): Boolean</ID>
+    <ID>CyclomaticComplexMethod:AntiBot.kt$AntiBot$fun isBot(entity: EntityLivingBase): Boolean</ID>
+    <ID>CyclomaticComplexMethod:ArmorFilter.kt$ArmorFilter$suspend fun dropLowDurabilityArmor(): Boolean</ID>
+    <ID>CyclomaticComplexMethod:ArmorSwap.kt$ArmorSwap$private suspend fun prepareSwap(now: Long): Boolean</ID>
+    <ID>CyclomaticComplexMethod:ArmorSwap.kt$ArmorSwap$private suspend fun processSwap(now: Long): Boolean</ID>
+    <ID>CyclomaticComplexMethod:Arraylist.kt$Arraylist$override fun drawElement(): Border?</ID>
+    <ID>CyclomaticComplexMethod:AutoArmor.kt$AutoArmor$private suspend fun equipArmorCandidate( armorType: Int, index: Int?, stack: ItemStack, stacks: List&lt;ItemStack?&gt;, ignoreMinAge: Boolean = false, ignoreRepairCheck: Boolean = false, ): Boolean</ID>
+    <ID>CyclomaticComplexMethod:AutoArmor.kt$AutoArmor$suspend fun equipFromHotbar()</ID>
+    <ID>CyclomaticComplexMethod:AutoBuff.kt$AutoBuff$private fun findBuffPotion(): BuffCandidate?</ID>
+    <ID>CyclomaticComplexMethod:AutoPot.kt$AutoPot$private fun findPotion(startSlot: Int, endSlot: Int): Int?</ID>
+    <ID>CyclomaticComplexMethod:BedPlates.kt$BedPlates$private fun drawPlate(bedState: BedState)</ID>
+    <ID>CyclomaticComplexMethod:BedProtectionESP.kt$BedProtectionESP$private fun getBlocksToRender( targetBlock: Block, maxLayers: Int, down: Boolean, allLayers: Boolean, blockLimit: Int ): Set&lt;BlockPos&gt;</ID>
+    <ID>CyclomaticComplexMethod:BlackStyle.kt$BlackStyle$override fun drawModuleElementAndClick( mouseX: Int, mouseY: Int, moduleElement: ModuleElement, mouseButton: Int? ): Boolean</ID>
+    <ID>CyclomaticComplexMethod:Blink.kt$Blink$override fun onPacket(event: PacketEvent)</ID>
+    <ID>CyclomaticComplexMethod:BlinkUtils.kt$BlinkUtils$fun blink(packet: Packet&lt;*&gt;, event: PacketEvent, sent: Boolean? = true, receive: Boolean? = true)</ID>
+    <ID>CyclomaticComplexMethod:BlockCounter.kt$BlockCounter$override fun drawElement(): Border</ID>
+    <ID>CyclomaticComplexMethod:BlockTrap.kt$BlockTrap$private fun collectTrapPositions(target: EntityLivingBase)</ID>
+    <ID>CyclomaticComplexMethod:BlocksMC2.kt$BlocksMC2$override fun onUpdate()</ID>
+    <ID>CyclomaticComplexMethod:BlocksMCHop.kt$BlocksMCHop$override fun onUpdate()</ID>
+    <ID>CyclomaticComplexMethod:Boost.kt$Boost$override fun onMotion()</ID>
+    <ID>CyclomaticComplexMethod:ChestStealer.kt$ChestStealer$private fun getItemsToSteal(): List&lt;ItemTakeRecord&gt;</ID>
+    <ID>CyclomaticComplexMethod:ChestStealer.kt$ChestStealer$suspend fun stealFromChest()</ID>
+    <ID>CyclomaticComplexMethod:ClickGui.kt$ClickGui$override fun drawScreen(x: Int, y: Int, partialTicks: Float)</ID>
+    <ID>CyclomaticComplexMethod:ClickGuiHeader.kt$ClickGuiHeader$private fun updateDrag(sr: ScaledResolution, mouseX: Int, mouseY: Int)</ID>
+    <ID>CyclomaticComplexMethod:ClientThemesUtils.kt$ClientThemesUtils$fun getColorWithAlpha(index: Int, alpha: Int): Color</ID>
+    <ID>CyclomaticComplexMethod:ClientThemesUtils.kt$ClientThemesUtils$fun setColor(type: String, alpha: Int): Color</ID>
+    <ID>CyclomaticComplexMethod:ColorElement.kt$ColorElement$override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float)</ID>
+    <ID>CyclomaticComplexMethod:ColorElement.kt$ColorElement$override fun mouseClicked(mouseX: Int, mouseY: Int, button: Int)</ID>
+    <ID>CyclomaticComplexMethod:CooldownHelper.kt$CooldownHelper$fun updateGenericAttackSpeed(itemStack: ItemStack?)</ID>
+    <ID>CyclomaticComplexMethod:CustomSpeed.kt$CustomSpeed$private fun handleCurrent()</ID>
+    <ID>CyclomaticComplexMethod:CustomSpeed.kt$CustomSpeed$private fun handleLegacy()</ID>
+    <ID>CyclomaticComplexMethod:DefaultVanilla.kt$DefaultVanilla$override fun onMove(event: MoveEvent)</ID>
+    <ID>CyclomaticComplexMethod:DiscordRPC.kt$DiscordRPC$fun update()</ID>
+    <ID>CyclomaticComplexMethod:DropdownCategory.kt$DropdownCategory$override fun drawScreen(mouseX: Int, mouseY: Int)</ID>
+    <ID>CyclomaticComplexMethod:EditorPanel.kt$EditorPanel$fun drawPanel(mouseX: Int, mouseY: Int, wheel: Int)</ID>
+    <ID>CyclomaticComplexMethod:EditorPanel.kt$EditorPanel$private fun drawCreate(mouseX: Int, mouseY: Int)</ID>
+    <ID>CyclomaticComplexMethod:EditorPanel.kt$EditorPanel$private fun drawEditor(mouseX: Int, mouseY: Int)</ID>
+    <ID>CyclomaticComplexMethod:EditorPanel.kt$EditorPanel$private fun drawSelection(mouseX: Int, mouseY: Int)</ID>
+    <ID>CyclomaticComplexMethod:Effects.kt$Effects$private fun drawClassicMode(): Border</ID>
+    <ID>CyclomaticComplexMethod:Effects.kt$Effects$private fun drawDefaultMode(): Border</ID>
+    <ID>CyclomaticComplexMethod:Effects.kt$Effects$private fun drawModernMode(): Border</ID>
+    <ID>CyclomaticComplexMethod:EnchantCommand.kt$EnchantCommand$override fun execute(args: Array&lt;String&gt;)</ID>
+    <ID>CyclomaticComplexMethod:EntityUtils.kt$EntityUtils$fun isSelected(entity: Entity?, canAttackCheck: Boolean): Boolean</ID>
+    <ID>CyclomaticComplexMethod:EspPreviewComponent.kt$EspPreviewComponent$fun draw(mouseX: Int, mouseY: Int)</ID>
+    <ID>CyclomaticComplexMethod:EspPreviewComponent.kt$EspPreviewComponent$fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int)</ID>
+    <ID>CyclomaticComplexMethod:EspPreviewComponent.kt$EspPreviewComponent$private fun drawEspPreview(x: Int, y: Int, backgroundColor: Color)</ID>
+    <ID>CyclomaticComplexMethod:Fireball.kt$Fireball$override fun onMotion(event: MotionEvent)</ID>
+    <ID>CyclomaticComplexMethod:FontRenderer.kt$FontRenderer$@JvmOverloads fun trimStringToWidth(text: String, width: Int, reverse: Boolean = false): String</ID>
+    <ID>CyclomaticComplexMethod:FontRenderer.kt$FontRenderer$fun drawString(text: String?, x: Double, y: Double, color: Int, shadow: Boolean): Float</ID>
+    <ID>CyclomaticComplexMethod:GameFontRenderer.kt$GameFontRenderer$private fun drawText( text: String?, x: Float, y: Float, color: Int, ignoreColor: Boolean, rainbow: Boolean = false, gradient: Boolean = false ): Int</ID>
+    <ID>CyclomaticComplexMethod:GraphSearch.kt$GraphSearch$private fun &lt;N&gt; search( start: N, isGoal: (N) -&gt; Boolean, edges: (N) -&gt; Iterable&lt;WeightedEdge&lt;N&gt;&gt;, heuristic: (N) -&gt; Double, limits: SearchLimits ): ShortestPath&lt;N&gt;</ID>
+    <ID>CyclomaticComplexMethod:GuiAltManager.kt$GuiAltManager$public override fun actionPerformed(button: GuiButton)</ID>
+    <ID>CyclomaticComplexMethod:GuiAltManager.kt$GuiAltManager$public override fun keyTyped(typedChar: Char, keyCode: Int)</ID>
+    <ID>CyclomaticComplexMethod:GuiClientConfiguration.kt$GuiClientConfiguration$override fun actionPerformed(button: GuiButton)</ID>
+    <ID>CyclomaticComplexMethod:GuiExtensions.kt$EditableText$inline fun processInput(typedChar: Char, keyCode: Int, onIndexUpdate: (Int) -&gt; Unit)</ID>
+    <ID>CyclomaticComplexMethod:GuiMainMenu.kt$GuiMainMenu$override fun mouseClicked(mouseX: Int, mouseY: Int, button: Int)</ID>
+    <ID>CyclomaticComplexMethod:GuiMainMenu.kt$GuiMainMenu$private fun drawChangelogPanel(mouseX: Int, mouseY: Int)</ID>
+    <ID>CyclomaticComplexMethod:GuiMainMenu.kt$GuiMainMenu$private fun drawMenuIcon(icon: MenuIcon, x: Float, y: Float, size: Float, color: Int, alphaMul: Float = 1f)</ID>
+    <ID>CyclomaticComplexMethod:GuiScripts.kt$GuiScripts$override fun actionPerformed(button: GuiButton)</ID>
+    <ID>CyclomaticComplexMethod:GuiServerSelect.kt$GuiServerSelect$override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float)</ID>
+    <ID>CyclomaticComplexMethod:GuiServerSelect.kt$GuiServerSelect$override fun keyTyped(typedChar: Char, keyCode: Int)</ID>
+    <ID>CyclomaticComplexMethod:GuiServerSelect.kt$GuiServerSelect$override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int)</ID>
+    <ID>CyclomaticComplexMethod:GuiServerSelect.kt$GuiServerSelect$private fun applyServerStatus(data: ServerData, response: ServerStatusResponse?)</ID>
+    <ID>CyclomaticComplexMethod:GuiServerSelect.kt$GuiServerSelect$private fun drawServerCard(data: ServerData, index: Int, x: Float, y: Float, w: Float, hovered: Boolean, mouseX: Int, mouseY: Int)</ID>
+    <ID>CyclomaticComplexMethod:GuiServerSelect.kt$GuiServerSelect$private fun drawUiIcon(icon: UiIcon, x: Float, y: Float, size: Float, color: Int, alphaMul: Float = 1f)</ID>
+    <ID>CyclomaticComplexMethod:GuiSpotifyPlayer.kt$GuiSpotifyPlayer$private fun drawTracks(mouseX: Int, mouseY: Int)</ID>
+    <ID>CyclomaticComplexMethod:HUD.kt$HUD$fun handleMouseMove(mouseX: Int, mouseY: Int)</ID>
+    <ID>CyclomaticComplexMethod:HoleESP.kt$HoleESP$private fun detectHole(pos: BlockPos, claimed: Set&lt;BlockPos&gt;): Hole?</ID>
+    <ID>CyclomaticComplexMethod:HudConfig.kt$HudConfig$@Throws(IOException::class) override fun loadConfig()</ID>
+    <ID>CyclomaticComplexMethod:HypixelLowHop.kt$HypixelLowHop$override fun onUpdate()</ID>
+    <ID>CyclomaticComplexMethod:InfiniteAura.kt$InfiniteAura$private fun prioritizeTarget(entity: EntityLivingBase): Double</ID>
+    <ID>CyclomaticComplexMethod:InfiniteAura.kt$InfiniteAura$private fun updateTarget()</ID>
+    <ID>CyclomaticComplexMethod:InfiniteAura.kt$InfiniteAura$private suspend fun hit(entity: EntityLivingBase, force: Boolean = false): Boolean</ID>
+    <ID>CyclomaticComplexMethod:InventoryCleaner.kt$InventoryCleaner$private fun hasBestParameters( stack: ItemStack?, stacks: List&lt;ItemStack?&gt;, entityStacksMap: Map&lt;ItemStack, EntityItem&gt;? = null, parameters: (ItemStack) -&gt; Float, ): Boolean</ID>
+    <ID>CyclomaticComplexMethod:InventoryCleaner.kt$InventoryCleaner$private fun isUsefulBlock( stack: ItemStack?, stacks: List&lt;ItemStack?&gt;, entityStacksMap: Map&lt;ItemStack, EntityItem&gt;?, ignoreLimits: Boolean, strictlyBest: Boolean, ): Boolean</ID>
+    <ID>CyclomaticComplexMethod:InventoryCleaner.kt$InventoryCleaner$private fun isUsefulFood( stack: ItemStack?, stacks: List&lt;ItemStack?&gt;, entityStacksMap: Map&lt;ItemStack, EntityItem&gt;?, ignoreLimits: Boolean, strictlyBest: Boolean, ): Boolean</ID>
+    <ID>CyclomaticComplexMethod:InventoryCleaner.kt$InventoryCleaner$private fun isUsefulPotion( stack: ItemStack?, stacks: List&lt;ItemStack?&gt;, entityStacksMap: Map&lt;ItemStack, EntityItem&gt;?, ignoreLimits: Boolean, strictlyBest: Boolean, ): Boolean</ID>
+    <ID>CyclomaticComplexMethod:InventoryCleaner.kt$InventoryCleaner$private fun isUsefulThrowable( stack: ItemStack?, stacks: List&lt;ItemStack?&gt;, entityStacksMap: Map&lt;ItemStack, EntityItem&gt;?, ignoreLimits: Boolean, strictlyBest: Boolean, ): Boolean</ID>
+    <ID>CyclomaticComplexMethod:InventoryCleaner.kt$InventoryCleaner$suspend fun mergeStacks()</ID>
+    <ID>CyclomaticComplexMethod:InventoryCleaner.kt$InventoryCleaner$suspend fun repairEquipment()</ID>
+    <ID>CyclomaticComplexMethod:InventoryCleaner.kt$InventoryCleaner$suspend fun sortHotbar()</ID>
+    <ID>CyclomaticComplexMethod:ItemDataCommand.kt$ItemDataCommand$override fun execute(args: Array&lt;String&gt;)</ID>
+    <ID>CyclomaticComplexMethod:KeyInfo.kt$KeyInfo$fun click(mouseX: Float, mouseY: Float)</ID>
+    <ID>CyclomaticComplexMethod:KillAura.kt$KillAura$private fun attackEntity(entity: EntityLivingBase, isLastClick: Boolean)</ID>
+    <ID>CyclomaticComplexMethod:KillAura.kt$KillAura$private fun runAttack(isFirstClick: Boolean, isLastClick: Boolean)</ID>
+    <ID>CyclomaticComplexMethod:KillAura.kt$KillAura$private fun shouldPrioritize(): Boolean</ID>
+    <ID>CyclomaticComplexMethod:KillAura.kt$KillAura$private fun startBlocking(interactEntity: Entity, interact: Boolean, fake: Boolean = false)</ID>
+    <ID>CyclomaticComplexMethod:KillAura.kt$KillAura$private fun updateHittable()</ID>
+    <ID>CyclomaticComplexMethod:LiquidBounceLegacyTH.kt$LiquidBounceLegacyTH$override fun drawTarget(entity: EntityLivingBase)</ID>
+    <ID>CyclomaticComplexMethod:LocalThemesCommand.kt$LocalThemesCommand$override fun execute(args: Array&lt;String&gt;)</ID>
+    <ID>CyclomaticComplexMethod:MLG.kt$MLG$override fun onRotationUpdate()</ID>
+    <ID>CyclomaticComplexMethod:MLG.kt$MLG$override fun onTick()</ID>
+    <ID>CyclomaticComplexMethod:MacroCommand.kt$MacroCommand$override fun execute(args: Array&lt;String&gt;)</ID>
+    <ID>CyclomaticComplexMethod:MatrixSpeeds.kt$MatrixSpeeds$override fun onUpdate()</ID>
+    <ID>CyclomaticComplexMethod:ModernRotationEngine.kt$ModernRotationEngine$private fun acceleration(currentRotation: Rotation, targetRotation: Rotation, settings: RotationSettings): Rotation</ID>
+    <ID>CyclomaticComplexMethod:ModuleCommand.kt$ModuleCommand$override fun execute(args: Array&lt;String&gt;)</ID>
+    <ID>CyclomaticComplexMethod:ModuleElement.kt$ModuleElement$fun buildElement(value: Value&lt;*&gt;): PanelElement?</ID>
+    <ID>CyclomaticComplexMethod:ModuleElement.kt$ModuleElement$override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float)</ID>
+    <ID>CyclomaticComplexMethod:MovementUtils.kt$MovementUtils$fun doTargetStrafe(target: EntityLivingBase, direction: Float, radius: Float, moveEvent: MoveEvent, mode: Int = 0)</ID>
+    <ID>CyclomaticComplexMethod:MultiSelectSetting.kt$MultiSelectSetting$override fun draw(mouseX: Int, mouseY: Int)</ID>
+    <ID>CyclomaticComplexMethod:NameTags.kt$NameTags$private fun getHealthString(entity: EntityLivingBase): String</ID>
+    <ID>CyclomaticComplexMethod:NameTags.kt$NameTags$private fun renderNameTag3D(entity: EntityLivingBase, isRenderingSelf: Boolean, name: String)</ID>
+    <ID>CyclomaticComplexMethod:NeverloseGui.kt$NeverloseGui$override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float)</ID>
+    <ID>CyclomaticComplexMethod:NeverloseGui.kt$NeverloseGui$override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int)</ID>
+    <ID>CyclomaticComplexMethod:NextGenBrowserRuntime.kt$NextGenBrowserRuntime$@Synchronized fun ensureStarted()</ID>
+    <ID>CyclomaticComplexMethod:NextGenClickGuiBridge.kt$NextGenClickGuiBridge$@Suppress("UNCHECKED_CAST") private fun applyValue(value: Value&lt;*&gt;, element: JsonElement)</ID>
+    <ID>CyclomaticComplexMethod:NextGenClickGuiBridge.kt$NextGenClickGuiBridge$fun applyModuleSettings(name: String, body: String)</ID>
+    <ID>CyclomaticComplexMethod:NextGenClickGuiBridge.kt$NextGenClickGuiBridge$fun runAction(body: String)</ID>
+    <ID>CyclomaticComplexMethod:NextGenClickGuiBridge.kt$NextGenClickGuiBridge$private fun settingJson(value: Value&lt;*&gt;): JsonObject?</ID>
+    <ID>CyclomaticComplexMethod:NextGenClickGuiScreen.kt$NextGenClickGuiScreen$private fun dispatchMouseToBrowser()</ID>
+    <ID>CyclomaticComplexMethod:NextGenClickGuiScreen.kt$NextGenClickGuiScreen$private fun handleFallbackInput()</ID>
+    <ID>CyclomaticComplexMethod:NextGenClickGuiServer.kt$NextGenClickGuiServer$private fun handleApi(exchange: HttpExchange)</ID>
+    <ID>CyclomaticComplexMethod:NlModule.kt$NlModule$fun buildDownward(setting: Value&lt;*&gt;): Downward&lt;*&gt;?</ID>
+    <ID>CyclomaticComplexMethod:NlSetting.kt$NlSetting$fun draw(mx: Int, my: Int)</ID>
+    <ID>CyclomaticComplexMethod:Notifications.kt$Notification$fun drawNotification(index: Int, style: String, colorValue1: Int, colorValue2: Int, backgroundMode: Boolean, backgroundColor: Color): Boolean</ID>
+    <ID>CyclomaticComplexMethod:Notifications.kt$Notifications$override fun drawElement(): Border?</ID>
+    <ID>CyclomaticComplexMethod:Numbersetting.kt$Numbersetting$override fun draw(mouseX: Int, mouseY: Int)</ID>
+    <ID>CyclomaticComplexMethod:Numbersetting.kt$Numbersetting$override fun keyTyped(typedChar: Char, keyCode: Int)</ID>
+    <ID>CyclomaticComplexMethod:PacketDebugger.kt$PacketDebugger$private fun analyzeGrim(packet: C03PacketPlayer)</ID>
+    <ID>CyclomaticComplexMethod:Panel.kt$Panel$fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float)</ID>
+    <ID>CyclomaticComplexMethod:Panel.kt$Panel$fun mouseClicked(mouseX: Int, mouseY: Int, button: Int)</ID>
+    <ID>CyclomaticComplexMethod:PerformanceStats.kt$PerformanceStats$override fun drawElement(): Border</ID>
+    <ID>CyclomaticComplexMethod:PlayerExtension.kt$fun EntityPlayerSP.onPlayerRightClick( clickPos: BlockPos, side: EnumFacing, clickVec: Vec3, stack: ItemStack? = inventory.mainInventory[SilentHotbar.currentSlot], ): Boolean</ID>
+    <ID>CyclomaticComplexMethod:Plugins.kt$Plugins$private fun printResultsAndMaybeLog(force: Boolean = false)</ID>
+    <ID>CyclomaticComplexMethod:PointerESP.kt$PointerESP$private fun draw(ticks: Float)</ID>
+    <ID>CyclomaticComplexMethod:Radar.kt$Radar$override fun drawElement(): Border</ID>
+    <ID>CyclomaticComplexMethod:RangeSetting.kt$RangeSetting$override fun draw(mouseX: Int, mouseY: Int)</ID>
+    <ID>CyclomaticComplexMethod:RaycastUtils.kt$RaycastUtils$fun raycastEntity( range: Double, yaw: Float = serverRotation.yaw, pitch: Float = serverRotation.pitch, entityFilter: Predicate&lt;Entity&gt;, ): Entity?</ID>
+    <ID>CyclomaticComplexMethod:RaycastUtils.kt$RaycastUtils$fun runWithModifiedRaycastResult( rotation: Rotation, range: Double, wallRange: Double, action: (MovingObjectPosition) -&gt; Unit )</ID>
+    <ID>CyclomaticComplexMethod:RenderUtils.kt$RenderUtils$fun drawExhiEnchants(stack: ItemStack, x: Float, y: Float)</ID>
+    <ID>CyclomaticComplexMethod:RenderUtils.kt$RenderUtils$fun drawRoundedRect(x: Float, y: Float, width: Float, height: Float, edgeRadius: Float, color: Int, borderWidth: Float, borderColor: Int)</ID>
+    <ID>CyclomaticComplexMethod:RotationUtils.kt$RotationUtils$fun faceBlock( blockPos: BlockPos?, throughWalls: Boolean = true, targetUpperFace: Boolean = false, hRange: ClosedFloatingPointRange&lt;Double&gt; = 0.0..1.0 ): VecRotation?</ID>
+    <ID>CyclomaticComplexMethod:RotationUtils.kt$RotationUtils$fun searchCenter( bb: AxisAlignedBB, distanceBasedSpot: Boolean = false, outborder: Boolean, randomization: RandomizationSettings? = null, predict: Boolean, lookRange: Float, attackRange: Float, throughWallsRange: Float = 0f, bodyPoints: List&lt;String&gt; = listOf("Head", "Feet"), horizontalSearch: ClosedFloatingPointRange&lt;Float&gt; = 0f..1f, preferLastPoint: Boolean = false, ): Rotation?</ID>
+    <ID>CyclomaticComplexMethod:RotationUtils.kt$RotationUtils$private fun applySlowDown( diff: Float, min: Float, timing: String, yaw: Boolean, applyRealism: Boolean, action: (Float) -&gt; Unit )</ID>
+    <ID>CyclomaticComplexMethod:SNCPBHop.kt$SNCPBHop$override fun onMove(event: MoveEvent)</ID>
+    <ID>CyclomaticComplexMethod:Scaffold.kt$Scaffold$fun handleMovementOptions(input: MovementInput)</ID>
+    <ID>CyclomaticComplexMethod:Scaffold.kt$Scaffold$fun search( blockPosition: BlockPos, raycast: Boolean, area: Boolean, horizontalOnly: Boolean = false, ): Boolean</ID>
+    <ID>CyclomaticComplexMethod:Scaffold.kt$Scaffold$private fun applyRotationMode(baseRotation: Rotation): Rotation</ID>
+    <ID>CyclomaticComplexMethod:Scaffold.kt$Scaffold$private fun doPlaceAttempt(raytrace: MovingObjectPosition?, lastClick: Boolean, onSuccess: () -&gt; Unit = { })</ID>
+    <ID>CyclomaticComplexMethod:Scaffold.kt$Scaffold$private fun findBlock(expand: Boolean, area: Boolean)</ID>
+    <ID>CyclomaticComplexMethod:Scaffold.kt$Scaffold$private fun findTargetPlace( pos: BlockPos, offsetPos: BlockPos, vec3: Vec3, side: EnumFacing, eyes: Vec3, maxReach: Float, raycast: Boolean, ): PlaceRotation?</ID>
+    <ID>CyclomaticComplexMethod:Scaffold.kt$Scaffold$private fun generateGodBridgeRotations(ticks: Int)</ID>
+    <ID>CyclomaticComplexMethod:Scaffold.kt$Scaffold$private fun place(placeInfo: PlaceInfo)</ID>
+    <ID>CyclomaticComplexMethod:Scaffold.kt$Scaffold$private fun tryToPlaceBlock( stack: ItemStack, clickPos: BlockPos, side: EnumFacing, hitVec: Vec3, attempt: Boolean = false, onSuccess: () -&gt; Unit = { } ): Boolean</ID>
+    <ID>CyclomaticComplexMethod:ScoreboardElement.kt$ScoreboardElement$override fun drawElement(): Border?</ID>
+    <ID>CyclomaticComplexMethod:ScriptManagerCommand.kt$ScriptManagerCommand$override fun execute(args: Array&lt;String&gt;)</ID>
+    <ID>CyclomaticComplexMethod:ServerCrasher.kt$ServerCrasher$override fun onEnable()</ID>
+    <ID>CyclomaticComplexMethod:ServerLag.kt$ServerLag$private fun shouldDelayPacketType(packet: Packet&lt;*&gt;, isOutbound: Boolean): Boolean</ID>
+    <ID>CyclomaticComplexMethod:ServerLag.kt$ServerLag$private fun shouldExcludePacket(packet: Packet&lt;*&gt;): Boolean</ID>
+    <ID>CyclomaticComplexMethod:ServerObserver.kt$ServerObserver$private fun guessFromTransactions(samples: List&lt;Int&gt;): String?</ID>
+    <ID>CyclomaticComplexMethod:SettingComponents.kt$SettingComponents$fun handle(mouseX: Int, mouseY: Int, button: Int, type: GuiEvents)</ID>
+    <ID>CyclomaticComplexMethod:SettingComponents.kt$SettingComponents$override fun keyTyped(typedChar: Char, keyCode: Int)</ID>
+    <ID>CyclomaticComplexMethod:SettingsCommand.kt$SettingsCommand$override fun execute(args: Array&lt;String&gt;)</ID>
+    <ID>CyclomaticComplexMethod:SettingsUtils.kt$SettingsUtils$fun applyScript(script: String)</ID>
+    <ID>CyclomaticComplexMethod:SettingsUtils.kt$SettingsUtils$fun generateScript(values: Boolean, binds: Boolean, states: Boolean): String</ID>
+    <ID>CyclomaticComplexMethod:SideGui.kt$SideGui$override fun keyTyped(typedChar: Char, keyCode: Int)</ID>
+    <ID>CyclomaticComplexMethod:SideGui.kt$SideGui$override fun mouseClicked(mouseX: Int, mouseY: Int, button: Int)</ID>
+    <ID>CyclomaticComplexMethod:SimpleFontRenderer.kt$SimpleFontRenderer$override fun trimStringToWidth(text: CharSequence, width: Int, reverse: Boolean): String</ID>
+    <ID>CyclomaticComplexMethod:SimpleFontRenderer.kt$SimpleFontRenderer$private fun drawStringInternal(text: CharSequence, x: Double, y: Double, color: Int, shadow: Boolean): Float</ID>
+    <ID>CyclomaticComplexMethod:SimulatedPlayer.kt$SimulatedPlayer$fun getCollidingBoundingBoxes(box: AxisAlignedBB): List&lt;AxisAlignedBB&gt;</ID>
+    <ID>CyclomaticComplexMethod:SimulatedPlayer.kt$SimulatedPlayer$private fun clientPlayerLivingUpdate()</ID>
+    <ID>CyclomaticComplexMethod:SimulatedPlayer.kt$SimulatedPlayer$private fun livingEntitySideMoveEntityWithHeading(strafing: Float, forwards: Float)</ID>
+    <ID>CyclomaticComplexMethod:SimulatedPlayer.kt$SimulatedPlayer$private fun livingEntityUpdate()</ID>
+    <ID>CyclomaticComplexMethod:SimulatedPlayer.kt$SimulatedPlayer$private fun moveEntity(xMotion: Double, yMotion: Double, zMotion: Double)</ID>
+    <ID>CyclomaticComplexMethod:SimulatedPlayer.kt$SimulatedPlayer$private fun pushOutOfBlocks(x: Double, y: Double, z: Double): Boolean</ID>
+    <ID>CyclomaticComplexMethod:SmartEat.kt$SmartEat$private fun findBestFood(): Int</ID>
+    <ID>CyclomaticComplexMethod:Spammer.kt$Spammer$private fun convert(text: String): String</ID>
+    <ID>CyclomaticComplexMethod:SpotifyElement.kt$SpotifyElement$override fun drawElement(): Border</ID>
+    <ID>CyclomaticComplexMethod:SpotifyModule.kt$SpotifyModule$fun beginBrowserAuthorization(callback: (BrowserAuthStatus, String) -&gt; Unit): Boolean</ID>
+    <ID>CyclomaticComplexMethod:SpotifyWebScreen.kt$SpotifyWebScreen$private fun dispatchMouse(target: IBrowser)</ID>
+    <ID>CyclomaticComplexMethod:Sprint.kt$Sprint$fun correctSprintState(movementInput: MovementInput, isUsingItem: Boolean)</ID>
+    <ID>CyclomaticComplexMethod:Sprint.kt$Sprint$private fun shouldStopSprinting(movementInput: MovementInput, isUsingItem: Boolean, ignoreDirectionCheck: Boolean = false): Boolean</ID>
+    <ID>CyclomaticComplexMethod:StaffDetector.kt$StaffDetector$private fun handleOtherChecks(packet: Packet&lt;*&gt;?)</ID>
+    <ID>CyclomaticComplexMethod:StaffDetector.kt$StaffDetector$private fun notifyStaffPacket(staff: Entity)</ID>
+    <ID>CyclomaticComplexMethod:StorageESP.kt$StorageESP$private fun getColor(tileEntity: TileEntity): Color?</ID>
+    <ID>CyclomaticComplexMethod:StorageESP.kt$StorageESP$private fun renderMergedBoxes()</ID>
+    <ID>CyclomaticComplexMethod:StringsSetting.kt$StringsSetting$override fun draw(mouseX: Int, mouseY: Int)</ID>
+    <ID>CyclomaticComplexMethod:TabGUI.kt$TabGUI$override fun drawElement(): Border</ID>
+    <ID>CyclomaticComplexMethod:Target.kt$Targets$override fun drawElement(): Border?</ID>
+    <ID>CyclomaticComplexMethod:TargetFocus.kt$TargetFocus$private fun selectBestTarget()</ID>
+    <ID>CyclomaticComplexMethod:TargetTracker.kt$TargetPriority$fun comparator(distance: (EntityLivingBase) -&gt; Double): Comparator&lt;EntityLivingBase&gt;</ID>
+    <ID>CyclomaticComplexMethod:Teams.kt$Teams$fun isInYourTeam(entity: EntityLivingBase): Boolean</ID>
+    <ID>CyclomaticComplexMethod:Text.kt$Text$@Suppress("UnclearPrecedenceOfBinaryExpression") override fun drawElement(): Border</ID>
+    <ID>CyclomaticComplexMethod:Text.kt$Text$fun getReplacement(str: String): Any?</ID>
+    <ID>CyclomaticComplexMethod:Tower.kt$Tower$private fun move()</ID>
+    <ID>CyclomaticComplexMethod:UNCPHopNew.kt$UNCPHopNew$override fun onUpdate()</ID>
+    <ID>CyclomaticComplexMethod:UiEventSocket.kt$UiEventSocket$private fun onChange(change: ClientChange)</ID>
+    <ID>CyclomaticComplexMethod:ValueKind.kt$fun Value&lt;*&gt;.kind(): ValueKind</ID>
+    <ID>CyclomaticComplexMethod:ValuesConfig.kt$ValuesConfig$@Throws(IOException::class) override fun loadConfig()</ID>
+    <ID>CyclomaticComplexMethod:Velocity.kt$Velocity$private fun flushDelayedPackets(force: Boolean = false)</ID>
+    <ID>CyclomaticComplexMethod:Velocity.kt$Velocity$private fun handleDelayedPacket(event: PacketEvent, player: net.minecraft.client.entity.EntityPlayerSP)</ID>
+    <ID>CyclomaticComplexMethod:Velocity.kt$Velocity$private fun handleVelocity(event: PacketEvent)</ID>
+    <ID>CyclomaticComplexMethod:VulcanSpeeds.kt$VulcanSpeeds$override fun onUpdate()</ID>
+    <ID>CyclomaticComplexMethod:Watermark.kt$Watermark$override fun drawElement(): Border</ID>
+    <ID>CyclomaticComplexMethod:XrayCommand.kt$XrayCommand$override fun execute(args: Array&lt;String&gt;)</ID>
+    <ID>CyclomaticComplexMethod:YzYGui.kt$YzYGui$@Throws(IOException::class) override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int)</ID>
+    <ID>DestructuringDeclarationWithTooManyEntries:AWTFontRenderer.kt$AWTFontRenderer$val (alpha, red, green, blue) = ColorUtils.unpackARGBFloatValue(color)</ID>
+    <ID>DestructuringDeclarationWithTooManyEntries:Backtrack.kt$Backtrack$(x, y, z, _)</ID>
+    <ID>DestructuringDeclarationWithTooManyEntries:Backtrack.kt$Backtrack$val (x, y, z, _) = backtrackDataArray.first()</ID>
+    <ID>DestructuringDeclarationWithTooManyEntries:JavaVersion.kt$val (major, minor, patch, update) = matchResult.destructured</ID>
+    <ID>DestructuringDeclarationWithTooManyEntries:Keystrokes.kt$Keystrokes$val (row, col, key, scale, _, color) = gridKey</ID>
+    <ID>DestructuringDeclarationWithTooManyEntries:RangeSetting.kt$RangeSetting$val (minimum, maximum, currentStart, currentEnd) = when { intRange != null -&gt; Quadruple( intRange.minimum.toDouble(), intRange.maximum.toDouble(), intRange.get().first.toDouble(), intRange.get().last.toDouble() ) floatRange != null -&gt; Quadruple( floatRange.minimum.toDouble(), floatRange.maximum.toDouble(), floatRange.get().start.toDouble(), floatRange.get().endInclusive.toDouble() ) else -&gt; return }</ID>
+    <ID>DestructuringDeclarationWithTooManyEntries:RenderUtils.kt$RenderUtils$val (alpha, red, green, blue) = ColorUtils.unpackARGBFloatValue(color)</ID>
+    <ID>DestructuringDeclarationWithTooManyEntries:RenderUtils.kt$RenderUtils$val (cx, cy, startAngle, ox, oy) = directionData</ID>
+    <ID>DestructuringDeclarationWithTooManyEntries:RenderUtils.kt$RenderUtils$val (newX1, newY1, newX2, newY2) = orderPoints(x1, y1, x2, y2)</ID>
+    <ID>DestructuringDeclarationWithTooManyEntries:RenderUtils.kt$RenderUtils$val (newX1, newY1, newX2, newY2) = orderPoints(x1.toFloat(), y1.toFloat(), x2.toFloat(), y2.toFloat())</ID>
+    <ID>DestructuringDeclarationWithTooManyEntries:SideGui.kt$SideGui$val (hexX, hexY, hexW, hexH) = getBgHexFieldArea(drag!!)</ID>
+    <ID>DestructuringDeclarationWithTooManyEntries:SideGui.kt$SideGui$val (hexX, hexY, hexW, hexH) = getColorHexFieldArea(drag!!)</ID>
+    <ID>EmptyCatchBlock:Numbersetting.kt$Numbersetting${ }</ID>
+    <ID>EmptyFunctionBlock:BlockElement.kt$BlockElement${}</ID>
+    <ID>EmptyFunctionBlock:BoolSetting.kt$BoolSetting${ }</ID>
+    <ID>EmptyFunctionBlock:BooleanElement.kt$BooleanElement${}</ID>
+    <ID>EmptyFunctionBlock:ColorElement.kt$ColorElement${}</ID>
+    <ID>EmptyFunctionBlock:CurveElement.kt$CurveElement${}</ID>
+    <ID>EmptyFunctionBlock:EspPreviewComponent.kt$EspPreviewComponent${}</ID>
+    <ID>EmptyFunctionBlock:FontElement.kt$FontElement${}</ID>
+    <ID>EmptyFunctionBlock:FontSetting.kt$FontSetting${}</ID>
+    <ID>EmptyFunctionBlock:GuiAltManager.kt$GuiAltManager.GuiList${}</ID>
+    <ID>EmptyFunctionBlock:GuiFontManager.kt$GuiFontManager.GuiList${}</ID>
+    <ID>EmptyFunctionBlock:GuiScripts.kt$GuiScripts.GuiList${}</ID>
+    <ID>EmptyFunctionBlock:HttpUtils.kt$&lt;no name provided&gt;${}</ID>
+    <ID>EmptyFunctionBlock:KeyBindElement.kt$KeyBindElement${}</ID>
+    <ID>EmptyFunctionBlock:KeyBindSetting.kt$KeyBindSetting${}</ID>
+    <ID>EmptyFunctionBlock:ListElement.kt$ListElement${}</ID>
+    <ID>EmptyFunctionBlock:ModuleElement.kt$FileElement${}</ID>
+    <ID>EmptyFunctionBlock:MultiSelectElement.kt$MultiSelectElement${}</ID>
+    <ID>EmptyFunctionBlock:MultiSelectSetting.kt$MultiSelectSetting${}</ID>
+    <ID>EmptyFunctionBlock:NlModule.kt$NlModule.FileSetting${}</ID>
+    <ID>EmptyFunctionBlock:NumericSliderElement.kt$NumericSliderElement${}</ID>
+    <ID>EmptyFunctionBlock:Panel.kt$Panel${ }</ID>
+    <ID>EmptyFunctionBlock:RangeElement.kt$RangeElement${}</ID>
+    <ID>EmptyFunctionBlock:RemoveEffect.kt$RemoveEffect${}</ID>
+    <ID>EmptyFunctionBlock:SideGuiBackgroundManager.kt$SideGuiBackgroundManager${ }</ID>
+    <ID>EmptyFunctionBlock:Spider.kt$Spider${ }</ID>
+    <ID>EmptyFunctionBlock:StringsSetting.kt$StringsSetting${}</ID>
+    <ID>EmptyFunctionBlock:TextElement.kt$TextElement${}</ID>
+    <ID>EmptyFunctionBlock:TextSetting.kt$TextSetting${}</ID>
+    <ID>EmptyFunctionBlock:Vec3Element.kt$Vec3Element${}</ID>
+    <ID>EmptyFunctionBlock:Vec3Setting.kt$Vec3Setting${}</ID>
+    <ID>EmptyFunctionBlock:YzYGui.kt$BindInputBox${}</ID>
+    <ID>EmptyIfBlock:FontRenderer.kt$FontRenderer${ }</ID>
+    <ID>ExplicitItLambdaParameter:ChestStealer.kt$ChestStealer${ it -&gt; // Base slot order (TopToBottom keeps the natural ascending order) if (order == "BottomToTop") it.sortByDescending { record -&gt; record.index } if (randomSlot) it.shuffle() // Prioritise armor pieces with lower priority, so that as many pieces can get equipped from hotbar after chest gets closed it.sortByDescending { it.stack.item is ItemArmor } // Prioritize items that can be sorted it.sortByDescending { it.sortableToSlot != null } // Fully prioritise armor pieces when it is possible to equip armor while in chest if (AutoArmor.canEquipFromChest()) it.sortByDescending { it.stack.item is ItemArmor } if (smartOrder) { sortBasedOnOptimumPath(it) } }</ID>
+    <ID>ExplicitItLambdaParameter:JumpCircle.kt$JumpCircle${ it -&gt; val progress = ((runTimeTicks + partialTick) - it.endTime) / lifeTime * animationSpeed val radius = circleRadius.lerpWith(progress) if(useTexture){ renderTexturedCircle( it.pos, radius.toDouble(), 1f - progress, circles.indexOf(it) * 30, lightFactor, effectStrength ) } else { renderSimpleCircle(it.pos, radius, progress) } progress &gt;= 1F }</ID>
+    <ID>ExplicitItLambdaParameter:RenderUtils.kt$RenderUtils${ index, it -&gt; val p = pos + Vec3(it.x * width, it.y + animatedCircleY, it.z * width) positions += doubleArrayOf(p.xCoord, p.yCoord, p.zCoord) if (filled) { buffer.pos(p.xCoord - renderX, p.yCoord - renderY, p.zCoord - renderZ).color(r1, g1, b1, a1) .endVertex() } }</ID>
+    <ID>ForbiddenComment:AAC1910.kt$AAC1910$// TODO: Doesn't this always overwrite the strafe(aacSpeed)?</ID>
+    <ID>ForbiddenComment:BlinkUtils.kt$BlinkUtils$// TODO: Make better &amp; more reliable BlinkUtils.</ID>
+    <ID>ForbiddenComment:BlockCounter.kt$BlockCounter$// TODO: Should it be removed? Text element does the same thing.</ID>
+    <ID>ForbiddenComment:ChestStealer.kt$ChestStealer$// TODO: if it can get merged but would also need another slot, it could simulate 2 clicks, one which maxes out the stack in inventory and second that puts excess items back</ID>
+    <ID>ForbiddenComment:ChestStealer.kt$ChestStealer$// TODO: player could theoretically already have too many stacks in inventory before opening the chest so no more should even get merged</ID>
+    <ID>ForbiddenComment:ChestStealer.kt$ChestStealer$// TODO: should the stealing be suspended until the armor gets equipped and some delay on top of that, maybe toggleable?</ID>
+    <ID>ForbiddenComment:EditorPanel.kt$EditorPanel$// TODO: branch completion</ID>
+    <ID>ForbiddenComment:Element.kt$Element$* CustomHUD element * * TODO: Make element name dependent</ID>
+    <ID>ForbiddenComment:FlagCheck.kt$FlagCheck$// TODO: Fade effect</ID>
+    <ID>ForbiddenComment:FlagCheck.kt$FlagCheck$// TODO: Model &amp; Wireframe Render</ID>
+    <ID>ForbiddenComment:Flight.kt$Flight$// TODO: Make better and faster calculation lol</ID>
+    <ID>ForbiddenComment:Ignite.kt$Ignite$// TODO: This desperately needs a recode</ID>
+    <ID>ForbiddenComment:InventoryCleaner.kt$InventoryCleaner$// TODO: Perhaps add a slider for merge delay?</ID>
+    <ID>ForbiddenComment:InventoryCleaner.kt$InventoryCleaner$// TODO: Simplify all is useful checks by a single getBetterAlternativeCount and checking if it is above 0, above stack limit, ...</ID>
+    <ID>ForbiddenComment:InventoryCleaner.kt$InventoryCleaner$// TODO: max potion, vehicle, ..., stacks?</ID>
+    <ID>ForbiddenComment:InventoryManager.kt$InventoryManager$// TODO: This could be at start of each action?</ID>
+    <ID>ForbiddenComment:KillAura.kt$KillAura$// TODO: Make block range independent from attack range</ID>
+    <ID>ForbiddenComment:ModuleCommand.kt$ModuleCommand$// TODO: branch completion</ID>
+    <ID>ForbiddenComment:NCPBHop.kt$NCPBHop$//TODO: Recode this mess</ID>
+    <ID>ForbiddenComment:NoFluid.kt$NoFluid$// TODO:only do this for blocks that player touched</ID>
+    <ID>ForbiddenComment:NoSlow.kt$NoSlow$// TODO: Not sure how to fix random grim simulation flag. (Seem to only happen in Loyisa).</ID>
+    <ID>ForbiddenComment:Phase.kt$Phase$// TODO: What is this???</ID>
+    <ID>ForbiddenComment:Refill.kt$Refill$// TODO: We want the Cache system here in [Refill]</ID>
+    <ID>ForbiddenComment:RenderUtils.kt$RenderUtils$* GL CAP MANAGER * * * TODO: Remove gl cap manager and replace by something better</ID>
+    <ID>ForbiddenComment:RotationSettings.kt$// TODO: refactor them all</ID>
+    <ID>ForbiddenComment:SNCPBHop.kt$SNCPBHop$// TODO: Recode this mess</ID>
+    <ID>ForbiddenComment:Setting.kt$Setting$* Object used by the script API to provide an idiomatic way of creating module values. * TODO: intRange, floatRange, color * * Note: this usage of [Configurable] is incorrect!!</ID>
+    <ID>ForbiddenComment:Step.kt$Step$// TODO: Improve Timer Balancing</ID>
+    <ID>ForbiddenComment:StringUtils.kt$StringUtils$// TODO: Remove this unused method?</ID>
+    <ID>ForbiddenComment:TeleportCommand.kt$TeleportCommand$// TODO: Should try to check for collisions by offsetting player's collision box instead</ID>
+    <ID>ForbiddenComment:Tower.kt$Tower$// TODO: toInt() required?</ID>
+    <ID>ForbiddenComment:Velocity.kt$Velocity$// TODO: Could this be useful in other modes? (Jump?)</ID>
+    <ID>FunctionNaming:NeverloseGui.kt$NeverloseGui.Companion$@JvmStatic fun NLOutline(str: String, fontRenderer: FontRenderer, x: Float, y: Float, color: Int, color2: Int, size: Float)</ID>
+    <ID>FunctionNaming:NlSetting.kt$NlSetting.Companion$@JvmStatic fun NLOutline(str: String, fontRenderer: FontRenderer, x: Float, y: Float, color: Int, color2: Int, w: Int, size: Float)</ID>
+    <ID>FunctionNaming:PopupScreen.kt$inline fun PopupScreen(builderAction: Builder.() -&gt; Unit)</ID>
+    <ID>FunctionOnlyReturningConstant:SimulatedPlayer.kt$SimulatedPlayer$private fun getJumpUpwardsMotion(): Float</ID>
+    <ID>FunctionOnlyReturningConstant:SimulatedPlayer.kt$SimulatedPlayer$private fun isServerWorld(): Boolean</ID>
+    <ID>FunctionParameterNaming:FontRenderer.kt$FontRenderer$p_getCharWidthFloat_1_: Char</ID>
+    <ID>FunctionParameterNaming:RenderUtil.kt$RenderUtil$FACTOR: Float</ID>
+    <ID>ImplicitDefaultLocale:Armor.kt$Armor$String.format("%.0f%%", percentage)</ID>
+    <ID>ImplicitDefaultLocale:Armor.kt$Armor$String.format("%.2f%%", percentage)</ID>
+    <ID>ImplicitDefaultLocale:Armor.kt$Armor$String.format("%d/%d (%.0f%%)", value, stack.maxDamage, percentage)</ID>
+    <ID>ImplicitDefaultLocale:GuiSpotify.kt$GuiSpotify$String.format("%d:%02d", minutes, seconds)</ID>
+    <ID>ImplicitDefaultLocale:GuiSpotifyPlayer.kt$GuiSpotifyPlayer$String.format("%d:%02d", minutes, seconds)</ID>
+    <ID>ImplicitDefaultLocale:InfiniteAura.kt$InfiniteAura$String.format("%.2f", reach)</ID>
+    <ID>ImplicitDefaultLocale:KillAura.kt$KillAura$String.format("%.2f", reach)</ID>
+    <ID>ImplicitDefaultLocale:NameTags.kt$NameTags$String.format("%.0f%%", durabilityPercentage)</ID>
+    <ID>ImplicitDefaultLocale:PacketDebugger.kt$PacketDebugger$String.format("%.2f", value)</ID>
+    <ID>ImplicitDefaultLocale:ShaderUtil.kt$ShaderUtil$String.format("Shader (%s) failed to compile!", shaderType)</ID>
+    <ID>ImplicitDefaultLocale:SpotifyElement.kt$SpotifyElement$String.format("%d:%02d", minutes, seconds)</ID>
+    <ID>ImplicitDefaultLocale:Vec3Element.kt$Vec3Element$String.format("%.2f", setting.value[i])</ID>
+    <ID>ImplicitDefaultLocale:Vec3Setting.kt$Vec3Setting$String.format("%.1f", setting.value[i])</ID>
+    <ID>InvalidRange:Panel.kt$Panel$1..0</ID>
+    <ID>IteratorNotThrowingNoSuchElementException:MathExtensions.kt$RangeIterator : Iterator</ID>
+    <ID>LargeClass:BlackStyle.kt$BlackStyle : Style</ID>
+    <ID>LargeClass:EditorPanel.kt$EditorPanel : MinecraftInstance</ID>
+    <ID>LargeClass:GuiMainMenu.kt$GuiMainMenu : AbstractScreenGuiYesNoCallback</ID>
+    <ID>LargeClass:GuiServerSelect.kt$GuiServerSelect : AbstractScreen</ID>
+    <ID>LargeClass:GuiSpotifyPlayer.kt$GuiSpotifyPlayer : AbstractScreenListenable</ID>
+    <ID>LargeClass:InventoryCleaner.kt$InventoryCleaner : Module</ID>
+    <ID>LargeClass:KillAura.kt$KillAura : Module</ID>
+    <ID>LargeClass:NextGenBrowserRuntime.kt$NextGenBrowserRuntime : MinecraftInstanceListenable</ID>
+    <ID>LargeClass:NextGenClickGuiBridge.kt$NextGenClickGuiBridge : MinecraftInstance</ID>
+    <ID>LargeClass:NoSlow.kt$NoSlow : Module</ID>
+    <ID>LargeClass:RandomUtils.kt$RandomUtils</ID>
+    <ID>LargeClass:RenderUtil.kt$RenderUtil</ID>
+    <ID>LargeClass:RenderUtils.kt$RenderUtils : MinecraftInstance</ID>
+    <ID>LargeClass:Scaffold.kt$Scaffold : Module</ID>
+    <ID>LargeClass:SettingComponents.kt$SettingComponents : Component</ID>
+    <ID>LargeClass:SimulatedPlayer.kt$SimulatedPlayer : MinecraftInstance</ID>
+    <ID>LargeClass:Velocity.kt$Velocity : Module</ID>
+    <ID>LongMethod:AWTFontRenderer.kt$AWTFontRenderer$fun drawString(text: String, x: Double, y: Double, color: Int)</ID>
+    <ID>LongMethod:Aimbot.kt$Aimbot$private fun findRotation(entity: Entity, random: Random): Boolean</ID>
+    <ID>LongMethod:AntiBot.kt$AntiBot$fun isBot(entity: EntityLivingBase): Boolean</ID>
+    <ID>LongMethod:ArmorSwap.kt$ArmorSwap$private suspend fun prepareSwap(now: Long): Boolean</ID>
+    <ID>LongMethod:Arraylist.kt$Arraylist$override fun drawElement(): Border?</ID>
+    <ID>LongMethod:BedPlates.kt$BedPlates$private fun drawPlate(bedState: BedState)</ID>
+    <ID>LongMethod:BlackStyle.kt$BlackStyle$fun renderLeaf(value: Value&lt;*&gt;): Boolean</ID>
+    <ID>LongMethod:Blink.kt$Blink$override fun onPacket(event: PacketEvent)</ID>
+    <ID>LongMethod:BlinkUtils.kt$BlinkUtils$fun blink(packet: Packet&lt;*&gt;, event: PacketEvent, sent: Boolean? = true, receive: Boolean? = true)</ID>
+    <ID>LongMethod:BoolSetting.kt$BoolSetting$override fun draw(mouseX: Int, mouseY: Int)</ID>
+    <ID>LongMethod:ChestStealer.kt$ChestStealer$suspend fun stealFromChest()</ID>
+    <ID>LongMethod:ChillTH.kt$ChillTH$override fun drawTarget(entity: EntityLivingBase)</ID>
+    <ID>LongMethod:ClientThemesUtils.kt$ClientThemesUtils$fun getColor(index: Int = 0): Color</ID>
+    <ID>LongMethod:ClientThemesUtils.kt$ClientThemesUtils$fun getColorFromName(name: String, index: Int): Color</ID>
+    <ID>LongMethod:ClientThemesUtils.kt$ClientThemesUtils$fun getColorWithAlpha(index: Int, alpha: Int): Color</ID>
+    <ID>LongMethod:ClientThemesUtils.kt$ClientThemesUtils$fun setColor(type: String, alpha: Int): Color</ID>
+    <ID>LongMethod:ColorElement.kt$ColorElement$override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float)</ID>
+    <ID>LongMethod:ColorElement.kt$ColorElement$override fun mouseClicked(mouseX: Int, mouseY: Int, button: Int)</ID>
+    <ID>LongMethod:CustomSpeed.kt$CustomSpeed$private fun handleLegacy()</ID>
+    <ID>LongMethod:DropdownCategory.kt$DropdownCategory$override fun drawScreen(mouseX: Int, mouseY: Int)</ID>
+    <ID>LongMethod:EditorPanel.kt$EditorPanel$private fun drawEditor(mouseX: Int, mouseY: Int)</ID>
+    <ID>LongMethod:EditorPanel.kt$EditorPanel$private fun drawSelection(mouseX: Int, mouseY: Int)</ID>
+    <ID>LongMethod:Effects.kt$Effects$private fun drawFDPMode(): Border</ID>
+    <ID>LongMethod:EnchantCommand.kt$EnchantCommand$override fun execute(args: Array&lt;String&gt;)</ID>
+    <ID>LongMethod:EspPreviewComponent.kt$EspPreviewComponent$private fun drawEspPreview(x: Int, y: Int, backgroundColor: Color)</ID>
+    <ID>LongMethod:FDPClient.kt$FDPClient$fun startClient()</ID>
+    <ID>LongMethod:FontRenderer.kt$FontRenderer$fun drawString(text: String?, x: Double, y: Double, color: Int, shadow: Boolean): Float</ID>
+    <ID>LongMethod:Fonts.kt$Fonts$fun loadFonts()</ID>
+    <ID>LongMethod:GameFontRenderer.kt$GameFontRenderer$private fun drawText( text: String?, x: Float, y: Float, color: Int, ignoreColor: Boolean, rainbow: Boolean = false, gradient: Boolean = false ): Int</ID>
+    <ID>LongMethod:GuiAltManager.kt$GuiAltManager$public override fun actionPerformed(button: GuiButton)</ID>
+    <ID>LongMethod:GuiCapeManager.kt$GuiCapeManager$override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float)</ID>
+    <ID>LongMethod:GuiClientConfiguration.kt$GuiClientConfiguration$override fun actionPerformed(button: GuiButton)</ID>
+    <ID>LongMethod:GuiMainMenu.kt$GuiMainMenu$private fun drawMenuIcon(icon: MenuIcon, x: Float, y: Float, size: Float, color: Int, alphaMul: Float = 1f)</ID>
+    <ID>LongMethod:GuiScripts.kt$GuiScripts$override fun actionPerformed(button: GuiButton)</ID>
+    <ID>LongMethod:GuiServerSelect.kt$GuiServerSelect$override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float)</ID>
+    <ID>LongMethod:GuiServerSelect.kt$GuiServerSelect$private fun drawUiIcon(icon: UiIcon, x: Float, y: Float, size: Float, color: Int, alphaMul: Float = 1f)</ID>
+    <ID>LongMethod:GuiSpotify.kt$GuiSpotify$override fun initGui()</ID>
+    <ID>LongMethod:GuiSpotify.kt$GuiSpotify$private fun drawPlaybackColumn()</ID>
+    <ID>LongMethod:GuiSpotifyPlayer.kt$GuiSpotifyPlayer$override fun initGui()</ID>
+    <ID>LongMethod:GuiSpotifyPlayer.kt$GuiSpotifyPlayer$private fun drawTracks(mouseX: Int, mouseY: Int)</ID>
+    <ID>LongMethod:InfiniteAura.kt$InfiniteAura$private suspend fun hit(entity: EntityLivingBase, force: Boolean = false): Boolean</ID>
+    <ID>LongMethod:InventoryCleaner.kt$InventoryCleaner$suspend fun repairEquipment()</ID>
+    <ID>LongMethod:JumpCircle.kt$JumpCircle$private fun renderTexturedCircle(pos: Vec3, maxRadius: Double, timeFraction: Float, circleIndex: Int, shift: Float, intensity: Float)</ID>
+    <ID>LongMethod:Keystrokes.kt$Keystrokes$override fun drawElement(): Border</ID>
+    <ID>LongMethod:KillAura.kt$KillAura$private fun runAttack(isFirstClick: Boolean, isLastClick: Boolean)</ID>
+    <ID>LongMethod:KillAura.kt$KillAura$private fun updateHittable()</ID>
+    <ID>LongMethod:LiquidBounceLegacyTH.kt$LiquidBounceLegacyTH$override fun drawTarget(entity: EntityLivingBase)</ID>
+    <ID>LongMethod:LocalThemesCommand.kt$LocalThemesCommand$override fun execute(args: Array&lt;String&gt;)</ID>
+    <ID>LongMethod:MLG.kt$MLG$override fun onRotationUpdate()</ID>
+    <ID>LongMethod:MLG.kt$MLG$override fun onTick()</ID>
+    <ID>LongMethod:MatrixSpeeds.kt$MatrixSpeeds$override fun onUpdate()</ID>
+    <ID>LongMethod:ModuleCommand.kt$ModuleCommand$override fun execute(args: Array&lt;String&gt;)</ID>
+    <ID>LongMethod:ModuleElement.kt$ModuleElement$override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float)</ID>
+    <ID>LongMethod:ModuleRect.kt$ModuleRect$fun drawScreen(mouseX: Int, mouseY: Int)</ID>
+    <ID>LongMethod:MultiSelectSetting.kt$MultiSelectSetting$override fun draw(mouseX: Int, mouseY: Int)</ID>
+    <ID>LongMethod:NameTags.kt$NameTags$private fun renderNameTag2D(entity: EntityLivingBase, isRenderingSelf: Boolean, name: String)</ID>
+    <ID>LongMethod:NameTags.kt$NameTags$private fun renderNameTag3D(entity: EntityLivingBase, isRenderingSelf: Boolean, name: String)</ID>
+    <ID>LongMethod:NeverloseGui.kt$NeverloseGui$override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float)</ID>
+    <ID>LongMethod:NeverloseGui.kt$NeverloseGui$override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int)</ID>
+    <ID>LongMethod:NextGenBrowserRuntime.kt$NextGenBrowserRuntime$@Synchronized fun ensureStarted()</ID>
+    <ID>LongMethod:NextGenClickGuiBridge.kt$NextGenClickGuiBridge$private fun settingJson(value: Value&lt;*&gt;): JsonObject?</ID>
+    <ID>LongMethod:NextGenClickGuiServer.kt$NextGenClickGuiServer$private fun handleApi(exchange: HttpExchange)</ID>
+    <ID>LongMethod:NlModule.kt$NlModule$fun draw(mx: Int, my: Int)</ID>
+    <ID>LongMethod:NlModule.kt$NlModule.CurveSetting$override fun draw(mouseX: Int, mouseY: Int)</ID>
+    <ID>LongMethod:NlSub.kt$NlSub$fun draw(mx: Int, my: Int)</ID>
+    <ID>LongMethod:Notifications.kt$Notification$fun drawNotification(index: Int, style: String, colorValue1: Int, colorValue2: Int, backgroundMode: Boolean, backgroundColor: Color): Boolean</ID>
+    <ID>LongMethod:Numbersetting.kt$Numbersetting$override fun draw(mouseX: Int, mouseY: Int)</ID>
+    <ID>LongMethod:Panel.kt$Panel$fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float)</ID>
+    <ID>LongMethod:Particles.kt$Particles$private fun drawShape(size: Float)</ID>
+    <ID>LongMethod:PerformanceStats.kt$PerformanceStats$override fun drawElement(): Border</ID>
+    <ID>LongMethod:Plugins.kt$Plugins$private fun printResultsAndMaybeLog(force: Boolean = false)</ID>
+    <ID>LongMethod:PointerESP.kt$PointerESP$private fun draw(ticks: Float)</ID>
+    <ID>LongMethod:Radar.kt$Radar$override fun drawElement(): Border</ID>
+    <ID>LongMethod:RangeSetting.kt$RangeSetting$override fun draw(mouseX: Int, mouseY: Int)</ID>
+    <ID>LongMethod:RaycastUtils.kt$RaycastUtils$fun runWithModifiedRaycastResult( rotation: Rotation, range: Double, wallRange: Double, action: (MovingObjectPosition) -&gt; Unit )</ID>
+    <ID>LongMethod:RemixTH.kt$RemixTH$override fun drawTarget(entity: EntityLivingBase)</ID>
+    <ID>LongMethod:RenderEntity.kt$RenderEntity$@JvmStatic fun drawLies(entity: EntityLivingBase, event: Render3DEvent)</ID>
+    <ID>LongMethod:RenderEntity.kt$RenderEntity$@JvmStatic fun drawZavz(entity: EntityLivingBase, event: Render3DEvent, dual: Boolean)</ID>
+    <ID>LongMethod:RenderUtil.kt$RenderUtil$fun drawAABB(aabb: AxisAlignedBB, r: Float, g: Float, b: Float)</ID>
+    <ID>LongMethod:RenderUtil.kt$RenderUtil$fun drawESP(e: Entity?, color: Int, damage: Boolean, type: Int)</ID>
+    <ID>LongMethod:RenderUtil.kt$RenderUtil$fun drawFastRoundedRect(x0: Float, y0: Float, x1: Float, y1: Float, radius: Float, color: Int)</ID>
+    <ID>LongMethod:RenderUtil.kt$RenderUtil$fun drawRoundedRect( x: Float, y: Float, width: Float, height: Float, edgeRadius: Float, color: Int, borderWidth: Float, borderColor: Int )</ID>
+    <ID>LongMethod:RenderUtils.kt$RenderUtils$fun customRounded( paramXStart: Float, paramYStart: Float, paramXEnd: Float, paramYEnd: Float, rTL: Float, rTR: Float, rBR: Float, rBL: Float, color: Int )</ID>
+    <ID>LongMethod:RenderUtils.kt$RenderUtils$fun drawCircle( entity: EntityLivingBase, speed: Float, height: ClosedFloatingPointRange&lt;Float&gt;, size: Float, filled: Boolean, withHeight: Boolean, circleY: ClosedFloatingPointRange&lt;Float&gt;? = null, startColor: Int, endColor: Int )</ID>
+    <ID>LongMethod:RenderUtils.kt$RenderUtils$fun drawCustomShapeWithRadiusRetangle( x: Float, y: Float, width: Float, height: Float, radius: Float, c: Color, leftTop: Boolean, leftBottom: Boolean, rightBottom: Boolean, rightTop: Boolean )</ID>
+    <ID>LongMethod:RenderUtils.kt$RenderUtils$fun drawDome(pos: Vec3, hRadius: Double, vRadius: Double, lineWidth: Float? = null, color: Color, renderMode: Int)</ID>
+    <ID>LongMethod:RenderUtils.kt$RenderUtils$fun drawExhiEnchants(stack: ItemStack, x: Float, y: Float)</ID>
+    <ID>LongMethod:RenderUtils.kt$RenderUtils$fun drawPoints( target: EntityLivingBase, baseColor: Color, speed: Float, pointsRadius: Float, pointsScale: Float, pointsLayers: Int, pointsAdditive: Boolean, hurt: Boolean )</ID>
+    <ID>LongMethod:RenderUtils.kt$RenderUtils$fun drawRoundedBindRect( paramXStart: Float, paramYStart: Float, paramXEnd: Float, paramYEnd: Float, radius: Float, color: Int, popPush: Boolean )</ID>
+    <ID>LongMethod:RenderUtils.kt$RenderUtils$fun drawRoundedGradientRectCorner( x: Float, y: Float, x1: Float, y1: Float, radius: Float, color: Int, color2: Int )</ID>
+    <ID>LongMethod:RenderUtils.kt$RenderUtils$fun drawRoundedRect( paramXStart: Float, paramYStart: Float, paramXEnd: Float, paramYEnd: Float, radius: Float, color: Int, popPush: Boolean )</ID>
+    <ID>LongMethod:RenderUtils.kt$RenderUtils$fun drawRoundedRect(x: Float, y: Float, width: Float, height: Float, edgeRadius: Float, color: Int, borderWidth: Float, borderColor: Int)</ID>
+    <ID>LongMethod:RenderUtils.kt$RenderUtils$fun renderBox(x: Double, y: Double, z: Double, width: Float, height: Float, c: Color)</ID>
+    <ID>LongMethod:RenderUtils.kt$RenderUtils$fun renderOutlines(x: Double, y: Double, z: Double, width: Float, height: Float, c: Color, outlinewidth: Float)</ID>
+    <ID>LongMethod:ScoreboardElement.kt$ScoreboardElement$override fun drawElement(): Border?</ID>
+    <ID>LongMethod:ScriptManagerCommand.kt$ScriptManagerCommand$override fun execute(args: Array&lt;String&gt;)</ID>
+    <ID>LongMethod:ServerCrasher.kt$ServerCrasher$override fun onEnable()</ID>
+    <ID>LongMethod:SettingComponents.kt$SettingComponents$fun renderSetting(setting: Value&lt;*&gt;)</ID>
+    <ID>LongMethod:SettingComponents.kt$SettingComponents$override fun keyTyped(typedChar: Char, keyCode: Int)</ID>
+    <ID>LongMethod:SettingsUtils.kt$SettingsUtils$fun applyScript(script: String)</ID>
+    <ID>LongMethod:SideGuiColorManager.kt$SideGuiColorManager$fun drawColorCategory( mouseX: Int, mouseY: Int, alpha: Int, drag: Drag, animScroll: Float, rectHeight: Float, smooth: FloatArray )</ID>
+    <ID>LongMethod:SideGuiConfigsManager.kt$SideGuiConfigsManager$fun drawConfigsCategory(mouseX: Int, mouseY: Int, alpha: Int, drag: Drag, rectWidth: Float)</ID>
+    <ID>LongMethod:SimpleFontRenderer.kt$SimpleFontRenderer$private fun drawStringInternal(text: CharSequence, x: Double, y: Double, color: Int, shadow: Boolean): Float</ID>
+    <ID>LongMethod:SimulatedPlayer.kt$SimulatedPlayer$private fun livingEntitySideMoveEntityWithHeading(strafing: Float, forwards: Float)</ID>
+    <ID>LongMethod:SimulatedPlayer.kt$SimulatedPlayer$private fun moveEntity(xMotion: Double, yMotion: Double, zMotion: Double)</ID>
+    <ID>LongMethod:SpotifyElement.kt$SpotifyElement$override fun drawElement(): Border</ID>
+    <ID>LongMethod:SpotifyModule.kt$SpotifyModule$fun beginBrowserAuthorization(callback: (BrowserAuthStatus, String) -&gt; Unit): Boolean</ID>
+    <ID>LongMethod:StringsSetting.kt$StringsSetting$override fun draw(mouseX: Int, mouseY: Int)</ID>
+    <ID>LongMethod:TabGUI.kt$TabGUI$override fun drawElement(): Border</ID>
+    <ID>LongMethod:Target.kt$Targets$override fun drawElement(): Border?</ID>
+    <ID>LongMethod:Text.kt$Text$@Suppress("UnclearPrecedenceOfBinaryExpression") override fun drawElement(): Border</ID>
+    <ID>LongMethod:Tower.kt$Tower$private fun move()</ID>
+    <ID>LongMethod:VerusDamage.kt$VerusDamage$override fun onMove(event: MoveEvent)</ID>
+    <ID>LongMethod:VulcanSpeeds.kt$VulcanSpeeds$override fun onUpdate()</ID>
+    <ID>LongMethod:Watermark.kt$Watermark$override fun drawElement(): Border</ID>
+    <ID>LongMethod:XrayCommand.kt$XrayCommand$override fun execute(args: Array&lt;String&gt;)</ID>
+    <ID>LongParameterList:AutoArmor.kt$AutoArmor$( armorType: Int, index: Int?, stack: ItemStack, stacks: List&lt;ItemStack?&gt;, ignoreMinAge: Boolean = false, ignoreRepairCheck: Boolean = false, )</ID>
+    <ID>LongParameterList:BlockESP.kt$BlockESP$( remaining: HashSet&lt;BlockPos&gt;, minX: Int, maxX: Int, minY: Int, maxY: Int, minZ: Int, maxZ: Int )</ID>
+    <ID>LongParameterList:BlockElement.kt$BlockElement$( private val element: ModuleElement, private val setting: BlockValue, parent: Panel, x: Int, y: Int, width: Int, height: Int )</ID>
+    <ID>LongParameterList:BooleanElement.kt$BooleanElement$( private val element: ModuleElement, private val setting: BoolValue, parent: Panel, x: Int, y: Int, width: Int, height: Int )</ID>
+    <ID>LongParameterList:CPSCounter.kt$CPSCounter$(mouseX: Int, mouseY: Int, x: Float, y: Float, x2: Float, y2: Float)</ID>
+    <ID>LongParameterList:CPSCounter.kt$CPSCounter$(mouseX: Int, mouseY: Int, x: Int, y: Int, width: Int, height: Int)</ID>
+    <ID>LongParameterList:Category.kt$Category$( val displayName: String, val configName: String, val htmlIcon: String, initialPosX: Int, initialPosY: Int, val clicked: Boolean = false, val showMods: Boolean = true, val subCategories: Array&lt;SubCategory&gt; )</ID>
+    <ID>LongParameterList:CharRenderer.kt$CharRenderer$(number: Float, orgX: Float, orgY: Float, initX: Float, initY: Float, scaleX: Float, scaleY: Float, shadow: Boolean, fontSpeed: Float, color: Int)</ID>
+    <ID>LongParameterList:ColorElement.kt$ColorElement$( private val element: ModuleElement, private val setting: ColorValue, parent: Panel, x: Int, y: Int, width: Int, height: Int )</ID>
+    <ID>LongParameterList:ColorUtils.kt$ColorUtils$( entity: EntityLivingBase, r: Int, g: Int, b: Int, a: Int, healthFromScoreboard: Boolean, absorption: Boolean )</ID>
+    <ID>LongParameterList:CommandBuilder.kt$BuiltCommand$( val name: String, val aliases: Array&lt;String&gt;, val parameters: List&lt;Parameter&lt;*&gt;&gt;, val subcommands: List&lt;BuiltCommand&gt;, val handler: CommandHandler?, val description: String?, var parent: BuiltCommand? = null )</ID>
+    <ID>LongParameterList:Configs.kt$Configs$(mx: Int, my: Int, width: Float, height: Float, configX: Float, configY: Float, action: () -&gt; Unit)</ID>
+    <ID>LongParameterList:Configs.kt$Configs$(x: Int, y: Int, width: Int, height: Int, mx: Int, my: Int, active: Boolean)</ID>
+    <ID>LongParameterList:Configs.kt$Configs$(x: Int, y: Int, width: Int, height: Int, mx: Int, my: Int, light: Boolean, active: Boolean)</ID>
+    <ID>LongParameterList:Configurable.kt$Configurable$( name: String, x: Double, y: Double, z: Double, useLocateButton: Boolean = false, isSupported: (() -&gt; Boolean)? = null )</ID>
+    <ID>LongParameterList:CurveElement.kt$CurveElement$( private val element: ModuleElement, private val setting: CurveValue, parent: Panel, x: Int, y: Int, width: Int, height: Int )</ID>
+    <ID>LongParameterList:CustomFont.kt$CustomFont$( x: Float, y: Float, width: Float, height: Float, srcX: Float, srcY: Float, srcWidth: Float, srcHeight: Float )</ID>
+    <ID>LongParameterList:DashTrail.kt$DashTrail$( x: Float, y: Float, x2: Float, y2: Float, c1: Int, c2: Int, c3: Int, c4: Int )</ID>
+    <ID>LongParameterList:EspPreviewComponent.kt$EspPreviewComponent$(moduleButtons: List&lt;ButtonArea&lt;Module&gt;&gt;, mouseX: Int, mouseY: Int, textColor: Color, outlineColor: Color, backgroundColor: Color)</ID>
+    <ID>LongParameterList:EspPreviewComponent.kt$EspPreviewComponent$(mouseX: Int, mouseY: Int, previewX: Int, previewWidth: Float, panelY: Float, textColor: Color)</ID>
+    <ID>LongParameterList:EspPreviewComponent.kt$EspPreviewComponent$(mouseX: Int, mouseY: Int, previewX: Int, previewY: Int, previewWidth: Float, playerAreaHeight: Float, backgroundColor: Color)</ID>
+    <ID>LongParameterList:EspPreviewComponent.kt$EspPreviewComponent$(mouseX: Int, mouseY: Int, previewX: Int, previewY: Int, previewWidth: Float, playerAreaHeight: Float, outlineColor: Color, textColor: Color)</ID>
+    <ID>LongParameterList:EspPreviewComponent.kt$EspPreviewComponent$(mouseX: Int, mouseY: Int, previewX: Int, previewY: Int, previewWidth: Float, previewHeight: Float)</ID>
+    <ID>LongParameterList:EspPreviewComponent.kt$EspPreviewComponent$(mouseX: Int, mouseY: Int, previewX: Int, previewY: Int, previewWidth: Float, previewHeight: Float, playerAreaHeight: Float, backgroundColor: Color, outlineColor: Color, textColor: Color)</ID>
+    <ID>LongParameterList:EspPreviewComponent.kt$EspPreviewComponent$(x: Float, y: Float, w: Float, h: Float, mouseX: Int, mouseY: Int)</ID>
+    <ID>LongParameterList:FallingPlayer.kt$FallingPlayer$( private var x: Double = mc.thePlayer.posX, private var y: Double = mc.thePlayer.posY, private var z: Double = mc.thePlayer.posZ, private var motionX: Double = mc.thePlayer.motionX, private var motionY: Double = mc.thePlayer.motionY, private var motionZ: Double = mc.thePlayer.motionZ, private val yaw: Float = mc.thePlayer.rotationYaw, private var strafe: Float = mc.thePlayer.moveStrafing, private var forward: Float = mc.thePlayer.moveForward )</ID>
+    <ID>LongParameterList:FontElement.kt$FontElement$( private val element: ModuleElement, private val setting: FontValue, parent: Panel, x: Int, y: Int, width: Int, height: Int, )</ID>
+    <ID>LongParameterList:GameFontRenderer.kt$GameFontRenderer$( text: String?, x: Float, y: Float, color: Int, ignoreColor: Boolean, rainbow: Boolean = false, gradient: Boolean = false )</ID>
+    <ID>LongParameterList:GradientFontShader.kt$GradientFontShader$(enable: Boolean, x: Float, y: Float, gradient: List&lt;FloatArray&gt;, speed: Float, offset: Float)</ID>
+    <ID>LongParameterList:GradientShader.kt$GradientShader$(enable: Boolean, x: Float, y: Float, gradient: List&lt;FloatArray&gt;, speed: Float, offset: Float)</ID>
+    <ID>LongParameterList:GraphSearch.kt$GraphSearch$( end: N, costs: Map&lt;N, Double&gt;, parents: Map&lt;N, N&gt;, reachedGoal: Boolean, expandedNodes: Int, termination: SearchTermination )</ID>
+    <ID>LongParameterList:GuiExtensions.kt$AbstractScreen$( id: Int, fontRenderer: FontRenderer, x: Int, y: Int, width: Int, height: Int, block: GuiTextField.() -&gt; Unit = {} )</ID>
+    <ID>LongParameterList:GuiMainMenu.kt$GuiMainMenu$(font: GameFontRenderer, text: String, x: Float, y: Float, color: Int, shadow: Boolean = false)</ID>
+    <ID>LongParameterList:GuiMainMenu.kt$GuiMainMenu$(icon: MenuIcon, x: Float, y: Float, size: Float, color: Int, alphaMul: Float = 1f)</ID>
+    <ID>LongParameterList:GuiMainMenu.kt$GuiMainMenu$(x: Float, y: Float, w: Float, h: Float, radius: Float, color: Color)</ID>
+    <ID>LongParameterList:GuiMainMenu.kt$GuiMainMenu$(x: Float, y: Float, w: Float, h: Float, radius: Float, f: Float)</ID>
+    <ID>LongParameterList:GuiServerSelect.kt$GuiServerSelect$(data: ServerData, index: Int, x: Float, y: Float, w: Float, hovered: Boolean, mouseX: Int, mouseY: Int)</ID>
+    <ID>LongParameterList:GuiServerSelect.kt$GuiServerSelect$(font: GameFontRenderer, text: String, x: Float, y: Float, color: Int, shadow: Boolean = false)</ID>
+    <ID>LongParameterList:GuiServerSelect.kt$GuiServerSelect$(icon: UiIcon, x: Float, y: Float, size: Float, color: Int, alphaMul: Float = 1f)</ID>
+    <ID>LongParameterList:GuiServerSelect.kt$GuiServerSelect$(icon: UiIcon, x: Float, y: Float, size: Float, mouseX: Int, mouseY: Int, hoverColor: Color, f: Float)</ID>
+    <ID>LongParameterList:GuiServerSelect.kt$GuiServerSelect$(label: String, value: String, focused: Boolean, x: Float, y: Float, w: Float)</ID>
+    <ID>LongParameterList:GuiServerSelect.kt$GuiServerSelect$(label: String, x: Float, y: Float, w: Float, h: Float, primary: Boolean, hovered: Boolean)</ID>
+    <ID>LongParameterList:GuiServerSelect.kt$GuiServerSelect$(x: Float, y: Float, w: Float, h: Float, radius: Float, color: Color)</ID>
+    <ID>LongParameterList:GuiSpotifyPlayer.kt$GuiSpotifyPlayer$( url: String?, fallback: ResourceLocation, x: Int, y: Int, width: Int, height: Int, alpha: Float = 1f, )</ID>
+    <ID>LongParameterList:GuiSpotifyPlayer.kt$GuiSpotifyPlayer$(texture: ResourceLocation, x: Int, y: Int, width: Int, height: Int, alpha: Float = 1f)</ID>
+    <ID>LongParameterList:GuiSpotifyPlayer.kt$GuiSpotifyPlayer.SpotifyIconButton$( id: Int, x: Int, y: Int, width: Int, height: Int, private val iconProvider: () -&gt; ResourceLocation, private val padding: Int = 3, )</ID>
+    <ID>LongParameterList:ImageButton.kt$ImageButton$( text: String, val image: ResourceLocation, x: Int, y: Int, open var imageWidth: Int = 6, open var imageHeight: Int = 6, customWidth: Int = 12, customHeight: Int = 12, open var hoverEffectYOffset: Int = -12 )</ID>
+    <ID>LongParameterList:ItemTeleport.kt$ItemTeleport$(x1: Double, y1: Double, z1: Double, x2: Double, y2: Double, z2: Double)</ID>
+    <ID>LongParameterList:JumpCircle.kt$JumpCircle$(pos: Vec3, maxRadius: Double, timeFraction: Float, circleIndex: Int, shift: Float, intensity: Float)</ID>
+    <ID>LongParameterList:KeyBindElement.kt$KeyBindElement$( private val element: ModuleElement, private val setting: KeyBindValue, parent: Panel, x: Int, y: Int, width: Int, height: Int )</ID>
+    <ID>LongParameterList:KeyInfo.kt$KeyInfo$( val posX: Float, val posY: Float, val width: Float, val height: Float, val key: Int, private val keyName: String, private val keyDisplayName: String )</ID>
+    <ID>LongParameterList:ListElement.kt$ListElement$( private val element: ModuleElement, private val setting: ListValue, parent: Panel, x: Int, y: Int, width: Int, height: Int )</ID>
+    <ID>LongParameterList:LunarButtonRenderer.kt$LunarButtonRenderer$(x: Float, y: Float, x1: Float, y1: Float, radius: Float, colour: Int)</ID>
+    <ID>LongParameterList:LunarButtonRenderer.kt$LunarButtonRenderer$(x: Float, y: Float, x1: Float, y1: Float, radius: Float, lineWidth: Float, colour: Int)</ID>
+    <ID>LongParameterList:MLG.kt$MLG$( blockPos: BlockPos, side: EnumFacing, hitVec: Vec3, stack: ItemStack, finalStage: Boolean = true, onSuccess: () -&gt; Unit = { } )</ID>
+    <ID>LongParameterList:ModernRotationEngine.kt$ModernRotationEngine$( error: Float, momentum: Float, directionChange: Float, targetDistance: Float, targetMotion: Float, baseSpeed: Float, outputMultiplier: Float, )</ID>
+    <ID>LongParameterList:Module.kt$Module$( name: String, val category: Category, val subCategory: Category.SubCategory = Category.SubCategory.GENERAL, defaultKeyBind: Int = Keyboard.KEY_NONE, private val canBeEnabled: Boolean = true, private val forcedDescription: String? = null, var expanded: Boolean = false, // Adds spaces between lowercase and uppercase letters (KillAura -&gt; Kill Aura) val spacedName: String = name.splitToSequence(SPLIT_REGEX).joinToString(separator = " "), subjective: Boolean = category == Category.VISUAL, val gameDetecting: Boolean = canBeEnabled, defaultState: Boolean = false, defaultHidden: Boolean = false, legacyNames: Array&lt;String&gt; = emptyArray(), )</ID>
+    <ID>LongParameterList:ModuleElement.kt$FileElement$( private val element: ModuleElement, private val setting: FileValue, parent: Panel, x: Int, y: Int, width: Int, height: Int )</ID>
+    <ID>LongParameterList:ModuleElement.kt$GroupElement$( private val moduleElement: ModuleElement, private val group: Configurable, parent: Panel, x: Int, y: Int, width: Int, height: Int )</ID>
+    <ID>LongParameterList:MovementUtils.kt$MovementUtils$( srcX: Double, srcY: Double, srcZ: Double, dstX: Double, dstY: Double, dstZ: Double )</ID>
+    <ID>LongParameterList:MultiSelectElement.kt$MultiSelectElement$( private val element: ModuleElement, private val setting: MultiSelectValue, parent: Panel, x: Int, y: Int, width: Int, height: Int )</ID>
+    <ID>LongParameterList:NeverloseGui.kt$NeverloseGui.Companion$(str: String, fontRenderer: FontRenderer, x: Float, y: Float, color: Int, color2: Int, size: Float)</ID>
+    <ID>LongParameterList:NlSetting.kt$NlSetting.Companion$(str: String, fontRenderer: FontRenderer, x: Float, y: Float, color: Int, color2: Int, w: Int, size: Float)</ID>
+    <ID>LongParameterList:Notifications.kt$Notification$(index: Int, style: String, colorValue1: Int, colorValue2: Int, backgroundMode: Boolean, backgroundColor: Color)</ID>
+    <ID>LongParameterList:Panel.kt$Panel$( val name: String, var x: Int, var y: Int, val width: Int, val height: Int, var open: Boolean, val elements: List&lt;Element&gt; )</ID>
+    <ID>LongParameterList:Parameter.kt$Parameter$( val name: String, val required: Boolean, val vararg: Boolean, val verifier: ((String) -&gt; ParameterValidationResult&lt;T&gt;)?, val autocompleter: ((begin: String, args: List&lt;String&gt;) -&gt; List&lt;String&gt;)?, val useMinecraftAutoCompletion: Boolean, /** Index assigned by the owning Command once the parameter list is finalized. */ var index: Int = -1 )</ID>
+    <ID>LongParameterList:PathUtils.kt$PathUtils$( curX: Double, curY: Double, curZ: Double, tpX: Double, tpY: Double, tpZ: Double, dashDistance: Double )</ID>
+    <ID>LongParameterList:PathUtils.kt$PathUtils$( curX: Double, curY: Double, curZ: Double, tpX: Double, tpY: Double, tpZ: Double, dashDistance: Double, diagonal: Boolean, maxLoops: Int = 3000 )</ID>
+    <ID>LongParameterList:PathUtils.kt$PathUtils$( tpX: Double, tpY: Double, tpZ: Double, dist: Double, diagonal: Boolean, maxLoops: Int = 3000 )</ID>
+    <ID>LongParameterList:PathUtils.kt$PathUtils$(x1: Double, y1: Double, z1: Double, x2: Double, y2: Double, z2: Double)</ID>
+    <ID>LongParameterList:ProjectileSolver.kt$ProjectileSolver$( origin: Vec3, target: Vec3, velocity: Vec3, flightTicks: Double, arc: ProjectileArc, launchSpeed: Double, )</ID>
+    <ID>LongParameterList:RangeElement.kt$RangeElement$( private val label: String, private val minimum: Float, private val maximum: Float, parent: Panel, x: Int, y: Int, width: Int, height: Int, private val getLow: () -&gt; Float, private val getHigh: () -&gt; Float, private val setLow: (Float) -&gt; Unit, private val setHigh: (Float) -&gt; Unit, private val isInt: Boolean, private val suffix: String, )</ID>
+    <ID>LongParameterList:RenderEffects.kt$RenderEffects$( paramXStart: Float, paramYStart: Float, paramXEnd: Float, paramYEnd: Float, radius: Float, color: Int, popPush: Boolean = true )</ID>
+    <ID>LongParameterList:RenderEffects.kt$RenderEffects$(x: Int, y: Int, width: Int, height: Int, blurRadius: Int, color: Color)</ID>
+    <ID>LongParameterList:RenderHelper.kt$RenderHelper$(x: Float, y: Float, width: Float, height: Float, mouseX: Int, mouseY: Int)</ID>
+    <ID>LongParameterList:RenderPrimitives.kt$RenderPrimitives$( centerX: Float, centerY: Float, radius: Float, startAngle: Double, segments: Int, color: Int )</ID>
+    <ID>LongParameterList:RenderPrimitives.kt$RenderPrimitives$( left: Double, top: Double, right: Double, bottom: Double, startColor: Int, endColor: Int, zLevel: Float = 0f )</ID>
+    <ID>LongParameterList:RenderPrimitives.kt$RenderPrimitives$( x: Float, y: Float, x2: Float, y2: Float, round: Float, color: Int )</ID>
+    <ID>LongParameterList:RenderPrimitives.kt$RenderPrimitives$(x1: Double, y1: Double, x2: Double, y2: Double, color: Int, width: Float = 1f)</ID>
+    <ID>LongParameterList:RenderPrimitives.kt$RenderPrimitives$(x: Float, y: Float, x2: Float, y2: Float, radius: Float, color: Int)</ID>
+    <ID>LongParameterList:RenderPrimitives.kt$RenderPrimitives$(x: Float, y: Float, x2: Float, y2: Float, width: Float, borderColor: Int, rectColor: Int)</ID>
+    <ID>LongParameterList:RenderPrimitives.kt$RenderPrimitives$(x: Float, y: Float, x2: Float, y2: Float, width: Float, color: Int)</ID>
+    <ID>LongParameterList:RenderTexture.kt$RenderTexture$( id: Int, hue: Float, width: Int, height: Int, generateImage: (BufferedImage, Graphics2D) -&gt; Unit, drawAt: (Int) -&gt; Unit )</ID>
+    <ID>LongParameterList:RenderTexture.kt$RenderTexture$( x: Float, y: Float, u: Float, v: Float, width: Float, height: Float, textureWidth: Float, textureHeight: Float )</ID>
+    <ID>LongParameterList:RenderTexture.kt$RenderTexture$( x: Int, y: Int, textureX: Int, textureY: Int, width: Int, height: Int, zLevel: Float )</ID>
+    <ID>LongParameterList:RenderTexture.kt$RenderTexture$( x: Int, y: Int, u: Float, v: Float, uWidth: Int, vHeight: Int, width: Int, height: Int, tileWidth: Float, tileHeight: Float )</ID>
+    <ID>LongParameterList:RenderUtil.kt$RenderUtil$( cX: Float, cY: Float, start: Int, end: Int, radius: Float, res: ResourceLocation?, color: Int )</ID>
+    <ID>LongParameterList:RenderUtil.kt$RenderUtil$( left: Double, top: Double, right: Double, bottom: Double, sideways: Boolean, startColor: Int, endColor: Int )</ID>
+    <ID>LongParameterList:RenderUtil.kt$RenderUtil$( renderer: WorldRenderer, x: Int, y: Int, width: Int, height: Int, red: Int, green: Int, blue: Int, alpha: Int )</ID>
+    <ID>LongParameterList:RenderUtil.kt$RenderUtil$( x: Double, y: Double, textureX: Double, textureY: Double, width: Double, height: Double )</ID>
+    <ID>LongParameterList:RenderUtil.kt$RenderUtil$( x: Float, y: Float, start: Float, end: Float, radius: Float, color: Int )</ID>
+    <ID>LongParameterList:RenderUtil.kt$RenderUtil$( x: Float, y: Float, start: Float, end: Float, w: Float, h: Float, color: Int )</ID>
+    <ID>LongParameterList:RenderUtil.kt$RenderUtil$( x: Float, y: Float, u: Float, v: Float, uWidth: Float, vHeight: Float, width: Int, height: Int, tileWidth: Float, tileHeight: Float )</ID>
+    <ID>LongParameterList:RenderUtil.kt$RenderUtil$( x: Float, y: Float, u: Float, v: Float, uWidth: Int, vHeight: Int, width: Int, height: Int, tileWidth: Float, tileHeight: Float )</ID>
+    <ID>LongParameterList:RenderUtil.kt$RenderUtil$( x: Float, y: Float, u: Float, v: Float, width: Float, height: Float, textureWidth: Float, textureHeight: Float )</ID>
+    <ID>LongParameterList:RenderUtil.kt$RenderUtil$( x: Float, y: Float, width: Float, height: Float, edgeRadius: Float, color: Int, borderWidth: Float, borderColor: Int )</ID>
+    <ID>LongParameterList:RenderUtil.kt$RenderUtil$(image: ResourceLocation?, x: Float, y: Float, width: Float, height: Float, alpha: Float)</ID>
+    <ID>LongParameterList:RenderUtil.kt$RenderUtil$(image: ResourceLocation?, x: Float, y: Float, width: Float, height: Float, color: Int)</ID>
+    <ID>LongParameterList:RenderUtil.kt$RenderUtil$(left: Double, top: Double, right: Double, bottom: Double, col1: Int, col2: Int)</ID>
+    <ID>LongParameterList:RenderUtil.kt$RenderUtil$(left: Float, top: Float, right: Float, bottom: Float, startColor: Int, endColor: Int)</ID>
+    <ID>LongParameterList:RenderUtil.kt$RenderUtil$(n: Float, n2: Float, n3: Double, n4: Int, n5: Int, n6: Double, n7: Int)</ID>
+    <ID>LongParameterList:RenderUtil.kt$RenderUtil$(x0: Float, y0: Float, x1: Float, y1: Float, radius: Float, color: Int)</ID>
+    <ID>LongParameterList:RenderUtil.kt$RenderUtil$(x: Double, y: Double, x2: Double, y2: Double, lw: Double, color: Color)</ID>
+    <ID>LongParameterList:RenderUtil.kt$RenderUtil$(x: Float, y: Float, width: Float, height: Float, mouseX: Int, mouseY: Int)</ID>
+    <ID>LongParameterList:RenderUtil.kt$RenderUtil$(x: Float, y: Float, x2: Float, y2: Float, l1: Float, col1: Int, col2: Int)</ID>
+    <ID>LongParameterList:RenderUtil.kt$RenderUtil$(x: Float, y: Float, x2: Float, y2: Float, mouseX: Int, mouseY: Int)</ID>
+    <ID>LongParameterList:RenderUtil.kt$RenderUtil$(x: Float, y: Float, x2: Float, y2: Float, round: Float, color: Int)</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$( entity: EntityLivingBase, speed: Float, height: ClosedFloatingPointRange&lt;Float&gt;, size: Float, filled: Boolean, withHeight: Boolean, circleY: ClosedFloatingPointRange&lt;Float&gt;? = null, startColor: Int, endColor: Int )</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$( entityX: Double, entityY: Double, entityZ: Double, theta: Double, phi: Double, horizontalRadius: Double, verticalRadius: Double )</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$( id: Int, hue: Float, width: Int, height: Int, generateImage: (BufferedImage, Graphics2D) -&gt; Unit, drawAt: (Int) -&gt; Unit )</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$( image: ResourceLocation?, x: Number, y: Number, width: Int, height: Int, color: Color = Color.WHITE, radius: Float = 0f )</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$( left: Float, top: Float, right: Float, bottom: Float, radius: Int, startColor: Int, endColor: Int )</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$( left: Number, top: Number, right: Number, bottom: Number, startColor: Int, endColor: Int, zLevel: Float )</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$( paramXStart: Float, paramYStart: Float, paramXEnd: Float, paramYEnd: Float, rTL: Float, rTR: Float, rBR: Float, rBL: Float, color: Int )</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$( paramXStart: Float, paramYStart: Float, paramXEnd: Float, paramYEnd: Float, radius: Float, color: Int )</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$( paramXStart: Float, paramYStart: Float, paramXEnd: Float, paramYEnd: Float, radius: Float, color: Int, popPush: Boolean )</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$( skin: ResourceLocation?, x: Int, y: Int, u: Float, v: Float, uWidth: Int, vHeight: Int, width: Int, height: Int, tileWidth: Float, tileHeight: Float, color: Color )</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$( target: EntityLivingBase, baseColor: Color, speed: Float, pointsRadius: Float, pointsScale: Float, pointsLayers: Int, pointsAdditive: Boolean, hurt: Boolean )</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$( target: EntityLivingBase, texture: ResourceLocation, color1: Color, color2: Color, color3: Color, color4: Color, scale: Float, xOffset: Float, yOffset: Float, additive: Boolean, spin: Boolean, spinSpeed: Float, billboard: Boolean, hurt: Boolean )</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$( x1: Float, y1: Float, x2: Float, y2: Float, color: Color, radius: Float, cornersToRound: RoundedCorners = RoundedCorners.ALL )</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$( x1: Float, y1: Float, x2: Float, y2: Float, color: Int, radius: Float, cornersToRound: RoundedCorners = RoundedCorners.ALL )</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$( x1: Float, y1: Float, x2: Float, y2: Float, color: Int, width: Float, radius: Float )</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$( x1: Float, y1: Float, x2: Float, y2: Float, color: Int, width: Float, radius: Float, bottom: Boolean = true )</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$( x1: Float, y1: Float, x2: Float, y2: Float, red: Float, green: Float, blue: Float, alpha: Float, radius: Float, cornersToRound: RoundedCorners = RoundedCorners.ALL )</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$( x1: Int, y1: Int, x2: Int, y2: Int, color: Int, radius: Float, cornersToRound: RoundedCorners = RoundedCorners.ALL )</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$( x: Double, y: Double, u: Float, v: Float, width: Double, height: Double, textureWidth: Float, textureHeight: Float, color: Color )</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$( x: Float, y: Float, u: Float, v: Float, width: Float, height: Float, textureWidth: Float, textureHeight: Float )</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$( x: Float, y: Float, width: Float, height: Float, radius: Float, c: Color, leftTop: Boolean, leftBottom: Boolean, rightBottom: Boolean, rightTop: Boolean )</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$( x: Float, y: Float, x1: Float, y1: Float, radius: Float, color: Int, color2: Int )</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$( x: Float, y: Float, x2: Float, y2: Float, width: Float, color1: Int, color2: Int, radius: Float )</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$( x: Int, y: Int, textureX: Int, textureY: Int, width: Int, height: Int, zLevel: Float )</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$( x: Int, y: Int, u: Float, v: Float, uWidth: Int, vHeight: Int, width: Int, height: Int, tileWidth: Float, tileHeight: Float )</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$(cx: Float, cy: Float, radius: Float, start: Float, end: Float, segments: Int)</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$(entity: EntityLivingBase, posX: Double, posY: Double, posZ: Double, color: Int, backgroundColor: Int)</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$(left: Double, top: Double, right: Double, bottom: Double, col1: Int, col2: Int)</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$(left: Double, top: Double, right: Double, bottom: Double, startColor: Int, endColor: Int)</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$(left: Float, top: Float, right: Float, bottom: Float, startColor: Int, endColor: Int)</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$(paramXStart: Float, paramYStart: Float, paramXEnd: Float, paramYEnd: Float, radius: Float, color: Int)</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$(pos: Vec3, hRadius: Double, vRadius: Double, lineWidth: Float? = null, color: Color, renderMode: Int)</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$(skin: ResourceLocation?, x: Int, y: Int, width: Int, height: Int, color: Int)</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$(x: Double, y: Double, width: Double, height: Double, startColor: Int, endColor: Int)</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$(x: Double, y: Double, z: Double, width: Float, height: Float, c: Color)</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$(x: Double, y: Double, z: Double, width: Float, height: Float, c: Color, outlinewidth: Float)</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$(x: Double, y: Double, z: Double, width: Float, height: Float, color: Color, outline: Boolean)</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$(x: Float, y: Float, width: Float, height: Float, edgeRadius: Float, color: Int, borderWidth: Float, borderColor: Int)</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$(x: Float, y: Float, width: Float, height: Float, mouseX: Int, mouseY: Int)</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$(x: Float, y: Float, width: Float, height: Float, radius: Float, color: Color)</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$(x: Float, y: Float, x1: Float, y1: Float, radius: Float, color: Int)</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$(x: Float, y: Float, x1: Float, y1: Float, radius: Float, lineWidth: Float, colour: Int)</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$(x: Float, y: Float, x2: Float, y2: Float, borderWidth: Float, borderColor: Int, fillColor: Int)</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$(x: Float, y: Float, x2: Float, y2: Float, radius: Float, width: Float)</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$(x: Float, y: Float, x2: Float, y2: Float, width: Float, borderColor: Int, rectColor: Int)</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$(x: Float, y: Float, x2: Float, y2: Float, width: Float, color1: Int)</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$(x: Float, y: Float, x2: Float, y2: Float, width: Float, color1: Int, color2: Int)</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$(x: Float, y: Float, x2: Float, y2: Float, width: Float, color: Int)</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$(x: Float, y: Float, x2: Float, y2: Float, width: Float, color: Int, radius: Float)</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$(x: Float, y: Float, xRadius: Float, yRadius: Float, start: Int, end: Int)</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$(x: Int, y: Int, width: Int, height: Int, blurRadius: Int, color: Color)</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$(x: Int, y: Int, x2: Int, y2: Int, radius: Float, width: Float, color: Int)</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$(x: Int, y: Int, x2: Int, y2: Int, width: Number, borderColor: Int, rectColor: Int)</ID>
+    <ID>LongParameterList:RenderUtils.kt$RenderUtils$(x: Int, y: Int, x2: Int, y2: Int, width: Number, color: Int)</ID>
+    <ID>LongParameterList:RotationUtils.kt$RotationUtils$( bb: AxisAlignedBB, distanceBasedSpot: Boolean = false, outborder: Boolean, randomization: RandomizationSettings? = null, predict: Boolean, lookRange: Float, attackRange: Float, throughWallsRange: Float = 0f, bodyPoints: List&lt;String&gt; = listOf("Head", "Feet"), horizontalSearch: ClosedFloatingPointRange&lt;Float&gt; = 0f..1f, preferLastPoint: Boolean = false, )</ID>
+    <ID>LongParameterList:RotationUtils.kt$RotationUtils$( currentRotation: Rotation, targetRotation: Rotation, hSpeed: Float, vSpeed: Float = hSpeed, legitimize: Boolean, minRotationDiff: Float, minRotationDiffResetTiming: String, )</ID>
+    <ID>LongParameterList:RotationUtils.kt$RotationUtils$( diff: Float, min: Float, timing: String, yaw: Boolean, applyRealism: Boolean, action: (Float) -&gt; Unit )</ID>
+    <ID>LongParameterList:RoundedUtil.kt$RoundedUtil.Companion$( x: Float, y: Float, width: Float, height: Float, radius: Float, bottomLeft: Color, topLeft: Color, bottomRight: Color, topRight: Color )</ID>
+    <ID>LongParameterList:RoundedUtil.kt$RoundedUtil.Companion$( x: Float, y: Float, width: Float, height: Float, radius: Float, left: Color, right: Color )</ID>
+    <ID>LongParameterList:RoundedUtil.kt$RoundedUtil.Companion$( x: Float, y: Float, width: Float, height: Float, radius: Float, outlineThickness: Float, color: Color, outlineColor: Color )</ID>
+    <ID>LongParameterList:RoundedUtil.kt$RoundedUtil.Companion$( x: Float, y: Float, width: Float, height: Float, radius: Float, roundedTexturedShader: ShaderUtil )</ID>
+    <ID>LongParameterList:RoundedUtil.kt$RoundedUtil.Companion$( x: Float, y: Float, width: Float, height: Float, radius: Float, top: Color, bottom: Color )</ID>
+    <ID>LongParameterList:RoundedUtil.kt$RoundedUtil.Companion$(left: Float, top: Float, right: Float, bottom: Float, radius: Float, color: Color)</ID>
+    <ID>LongParameterList:RoundedUtil.kt$RoundedUtil.Companion$(x: Float, y: Float, width: Float, height: Float, radius: Float, alpha: Float)</ID>
+    <ID>LongParameterList:RoundedUtil.kt$RoundedUtil.Companion$(x: Float, y: Float, width: Float, height: Float, radius: Float, blur: Boolean, color: Color)</ID>
+    <ID>LongParameterList:RoundedUtil.kt$RoundedUtil.Companion$(x: Float, y: Float, width: Float, height: Float, radius: Float, color: Color)</ID>
+    <ID>LongParameterList:RoundedUtil.kt$RoundedUtil.Companion$(x: Float, y: Float, width: Float, height: Float, radius: Float, color: Color, scale: Float)</ID>
+    <ID>LongParameterList:Scaffold.kt$Scaffold$( pos: BlockPos, offsetPos: BlockPos, vec3: Vec3, side: EnumFacing, eyes: Vec3, maxReach: Float, raycast: Boolean, )</ID>
+    <ID>LongParameterList:Scaffold.kt$Scaffold$( stack: ItemStack, clickPos: BlockPos, side: EnumFacing, hitVec: Vec3, attempt: Boolean = false, onSuccess: () -&gt; Unit = { } )</ID>
+    <ID>LongParameterList:SideGuiBackgroundManager.kt$SideGuiBackgroundManager$(mouseX: Int, mouseY: Int, alpha: Int, drag: Drag, animScroll: Float, rectHeight: Float)</ID>
+    <ID>LongParameterList:SideGuiColorManager.kt$SideGuiColorManager$( mouseX: Int, mouseY: Int, alpha: Int, colorXStart: Float, buttonBaseY: Float, colorWidth: Float, drag: Drag )</ID>
+    <ID>LongParameterList:SideGuiColorManager.kt$SideGuiColorManager$( mouseX: Int, mouseY: Int, alpha: Int, drag: Drag, animScroll: Float, rectHeight: Float, smooth: FloatArray )</ID>
+    <ID>LongParameterList:SideGuiConfigsManager.kt$SideGuiConfigsManager$( mouseX: Int, mouseY: Int, alpha: Int, configX: Float, configY: Float, width: Float, height: Float, drawContent: () -&gt; Unit )</ID>
+    <ID>LongParameterList:SideGuiConfigsManager.kt$SideGuiConfigsManager$(mouseX: Int, mouseY: Int, alpha: Int, startY: Float, drag: Drag, rectWidth: Float)</ID>
+    <ID>LongParameterList:SilentHotbar.kt$SilentHotbar$( requester: Any?, slot: Int, ticksUntilReset: Int? = null, immediate: Boolean = false, render: Boolean = true, resetManually: Boolean = false, renderHotbar: Boolean = render, renderFirstPerson: Boolean = render, renderThirdPerson: Boolean = render, )</ID>
+    <ID>LongParameterList:SilentHotbar.kt$SilentHotbarState$( val enforcedSlot: Int, var requester: Any?, var resetTicks: Int?, val renderHotbar: Boolean, val renderFirstPerson: Boolean, val renderThirdPerson: Boolean, val resetManually: Boolean, )</ID>
+    <ID>LongParameterList:SimpleFontRenderer.kt$SimpleFontRenderer$( x: Float, y: Float, width: Float, height: Float, srcX: Float, srcY: Float, srcWidth: Float, srcHeight: Float )</ID>
+    <ID>LongParameterList:SimulatedPlayer.kt$SimulatedPlayer$( private val player: EntityPlayerSP, var box: AxisAlignedBB, var movementInput: MovementInput, private var jumpTicks: Int, var motionZ: Double, var motionY: Double, var motionX: Double, var inWater: Boolean, var onGround: Boolean, private var isAirBorne: Boolean, var rotationYaw: Float, var posX: Double, var posY: Double, var posZ: Double, private val capabilities: PlayerCapabilities, private val ridingEntity: Entity?, private var jumpMovementFactor: Float, private val worldObj: World, var isCollidedHorizontally: Boolean, var isCollidedVertically: Boolean, private val worldBorder: WorldBorder, private val chunkProvider: IChunkProvider, private var isOutsideBorder: Boolean, private var riddenByEntity: Entity?, private var attributeMap: BaseAttributeMap?, private val isSpectator: Boolean, var fallDistance: Float, private val stepHeight: Float, var isCollided: Boolean, private var fire: Int, private var distanceWalkedModified: Float, private var distanceWalkedOnStepModified: Float, private var nextStepDistance: Int, private val height: Float, private val width: Float, private val fireResistance: Int, var isInWeb: Boolean, private var noClip: Boolean, private var isSprinting: Boolean, private val foodStats: FoodStats, )</ID>
+    <ID>LongParameterList:SimulatedPlayer.kt$SimulatedPlayer$(minX: Int, minY: Int, minZ: Int, maxX: Int, maxY: Int, maxZ: Int, idfk: Boolean)</ID>
+    <ID>LongParameterList:TabGUI.kt$TabGUI.Tab$( x: Float, y: Float, color: Int, backgroundColor: Int, borderColor: Int, borderStrength: Float, fontRenderer: FontRenderer, borderRainbow: Boolean, rectRainbow: Boolean )</ID>
+    <ID>LongParameterList:TargetStyle.kt$TargetStyle$( skin: ResourceLocation, x: Float, y: Float, scale: Float, width: Int, height: Int, red: Float, green: Float, blue: Float, alpha: Float = 1F )</ID>
+    <ID>LongParameterList:TargetStyle.kt$TargetStyle$( skin: ResourceLocation, x: Int = 2, y: Int = 2, width: Int, height: Int, alpha: Float = 1F )</ID>
+    <ID>LongParameterList:TextElement.kt$TextElement$( private val element: ModuleElement, private val setting: TextValue, parent: Panel, x: Int, y: Int, width: Int, height: Int )</ID>
+    <ID>LongParameterList:TickedActions.kt$TickedActions$( slot: Int, button: Int, mode: Int, allowDuplicates: Boolean = false, windowId: Int = mc.thePlayer.openContainer.windowId, crossinline callback: (ItemStack?) -&gt; Unit = {} )</ID>
+    <ID>LongParameterList:UIEffectRenderer.kt$UIEffectRenderer$( x: Float, y: Float, u: Float, v: Float, width: Float, height: Float, textureWidth: Float, textureHeight: Float )</ID>
+    <ID>LongParameterList:UIEffectRenderer.kt$UIEffectRenderer$(x: Float, y: Float, width: Float, height: Float, image: String, alpha: Float)</ID>
+    <ID>LongParameterList:ValueGroups.kt$ModeValueGroup$(name: String, value: ClosedFloatingPointRange&lt;Float&gt;, range: ClosedFloatingPointRange&lt;Float&gt; = 0f..Float.MAX_VALUE, suffix: String? = null, modes: Array&lt;String&gt;, isSupported: (() -&gt; Boolean)? = null)</ID>
+    <ID>LongParameterList:ValueGroups.kt$ModeValueGroup$(name: String, value: Float, range: ClosedFloatingPointRange&lt;Float&gt; = 0f..Float.MAX_VALUE, suffix: String? = null, modes: Array&lt;String&gt;, isSupported: (() -&gt; Boolean)? = null)</ID>
+    <ID>LongParameterList:ValueGroups.kt$ModeValueGroup$(name: String, value: Int, range: IntRange, suffix: String? = null, modes: Array&lt;String&gt;, isSupported: (() -&gt; Boolean)? = null)</ID>
+    <ID>LongParameterList:ValueGroups.kt$ModeValueGroup$(name: String, value: IntRange, range: IntRange, suffix: String? = null, modes: Array&lt;String&gt;, isSupported: (() -&gt; Boolean)? = null)</ID>
+    <ID>LongParameterList:Vec3Element.kt$Vec3Element$( private val element: ModuleElement, private val setting: Vec3Value, parent: Panel, x: Int, y: Int, width: Int, height: Int )</ID>
+    <ID>LongParameterList:WorldTextRenderer.kt$( entity: Entity, text: String, fontRenderer: FontRenderer, color: Int, shadow: Boolean, scaleMultiplier: Float, yOffset: Double = 0.0, )</ID>
+    <ID>LoopWithTooManyJumpStatements:AWTFontRenderer.kt$AWTFontRenderer$for</ID>
+    <ID>LoopWithTooManyJumpStatements:AntiFireball.kt$AntiFireball$for</ID>
+    <ID>LoopWithTooManyJumpStatements:ArmorFilter.kt$ArmorFilter$for</ID>
+    <ID>LoopWithTooManyJumpStatements:ArmorSwap.kt$ArmorSwap$for</ID>
+    <ID>LoopWithTooManyJumpStatements:AutoArmor.kt$AutoArmor$for</ID>
+    <ID>LoopWithTooManyJumpStatements:AutoBuff.kt$AutoBuff$for</ID>
+    <ID>LoopWithTooManyJumpStatements:AutoBuild.kt$AutoBuild$for</ID>
+    <ID>LoopWithTooManyJumpStatements:AutoCrafter.kt$AutoCrafter$for</ID>
+    <ID>LoopWithTooManyJumpStatements:AutoFarm.kt$AutoFarm$for</ID>
+    <ID>LoopWithTooManyJumpStatements:AutoMobHeal.kt$AutoMobHeal$for</ID>
+    <ID>LoopWithTooManyJumpStatements:AutoTrap.kt$AutoTrap$for</ID>
+    <ID>LoopWithTooManyJumpStatements:BedPlates.kt$BedPlates$for</ID>
+    <ID>LoopWithTooManyJumpStatements:BlockIn.kt$BlockIn$for</ID>
+    <ID>LoopWithTooManyJumpStatements:BlockTrap.kt$BlockTrap$for</ID>
+    <ID>LoopWithTooManyJumpStatements:BuilderCommand.kt$BuilderCommand$for</ID>
+    <ID>LoopWithTooManyJumpStatements:ChestStealer.kt$ChestStealer$for</ID>
+    <ID>LoopWithTooManyJumpStatements:ChestStealer.kt$ChestStealer$while</ID>
+    <ID>LoopWithTooManyJumpStatements:ChunkScanner.kt$ChunkScanner$while</ID>
+    <ID>LoopWithTooManyJumpStatements:CombineMobs.kt$CombineMobs$for</ID>
+    <ID>LoopWithTooManyJumpStatements:DamageParticle.kt$DamageParticle$for</ID>
+    <ID>LoopWithTooManyJumpStatements:DynamicAtlasAllocator.kt$DynamicAtlasAllocator$for</ID>
+    <ID>LoopWithTooManyJumpStatements:ESP2D.kt$ESP2D$for</ID>
+    <ID>LoopWithTooManyJumpStatements:EditorPanel.kt$EditorPanel$for</ID>
+    <ID>LoopWithTooManyJumpStatements:EntityUtils.kt$EntityUtils$for</ID>
+    <ID>LoopWithTooManyJumpStatements:ExhibitionTH.kt$ExhibitionTH$for</ID>
+    <ID>LoopWithTooManyJumpStatements:GameDetector.kt$GameDetector$for</ID>
+    <ID>LoopWithTooManyJumpStatements:GraphSearch.kt$GraphSearch$for</ID>
+    <ID>LoopWithTooManyJumpStatements:GraphSearch.kt$GraphSearch$while</ID>
+    <ID>LoopWithTooManyJumpStatements:GuiServerSelect.kt$GuiServerSelect$for</ID>
+    <ID>LoopWithTooManyJumpStatements:HUD.kt$HUD$for</ID>
+    <ID>LoopWithTooManyJumpStatements:HitSelect.kt$HitSelect$for</ID>
+    <ID>LoopWithTooManyJumpStatements:HoleESP.kt$HoleESP$for</ID>
+    <ID>LoopWithTooManyJumpStatements:HoleFiller.kt$HoleFiller$for</ID>
+    <ID>LoopWithTooManyJumpStatements:HudConfig.kt$HudConfig$for</ID>
+    <ID>LoopWithTooManyJumpStatements:Ignite.kt$Ignite$for</ID>
+    <ID>LoopWithTooManyJumpStatements:InfiniteAura.kt$InfiniteAura$for</ID>
+    <ID>LoopWithTooManyJumpStatements:InventoryCleaner.kt$InventoryCleaner$for</ID>
+    <ID>LoopWithTooManyJumpStatements:ItemESP.kt$ItemESP$for</ID>
+    <ID>LoopWithTooManyJumpStatements:ItemTags.kt$ItemTags$for</ID>
+    <ID>LoopWithTooManyJumpStatements:ItemUtils.kt$ItemUtils$for</ID>
+    <ID>LoopWithTooManyJumpStatements:LiquidFiller.kt$LiquidFiller$for</ID>
+    <ID>LoopWithTooManyJumpStatements:LogoffSpot.kt$LogoffSpot$for</ID>
+    <ID>LoopWithTooManyJumpStatements:MurderMystery.kt$MurderMystery$for</ID>
+    <ID>LoopWithTooManyJumpStatements:NameTags.kt$NameTags$for</ID>
+    <ID>LoopWithTooManyJumpStatements:NextGenClickGuiBridge.kt$NextGenClickGuiBridge$for</ID>
+    <ID>LoopWithTooManyJumpStatements:NextGenClickGuiScreen.kt$NextGenClickGuiScreen$while</ID>
+    <ID>LoopWithTooManyJumpStatements:NoInterpolation.kt$NoInterpolation$for</ID>
+    <ID>LoopWithTooManyJumpStatements:Notifier.kt$Notifier$for</ID>
+    <ID>LoopWithTooManyJumpStatements:Phase.kt$Phase$for</ID>
+    <ID>LoopWithTooManyJumpStatements:PointerESP.kt$PointerESP$for</ID>
+    <ID>LoopWithTooManyJumpStatements:Projectiles.kt$Projectiles$for</ID>
+    <ID>LoopWithTooManyJumpStatements:RemixTH.kt$RemixTH$for</ID>
+    <ID>LoopWithTooManyJumpStatements:Replenish.kt$Replenish$for</ID>
+    <ID>LoopWithTooManyJumpStatements:RotationUtils.kt$RotationUtils$for</ID>
+    <ID>LoopWithTooManyJumpStatements:Scaffold.kt$Scaffold$for</ID>
+    <ID>LoopWithTooManyJumpStatements:ServerLag.kt$ServerLag$while</ID>
+    <ID>LoopWithTooManyJumpStatements:SimulatedPlayer.kt$SimulatedPlayer$for</ID>
+    <ID>LoopWithTooManyJumpStatements:SmartEat.kt$SmartEat$for</ID>
+    <ID>LoopWithTooManyJumpStatements:SpotifyModule.kt$SpotifyModule$while</ID>
+    <ID>LoopWithTooManyJumpStatements:SpotifyWebScreen.kt$SpotifyWebScreen$while</ID>
+    <ID>LoopWithTooManyJumpStatements:StorageESP.kt$StorageESP$for</ID>
+    <ID>LoopWithTooManyJumpStatements:StrongholdFinder.kt$StrongholdFinder$for</ID>
+    <ID>LoopWithTooManyJumpStatements:Surround.kt$Surround$for</ID>
+    <ID>LoopWithTooManyJumpStatements:Teams.kt$Teams$for</ID>
+    <ID>LoopWithTooManyJumpStatements:Trajectories.kt$Trajectories$for</ID>
+    <ID>LoopWithTooManyJumpStatements:Trajectories.kt$Trajectories$while</ID>
+    <ID>LoopWithTooManyJumpStatements:UiEventSocket.kt$UiEventSocket$while</ID>
+    <ID>LoopWithTooManyJumpStatements:VoidESP.kt$VoidESP$for</ID>
+    <ID>MatchingDeclarationName:Hat.kt$ChineseHat : Module</ID>
+    <ID>MatchingDeclarationName:ModeSupport.kt$NamedMode</ID>
+    <ID>MatchingDeclarationName:Regen.kt$TimeShift : Module</ID>
+    <ID>MatchingDeclarationName:Target.kt$Targets : Element</ID>
+    <ID>MayBeConst:AutoChatGame.kt$AutoChatGame$private val defaultPrompt = ("You participate in a chat game in which you have to answer questions or do tasks. " + "Your goal is to answer them as short and precise as possible and win the game. " + "The questions might be based on the game Minecraft or the server you are playing on. " + "The server name is {SERVER_NAME}. " + "On true or false questions, respond without any dots, in lower-case with 'true' or 'false'. " + "On math questions, respond with the result. " + "On first to type tasks, respond with the word. " + "On unscramble tasks, the word is scrambled and might be from the game Minecraft, " + "respond with the unscrambled word. " + "On other questions, respond with the answer. " + "DO NOT SAY ANYTHING ELSE THAN THE ANSWER! If you do, you will be disqualified.")</ID>
+    <ID>MayBeConst:KeyBindManager.kt$KeyBindManager$private val baseHeight = 205</ID>
+    <ID>MayBeConst:KeyBindManager.kt$KeyBindManager$private val baseWidth = 500</ID>
+    <ID>MayBeConst:StrongholdFinder.kt$StrongholdFinder$private val rayLength = 2048.0</ID>
+    <ID>MemberNameEqualsClassName:Animations.kt$Animations$private val animations = arrayOf( OneSevenAnimation(), OldPushdownAnimation(), NewPushdownAnimation(), OldAnimation(), HeliumAnimation(), ArgonAnimation(), CesiumAnimation(), SulfurAnimation() )</ID>
+    <ID>MemberNameEqualsClassName:FakePlayer.kt$FakePlayer$private var fakePlayer: EntityOtherPlayerMP? = null</ID>
+    <ID>MemberNameEqualsClassName:Fonts.kt$Fonts$val fonts: List&lt;FontRenderer&gt; get() = FONT_REGISTRY.values.toList()</ID>
+    <ID>MemberNameEqualsClassName:Image.kt$Image$private val image = text("Image", "").onChanged { value -&gt; if (value.isBlank()) return@onChanged setImage(value) }</ID>
+    <ID>MemberNameEqualsClassName:Particles.kt$Particles$private val particles = mutableListOf&lt;Particle&gt;()</ID>
+    <ID>MemberNameEqualsClassName:RenderWings.kt$RenderWings$fun renderWings(partialTicks: Float)</ID>
+    <ID>MemberNameEqualsClassName:Scroll.kt$Scroll$/** * The current scroll value adjusted by the animation output. * Use this property to draw or retrieve the "real" scroll offset. */ val scroll: Float get() = (rawScroll - scrollAnimation.output).toFloat()</ID>
+    <ID>MemberNameEqualsClassName:TargetStrafe.kt$TargetStrafe.Point$val point: Vec3 = calculatePos()</ID>
+    <ID>MemberNameEqualsClassName:WorldToScreen.kt$WorldToScreen$fun worldToScreen( pointInWorld: Vector3f, viewMatrix: Matrix4f = getMatrix(GL11.GL_MODELVIEW_MATRIX), projectionMatrix: Matrix4f = getMatrix(GL11.GL_PROJECTION_MATRIX), screenWidth: Int = mc.displayWidth, screenHeight: Int = mc.displayHeight ): Vector2f?</ID>
+    <ID>MemberNameEqualsClassName:Zoom.kt$Zoom$private val zoom by float("Zoom", 3f, 1.5f..10f) .describe("How far the camera zooms in.")</ID>
+    <ID>NestedBlockDepth:AutoDodge.kt$AutoDodge$private fun inflictedHit(): HitInfo?</ID>
+    <ID>NestedBlockDepth:BedProtectionESP.kt$BedProtectionESP$private fun getBlocksToRender( targetBlock: Block, maxLayers: Int, down: Boolean, allLayers: Boolean, blockLimit: Int ): Set&lt;BlockPos&gt;</ID>
+    <ID>NestedBlockDepth:BlackStyle.kt$BlackStyle$override fun drawModuleElementAndClick( mouseX: Int, mouseY: Int, moduleElement: ModuleElement, mouseButton: Int? ): Boolean</ID>
+    <ID>NestedBlockDepth:Blink.kt$Blink$override fun onPacket(event: PacketEvent)</ID>
+    <ID>NestedBlockDepth:BlockESP.kt$BlockESP$private fun tryGrow( remaining: HashSet&lt;BlockPos&gt;, minX: Int, maxX: Int, minY: Int, maxY: Int, minZ: Int, maxZ: Int ): Boolean</ID>
+    <ID>NestedBlockDepth:BlockIn.kt$BlockIn$private fun collectPlacePositions(enemy: EntityLivingBase)</ID>
+    <ID>NestedBlockDepth:BlockTrap.kt$BlockTrap$private fun collectTrapPositions(target: EntityLivingBase)</ID>
+    <ID>NestedBlockDepth:BlockUtils.kt$BlockUtils$fun collideBlockIntersects(axisAlignedBB: AxisAlignedBB, collide: Collidable): Boolean</ID>
+    <ID>NestedBlockDepth:BlockUtils.kt$BlockUtils$fun searchBlocks( radius: Int, targetBlocks: Set&lt;Block&gt;? = null, maxBlocksLimit: Int? = null, predicate: (BlockPos, Block) -&gt; Boolean = { _, _ -&gt; true } ): MutableMap&lt;BlockPos, Block&gt;</ID>
+    <ID>NestedBlockDepth:BlocksMCHop.kt$BlocksMCHop$override fun onUpdate()</ID>
+    <ID>NestedBlockDepth:BuilderCommand.kt$BuilderCommand$private fun parseParameters(node: BuiltCommand, tokens: List&lt;String&gt;): Array&lt;Any?&gt;</ID>
+    <ID>NestedBlockDepth:BuilderCommand.kt$BuilderCommand.Companion$fun complete(root: BuiltCommand, args: List&lt;String&gt;): List&lt;String&gt;</ID>
+    <ID>NestedBlockDepth:ClickGui.kt$ClickGui$override fun updateScreen()</ID>
+    <ID>NestedBlockDepth:Configs.kt$Configs$private fun drawConfigList(mx: Int, my: Int, startY: Int, alpha: Int)</ID>
+    <ID>NestedBlockDepth:CustomSpeed.kt$CustomSpeed$private fun handleLegacy()</ID>
+    <ID>NestedBlockDepth:EditorPanel.kt$EditorPanel$fun drawPanel(mouseX: Int, mouseY: Int, wheel: Int)</ID>
+    <ID>NestedBlockDepth:EditorPanel.kt$EditorPanel$private fun drawCreate(mouseX: Int, mouseY: Int)</ID>
+    <ID>NestedBlockDepth:EditorPanel.kt$EditorPanel$private fun drawEditor(mouseX: Int, mouseY: Int)</ID>
+    <ID>NestedBlockDepth:EditorPanel.kt$EditorPanel$private fun drawSelection(mouseX: Int, mouseY: Int)</ID>
+    <ID>NestedBlockDepth:EntityUtils.kt$EntityUtils$fun isSelected(entity: Entity?, canAttackCheck: Boolean): Boolean</ID>
+    <ID>NestedBlockDepth:EspPreviewComponent.kt$EspPreviewComponent$private fun drawEspPreview(x: Int, y: Int, backgroundColor: Color)</ID>
+    <ID>NestedBlockDepth:FDPDropdownClickGUI.kt$FDPDropdownClickGUI$override fun initGui()</ID>
+    <ID>NestedBlockDepth:FightBot.kt$FightBot$private fun findWither(): EntityLivingBase?</ID>
+    <ID>NestedBlockDepth:FontRenderer.kt$FontRenderer$@JvmOverloads fun trimStringToWidth(text: String, width: Int, reverse: Boolean = false): String</ID>
+    <ID>NestedBlockDepth:FontRenderer.kt$FontRenderer$fun drawString(text: String?, x: Double, y: Double, color: Int, shadow: Boolean): Float</ID>
+    <ID>NestedBlockDepth:FontRenderer.kt$FontRenderer$fun getWidth(text: String?): Int</ID>
+    <ID>NestedBlockDepth:FontRenderer.kt$FontRenderer$fun wrapWords(text: String, width: Double): List&lt;String&gt;</ID>
+    <ID>NestedBlockDepth:Fonts.kt$Fonts$fun downloadFonts()</ID>
+    <ID>NestedBlockDepth:Frame.kt$Frame$override fun onMotion()</ID>
+    <ID>NestedBlockDepth:GCMonitor.kt$GCMonitor$override fun handleNotification(notification: Notification, handback: Any?)</ID>
+    <ID>NestedBlockDepth:GUIManager.kt$GUIManager$fun register()</ID>
+    <ID>NestedBlockDepth:GuiHudDesigner.kt$GuiHudDesigner$override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float)</ID>
+    <ID>NestedBlockDepth:GuiServerSelect.kt$GuiServerSelect$override fun keyTyped(typedChar: Char, keyCode: Int)</ID>
+    <ID>NestedBlockDepth:GuiServerSelect.kt$GuiServerSelect$override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int)</ID>
+    <ID>NestedBlockDepth:GuiServerSelect.kt$GuiServerSelect$private fun applyServerStatus(data: ServerData, response: ServerStatusResponse?)</ID>
+    <ID>NestedBlockDepth:GuiSpotifyPlayer.kt$GuiSpotifyPlayer$private fun drawPlaylists(mouseX: Int, mouseY: Int)</ID>
+    <ID>NestedBlockDepth:HudConfig.kt$HudConfig$@Throws(IOException::class) override fun loadConfig()</ID>
+    <ID>NestedBlockDepth:IRCModule.kt$IRCModule$private fun String.toChatComponent(): IChatComponent</ID>
+    <ID>NestedBlockDepth:InfiniteAura.kt$InfiniteAura$private fun updateTarget()</ID>
+    <ID>NestedBlockDepth:InventoryCleaner.kt$InventoryCleaner$suspend fun repairEquipment()</ID>
+    <ID>NestedBlockDepth:InventoryCleaner.kt$InventoryCleaner$suspend fun sortHotbar()</ID>
+    <ID>NestedBlockDepth:KeyBindManager.kt$KeyBindManager$override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int)</ID>
+    <ID>NestedBlockDepth:KeyInfo.kt$KeyInfo$fun click(mouseX: Float, mouseY: Float)</ID>
+    <ID>NestedBlockDepth:KillAura.kt$KillAura$private fun runAttack(isFirstClick: Boolean, isLastClick: Boolean)</ID>
+    <ID>NestedBlockDepth:KillAura.kt$KillAura$private fun stopBlocking(forceStop: Boolean = false)</ID>
+    <ID>NestedBlockDepth:LiquidFiller.kt$LiquidFiller$private fun collectFillPositions(feet: BlockPos)</ID>
+    <ID>NestedBlockDepth:MLG.kt$MLG$override fun onRotationUpdate()</ID>
+    <ID>NestedBlockDepth:MacroCommand.kt$MacroCommand$override fun execute(args: Array&lt;String&gt;)</ID>
+    <ID>NestedBlockDepth:MatrixSpeeds.kt$MatrixSpeeds$override fun onUpdate()</ID>
+    <ID>NestedBlockDepth:ModuleCommand.kt$ModuleCommand$override fun execute(args: Array&lt;String&gt;)</ID>
+    <ID>NestedBlockDepth:ModuleCommand.kt$ModuleCommand$override fun tabComplete(args: Array&lt;String&gt;): List&lt;String&gt;</ID>
+    <ID>NestedBlockDepth:NameProtect.kt$NameProtect$fun handleTextMessage(text: String): String</ID>
+    <ID>NestedBlockDepth:NameTags.kt$NameTags$private fun renderNameTag3D(entity: EntityLivingBase, isRenderingSelf: Boolean, name: String)</ID>
+    <ID>NestedBlockDepth:NeverloseGui.kt$NeverloseGui$override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int)</ID>
+    <ID>NestedBlockDepth:NextGenClickGuiScreen.kt$NextGenClickGuiScreen$private fun dispatchMouseToBrowser()</ID>
+    <ID>NestedBlockDepth:NlTab.kt$NlTab$fun draw(mx: Int, my: Int)</ID>
+    <ID>NestedBlockDepth:Numbersetting.kt$Numbersetting$override fun keyTyped(typedChar: Char, keyCode: Int)</ID>
+    <ID>NestedBlockDepth:Panel.kt$Panel$fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float)</ID>
+    <ID>NestedBlockDepth:Panel.kt$Panel$fun mouseClicked(mouseX: Int, mouseY: Int, button: Int)</ID>
+    <ID>NestedBlockDepth:Panel.kt$Panel$fun parseY(value: Int = y): Int</ID>
+    <ID>NestedBlockDepth:PathUtils.kt$PathUtils$fun simplifyPath( path: ArrayList&lt;Cell&gt;, dashDistance: Double, worldProvider: MinecraftWorldProvider ): ArrayList&lt;Vec3&gt;</ID>
+    <ID>NestedBlockDepth:PointTracker.kt$PointTracker$private fun AxisAlignedBB.surfacePoints(steps: Int): List&lt;Vec3&gt;</ID>
+    <ID>NestedBlockDepth:Radar.kt$Radar$override fun drawElement(): Border</ID>
+    <ID>NestedBlockDepth:RaycastUtils.kt$RaycastUtils$fun raycastEntity( range: Double, yaw: Float = serverRotation.yaw, pitch: Float = serverRotation.pitch, entityFilter: Predicate&lt;Entity&gt;, ): Entity?</ID>
+    <ID>NestedBlockDepth:RaycastUtils.kt$RaycastUtils$fun runWithModifiedRaycastResult( rotation: Rotation, range: Double, wallRange: Double, action: (MovingObjectPosition) -&gt; Unit )</ID>
+    <ID>NestedBlockDepth:RotationUtils.kt$RotationUtils$fun faceBlock( blockPos: BlockPos?, throughWalls: Boolean = true, targetUpperFace: Boolean = false, hRange: ClosedFloatingPointRange&lt;Double&gt; = 0.0..1.0 ): VecRotation?</ID>
+    <ID>NestedBlockDepth:RotationUtils.kt$RotationUtils$fun searchCenter( bb: AxisAlignedBB, distanceBasedSpot: Boolean = false, outborder: Boolean, randomization: RandomizationSettings? = null, predict: Boolean, lookRange: Float, attackRange: Float, throughWallsRange: Float = 0f, bodyPoints: List&lt;String&gt; = listOf("Head", "Feet"), horizontalSearch: ClosedFloatingPointRange&lt;Float&gt; = 0f..1f, preferLastPoint: Boolean = false, ): Rotation?</ID>
+    <ID>NestedBlockDepth:RotationUtils.kt$RotationUtils$private fun update()</ID>
+    <ID>NestedBlockDepth:Scaffold.kt$Scaffold$fun handleMovementOptions(input: MovementInput)</ID>
+    <ID>NestedBlockDepth:Scaffold.kt$Scaffold$fun search( blockPosition: BlockPos, raycast: Boolean, area: Boolean, horizontalOnly: Boolean = false, ): Boolean</ID>
+    <ID>NestedBlockDepth:SettingComponents.kt$SettingComponents$fun handle(mouseX: Int, mouseY: Int, button: Int, type: GuiEvents)</ID>
+    <ID>NestedBlockDepth:SettingComponents.kt$SettingComponents$override fun keyTyped(typedChar: Char, keyCode: Int)</ID>
+    <ID>NestedBlockDepth:SideGuiBackgroundManager.kt$SideGuiBackgroundManager$fun drawBackgroundCategory(mouseX: Int, mouseY: Int, alpha: Int, drag: Drag, animScroll: Float, rectHeight: Float)</ID>
+    <ID>NestedBlockDepth:SideGuiConfigsManager.kt$SideGuiConfigsManager$private fun drawConfigList(mouseX: Int, mouseY: Int, alpha: Int, startY: Float, drag: Drag, rectWidth: Float)</ID>
+    <ID>NestedBlockDepth:SimpleFontRenderer.kt$SimpleFontRenderer$override fun stringWidth(text: CharSequence): Int</ID>
+    <ID>NestedBlockDepth:SimpleFontRenderer.kt$SimpleFontRenderer$private fun drawStringInternal(text: CharSequence, x: Double, y: Double, color: Int, shadow: Boolean): Float</ID>
+    <ID>NestedBlockDepth:SimulatedPlayer.kt$SimulatedPlayer$fun getCollidingBoundingBoxes(box: AxisAlignedBB): List&lt;AxisAlignedBB&gt;</ID>
+    <ID>NestedBlockDepth:SimulatedPlayer.kt$SimulatedPlayer$private fun doBlockCollisions()</ID>
+    <ID>NestedBlockDepth:SimulatedPlayer.kt$SimulatedPlayer$private fun handleMaterialAcceleration(boundingBox: AxisAlignedBB, material: Material): Boolean</ID>
+    <ID>NestedBlockDepth:SimulatedPlayer.kt$SimulatedPlayer$private fun isAreaLoaded(minX: Int, minY: Int, minZ: Int, maxX: Int, maxY: Int, maxZ: Int, idfk: Boolean): Boolean</ID>
+    <ID>NestedBlockDepth:SimulatedPlayer.kt$SimulatedPlayer$private fun isLivingOnLadder(block: Block?, world: World, pos: BlockPos?, entity: EntityLivingBase): Boolean</ID>
+    <ID>NestedBlockDepth:SimulatedPlayer.kt$SimulatedPlayer$private fun livingEntitySideMoveEntityWithHeading(strafing: Float, forwards: Float)</ID>
+    <ID>NestedBlockDepth:SimulatedPlayer.kt$SimulatedPlayer$private fun moveEntity(xMotion: Double, yMotion: Double, zMotion: Double)</ID>
+    <ID>NestedBlockDepth:SpotifyWebScreen.kt$SpotifyWebScreen$private fun dispatchMouse(target: IBrowser)</ID>
+    <ID>NestedBlockDepth:StorageESP.kt$StorageESP$private fun mergeClusters(positions: Set&lt;BlockPos&gt;): List&lt;List&lt;BlockPos&gt;&gt;</ID>
+    <ID>NestedBlockDepth:StorageESP.kt$StorageESP$private fun renderMergedBoxes()</ID>
+    <ID>NestedBlockDepth:StringsSetting.kt$StringsSetting$override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int)</ID>
+    <ID>NestedBlockDepth:Target.kt$Targets$override fun drawElement(): Border?</ID>
+    <ID>NestedBlockDepth:TargetFocus.kt$TargetFocus$private fun selectBestTarget()</ID>
+    <ID>NestedBlockDepth:Text.kt$Text$private fun multiReplace(str: String): String</ID>
+    <ID>NestedBlockDepth:Velocity.kt$Velocity$private fun handleVelocity(event: PacketEvent)</ID>
+    <ID>NestedBlockDepth:VerusLowHopNew.kt$VerusLowHopNew$override fun onUpdate()</ID>
+    <ID>NestedBlockDepth:VerusSpeeds.kt$VerusSpeeds$override fun onPreMotion()</ID>
+    <ID>NestedBlockDepth:VoidESP.kt$VoidESP$private fun isOverVoid(entity: Entity): Boolean</ID>
+    <ID>NestedBlockDepth:VulcanSpeeds.kt$VulcanSpeeds$override fun onUpdate()</ID>
+    <ID>NestedBlockDepth:XrayCommand.kt$XrayCommand$override fun execute(args: Array&lt;String&gt;)</ID>
+    <ID>NestedBlockDepth:YzYGui.kt$YzYGui$@Throws(IOException::class) override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int)</ID>
+    <ID>NestedBlockDepth:YzYGui.kt$YzYGui$override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float)</ID>
+    <ID>NestedBlockDepth:YzYGui.kt$YzYGui$private fun initializePanels()</ID>
+    <ID>NestedBlockDepth:ZipExtensions.kt$fun Collection&lt;File&gt;.zipFilesTo(outputZipFile: File)</ID>
+    <ID>NestedBlockDepth:ZipExtensions.kt$fun File.extractZipTo(outputFolder: File, fileExtracted: (File) -&gt; Unit = {})</ID>
+    <ID>PackageNaming:Configs.kt$package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.Config</ID>
+    <ID>PackageNaming:NeverloseConfig.kt$package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.Config</ID>
+    <ID>PackageNaming:NeverloseConfigManager.kt$package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.Config</ID>
+    <ID>PrintStackTrace:Background.kt$ImageBackground$e</ID>
+    <ID>PrintStackTrace:ChartRecorderModule.kt$ChartRecorderModule$exception</ID>
+    <ID>PrintStackTrace:CustomFont.kt$CustomFont$e</ID>
+    <ID>PrintStackTrace:CustomFont.kt$CustomFont$ex</ID>
+    <ID>PrintStackTrace:DashTrail.kt$DashTrail$e</ID>
+    <ID>PrintStackTrace:EditorPanel.kt$EditorPanel$e</ID>
+    <ID>PrintStackTrace:FontRenderer.kt$FontRenderer$e</ID>
+    <ID>PrintStackTrace:GuiAltManager.kt$GuiAltManager$any</ID>
+    <ID>PrintStackTrace:GuiMainMenu.kt$GuiMainMenu$e</ID>
+    <ID>PrintStackTrace:ItemUtils.kt$ItemUtils$exception</ID>
+    <ID>PrintStackTrace:LocalThemesCommand.kt$LocalThemesCommand$e</ID>
+    <ID>PrintStackTrace:PlayerExtension.kt$any</ID>
+    <ID>PrintStackTrace:RenderUtil.kt$RenderUtil$e</ID>
+    <ID>PrintStackTrace:Shader.kt$Shader$e</ID>
+    <ID>PrintStackTrace:ShaderUtil.kt$ShaderUtil$e</ID>
+    <ID>PrintStackTrace:ShaderUtil.kt$ShaderUtil.Companion$e</ID>
+    <ID>PrintStackTrace:SimulatedPlayer.kt$SimulatedPlayer$var11</ID>
+    <ID>PrintStackTrace:SimulatedPlayer.kt$SimulatedPlayer$var52</ID>
+    <ID>SpreadOperator:AACv4.kt$AACv4$(*aac4Packets.toTypedArray(), triggerEvents = false)</ID>
+    <ID>SpreadOperator:BlinkUtils.kt$BlinkUtils$(*packets.toTypedArray(), triggerEvents = false)</ID>
+    <ID>SpreadOperator:BlocksMC2.kt$BlocksMC2$(*packets.toTypedArray(), triggerEvents = false)</ID>
+    <ID>SpreadOperator:BuilderCommand.kt$BuilderCommand$(built.name, *built.aliases)</ID>
+    <ID>SpreadOperator:MiscUtils.kt$FileFilters$("Image Files (${it.joinToString()}", *it.toTypedArray())</ID>
+    <ID>SpreadOperator:Module.kt$Module$(*legacyNames)</ID>
+    <ID>SpreadOperator:NextGenClickGuiBridge.kt$NextGenClickGuiBridge$(extensions.joinToString(", "), *extensions.toTypedArray())</ID>
+    <ID>SpreadOperator:Plugins.kt$Plugins$(*splitters, limit = 2)</ID>
+    <ID>SpreadOperator:Script.kt$Script$(*engineFlags)</ID>
+    <ID>SpreadOperator:ScriptCommand.kt$ScriptCommand$(commandObject.getMember("name") as String, *ScriptUtils.convert(commandObject.getMember("aliases"), Array&lt;String&gt;::class.java) as Array&lt;out String&gt;)</ID>
+    <ID>SpreadOperator:TargetTracker.kt$TargetTracker$(*priorities.map { it.comparator(distance) }.toTypedArray())</ID>
+    <ID>SpreadOperator:Teleport.kt$Teleport$(*packets.toTypedArray())</ID>
+    <ID>SpreadOperator:Values.kt$FileValue$(extensions.joinToString(", "), *extensions.toTypedArray())</ID>
+    <ID>SwallowedException:AWTFontRenderer.kt$AWTFontRenderer$e: Throwable</ID>
+    <ID>SwallowedException:AccountsConfig.kt$AccountsConfig$e: IllegalStateException</ID>
+    <ID>SwallowedException:AccountsConfig.kt$AccountsConfig$e: JsonSyntaxException</ID>
+    <ID>SwallowedException:BufferExtensions.kt$ex: Exception</ID>
+    <ID>SwallowedException:BuilderCommand.kt$BuilderCommand$e: Throwable</ID>
+    <ID>SwallowedException:ClassUtils.kt$ClassUtils$e: ClassNotFoundException</ID>
+    <ID>SwallowedException:ColorElement.kt$ColorElement$e: Exception</ID>
+    <ID>SwallowedException:CustomFont.kt$CustomFont$e: FontFormatException</ID>
+    <ID>SwallowedException:CustomFont.kt$CustomFont$e: IOException</ID>
+    <ID>SwallowedException:DiscordRPC.kt$DiscordRPC$e: Throwable</ID>
+    <ID>SwallowedException:ESP2D.kt$ESP2D$e: Exception</ID>
+    <ID>SwallowedException:ExhibitionTH.kt$ExhibitionTH$e: Exception</ID>
+    <ID>SwallowedException:GCMonitor.kt$GCMonitor$e: Exception</ID>
+    <ID>SwallowedException:GUIManager.kt$GUIManager$exception: IOException</ID>
+    <ID>SwallowedException:GuiMainMenu.kt$GuiMainMenu$e: Exception</ID>
+    <ID>SwallowedException:GuiServerSelect.kt$GuiServerSelect$e: Exception</ID>
+    <ID>SwallowedException:GuiServerStatus.kt$GuiServerStatus$e: IOException</ID>
+    <ID>SwallowedException:ItemTags.kt$ItemTags$e: Exception</ID>
+    <ID>SwallowedException:JavaVersion.kt$e: Exception</ID>
+    <ID>SwallowedException:LoginUtils.kt$LoginUtils$e: Exception</ID>
+    <ID>SwallowedException:ModuleManager.kt$ModuleManager$e: IllegalAccessException</ID>
+    <ID>SwallowedException:PacketDebugger.kt$PacketDebugger$e: Exception</ID>
+    <ID>SwallowedException:PerformanceMonitor.kt$PerformanceMonitor$e: Exception</ID>
+    <ID>SwallowedException:Watermark.kt$Watermark$e: Exception</ID>
+    <ID>SwallowedException:Watermark.kt$Watermark$t: Throwable</ID>
+    <ID>ThrowsCount:BuilderCommand.kt$BuilderCommand$private fun parseParameters(node: BuiltCommand, tokens: List&lt;String&gt;): Array&lt;Any?&gt;</ID>
+    <ID>ThrowsCount:NextGenBrowserRuntime.kt$NextGenBrowserRuntime$private fun readRemoteChecksums(remoteConfigClass: Class&lt;*&gt;, remoteConfig: Any, root: File): Map&lt;File, String&gt;</ID>
+    <ID>TooGenericExceptionCaught:APIConnectorUtils.kt$APIConnectorUtils$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:AWTFontRenderer.kt$AWTFontRenderer$e: Throwable</ID>
+    <ID>TooGenericExceptionCaught:AWTFontRenderer.kt$AWTFontRenderer$throwable: Throwable</ID>
+    <ID>TooGenericExceptionCaught:Background.kt$ImageBackground$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:Background.kt$ShaderBackground$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:BufferExtensions.kt$any: Exception</ID>
+    <ID>TooGenericExceptionCaught:BufferExtensions.kt$ex: Exception</ID>
+    <ID>TooGenericExceptionCaught:BuilderCommand.kt$BuilderCommand$e: Throwable</ID>
+    <ID>TooGenericExceptionCaught:CapeService.kt$CapeService$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:CapeService.kt$CapeService$e: Throwable</ID>
+    <ID>TooGenericExceptionCaught:ChartRecorderModule.kt$ChartRecorderModule$exception: Exception</ID>
+    <ID>TooGenericExceptionCaught:ClickGUIModule.kt$ClickGUIModule$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:ClickGui.kt$ClickGui$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:ClickGuiConfig.kt$ClickGuiConfig$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:ClientSettings.kt$e: Throwable</ID>
+    <ID>TooGenericExceptionCaught:ClientUpdate.kt$ClientUpdate$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:ClientUpdate.kt$ClientUpdate$e: Throwable</ID>
+    <ID>TooGenericExceptionCaught:ColorElement.kt$ColorElement$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:ColorThemeConfig.kt$ColorThemeConfig$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:CommandManager.kt$CommandManager$e: Throwable</ID>
+    <ID>TooGenericExceptionCaught:CommandManager.kt$CommandManager$throwable: Throwable</ID>
+    <ID>TooGenericExceptionCaught:CommandUtils.kt$CommandUtils$t: Throwable</ID>
+    <ID>TooGenericExceptionCaught:Configs.kt$Configs$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:CoroutineExtensions.kt$RenderDispatcher$e: Throwable</ID>
+    <ID>TooGenericExceptionCaught:CustomFont.kt$CustomFont$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:CustomFont.kt$CustomFont$ex: Exception</ID>
+    <ID>TooGenericExceptionCaught:DashTrail.kt$DashTrail$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:DiscordRPC.kt$DiscordRPC$e: Throwable</ID>
+    <ID>TooGenericExceptionCaught:DiscordRPC.kt$DiscordRPC.&lt;no name provided&gt;$e: Throwable</ID>
+    <ID>TooGenericExceptionCaught:ESP.kt$ESP$ex: Exception</ID>
+    <ID>TooGenericExceptionCaught:ESP2D.kt$ESP2D$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:EditorPanel.kt$EditorPanel$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:EventHook.kt$EventHook$e: Throwable</ID>
+    <ID>TooGenericExceptionCaught:ExhibitionTH.kt$ExhibitionTH$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:FDPClient.kt$FDPClient$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:FDPDropdownClickGUI.kt$FDPDropdownClickGUI$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:FightBot.kt$FightBot$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:FightBot.kt$FightBot$e:Exception</ID>
+    <ID>TooGenericExceptionCaught:FileManager.kt$FileManager$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:FileManager.kt$FileManager$t: Throwable</ID>
+    <ID>TooGenericExceptionCaught:FontRenderer.kt$FontRenderer$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:Fonts.kt$Fonts$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:Fonts.kt$Fonts$e:Exception</ID>
+    <ID>TooGenericExceptionCaught:GCMonitor.kt$GCMonitor$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:General.kt$e: Throwable</ID>
+    <ID>TooGenericExceptionCaught:GradientFontShader.kt$GradientFontShader$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GradientShader.kt$GradientShader$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GuiAltManager.kt$GuiAltManager$any: Exception</ID>
+    <ID>TooGenericExceptionCaught:GuiAltManager.kt$GuiAltManager$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GuiAltManager.kt$GuiAltManager.Companion$exception: Exception</ID>
+    <ID>TooGenericExceptionCaught:GuiAltManager.kt$GuiAltManager.Companion$throwable: Throwable</ID>
+    <ID>TooGenericExceptionCaught:GuiClientConfiguration.kt$GuiClientConfiguration$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GuiMainMenu.kt$GuiMainMenu$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GuiMicrosoftLoginProgress.kt$GuiMicrosoftLoginProgress$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GuiScripts.kt$GuiScripts$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GuiScripts.kt$GuiScripts$t: Throwable</ID>
+    <ID>TooGenericExceptionCaught:GuiServerSelect.kt$GuiServerSelect$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GuiUpdate.kt$GuiUpdate$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:HUD.kt$HUD$ex: Exception</ID>
+    <ID>TooGenericExceptionCaught:HeadsTab.kt$HeadsTab$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:HttpUtils.kt$Downloader$throwable: Throwable</ID>
+    <ID>TooGenericExceptionCaught:HudConfig.kt$HudConfig$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:Image.kt$Image$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:ItemTags.kt$ItemTags$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:ItemUtils.kt$ItemUtils$exception: Exception</ID>
+    <ID>TooGenericExceptionCaught:JavaVersion.kt$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:LocalSettingsCommand.kt$LocalSettingsCommand$throwable: Throwable</ID>
+    <ID>TooGenericExceptionCaught:LocalThemesCommand.kt$LocalThemesCommand$throwable: Throwable</ID>
+    <ID>TooGenericExceptionCaught:LoginUtils.kt$LoginUtils$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:MessageOfTheDay.kt$e: Throwable</ID>
+    <ID>TooGenericExceptionCaught:Module.kt$Module$any: Exception</ID>
+    <ID>TooGenericExceptionCaught:Module.kt$Module$throwable: Throwable</ID>
+    <ID>TooGenericExceptionCaught:ModuleManager.kt$ModuleManager$e: Throwable</ID>
+    <ID>TooGenericExceptionCaught:NextGenBrowserRuntime.kt$NextGenBrowserRuntime$throwable: Throwable</ID>
+    <ID>TooGenericExceptionCaught:NextGenClickGuiServer.kt$NextGenClickGuiServer$throwable: Throwable</ID>
+    <ID>TooGenericExceptionCaught:Notebot.kt$Notebot$throwable: Throwable</ID>
+    <ID>TooGenericExceptionCaught:PacketDebugger.kt$PacketDebugger$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:Panel.kt$Panel$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:PerformanceMonitor.kt$PerformanceMonitor$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:PlayerExtension.kt$any: Exception</ID>
+    <ID>TooGenericExceptionCaught:Plugins.kt$Plugins$t: Throwable</ID>
+    <ID>TooGenericExceptionCaught:ProphuntESP.kt$ProphuntESP$ex: Exception</ID>
+    <ID>TooGenericExceptionCaught:RenderUtil.kt$RenderUtil$e: Throwable</ID>
+    <ID>TooGenericExceptionCaught:ScoreboardElement.kt$ScoreboardElement$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:Script.kt$Script$throwable: Throwable</ID>
+    <ID>TooGenericExceptionCaught:ScriptCommand.kt$ScriptCommand$throwable: Throwable</ID>
+    <ID>TooGenericExceptionCaught:ScriptManager.kt$ScriptManager$t: Throwable</ID>
+    <ID>TooGenericExceptionCaught:ScriptManagerCommand.kt$ScriptManagerCommand$t: Throwable</ID>
+    <ID>TooGenericExceptionCaught:ScriptModule.kt$ScriptModule$throwable: Throwable</ID>
+    <ID>TooGenericExceptionCaught:SettingsCommand.kt$SettingsCommand$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:SettingsCommand.kt$SettingsCommand$throwable: Throwable</ID>
+    <ID>TooGenericExceptionCaught:SettingsUtils.kt$SettingsUtils$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:Shader.kt$Shader$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:ShaderUtil.kt$ShaderUtil.Companion$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:SideGuiConfigsManager.kt$SideGuiConfigsManager$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:SimulatedPlayer.kt$SimulatedPlayer$var11: Throwable</ID>
+    <ID>TooGenericExceptionCaught:SimulatedPlayer.kt$SimulatedPlayer$var52: Throwable</ID>
+    <ID>TooGenericExceptionCaught:SpotifyIntegration.kt$SpotifyIntegration$ex: Throwable</ID>
+    <ID>TooGenericExceptionCaught:SpotifyLocalSource.kt$SpotifyLocalSource$t: Throwable</ID>
+    <ID>TooGenericExceptionCaught:SpotifyService.kt$SpotifyService$exception: Exception</ID>
+    <ID>TooGenericExceptionCaught:StaffDetector.kt$StaffDetector$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:StorageESP.kt$StorageESP$ex: Exception</ID>
+    <ID>TooGenericExceptionCaught:UiEventSocket.kt$UiEventSocket$throwable: Throwable</ID>
+    <ID>TooGenericExceptionCaught:Value.kt$Value$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:Watermark.kt$Watermark$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:Watermark.kt$Watermark$t: Throwable</ID>
+    <ID>TooGenericExceptionCaught:YzYGui.kt$BindInputBox$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:YzYGui.kt$YzYGui$e: Exception</ID>
+    <ID>TooGenericExceptionThrown:CapeService.kt$CapeService$throw RuntimeException("Failed to decode JSON of self cape. Response: ${response.body.string()}", e)</ID>
+    <ID>TooGenericExceptionThrown:CapeService.kt$CapeService$throw RuntimeException("Failed to get cape carriers. Status code: ${it.code}")</ID>
+    <ID>TooGenericExceptionThrown:CapeService.kt$CapeService$throw RuntimeException("Failed to get self cape. Status code: ${response.code}")</ID>
+    <ID>TooGenericExceptionThrown:FileManager.kt$FileManager$throw RuntimeException("Failed to write to file: ${file.name}", e)</ID>
+    <ID>TooGenericExceptionThrown:GUIManager.kt$GUIManager$throw RuntimeException(e)</ID>
+    <ID>TooGenericExceptionThrown:ServerCrasher.kt$ServerCrasher$throw RuntimeException("Zywl is cool, and I wish a blonde girl for every blessed person in this hack")</ID>
+    <ID>TooGenericExceptionThrown:Shader.kt$Shader$throw RuntimeException("Error creating shader: " + getLogInfo(shader))</ID>
+    <ID>TooGenericExceptionThrown:SimpleFontManager.kt$SimpleFontManager.FontRegistry$throw RuntimeException( "Couldn't completely read font resource.", e )</ID>
+    <ID>TooGenericExceptionThrown:SimpleFontManager.kt$SimpleFontManager.FontRegistry$throw RuntimeException( "Resource does not contain the required font tables " + "for the specified format.", e )</ID>
+    <ID>TooManyFunctions:AWTFontRenderer.kt$AWTFontRenderer : MinecraftInstance</ID>
+    <ID>TooManyFunctions:AbstractBlockLocationTracker.kt$AbstractBlockLocationTracker : BlockScanSubscriber</ID>
+    <ID>TooManyFunctions:AccountsConfig.kt$AccountsConfig : FileConfig</ID>
+    <ID>TooManyFunctions:AnimationUtil.kt$AnimationUtil</ID>
+    <ID>TooManyFunctions:ArmorFilter.kt$ArmorFilter : Module</ID>
+    <ID>TooManyFunctions:ArmorSwap.kt$ArmorSwap : Module</ID>
+    <ID>TooManyFunctions:AutoArmor.kt$AutoArmor : Module</ID>
+    <ID>TooManyFunctions:AutoDodge.kt$AutoDodge : Module</ID>
+    <ID>TooManyFunctions:Backtrack.kt$Backtrack : Module</ID>
+    <ID>TooManyFunctions:ChestStealer.kt$ChestStealer : Module</ID>
+    <ID>TooManyFunctions:ChunkScanner.kt$ChunkScanner : MinecraftInstanceListenable</ID>
+    <ID>TooManyFunctions:ClickGui.kt$ClickGui : GuiScreen</ID>
+    <ID>TooManyFunctions:ColorSetting.kt$ColorSetting : Downward</ID>
+    <ID>TooManyFunctions:ColorUtils.kt$ColorUtils</ID>
+    <ID>TooManyFunctions:Configs.kt$Configs</ID>
+    <ID>TooManyFunctions:Configurable.kt$Configurable : Value</ID>
+    <ID>TooManyFunctions:DashTrail.kt$DashTrail : Module</ID>
+    <ID>TooManyFunctions:ESP2D.kt$ESP2D : Module</ID>
+    <ID>TooManyFunctions:EspPreviewComponent.kt$EspPreviewComponent : MinecraftInstance</ID>
+    <ID>TooManyFunctions:FileManager.kt$FileManager : MinecraftInstanceIterable</ID>
+    <ID>TooManyFunctions:FlyMode.kt$FlyMode : MinecraftInstanceNamedMode</ID>
+    <ID>TooManyFunctions:FontRenderer.kt$FontRenderer</ID>
+    <ID>TooManyFunctions:FontRenderer.kt$FontRenderer : CustomFont</ID>
+    <ID>TooManyFunctions:Fonts.kt$Fonts : MinecraftInstance</ID>
+    <ID>TooManyFunctions:GameFontRenderer.kt$GameFontRenderer : FontRenderer</ID>
+    <ID>TooManyFunctions:GsonExtensions.kt$net.ccbluex.liquidbounce.file.gson.GsonExtensions.kt</ID>
+    <ID>TooManyFunctions:GuiMainMenu.kt$GuiMainMenu : AbstractScreenGuiYesNoCallback</ID>
+    <ID>TooManyFunctions:GuiServerSelect.kt$GuiServerSelect : AbstractScreen</ID>
+    <ID>TooManyFunctions:GuiSpotify.kt$GuiSpotify : AbstractScreenListenable</ID>
+    <ID>TooManyFunctions:GuiSpotifyPlayer.kt$GuiSpotifyPlayer : AbstractScreenListenable</ID>
+    <ID>TooManyFunctions:HUD.kt$HUD : MinecraftInstance</ID>
+    <ID>TooManyFunctions:HideClans.kt$HideClans : Module</ID>
+    <ID>TooManyFunctions:HitSelect.kt$HitSelect : Module</ID>
+    <ID>TooManyFunctions:HttpUtils.kt$net.ccbluex.liquidbounce.utils.io.HttpUtils.kt</ID>
+    <ID>TooManyFunctions:InventoryCleaner.kt$InventoryCleaner : Module</ID>
+    <ID>TooManyFunctions:InventoryUtils.kt$InventoryUtils : MinecraftInstanceListenable</ID>
+    <ID>TooManyFunctions:KillAura.kt$KillAura : Module</ID>
+    <ID>TooManyFunctions:LineGraphs.kt$LineGraphs : Module</ID>
+    <ID>TooManyFunctions:LongJumpMode.kt$LongJumpMode : MinecraftInstanceNamedMode</ID>
+    <ID>TooManyFunctions:MathExtensions.kt$net.ccbluex.liquidbounce.utils.extensions.MathExtensions.kt</ID>
+    <ID>TooManyFunctions:MemoryProfiler.kt$MemoryProfiler</ID>
+    <ID>TooManyFunctions:ModernRotationEngine.kt$ModernRotationEngine : MinecraftInstance</ID>
+    <ID>TooManyFunctions:Module.kt$Module : ConfigurableMinecraftInstanceListenable</ID>
+    <ID>TooManyFunctions:ModuleManager.kt$ModuleManager : ListenableCollection</ID>
+    <ID>TooManyFunctions:MovementUtils.kt$MovementUtils : MinecraftInstanceListenable</ID>
+    <ID>TooManyFunctions:NBTExtensions.kt$net.ccbluex.liquidbounce.utils.extensions.NBTExtensions.kt</ID>
+    <ID>TooManyFunctions:NextGenBrowserRuntime.kt$NextGenBrowserRuntime : MinecraftInstanceListenable</ID>
+    <ID>TooManyFunctions:NextGenClickGuiBridge.kt$NextGenClickGuiBridge : MinecraftInstance</ID>
+    <ID>TooManyFunctions:NextGenClickGuiScreen.kt$NextGenClickGuiScreen : GuiScreen</ID>
+    <ID>TooManyFunctions:NextGenClickGuiServer.kt$NextGenClickGuiServer</ID>
+    <ID>TooManyFunctions:NextGenHudBridge.kt$NextGenHudBridge : MinecraftInstance</ID>
+    <ID>TooManyFunctions:NlModule.kt$NlModule</ID>
+    <ID>TooManyFunctions:NoFallMode.kt$NoFallMode : MinecraftInstanceNamedMode</ID>
+    <ID>TooManyFunctions:PacketDebugger.kt$PacketDebugger : Module</ID>
+    <ID>TooManyFunctions:Panel.kt$Panel</ID>
+    <ID>TooManyFunctions:Panel.kt$Panel : MinecraftInstance</ID>
+    <ID>TooManyFunctions:PlayerExtension.kt$net.ccbluex.liquidbounce.utils.extensions.PlayerExtension.kt</ID>
+    <ID>TooManyFunctions:Plugins.kt$Plugins : Module</ID>
+    <ID>TooManyFunctions:ProjectileSolver.kt$ProjectileSolver</ID>
+    <ID>TooManyFunctions:RandomUtils.kt$RandomUtils</ID>
+    <ID>TooManyFunctions:RearView.kt$RearView : Element</ID>
+    <ID>TooManyFunctions:RenderColor.kt$RenderColor</ID>
+    <ID>TooManyFunctions:RenderGL.kt$RenderGL</ID>
+    <ID>TooManyFunctions:RenderPrimitives.kt$RenderPrimitives</ID>
+    <ID>TooManyFunctions:RenderUtil.kt$RenderUtil</ID>
+    <ID>TooManyFunctions:RenderUtils.kt$RenderUtils : MinecraftInstance</ID>
+    <ID>TooManyFunctions:RotationUtils.kt$RotationUtils : MinecraftInstanceListenable</ID>
+    <ID>TooManyFunctions:RoundedUtil.kt$RoundedUtil$Companion</ID>
+    <ID>TooManyFunctions:Scaffold.kt$Scaffold : Module</ID>
+    <ID>TooManyFunctions:ServerLag.kt$ServerLag : Module</ID>
+    <ID>TooManyFunctions:ServerObserver.kt$ServerObserver : MinecraftInstanceListenable</ID>
+    <ID>TooManyFunctions:SettingComponents.kt$SettingComponents : Component</ID>
+    <ID>TooManyFunctions:SettingsCommand.kt$SettingsCommand : Command</ID>
+    <ID>TooManyFunctions:SideGui.kt$SideGui : GuiPanel</ID>
+    <ID>TooManyFunctions:SilentHotbar.kt$SilentHotbar : ListenableMinecraftInstance</ID>
+    <ID>TooManyFunctions:SimpleFontRenderer.kt$SimpleFontRenderer : FontRenderer</ID>
+    <ID>TooManyFunctions:SimulatedPlayer.kt$SimulatedPlayer : MinecraftInstance</ID>
+    <ID>TooManyFunctions:SmartEat.kt$SmartEat : Module</ID>
+    <ID>TooManyFunctions:Spider.kt$Spider : Module</ID>
+    <ID>TooManyFunctions:SpotifyIntegration.kt$SpotifyIntegration : MinecraftInstance</ID>
+    <ID>TooManyFunctions:SpotifyLocalSource.kt$SpotifyLocalSource</ID>
+    <ID>TooManyFunctions:SpotifyModule.kt$SpotifyModule : Module</ID>
+    <ID>TooManyFunctions:SpotifyService.kt$SpotifyService</ID>
+    <ID>TooManyFunctions:SpotifyWebScreen.kt$SpotifyWebScreen : GuiScreen</ID>
+    <ID>TooManyFunctions:StaffDetector.kt$StaffDetector : Module</ID>
+    <ID>TooManyFunctions:StencilUtils.kt$StencilUtils : MinecraftInstance</ID>
+    <ID>TooManyFunctions:Style.kt$Style : MinecraftInstance</ID>
+    <ID>TooManyFunctions:TargetFocus.kt$TargetFocus : Module</ID>
+    <ID>TooManyFunctions:TargetStrafe.kt$TargetStrafe : Module</ID>
+    <ID>TooManyFunctions:TickedActions.kt$TickedActions : Listenable</ID>
+    <ID>TooManyFunctions:UiEventSocket.kt$UiEventSocket$Client</ID>
+    <ID>TooManyFunctions:Value.kt$Value&lt;T&gt; : ReadWriteProperty</ID>
+    <ID>TooManyFunctions:ValueGroups.kt$ModeValueGroup : Configurable</ID>
+    <ID>TooManyFunctions:ValueGroups.kt$ToggleableValueGroup : Configurable</ID>
+    <ID>TooManyFunctions:Velocity.kt$Velocity : Module</ID>
+    <ID>UnusedParameter:Armor.kt$Armor$color: Int</ID>
+    <ID>UnusedParameter:Armor.kt$Armor$stack: ItemStack</ID>
+    <ID>UnusedParameter:ArmorSwap.kt$ArmorSwap$now: Long</ID>
+    <ID>UnusedParameter:CharRenderer.kt$CharRenderer$orgX: Float</ID>
+    <ID>UnusedParameter:CharRenderer.kt$CharRenderer$scaleX: Float</ID>
+    <ID>UnusedParameter:ClickGuiHeader.kt$ClickGuiHeader$sr: ScaledResolution</ID>
+    <ID>UnusedParameter:ColorUtils.kt$ColorUtils$colorSettings: ColorSettingsInteger</ID>
+    <ID>UnusedParameter:ConfigMigration.kt$ConfigMigration$root: JsonObject</ID>
+    <ID>UnusedParameter:DashTrail.kt$DashTrail.DashCubic$nextSegment: DashCubic?</ID>
+    <ID>UnusedParameter:DashTrail.kt$DashTrail.DashCubic$partialTicks: Float</ID>
+    <ID>UnusedParameter:EspPreviewComponent.kt$EspPreviewComponent$keyCode: Int</ID>
+    <ID>UnusedParameter:EspPreviewComponent.kt$EspPreviewComponent$mouseX: Int</ID>
+    <ID>UnusedParameter:EspPreviewComponent.kt$EspPreviewComponent$mouseY: Int</ID>
+    <ID>UnusedParameter:EspPreviewComponent.kt$EspPreviewComponent$outlineColor: Color</ID>
+    <ID>UnusedParameter:EspPreviewComponent.kt$EspPreviewComponent$textColor: Color</ID>
+    <ID>UnusedParameter:EspPreviewComponent.kt$EspPreviewComponent$typedChar: Char</ID>
+    <ID>UnusedParameter:NameTags.kt$NameTags$isRenderingSelf: Boolean</ID>
+    <ID>UnusedParameter:NlSetting.kt$NlSetting$mx: Int</ID>
+    <ID>UnusedParameter:NlSetting.kt$NlSetting$my: Int</ID>
+    <ID>UnusedParameter:Panel.kt$Panel$mouseX: Int</ID>
+    <ID>UnusedParameter:Panel.kt$Panel$mouseY: Int</ID>
+    <ID>UnusedParameter:Panel.kt$Panel$partialTicks: Float</ID>
+    <ID>UnusedParameter:PopupScreen.kt$PopupScreen$mouseButton: Int</ID>
+    <ID>UnusedParameter:PopupScreen.kt$PopupScreen$screenHeight: Int</ID>
+    <ID>UnusedParameter:RenderUtils.kt$RenderUtils$color: Int</ID>
+    <ID>UnusedParameter:ServerLag.kt$ServerLag$isOutbound: Boolean</ID>
+    <ID>UnusedParameter:SettingsUtils.kt$SettingsUtils$args: Array&lt;String&gt;</ID>
+    <ID>UnusedParameter:SideGui.kt$SideGui$sr: ScaledResolution</ID>
+    <ID>UnusedParameter:SideGuiBackgroundManager.kt$SideGuiBackgroundManager$mouseX: Int</ID>
+    <ID>UnusedParameter:SideGuiBackgroundManager.kt$SideGuiBackgroundManager$mouseY: Int</ID>
+    <ID>UnusedParameter:SideGuiColorManager.kt$SideGuiColorManager$mouseX: Int</ID>
+    <ID>UnusedParameter:SideGuiColorManager.kt$SideGuiColorManager$mouseY: Int</ID>
+    <ID>UnusedParameter:SimpleFontRenderer.kt$SimpleFontRenderer$antiAlias: Boolean</ID>
+    <ID>UnusedParameter:Spider.kt$Spider$event: BlockBBEvent</ID>
+    <ID>UnusedParameter:TargetStrafe.kt$TargetStrafe$target: EntityLivingBase</ID>
+    <ID>UnusedParameter:YzYGui.kt$BindInputBox$mouseButton: Int</ID>
+    <ID>UnusedParameter:YzYGui.kt$BindInputBox$mouseX: Int</ID>
+    <ID>UnusedParameter:YzYGui.kt$BindInputBox$mouseY: Int</ID>
+    <ID>UnusedParameter:YzYGui.kt$BindInputBox$partialTicks: Float</ID>
+    <ID>UnusedParameter:YzYGui.kt$BindInputBox$state: Int</ID>
+    <ID>UnusedPrivateMember:TargetFocus.kt$TargetFocus$private fun observedTargetHit(target: EntityPlayer?): Boolean</ID>
+    <ID>UnusedPrivateMember:TargetStrafe.kt$TargetStrafe$private fun isCloseToPoint(point: Point): Boolean</ID>
+    <ID>UnusedPrivateProperty:AWTFontRenderer.kt$AWTFontRenderer.Companion$/** * Should be called each frame or so. Every 600 frames, we run garbage collection * on every active font renderer. */ private val onRender2D = handler&lt;Render2DEvent&gt;(priority = Byte.MIN_VALUE) { if (++gcTicks &gt; GC_TICKS) { activeFontRenderers.forEach { it.collectGarbage() } gcTicks = 0 } }</ID>
+    <ID>UnusedPrivateProperty:ArmorSwap.kt$ArmorSwap$private val noMove by +InventoryManager.noMoveValue</ID>
+    <ID>UnusedPrivateProperty:ArmorSwap.kt$ArmorSwap$private val noMoveAir by +InventoryManager.noMoveAirValue</ID>
+    <ID>UnusedPrivateProperty:ArmorSwap.kt$ArmorSwap$private val noMoveGround by +InventoryManager.noMoveGroundValue</ID>
+    <ID>UnusedPrivateProperty:AutoArmor.kt$AutoArmor$private val autoClose by +InventoryManager.autoCloseValue</ID>
+    <ID>UnusedPrivateProperty:AutoArmor.kt$AutoArmor$private val closeDelay by +InventoryManager.closeDelayValue</ID>
+    <ID>UnusedPrivateProperty:AutoArmor.kt$AutoArmor$private val noMove by +InventoryManager.noMoveValue</ID>
+    <ID>UnusedPrivateProperty:AutoArmor.kt$AutoArmor$private val noMoveAir by +InventoryManager.noMoveAirValue</ID>
+    <ID>UnusedPrivateProperty:AutoArmor.kt$AutoArmor$private val noMoveGround by +InventoryManager.noMoveGroundValue</ID>
+    <ID>UnusedPrivateProperty:AutoArmor.kt$AutoArmor$private val postInventoryCloseDelay by +InventoryManager.postInventoryCloseDelayValue</ID>
+    <ID>UnusedPrivateProperty:AutoPearl.kt$AutoPearl$private const val PEARL_SIZE = 0.25</ID>
+    <ID>UnusedPrivateProperty:BlockElement.kt$BlockElement$private val element: ModuleElement</ID>
+    <ID>UnusedPrivateProperty:CapeService.kt$CapeService$/** * We want to immediately update the owner of the cape and refresh the cape carriers */ private val onNewSession = handler&lt;SessionUpdateEvent&gt;(dispatcher = Dispatchers.IO) { // Check if donator cape is actually enabled and has a transfer code, also make sure the account used is premium. val capeUser = clientCapeUser ?: return@handler if (!UserUtils.isValidTokenOffline(mc.session.token)) return@handler try { // Apply cape to new account val uuid = mc.session.playerID val username = mc.session.username val requestBody = "{\"uuid\":${uuid}}".toRequestBody("application/json".toMediaType()) val request = Request.Builder() .url(SELF_CAPE_URL) .patch(requestBody) .addHeader("Content-Type", "application/json") .addHeader("Authorization", capeUser.token) .build() HttpClient.newCall(request).execute().use { response -&gt; if (response.code == 204) { // HTTP 204 No Content capeUser.uuid = uuid LOGGER.info("[Donator Cape] Successfully transferred cape to $uuid ($username)") } else { LOGGER.info("[Donator Cape] Failed to transfer cape (${response.code})") } } // Refresh cape carriers refreshCapeCarriers(force = true) { LOGGER.info("Cape carriers refreshed after session change.") } } catch (e: Throwable) { LOGGER.error("Failed to handle new session due to error.", e) } }</ID>
+    <ID>UnusedPrivateProperty:Category.kt$Category$initialPosX: Int</ID>
+    <ID>UnusedPrivateProperty:ChestAura.kt$ChestAura$private val minDistanceFromOpponent by float("MinDistanceFromOpponent", 10F, 0F..30F).onChanged { value -&gt; minDistanceFromOpponentSq = value.pow(2) } .describe("Pause opening chests when an enemy is closer than this.")</ID>
+    <ID>UnusedPrivateProperty:ClickGUIModule.kt$ClickGUIModule$// Full clean reinstall: purge every cached asset and download from scratch. For the rare case the // cache or manifest is corrupt; everyday recovery should use the fast "Re-download Assets" resume above. private val cleanReinstallValue = boolean("Clean Reinstall", false) { style == "NextGen" || NextGenBrowserRuntime.state == NextGenBrowserRuntime.State.FAILED } .describe("Click to delete all cached browser assets and download everything again from scratch.") .onChange { _, triggered -&gt; if (triggered) { NextGenBrowserRuntime.retry(redownloadAssets = true) HUD.addNotification( Notification("NextGen ClickGUI", "Reinstalling all in-game browser assets...", Type.INFO) ) } false }</ID>
+    <ID>UnusedPrivateProperty:ClickGUIModule.kt$ClickGUIModule$// Momentary action: flips on, kicks off a fresh asset download/retry, then bounces back off so it // reads like a button. Stays visible after a failure (even from another style) so the in-game // browser can always be recovered, and a failed attempt's reason is shown on the NextGen fallback // screen via [NextGenBrowserRuntime.lastErrorLog]. private val redownloadAssetsValue = boolean("Re-download Assets", false) { style == "NextGen" || NextGenBrowserRuntime.state == NextGenBrowserRuntime.State.FAILED } .describe("Click to fetch any missing in-game browser assets and retry - a fast resume after a failed or stalled download.") .onChange { _, triggered -&gt; if (triggered) { NextGenBrowserRuntime.retry() HUD.addNotification( Notification("NextGen ClickGUI", "Resuming in-game browser download...", Type.INFO) ) } false }</ID>
+    <ID>UnusedPrivateProperty:ColorElement.kt$ColorElement$private val element: ModuleElement</ID>
+    <ID>UnusedPrivateProperty:CurveElement.kt$CurveElement$private val element: ModuleElement</ID>
+    <ID>UnusedPrivateProperty:DamageCommand.kt$DamageCommand$i</ID>
+    <ID>UnusedPrivateProperty:DashTrail.kt$DashTrail.DashBase$rmTime: Int</ID>
+    <ID>UnusedPrivateProperty:DiscordRPC.kt$DiscordRPC$private val onClientShutdown = handler&lt;ClientShutdownEvent&gt; { stop() }</ID>
+    <ID>UnusedPrivateProperty:ESP2D.kt$ESP2D$val fr = minecraftFont</ID>
+    <ID>UnusedPrivateProperty:ESP2D.kt$ESP2D$val isPlayer = entity is EntityPlayer</ID>
+    <ID>UnusedPrivateProperty:EntityLookup.kt$EntityLookup$private val onUpdate = handler&lt;UpdateEvent&gt; { ticks++ ticks %= updateCycle if (ticks != 0) return@handler @Suppress("UNCHECKED_CAST") entities = mc.theWorld?.loadedEntityList ?.filter { entity -&gt; entityClass.isAssignableFrom(entity.javaClass) &amp;&amp; !EntityVisibilityFilter.shouldHideFromRender(entity) &amp;&amp; predicates.all { it.test(entity as T) } } as? Collection&lt;T&gt; ?: emptyList() }</ID>
+    <ID>UnusedPrivateProperty:EspPreviewComponent.kt$EspPreviewComponent$private val dFormat = DecimalFormat("0.0")</ID>
+    <ID>UnusedPrivateProperty:FightBot.kt$FightBot$val height = 0.3</ID>
+    <ID>UnusedPrivateProperty:FightBot.kt$FightBot$val width = 0.3</ID>
+    <ID>UnusedPrivateProperty:FireFlies.kt$FireFlies.FirePart$i</ID>
+    <ID>UnusedPrivateProperty:Flight.kt$Flight$private val showDeprecated by boolean("DeprecatedMode", true).onChanged { value -&gt; modeValue.changeValue(modesList.first { it !in deprecatedMode }.modeName) modeValue.updateValues(modesList.filter { value || it !in deprecatedMode }.modeNames()) } .describe("Show deprecated fly modes in the mode list.")</ID>
+    <ID>UnusedPrivateProperty:FontElement.kt$FontElement$private val element: ModuleElement</ID>
+    <ID>UnusedPrivateProperty:FontRenderer.kt$FontRenderer$val render = true</ID>
+    <ID>UnusedPrivateProperty:GuiSpotify.kt$GuiSpotify$private val connectionHandler = handler&lt;SpotifyConnectionChangedEvent&gt;(always = true) { event -&gt; connectionState = event.state connectionError = event.errorMessage ?: SpotifyModule.lastErrorMessage }</ID>
+    <ID>UnusedPrivateProperty:GuiSpotify.kt$GuiSpotify$private val stateHandler = handler&lt;SpotifyStateChangedEvent&gt;(always = true) { event -&gt; playbackState = event.state updateCoverTexture(event.state) }</ID>
+    <ID>UnusedPrivateProperty:GuiSpotifyPlayer.kt$GuiSpotifyPlayer$private val connectionHandler = handler&lt;SpotifyConnectionChangedEvent&gt;(always = true) { event -&gt; connectionState = event.state }</ID>
+    <ID>UnusedPrivateProperty:GuiSpotifyPlayer.kt$GuiSpotifyPlayer$private val stateHandler = handler&lt;SpotifyStateChangedEvent&gt;(always = true) { event -&gt; playbackState = event.state shuffleEnabled = event.state?.shuffleEnabled ?: false repeatMode = event.state?.repeatMode ?: SpotifyRepeatMode.OFF // Don't let a playback refresh snap the slider back while the user is dragging it. event.state?.volumePercent?.let { if (!adjustingVolume) volumePercent = it } }</ID>
+    <ID>UnusedPrivateProperty:HideClans.kt$HideClans$private val onUpdate = handler&lt;UpdateEvent&gt; { updateHiddenAllies() }</ID>
+    <ID>UnusedPrivateProperty:InfiniteAura.kt$InfiniteAura$private val attackTimer = MSTimer()</ID>
+    <ID>UnusedPrivateProperty:InfiniteAura.kt$InfiniteAura$private val limitedMultiTargets by int("LimitedMultiTargets", 0, 0..50) { targetMode == "Multi" } .describe("Max targets to hit in multi mode, 0 is no limit.")</ID>
+    <ID>UnusedPrivateProperty:InfiniteAura.kt$InfiniteAura$private val onWorld = handler&lt;WorldEvent&gt; { auraJob?.cancel() points.clear() target = null hittable = false prevTargetEntities.clear() synchronized(swingFails) { swingFails.clear() } }</ID>
+    <ID>UnusedPrivateProperty:InfiniteAura.kt$InfiniteAura$val diff = sqrt(x * x + y * y + z * z)</ID>
+    <ID>UnusedPrivateProperty:InventoryCleaner.kt$InventoryCleaner$private val autoClose by +InventoryManager.autoCloseValue</ID>
+    <ID>UnusedPrivateProperty:InventoryCleaner.kt$InventoryCleaner$private val closeDelay by +InventoryManager.closeDelayValue</ID>
+    <ID>UnusedPrivateProperty:InventoryCleaner.kt$InventoryCleaner$private val noMove by +InventoryManager.noMoveValue</ID>
+    <ID>UnusedPrivateProperty:InventoryCleaner.kt$InventoryCleaner$private val noMoveAir by +InventoryManager.noMoveAirValue</ID>
+    <ID>UnusedPrivateProperty:InventoryCleaner.kt$InventoryCleaner$private val noMoveGround by +InventoryManager.noMoveGroundValue</ID>
+    <ID>UnusedPrivateProperty:InventoryCleaner.kt$InventoryCleaner$private val postInventoryCloseDelay by +InventoryManager.postInventoryCloseDelayValue</ID>
+    <ID>UnusedPrivateProperty:InventoryManager.kt$InventoryManager$private val managerLoop = loopSequence(dispatcher = Dispatchers.Default, priority = 100) { hasScheduledInLastLoop = false /** * ChestStealer actions */ ChestStealer.stealFromChest() if (ArmorFilter.dropLowDurabilityArmor()) { delay(50) return@loopSequence } if (ArmorSwap.runSwap()) { delay(50) return@loopSequence } /** * AutoArmor actions */ if (AutoArmor.handleManualSwapRequest()) { delay(50) return@loopSequence } AutoArmor.equipFromHotbar() // Following actions require inventory / simulated inventory, ... // TODO: This could be at start of each action? // Don't wait for NoMove not to be violated, check if there is anything to equip from hotbar and such by looping again if (!canClickInventory() || (invOpenValue.get() &amp;&amp; mc.currentScreen !is GuiInventory)) { delay(50) return@loopSequence } canCloseInventory = false AutoArmor.equipFromInventory() /** * InventoryCleaner actions */ // Repair useful equipment by merging in the crafting grid InventoryCleaner.repairEquipment() // Compact multiple small stacks into one to free up inventory space InventoryCleaner.mergeStacks() // Sort hotbar (with useful items without even dropping bad items first) InventoryCleaner.sortHotbar() // Drop bad items to free up inventory space InventoryCleaner.dropGarbage() // Stores which action should be executed to close open inventory or simulated inventory // If no clicks were scheduled throughout any iteration (canCloseInventory == false), then it is null, to prevent closing inventory all the time val action = closingAction ?: run { delay(50) return@loopSequence } // Prepare for closing the inventory delay(closeDelayValue.get().toLong()) // Try to search through inventory one more time, only close when no actions were scheduled in current iteration if (!hasScheduledInLastLoop) { action.run() } }</ID>
+    <ID>UnusedPrivateProperty:JumpCircle.kt$JumpCircle$val alpha2 = ((color2.rgb shr 24) and 0xFF) / 255f</ID>
+    <ID>UnusedPrivateProperty:KeyBindElement.kt$KeyBindElement$private val element: ModuleElement</ID>
+    <ID>UnusedPrivateProperty:ListElement.kt$ListElement$private val element: ModuleElement</ID>
+    <ID>UnusedPrivateProperty:MiscUtils.kt$MiscUtils$val tips = possibleTips()</ID>
+    <ID>UnusedPrivateProperty:ModernTH.kt$ModernTH$val scale = if (hurtPercent == 0f) { 1f } else if (hurtPercent &lt; 0.5f) { 1 - (0.2f * hurtPercent * 2) } else { 0.8f + (0.2f * (hurtPercent - 0.5f) * 2) }</ID>
+    <ID>UnusedPrivateProperty:ModernTH.kt$ModernTH$val size = 35</ID>
+    <ID>UnusedPrivateProperty:ModuleManager.kt$ModuleManager$/** * Handle incoming key presses and releases. */ private val onKeyState = handler&lt;KeyStateEvent&gt; { event -&gt; if (event.key == Keyboard.KEY_NONE) { return@handler } MODULE_REGISTRY.forEach { module -&gt; if (module.keyBind == Keyboard.KEY_NONE) { return@forEach } val keyMatches = module.keyBind == event.key val releasedModifier = !event.pressed &amp;&amp; module.bindModifiers.any { it.matchesKey(event.key) } when (module.bindAction) { ModuleBindAction.TOGGLE -&gt; { if (event.pressed &amp;&amp; keyMatches &amp;&amp; module.bindModifiersPressed()) { module.toggle() } } ModuleBindAction.HOLD -&gt; { when { event.pressed &amp;&amp; keyMatches &amp;&amp; module.bindModifiersPressed() -&gt; module.state = true !event.pressed &amp;&amp; (keyMatches || releasedModifier) -&gt; module.state = false } } ModuleBindAction.SMART -&gt; { when { event.pressed &amp;&amp; keyMatches &amp;&amp; module.bindModifiersPressed() -&gt; { smartPressedStates[module] = module.state to System.currentTimeMillis() module.state = true } !event.pressed &amp;&amp; keyMatches -&gt; { val (wasEnabled, pressedAt) = smartPressedStates.remove(module) ?: return@forEach val held = System.currentTimeMillis() - pressedAt &gt;= SMART_HOLD_THRESHOLD_MS module.state = if (held) false else !wasEnabled } releasedModifier &amp;&amp; smartPressedStates.remove(module) != null -&gt; module.state = false } } } } }</ID>
+    <ID>UnusedPrivateProperty:ModuleManager.kt$ModuleManager$/** * Safety net for HOLD/SMART binds. Key-release events are only delivered while no screen is open * (the release fires from the mixin only when currentScreen == null), so holding a bind key and * then opening a GUI - or losing window focus - would otherwise strand the module enabled because * its release is never seen. Every tick we reconcile against the real keyboard state and let go of * the module once the keys are physically up. */ private val onBindTick = handler&lt;GameTickEvent&gt; { MODULE_REGISTRY.forEach { module -&gt; if (module.keyBind == Keyboard.KEY_NONE) { return@forEach } when (module.bindAction) { ModuleBindAction.HOLD -&gt; { if (module.state &amp;&amp; !module.bindHeldPhysically()) { module.state = false } } ModuleBindAction.SMART -&gt; { val (wasEnabled, pressedAt) = smartPressedStates[module] ?: return@forEach when { !Keyboard.isKeyDown(module.keyBind) -&gt; { smartPressedStates.remove(module) val held = System.currentTimeMillis() - pressedAt &gt;= SMART_HOLD_THRESHOLD_MS module.state = if (held) false else !wasEnabled } !module.bindModifiersPressed() -&gt; { smartPressedStates.remove(module) module.state = false } } } else -&gt; {} } } }</ID>
+    <ID>UnusedPrivateProperty:MultiSelectElement.kt$MultiSelectElement$private val element: ModuleElement</ID>
+    <ID>UnusedPrivateProperty:NeverloseGui.kt$NeverloseGui$subCategory</ID>
+    <ID>UnusedPrivateProperty:NextGenBrowserRuntime.kt$NextGenBrowserRuntime$/** * Persistent on-screen download status. Stays visible the whole time the browser runtime is * being prepared/downloaded (does NOT fade like a notification) and disappears only once the * download finishes (state leaves INITIALIZING). */ private val onRenderOverlay = handler&lt;Render2DEvent&gt;(always = true) { if (state != State.INITIALIZING) { return@handler } val font = mc.fontRendererObj ?: return@handler val sr = ScaledResolution(mc) val text = detail.ifEmpty { "Preparing in-game browser (one-time ~160MB download)..." } val pct = progress val hasBar = pct in 0.0..100.0 val boxW = (font.getStringWidth(text) + 16).coerceAtLeast(200) val boxH = if (hasBar) 30 else 20 val x = (sr.scaledWidth - boxW) / 2 val y = 6 RenderUtils.drawRect(x.toFloat(), y.toFloat(), (x + boxW).toFloat(), (y + boxH).toFloat(), 0xC8101014.toInt()) RenderUtils.drawRect(x.toFloat(), y.toFloat(), (x + boxW).toFloat(), (y + 1).toFloat(), 0x40FFFFFF) font.drawStringWithShadow(text, (x + 8).toFloat(), (y + 6).toFloat(), 0xFFFFFF) if (hasBar) { val barX = x + 8 val barY = y + 20 val barW = boxW - 16 RenderUtils.drawRect(barX.toFloat(), barY.toFloat(), (barX + barW).toFloat(), (barY + 4).toFloat(), 0xC0202024.toInt()) val filled = (barW * (pct / 100.0)).toInt() if (filled &gt; 0) { RenderUtils.drawRect(barX.toFloat(), barY.toFloat(), (barX + filled).toFloat(), (barY + 4).toFloat(), 0xFF3A8BFF.toInt()) } } }</ID>
+    <ID>UnusedPrivateProperty:NextGenBrowserRuntime.kt$NextGenBrowserRuntime$private val onGameLoop = handler&lt;GameLoopEvent&gt;(always = true, priority = Byte.MIN_VALUE) { tickPersistentBrowser() tickHudBrowser() }</ID>
+    <ID>UnusedPrivateProperty:NextGenBrowserRuntime.kt$NextGenBrowserRuntime$private val onShutdown = handler&lt;ClientShutdownEvent&gt;(always = true) { closePersistentBrowser() closeHudBrowser() NextGenClickGuiServer.stop() }</ID>
+    <ID>UnusedPrivateProperty:NoBlockInteract.kt$NoBlockInteract$private val handlePacket = handler&lt;PacketEvent&gt; { event -&gt; val player = mc.thePlayer ?: return@handler val packet = event.packet // Only react to actual block interactions. A direction of 0..5 means a real block // face was clicked; 255 means the client is using an item against air. if (packet !is C08PacketPlayerBlockPlacement || packet.placedBlockDirection !in 0..5) { return@handler } if (onlyWhenSneaking &amp;&amp; !player.isSneaking) { return@handler } val block = packet.position?.block ?: return@handler if (shouldCancel(block)) { event.cancelEvent() } }</ID>
+    <ID>UnusedPrivateProperty:NoEntityInteract.kt$NoEntityInteract$private val handlePacket = handler&lt;PacketEvent&gt; { event -&gt; val world = mc.theWorld ?: return@handler val player = mc.thePlayer ?: return@handler val packet = event.packet // Only react to interaction (right-click) actions, never to ATTACK. if (packet !is C02PacketUseEntity || (packet.action != INTERACT &amp;&amp; packet.action != INTERACT_AT)) { return@handler } if (onlyWhenSneaking &amp;&amp; !player.isSneaking) { return@handler } val entity = packet.getEntityFromWorld(world) ?: return@handler if (shouldCancel(entity)) { event.cancelEvent() } }</ID>
+    <ID>UnusedPrivateProperty:Nuker.kt$Nuker$private val nuke by int("Nuke", 1, 1..20) .describe("Number of blocks to break per cycle.")</ID>
+    <ID>UnusedPrivateProperty:RenderUtil.kt$RenderUtil$val scaledResolution = ScaledResolution(Minecraft.getMinecraft())</ID>
+    <ID>UnusedPrivateProperty:RenderUtil.kt$RenderUtil$val var16 = var15.getWorldRenderer()</ID>
+    <ID>UnusedPrivateProperty:RenderWings.kt$RenderWings$val factor = ((sin(t * 2 * Math.PI) + 1) / 2).toFloat()</ID>
+    <ID>UnusedPrivateProperty:ServerLag.kt$ServerLag$private val flushOnTeleport by boolean("FlushOnTeleport", true) { autoFlush } .describe("Release packets when you are teleported.")</ID>
+    <ID>UnusedPrivateProperty:ServerLag.kt$ServerLag$val sr = ScaledResolution(mc)</ID>
+    <ID>UnusedPrivateProperty:SettingComponents.kt$SettingComponents$val hueSliderEndY = colorPickerStartY + hueSliderHeight</ID>
+    <ID>UnusedPrivateProperty:SettingComponents.kt$SettingComponents$val pixelPos1 = totalSliderWidth * percent1</ID>
+    <ID>UnusedPrivateProperty:SettingComponents.kt$SettingComponents$val pixelPos2 = totalSliderWidth * percent2</ID>
+    <ID>UnusedPrivateProperty:SideGuiBackgroundManager.kt$SideGuiBackgroundManager$val sideBgH = 15f</ID>
+    <ID>UnusedPrivateProperty:SideGuiColorManager.kt$SideGuiColorManager$val sideBtnH = 15f</ID>
+    <ID>UnusedPrivateProperty:SimpleFontRenderer.kt$SimpleFontRenderer.Companion$private const val CHAR_OFFSET: Float = 0f</ID>
+    <ID>UnusedPrivateProperty:Speed.kt$Speed$private val showDeprecated by boolean("DeprecatedMode", true).onChanged { value -&gt; mode.changeValue(modesList.first { it !in deprecatedMode }.modeName) mode.updateValues(modesList.filter { value || it !in deprecatedMode }.modeNames()) } .describe("Show deprecated speed modes in the mode list.")</ID>
+    <ID>UnusedPrivateProperty:SpotifyModule.kt$SpotifyModule$private val openPlayerValue = boolean("OpenUI", false).apply { onChange { _, newValue -&gt; if (newValue) { mc.addScheduledTask { openPlayerScreen() } } false } }</ID>
+    <ID>UnusedPrivateProperty:TargetFocus.kt$TargetFocus$private val onAttack = handler&lt;AttackEvent&gt; { event -&gt; observedHitThisTick = event.targetEntity as? EntityPlayer }</ID>
+    <ID>UnusedPrivateProperty:TargetFocus.kt$TargetFocus$private val onUpdate = handler&lt;UpdateEvent&gt; { updateTarget() }</ID>
+    <ID>UnusedPrivateProperty:TextElement.kt$TextElement$private val element: ModuleElement</ID>
+    <ID>UnusedPrivateProperty:TickedActions.kt$TickedActions$private val onTick = handler&lt;GameTickEvent&gt;(priority = 1) { // Prevent new scheduled ids from getting marked as duplicates even if they are going to be called next tick actions.toCollection(calledThisTick) calledThisTick.forEach { it.action.run() if (actions.isNotEmpty()) { actions.remove() } } calledThisTick.clear() }</ID>
+    <ID>UnusedPrivateProperty:TickedActions.kt$TickedActions$private val onWorld = handler&lt;WorldEvent&gt; { actions.clear() }</ID>
+    <ID>UnusedPrivateProperty:Vec3Element.kt$Vec3Element$private val element: ModuleElement</ID>
+    <ID>UnusedPrivateProperty:Velocity.kt$Velocity$i</ID>
+    <ID>UseCheckOrError:SpotifyIntegration.kt$SpotifyIntegration$throw IllegalStateException("$label URL is empty")</ID>
+    <ID>UseCheckOrError:SpotifyModule.kt$SpotifyModule$throw IllegalStateException("Unable to create directory: ${directory.absolutePath}")</ID>
+    <ID>UseRequire:ColorUtils.kt$ColorUtils$throw IllegalArgumentException("Fractions and colors must have equal number of elements")</ID>
+    <ID>UseRequire:ModuleCommand.kt$ModuleCommand$throw IllegalArgumentException("Values are empty!")</ID>
+    <ID>UseRequire:RearView.kt$RearView$throw IllegalArgumentException("FOV must be between 30 and 170")</ID>
+    <ID>UseRequire:RearView.kt$RearView$throw IllegalArgumentException("Resolution must be within valid range")</ID>
+    <ID>VariableNaming:FontRenderer.kt$FontRenderer$private val COLOR_CODE_START = '§'</ID>
+    <ID>VariableNaming:GUIManager.kt$GUIManager$val `object` = element.asJsonObject</ID>
+    <ID>VariableNaming:NlModule.kt$NlModule$var HoveringAnimation: Animation = DecelerateAnimation(225, 1.0, Direction.BACKWARDS)</ID>
+    <ID>VariableNaming:NlSetting.kt$NlSetting$var Light = false</ID>
+    <ID>VariableNaming:Numbersetting.kt$Numbersetting$val `val` = safeValue.toFloat()</ID>
+    <ID>VariableNaming:Numbersetting.kt$Numbersetting$val `val` = safeValue.toInt()</ID>
+    <ID>VariableNaming:Numbersetting.kt$Numbersetting$var HoveringAnimation: Animation = DecelerateAnimation(225, 1.0, Direction.BACKWARDS)</ID>
+    <ID>VariableNaming:RearView.kt$RearView$private var Fov by int("Fov", 110, 30..170)</ID>
+  </CurrentIssues>
+</SmellBaseline>

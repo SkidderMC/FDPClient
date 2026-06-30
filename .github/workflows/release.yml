@@ -1,0 +1,40 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "8"
+          cache: gradle
+
+      - name: Verify and build
+        run: |
+          chmod +x gradlew
+          VERSION="${GITHUB_REF_NAME#v}"
+          ./gradlew --no-daemon setupCiWorkspace
+          ./gradlew --no-daemon clean check build -Pmod_version="$VERSION"
+
+      - name: Write artifact checksums
+        run: |
+          cd build/libs
+          sha256sum *.jar > SHA256SUMS
+
+      - name: Publish tagged release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" build/libs/*.jar build/libs/SHA256SUMS --verify-tag --generate-notes

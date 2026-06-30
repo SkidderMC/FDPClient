@@ -1,36 +1,37 @@
-name: build
+name: Build
 
 on:
-  - push
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+
+permissions:
+  contents: read
 
 jobs:
-  build:
+  verify:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
-          submodules: recursive
+          fetch-depth: 0
 
-      - name: Java setup
-        uses: actions/setup-java@v4
+      - uses: actions/setup-java@v4
         with:
-          distribution: "zulu"
-          java-version: 8
-          cache: "gradle"
+          distribution: temurin
+          java-version: "8"
+          cache: gradle
 
-      - name: Set outputs
-        id: vars
-        run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+      - name: Verify and build
+        run: |
+          chmod +x gradlew
+          ./gradlew --no-daemon setupCiWorkspace
+          ./gradlew --no-daemon clean check build
 
-      - name: Build
-        run: chmod +x ./gradlew && ./gradlew setupCiWorkspace && ./gradlew build
-
-      - name: Rename build artifacts
-        run: mv build/libs/FDPClient-*.jar build/libs/FDPClient-build.jar
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
-          name: FDPClient
-          path: build/libs/FDPClient-build.jar
+          name: FDPClient-${{ github.sha }}
+          path: build/libs/*.jar
+          if-no-files-found: error

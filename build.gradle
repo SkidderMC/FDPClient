@@ -2,6 +2,7 @@ plugins {
     id "java"
     id "idea"
     id "org.jetbrains.kotlin.jvm"
+    id "io.gitlab.arturbosch.detekt"
     id "com.github.johnrengelman.shadow" version "6.1.0"
     id "net.minecraftforge.gradle.forge"
     id "org.spongepowered.mixin"
@@ -9,7 +10,6 @@ plugins {
 }
 
 repositories {
-    mavenLocal()
     mavenCentral()
     maven { url = "https://repo.spongepowered.org/repository/maven-public/" }
     maven { url = "https://jitpack.io/" }
@@ -21,6 +21,23 @@ group = project.maven_group
 
 sourceCompatibility = targetCompatibility = 1.8
 compileJava.options.encoding = "UTF-8"
+
+detekt {
+    source = files("src/main/java")
+    buildUponDefaultConfig = true
+    config.setFrom(files("config/detekt/detekt.yml"))
+    parallel = true
+    baseline = file("config/detekt/baseline.xml")
+}
+
+tasks.withType(io.gitlab.arturbosch.detekt.Detekt).configureEach {
+    jvmTarget = "1.8"
+    reports {
+        html.required.set(true)
+        xml.required.set(true)
+        sarif.required.set(true)
+    }
+}
 
 minecraft {
     version = "1.8.9-11.15.1.2318-1.8.9"
@@ -112,6 +129,9 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_coroutines_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlin_coroutines_version"
 
+    testImplementation "junit:junit:4.13.2"
+    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
+
     // Swing LookAndFeel
     implementation "com.formdev:flatlaf:3.7.1"
 
@@ -154,6 +174,55 @@ tasks.register("verifySimulation", JavaExec) {
 }
 
 check.dependsOn("verifyRotations", "verifyFoundations", "verifyWorldFoundations", "verifySimulation")
+
+tasks.register("verifyBundledLibraries") {
+    group = "verification"
+    description = "Verifies every bundled library against the tracked SHA-256 provenance manifest."
+
+    def checksumFile = file("libs/checksums.sha256")
+    inputs.file(checksumFile)
+    inputs.files(fileTree("libs") { include "*.jar" })
+
+    doLast {
+        if (!checksumFile.isFile()) {
+            throw new GradleException("Missing bundled-library checksum manifest: ${checksumFile}")
+        }
+
+        def expected = [:]
+        checksumFile.eachLine("UTF-8") { rawLine ->
+            def line = rawLine.trim()
+            if (!line || line.startsWith("#")) return
+            def matcher = line =~ /^([0-9a-fA-F]{64})\s{2}(.+)$/
+            if (!matcher.matches()) {
+                throw new GradleException("Malformed checksum manifest line: ${rawLine}")
+            }
+            expected[matcher.group(2)] = matcher.group(1).toLowerCase(Locale.ROOT)
+        }
+
+        def jars = fileTree("libs") { include "*.jar" }.files.sort { it.name }
+        def actualNames = jars.collect { it.name } as Set
+        if (actualNames != expected.keySet()) {
+            throw new GradleException("Bundled-library manifest mismatch. jars=${actualNames}, manifest=${expected.keySet()}")
+        }
+
+        jars.each { jarFile ->
+            def digest = java.security.MessageDigest.getInstance("SHA-256")
+            jarFile.withInputStream { input ->
+                byte[] buffer = new byte[64 * 1024]
+                int read
+                while ((read = input.read(buffer)) >= 0) {
+                    if (read > 0) digest.update(buffer, 0, read)
+                }
+            }
+            def actual = digest.digest().collect { String.format("%02x", it & 0xff) }.join()
+            if (actual != expected[jarFile.name]) {
+                throw new GradleException("SHA-256 mismatch for bundled library ${jarFile.name}")
+            }
+        }
+    }
+}
+
+check.dependsOn("verifyBundledLibraries")
 
 shadowJar {
     archiveClassifier.set("")
@@ -205,7 +274,20 @@ tasks.register('moveResources') {
 classes.dependsOn(moveResources)
 
 jar {
+    def revision = System.getenv("GITHUB_SHA")
+    if (!revision) {
+        try {
+            revision = ["git", "rev-parse", "HEAD"].execute(null, rootDir).text.trim()
+        } catch (ignored) {
+            revision = "unknown"
+        }
+    }
+
     manifest.attributes(
+            "Implementation-Title": archivesBaseName,
+            "Implementation-Version": project.version,
+            "Build-Revision": revision ?: "unknown",
+            "Build-Jdk": System.getProperty("java.version"),
             "FMLCorePlugin": "net.ccbluex.liquidbounce.injection.forge.MixinLoader",
             "FMLCorePluginContainsFMLMod": true,
             "ForceLoadAsMod": true,

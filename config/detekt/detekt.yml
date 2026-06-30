@@ -1,0 +1,14 @@
+# Layout-only rules generate thousands of findings in the inherited 1.8 codebase without
+# protecting behavior. Complexity, correctness, exception and performance rules remain active;
+# their current debt is baselined so new findings fail CI.
+style:
+  MagicNumber:
+    active: false
+  MaxLineLength:
+    active: false
+  NewLineAtEndOfFile:
+    active: false
+  ReturnCount:
+    active: false
+  WildcardImport:
+    active: false
