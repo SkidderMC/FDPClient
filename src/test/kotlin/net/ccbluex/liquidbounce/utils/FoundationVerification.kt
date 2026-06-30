@@ -32,6 +32,9 @@ import net.ccbluex.liquidbounce.utils.render.Color4b
 import net.ccbluex.liquidbounce.utils.render.DynamicAtlasAllocator
 import net.ccbluex.liquidbounce.utils.sorting.ComparatorChain
 import net.ccbluex.liquidbounce.utils.rotation.ModernRotationEngine
+import net.ccbluex.liquidbounce.utils.client.AnticheatModeAdvisor
+import net.ccbluex.liquidbounce.utils.client.AnticheatProfile
+import net.ccbluex.liquidbounce.utils.client.ModeRisk
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
 import net.minecraft.util.AxisAlignedBB
@@ -53,7 +56,23 @@ object FoundationVerification {
         verifyModeChoices()
         verifyComparatorChain()
         verifyNeuralSmoother()
+        verifyAnticheatAdvice()
         println("Foundation verification passed")
+    }
+
+    private fun verifyAnticheatAdvice() {
+        check(AnticheatModeAdvisor.resolve("Auto", "Grim") == AnticheatProfile.GRIM)
+        check(AnticheatModeAdvisor.resolve("Auto", "NoCheatPlus") == AnticheatProfile.NCP)
+
+        val all = arrayOf("Simple", "Grim", "GrimVertical", "Cancel")
+        val filtered = AnticheatModeAdvisor.filteredModes("Velocity", "Grim", null, all)
+        check(filtered.contentEquals(arrayOf("Grim", "GrimVertical")))
+        check(AnticheatModeAdvisor.filteredModes("Velocity", "Auto", null, all).contentEquals(all))
+
+        val safe = AnticheatModeAdvisor.assess("Criticals", "Jump", "Grim", null)
+        val unsafe = AnticheatModeAdvisor.assess("Criticals", "Packet", "Grim", null)
+        check(safe.risk == ModeRisk.RECOMMENDED)
+        check(unsafe.risk == ModeRisk.LIKELY_DETECTED && unsafe.recommendedMode == "Jump")
     }
 
     private fun verifyGeometry() {
