@@ -111,9 +111,7 @@ enum class TargetPriority {
         HURT_RESISTANCE -> compareBy { it.hurtResistantTime }
         HURT_TIME -> compareBy { it.hurtTime }
         HEALTH_ABSORPTION -> compareBy { it.health + it.absorptionAmount }
-        REGEN_AMPLIFIER -> compareBy {
-            if (it.isPotionActive(Potion.regeneration)) it.getActivePotionEffect(Potion.regeneration).amplifier else -1
-        }
+        REGEN_AMPLIFIER -> compareBy { it.getActivePotionEffect(Potion.regeneration)?.amplifier ?: -1 }
         ON_LADDER -> compareBy { !it.isOnLadder }
         IN_LIQUID -> compareBy { !(it.isInWater || it.isInLava) }
         IN_WEB -> compareBy { !it.isInWeb }

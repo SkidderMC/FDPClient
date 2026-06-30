@@ -120,7 +120,9 @@ val ItemStack.enchantments: Map<Enchantment, Int>
         repeat(enchantmentTagList.tagCount()) {
             val tagCompound = enchantmentTagList.getCompoundTagAt(it)
             if (tagCompound.hasKey("ench") || tagCompound.hasKey("id"))
-                enchantments[Enchantment.getEnchantmentById(tagCompound.getInteger("id"))] = tagCompound.getInteger("lvl")
+                Enchantment.getEnchantmentById(tagCompound.getInteger("id"))?.let { ench ->
+                    enchantments[ench] = tagCompound.getInteger("lvl")
+                }
         }
 
         return enchantments
