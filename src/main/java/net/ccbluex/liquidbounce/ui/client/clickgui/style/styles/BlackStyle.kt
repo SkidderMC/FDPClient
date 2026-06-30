@@ -133,7 +133,7 @@ object BlackStyle : Style() {
         )
 
         // Draw settings
-        val moduleValues = ValueDispatcher.visibleDeep(moduleElement.module)
+        val moduleValues = ValueDispatcher.visible(moduleElement.module)
         if (moduleValues.isNotEmpty()) {
             fontSemibold35.drawString(
                 if (moduleElement.showSettings) "<" else ">",
@@ -158,7 +158,7 @@ object BlackStyle : Style() {
                     Color(40, 40, 40).rgb
                 )
 
-                for (value in moduleValues) {
+                fun renderLeaf(value: Value<*>): Boolean {
                     assumeNonVolatile = value.get() is Number
 
                     val suffix = value.suffix ?: ""
@@ -1051,6 +1051,49 @@ object BlackStyle : Style() {
                             yPos += 12
                         }
                     }
+
+                    return false
+                }
+
+                fun renderValue(value: Value<*>): Boolean {
+                    if (value is Configurable) {
+                        val children = value.values.filter { it.shouldRender() }
+                        if (children.isEmpty()) return false
+
+                        moduleElement.settingsWidth =
+                            maxOf(moduleElement.settingsWidth, fontSemibold35.getStringWidth(value.name) + 16)
+
+                        if (mouseButton == 0 && mouseX in minX..maxX && mouseY in yPos..yPos + fontSemibold35.fontHeight) {
+                            value.groupExpanded = !value.groupExpanded
+                            clickSound()
+                            return true
+                        }
+
+                        drawRect(minX, yPos - 1, maxX, yPos + fontSemibold35.fontHeight, Color(30, 30, 30).rgb)
+                        fontSemibold35.drawString(value.name, minX + 2, yPos + 2, Color(7, 152, 252).rgb)
+                        fontSemibold35.drawString(
+                            if (value.groupExpanded) "-" else "+",
+                            maxX - if (value.groupExpanded) 5 else 6,
+                            yPos + 2,
+                            Color.WHITE.rgb
+                        )
+
+                        yPos += fontSemibold35.fontHeight + 1
+
+                        if (value.groupExpanded) {
+                            for (child in children) {
+                                if (renderValue(child)) return true
+                            }
+                        }
+
+                        return false
+                    }
+
+                    return renderLeaf(value)
+                }
+
+                for (value in moduleValues) {
+                    if (renderValue(value)) return true
                 }
 
                 moduleElement.adjustWidth()
