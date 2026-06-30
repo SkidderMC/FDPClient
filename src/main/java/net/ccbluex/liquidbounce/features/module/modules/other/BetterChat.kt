@@ -58,6 +58,8 @@ object BetterChat : Module(
             stackMessages && existing != null -> {
                 existing.count++
                 existing.lastSeenAt = now
+                order.remove(key)
+                order.addLast(key)
                 appendCount(component, existing.count)
             }
             else -> {

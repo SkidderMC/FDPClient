@@ -35,9 +35,13 @@ object ItemChams : Module("ItemChams", Category.VISUAL, Category.SubCategory.REN
     @JvmStatic
     fun endRender() {
         if (!handleEvents()) return
-        GlStateManager.color(1F, 1F, 1F, 1F)
-        GlStateManager.disableBlend()
-        GlStateManager.depthMask(true)
-        GlStateManager.enableDepth()
+        if (blend) {
+            GlStateManager.color(1F, 1F, 1F, 1F)
+            GlStateManager.disableBlend()
+        }
+        if (throughWalls) {
+            GlStateManager.depthMask(true)
+            GlStateManager.enableDepth()
+        }
     }
 }

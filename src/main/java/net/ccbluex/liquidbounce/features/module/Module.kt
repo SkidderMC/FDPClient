@@ -160,10 +160,10 @@ open class Module(
             if (value) {
                 onEnable()
 
-                if (canBeEnabled)
+                if (canBeEnabled) {
                     field = true
-
-                startEnabledEffects()
+                    startEnabledEffects()
+                }
             } else {
                 enabledEffectJobs.forEach(Job::cancel)
                 enabledEffectJobs.clear()
