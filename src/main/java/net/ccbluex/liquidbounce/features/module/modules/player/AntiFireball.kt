@@ -33,7 +33,13 @@ import kotlin.math.floor
 import kotlin.math.sin
 import org.lwjgl.opengl.GL11
 
-object AntiFireball : Module("AntiFireball", Category.PLAYER, Category.SubCategory.PLAYER_COUNTER) {
+object AntiFireball : Module(
+    "ProjectilePuncher",
+    Category.PLAYER,
+    Category.SubCategory.PLAYER_COUNTER,
+    forcedDescription = "Predicts and punches incoming fireballs before they reach you.",
+    legacyNames = arrayOf("AntiFireball", "Anti Fireball"),
+) {
 
     private val indicators by boolean("Indicator", true)
         .describe("Show on-screen indicators pointing to fireballs.")

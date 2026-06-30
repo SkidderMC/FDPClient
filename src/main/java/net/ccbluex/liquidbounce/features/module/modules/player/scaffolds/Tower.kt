@@ -17,12 +17,15 @@ import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPackets
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.extensions.tryJump
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.blocksAmount
+import net.ccbluex.liquidbounce.utils.movement.MovementUtils
 import net.ccbluex.liquidbounce.utils.timing.TickTimer
 import net.minecraft.init.Blocks.air
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.stats.StatList
 import net.minecraft.util.BlockPos
 import kotlin.math.truncate
+import kotlin.math.round
+import java.util.concurrent.ThreadLocalRandom
 
 object Tower : Configurable("Tower"), MinecraftInstance, Listenable {
 
@@ -39,6 +42,8 @@ object Tower : Configurable("Tower"), MinecraftInstance, Listenable {
             "Teleport",
             "AAC3.3.9",
             "AAC3.6.4",
+            "Karhu",
+            "Hypixel",
             "Vulcan2.9.0",
             "Pulldown"
         ),
@@ -75,6 +80,11 @@ object Tower : Configurable("Tower"), MinecraftInstance, Listenable {
     val triggerMotionValues = float("TriggerMotion", 0.1f, 0.0f..0.2f) { towerModeValues.get() == "Pulldown" }
     val dragMotionValues = float("DragMotion", 1.0f, 0.1f..1.0f) { towerModeValues.get() == "Pulldown" }
 
+    // Karhu
+    val karhuTimerValues = float("KarhuTimer", 5f, 0.1f..10f) { towerModeValues.get() == "Karhu" }
+    val karhuTriggerValues = float("KarhuTrigger", 0.06f, 0f..0.2f) { towerModeValues.get() == "Karhu" }
+    val karhuPulldownValues = boolean("KarhuPulldown", true) { towerModeValues.get() == "Karhu" }
+
     // Teleport
     val teleportHeightValues = float("TeleportHeight", 1.15f, 0.1f..5f) { towerModeValues.get() == "Teleport" }
     val teleportDelayValues = int("TeleportDelay", 0, 0..20) { towerModeValues.get() == "Teleport" }
@@ -86,6 +96,7 @@ object Tower : Configurable("Tower"), MinecraftInstance, Listenable {
     // Mode stuff
     private val tickTimer = TickTimer()
     private var jumpGround = 0.0
+    private var karhuTimerActive = false
 
     // Handle motion events
     val onMotion = handler<MotionEvent> { event ->
@@ -95,9 +106,18 @@ object Tower : Configurable("Tower"), MinecraftInstance, Listenable {
 
         isTowering = false
 
+        if (towerModeValues.get() != "Karhu" && karhuTimerActive) {
+            mc.timer.timerSpeed = Scaffold.timer
+            karhuTimerActive = false
+        }
+
         if (towerModeValues.get() == "None" || notOnMoveValues.get() && player.isMoving ||
             onJumpValues.get() && !mc.gameSettings.keyBindJump.isKeyDown
         ) {
+            if (karhuTimerActive) {
+                mc.timer.timerSpeed = Scaffold.timer
+                karhuTimerActive = false
+            }
             return@handler
         }
 
@@ -242,6 +262,46 @@ object Tower : Configurable("Tower"), MinecraftInstance, Listenable {
                     player.motionY = -dragMotionValues.get().toDouble()
                 } else {
                     fakeJump()
+                }
+            }
+
+            "karhu" -> {
+                if (player.onGround) {
+                    mc.timer.timerSpeed = Scaffold.timer
+                    karhuTimerActive = false
+                    fakeJump()
+                    player.motionY = 0.42
+                } else {
+                    mc.timer.timerSpeed = karhuTimerValues.get()
+                    karhuTimerActive = true
+
+                    if (karhuPulldownValues.get() && player.motionY < karhuTriggerValues.get() &&
+                        BlockPos(player).down().block != air
+                    ) {
+                        player.motionY -= 1.0
+                    }
+                }
+            }
+
+            "hypixel" -> {
+                if (MovementUtils.airTicks > 14) {
+                    player.motionY -= 0.09
+                    player.motionX *= 0.6
+                    player.motionZ *= 0.6
+                    return
+                }
+
+                if (!player.isMoving && player.posX % 1.0 != 0.0) {
+                    player.motionX = (round(player.posX) - player.posX).coerceIn(-0.281, 0.281)
+                }
+
+                when (MovementUtils.airTicks % 3) {
+                    0 -> {
+                        fakeJump()
+                        player.motionY = 0.42
+                        MovementUtils.strafe(0.247f - ThreadLocalRandom.current().nextFloat() / 100f)
+                    }
+                    2 -> player.motionY = 1.0 - player.posY % 1.0
                 }
             }
 

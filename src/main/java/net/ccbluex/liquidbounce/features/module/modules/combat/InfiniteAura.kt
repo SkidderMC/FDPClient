@@ -47,7 +47,13 @@ import java.awt.Color
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
-object InfiniteAura : Module(name = "InfiniteAura", category = Category.COMBAT, subCategory = Category.SubCategory.COMBAT_RAGE, spacedName = "Infinite Aura") {
+object InfiniteAura : Module(
+    name = "TpAura",
+    category = Category.COMBAT,
+    subCategory = Category.SubCategory.COMBAT_RAGE,
+    spacedName = "TP Aura",
+    legacyNames = arrayOf("InfiniteAura", "Infinite Aura"),
+) {
 
     private val packetValue by choices("PacketMode", arrayOf("PacketPosition", "PacketPosLook"), "PacketPosition")
         .describe("Which movement packet type to teleport with.")
