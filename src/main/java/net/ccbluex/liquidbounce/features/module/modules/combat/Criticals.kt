@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
+import net.ccbluex.liquidbounce.FDPClient.hud
 import net.ccbluex.liquidbounce.event.AttackEvent
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.handler
@@ -12,32 +13,34 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.movement.Flight
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPackets
+import net.ccbluex.liquidbounce.utils.client.AnticheatModeAdvisor
+import net.ccbluex.liquidbounce.utils.client.ModeRisk
+import net.ccbluex.liquidbounce.utils.client.ServerObserver
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 
+private val CRITICAL_MODES = arrayOf(
+    "Packet", "NCPPacket", "BlocksMC", "BlocksMC2", "NoGround", "Hop", "TPHop",
+    "Jump", "LowJump", "CustomMotion", "Visual"
+)
+
 object Criticals : Module("Criticals", Category.COMBAT, Category.SubCategory.COMBAT_LEGIT) {
 
-    val mode by choices(
-        "Mode",
-        arrayOf(
-            "Packet",
-            "NCPPacket",
-            "BlocksMC",
-            "BlocksMC2",
-            "NoGround",
-            "Hop",
-            "TPHop",
-            "Jump",
-            "LowJump",
-            "CustomMotion",
-            "Visual"
-        ),
-        "Packet"
-    )
-        .describe("Critical-hit mode.")
+    private val antiCheatValue = choices(
+        "AntiCheat", arrayOf("Auto", "All", "NCP", "AAC", "Grim", "Vulcan"), "Auto"
+    ).onChanged { refreshModeChoices(force = true) }
+        .describe("Filter critical modes by a detected or explicitly selected anti-cheat family.")
+    private val antiCheat by antiCheatValue
+
+    private val modeValue = choices("Mode", CRITICAL_MODES.copyOf(), "Packet")
+        .describe("Critical-hit mode with compatibility guidance for the selected anti-cheat.")
+        .apply { onChanged { if (state) warnAboutMode(it) } }
+    val mode by modeValue
 
     val delay by int("Delay", 0, 0..500)
         .describe("Minimum delay between critical hits.")
@@ -47,13 +50,18 @@ object Criticals : Module("Criticals", Category.COMBAT, Category.SubCategory.COM
         .describe("Upward motion used by the custom crit mode.")
 
     val msTimer = MSTimer()
+    private var lastProfileFingerprint = ""
+    private var lastModeWarning = ""
 
     override fun onEnable() {
+        refreshModeChoices(force = true)
+        warnAboutMode(mode)
         if (mode == "NoGround")
             mc.thePlayer.tryJump()
     }
 
     val onAttack = handler<AttackEvent> { event ->
+        refreshModeChoices()
         if (event.targetEntity is EntityLivingBase) {
             val thePlayer = mc.thePlayer ?: return@handler
             val entity = event.targetEntity
@@ -133,4 +141,41 @@ object Criticals : Module("Criticals", Category.COMBAT, Category.SubCategory.COM
 
     override val tag
         get() = mode
+
+    private fun refreshModeChoices(force: Boolean = false) {
+        val observed = ServerObserver.guessAnticheat()?.takeUnless { it.equals("Unknown", true) }
+        val fingerprint = "$antiCheat|${observed.orEmpty()}"
+        if (!force && fingerprint == lastProfileFingerprint) return
+        lastProfileFingerprint = fingerprint
+
+        val available = AnticheatModeAdvisor.filteredModes("Criticals", antiCheat, observed, CRITICAL_MODES)
+        modeValue.updateValues(available)
+        if (available.none { it.equals(mode, true) }) {
+            val previous = mode
+            modeValue.set(available.first())
+            if (state && !previous.equals(mode, true)) {
+                hud.addNotification(Notification("Criticals compatibility",
+                    "$previous unavailable here; switched to $mode.", Type.WARNING, 4500))
+            }
+        } else if (state) {
+            warnAboutMode(mode)
+        }
+    }
+
+    private fun warnAboutMode(selectedMode: String) {
+        val observed = ServerObserver.guessAnticheat()?.takeUnless { it.equals("Unknown", true) }
+        if (antiCheat.equals("Auto", true) && observed == null) return
+        val advice = AnticheatModeAdvisor.assess("Criticals", selectedMode, antiCheat, observed)
+        if (advice.risk == ModeRisk.RECOMMENDED) return
+
+        val warningKey = "${advice.profile}|$selectedMode|${advice.risk}"
+        if (warningKey == lastModeWarning) return
+        lastModeWarning = warningKey
+        val message = when (advice.risk) {
+            ModeRisk.EXPERIMENTAL -> "$selectedMode is experimental on ${advice.profile.displayName}; server correction is possible."
+            ModeRisk.LIKELY_DETECTED -> "Probable detection: $selectedMode on ${advice.profile.displayName}. Prefer ${advice.recommendedMode}."
+            ModeRisk.RECOMMENDED -> return
+        }
+        hud.addNotification(Notification("Criticals compatibility", message, Type.WARNING, 4500))
+    }
 }

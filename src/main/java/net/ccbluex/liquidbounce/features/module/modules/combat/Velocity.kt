@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
+import net.ccbluex.liquidbounce.FDPClient.hud
 import net.ccbluex.liquidbounce.config.*
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
@@ -25,6 +26,8 @@ import net.ccbluex.liquidbounce.utils.rotation.RaycastUtils.runWithModifiedRayca
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.currentRotation
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
 import net.minecraft.block.BlockAir
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.entity.Entity
@@ -47,6 +50,17 @@ import kotlin.collections.set
 import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.sqrt
+import kotlin.math.sin
+
+private val VELOCITY_MODES = arrayOf(
+    "Simple", "AAC", "AACPush", "AACZero", "AACv4",
+    "Reverse", "SmoothReverse", "Jump", "Glitch", "Legit",
+    "GhostBlock", "Vulcan", "S32Packet", "MatrixSimple", "MatrixReduce", "MatrixReverse",
+    "IntaveReduce", "Intave", "Delay", "Delayed", "Grim", "GrimC03", "Grim1.17", "GrimC07", "GrimDamage",
+    "Hypixel", "HypixelAir", "HypixelBoost",
+    "Click", "BlocksMC", "GrimVertical", "AttackReduce", "Spoof", "Tick", "AAC4Reduce", "AAC5Reduce",
+    "AAC5.2.0", "AAC5.2.0Combat", "Cancel", "Minemen", "Phase", "SideStrafe", "Polar", "Sentinel"
+)
 
 /**
  * Velocity module - Modifies knockback taken
@@ -59,17 +73,16 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
     /**
      * OPTIONS
      */
-    private val mode by choices(
-        "Mode", arrayOf(
-            "Simple", "AAC", "AACPush", "AACZero", "AACv4",
-            "Reverse", "SmoothReverse", "Jump", "Glitch", "Legit",
-            "GhostBlock", "Vulcan", "S32Packet", "MatrixSimple", "MatrixReduce", "MatrixReverse",
-            "IntaveReduce", "Intave", "Delay", "Delayed", "Grim", "GrimC03", "Grim1.17", "GrimC07", "GrimDamage",
-            "Hypixel", "HypixelAir", "HypixelBoost",
-            "Click", "BlocksMC", "GrimVertical", "AttackReduce", "Spoof", "Tick", "AAC4Reduce", "AAC5Reduce",
-            "AAC5.2.0", "AAC5.2.0Combat", "Cancel", "Minemen", "Phase", "SideStrafe", "Polar", "Sentinel"
-        ), "Simple"
-    )
+    private val antiCheatValue = choices(
+        "AntiCheat", arrayOf("Auto", "All", "NCP", "AAC", "Grim", "Vulcan"), "Auto"
+    ).onChanged { refreshModeChoices(force = true) }
+        .describe("Filter modes by a detected or explicitly selected anti-cheat family.")
+    private val antiCheat by antiCheatValue
+
+    private val modeValue = choices("Mode", VELOCITY_MODES.copyOf(), "Simple")
+        .describe("Knockback method. Legacy modes outside the selected profile are not presented as bypasses.")
+        .apply { onChanged { if (state) warnAboutMode(it) } }
+    private val mode by modeValue
 
     private val horizontal by float("Horizontal", 0F, -1F..1F) { mode in arrayOf("Simple", "AAC", "Legit", "Tick") }
         .describe("Horizontal knockback multiplier.")
@@ -221,6 +234,12 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
         .describe("Maximum vertical knockback motion.")
 
     //Grim
+    private val grimAdaptiveHorizontal by float("GrimAdaptive-Horizontal", 0.82f, 0.6f..1f) { mode == "Grim" }
+        .describe("Maximum horizontal reduction when telemetry is stable; vertical velocity is preserved.")
+    private val grimAdaptiveUncertainty by float("GrimAdaptive-Uncertainty", 0.015f, 0f..0.05f) { mode == "Grim" }
+        .describe("Small bounded variance used to avoid a fixed motion signature.")
+    private val grimSetbackCooldown by int("GrimAdaptive-SetbackCooldown", 8000, 1000..30000) { mode == "Grim" }
+        .describe("Accept full velocity for this many milliseconds after a server setback.")
     private val grimVerticalMode by choices("GrimVerticalMode", arrayOf("Reduce", "1.17", "Vertical"), "Reduce") { mode == "GrimVertical" }
         .describe("Sub-mode for the GrimVertical bypass.")
     private val smartVelo by boolean("SmartVelo", true) { mode == "GrimVertical" && grimVerticalMode == "Vertical" }
@@ -268,7 +287,7 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
 
     init {
         moveValues(generalGroup,
-            "Mode", "Horizontal", "Vertical", "OnlyGround", "OnlyCombat", "noFire",
+            "AntiCheat", "Mode", "Horizontal", "Vertical", "OnlyGround", "OnlyCombat", "noFire",
             "OverrideDirection", "OverrideDirectionYaw", "PauseOnExplosion", "TicksToPause")
 
         moveValues(reverseGroup,
@@ -291,6 +310,7 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
             "LimitMaxMotion", "MaxXZMotion", "MaxYMotion")
 
         moveValues(grimGroup,
+            "GrimAdaptive-Horizontal", "GrimAdaptive-Uncertainty", "GrimAdaptive-SetbackCooldown",
             "GrimC07-Always", "GrimC07-OnlyBreakAir", "GrimC07-BreakOnWorld", "GrimC07-SendC03",
             "GrimC07-Send1.17C06", "GrimC07-FlagPauseTime", "GrimVerticalMode", "SmartVelo",
             "C0F", "C0FPacketAmount", "CallEvent", "Via")
@@ -343,12 +363,11 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
 
     // Grim
     private var timerTicks = 0
-    private var grimCancelPackets = 0
-    private var grimUpdates = 0
-    private val grimDefaultCancelPackets = 6
-    private val grimDefaultResetTicks = 8
     private var grimC07GotVelocity = false
     private val grimC07FlagTimer = MSTimer()
+    private var profileRefreshTicks = 0
+    private var lastProfileFingerprint = ""
+    private var lastModeWarning = ""
 
     // Vulcan
     private var transaction = false
@@ -378,6 +397,11 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
             "$horizontalPercentage% $verticalPercentage%"
         } else mode
 
+    override fun onEnable() {
+        refreshModeChoices(force = true)
+        warnAboutMode(mode)
+    }
+
     override fun onDisable() {
         pauseTicks = 0
         mc.thePlayer?.speedInAir = 0.02F
@@ -391,8 +415,6 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
         canSpoof = false
         velocityTick = 0
         intaveJumped = 0
-        grimCancelPackets = 0
-        grimUpdates = 0
         grimC07GotVelocity = false
         sideStrafePos = null
         aac520CombatTemplateX = 0
@@ -413,6 +435,10 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
 
     val onUpdate = handler<UpdateEvent> {
         val thePlayer = mc.thePlayer ?: return@handler
+        if (++profileRefreshTicks >= 20) {
+            profileRefreshTicks = 0
+            refreshModeChoices()
+        }
 
         if (mode != "Intave") {
             mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
@@ -731,11 +757,10 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
             }
 
             "grim" -> {
-                grimUpdates++
-
-                if (grimDefaultResetTicks > 0 && grimCancelPackets > 0) {
-                    grimUpdates = 0
-                    grimCancelPackets--
+                // A setback means the server rejected recent movement assumptions. Stop reducing
+                // immediately instead of compounding the mismatch with transaction cancellation.
+                if (hasReceivedVelocity && isInsideGrimSetbackCooldown()) {
+                    hasReceivedVelocity = false
                 }
             }
 
@@ -932,12 +957,6 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
             if (event.isCancelled) {
                 return@handler
             }
-        }
-
-        if (mode == "Grim" && packet is S32PacketConfirmTransaction && grimCancelPackets > 0) {
-            event.cancelEvent()
-            grimCancelPackets--
-            return@handler
         }
 
         if (mode == "MatrixSimple") {
@@ -1276,9 +1295,10 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
 
                 "grim" -> {
                     if (packet is S12PacketEntityVelocity && packet.entityID == thePlayer.entityId) {
-                        event.cancelEvent()
-                        grimCancelPackets = grimDefaultCancelPackets
-                        grimUpdates = 0
+                        val factor = grimAdaptiveFactor()
+                        packet.motionX = (packet.motionX * factor).toInt()
+                        packet.motionZ = (packet.motionZ * factor).toInt()
+                        hasReceivedVelocity = factor < 0.999
                     }
                 }
 
@@ -1578,6 +1598,67 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
         if (force || delayedPackets.isEmpty()) {
             delayedVelocityTick = -1
         }
+    }
+
+    private fun refreshModeChoices(force: Boolean = false) {
+        val observed = ServerObserver.guessAnticheat()?.takeUnless { it.equals("Unknown", true) }
+        val fingerprint = "$antiCheat|${observed.orEmpty()}"
+        if (!force && fingerprint == lastProfileFingerprint) return
+        lastProfileFingerprint = fingerprint
+
+        val available = AnticheatModeAdvisor.filteredModes("Velocity", antiCheat, observed, VELOCITY_MODES)
+        modeValue.updateValues(available)
+        if (available.none { it.equals(mode, true) }) {
+            val previous = mode
+            modeValue.set(available.first())
+            if (state && !previous.equals(mode, true)) {
+                hud.addNotification(Notification("Velocity compatibility",
+                    "$previous unavailable here; switched to $mode.", Type.WARNING, 4500))
+            }
+        } else if (state) {
+            warnAboutMode(mode)
+        }
+    }
+
+    private fun warnAboutMode(selectedMode: String) {
+        val observed = ServerObserver.guessAnticheat()?.takeUnless { it.equals("Unknown", true) }
+        if (antiCheat.equals("Auto", true) && observed == null) return
+        val advice = AnticheatModeAdvisor.assess("Velocity", selectedMode, antiCheat, observed)
+        if (advice.risk == ModeRisk.RECOMMENDED) return
+
+        val warningKey = "${advice.profile}|$selectedMode|${advice.risk}"
+        if (warningKey == lastModeWarning) return
+        lastModeWarning = warningKey
+        val message = when (advice.risk) {
+            ModeRisk.EXPERIMENTAL -> "$selectedMode is experimental on ${advice.profile.displayName}; setbacks are possible."
+            ModeRisk.LIKELY_DETECTED -> "Probable detection: $selectedMode on ${advice.profile.displayName}. Prefer ${advice.recommendedMode}."
+            ModeRisk.RECOMMENDED -> return
+        }
+        hud.addNotification(Notification("Velocity compatibility", message, Type.WARNING, 4500))
+    }
+
+    private fun isInsideGrimSetbackCooldown(): Boolean =
+        ServerObserver.lastLagBackAt > 0L &&
+            System.currentTimeMillis() - ServerObserver.lastLagBackAt < grimSetbackCooldown
+
+    private fun grimAdaptiveFactor(): Double {
+        if (isInsideGrimSetbackCooldown()) return 1.0
+
+        val observed = ServerObserver.guessAnticheat()?.takeUnless { it.equals("Unknown", true) }
+        val profile = AnticheatModeAdvisor.resolve(antiCheat, observed)
+        val familyConfidence = when {
+            profile == AnticheatProfile.GRIM -> 0.85
+            antiCheat.equals("All", true) -> 0.4
+            else -> 0.55
+        }
+        val tpsConfidence = (ServerObserver.tps.takeIf(Double::isFinite) ?: 18.0).div(20.0).coerceIn(0.35, 1.0)
+        val pingConfidence = (1.0 - (ServerObserver.ping.coerceAtLeast(0) / 900.0)).coerceIn(0.35, 1.0)
+        val setbackConfidence = (1.0 / (1.0 + ServerObserver.lagBackCount * 0.18)).coerceIn(0.35, 1.0)
+        val confidence = familyConfidence * tpsConfidence * pingConfidence * setbackConfidence
+        val reduction = 1.0 - (1.0 - grimAdaptiveHorizontal) * confidence
+        val variance = sin((mc.thePlayer?.ticksExisted ?: 0) * 1.618 + ServerObserver.ping) *
+            grimAdaptiveUncertainty * (1.0 - confidence * 0.5)
+        return (reduction + variance).coerceIn(grimAdaptiveHorizontal.toDouble(), 1.0)
     }
 
     private fun checkGrimC07Block(pos: BlockPos, world: net.minecraft.client.multiplayer.WorldClient): Boolean {
