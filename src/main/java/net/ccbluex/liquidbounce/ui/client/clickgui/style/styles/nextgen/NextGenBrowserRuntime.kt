@@ -18,6 +18,9 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.minecraft.client.Minecraft
+import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.Tessellator
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.montoyo.mcef.MCEF
 import net.montoyo.mcef.api.API
 import net.montoyo.mcef.api.IBrowser
@@ -27,6 +30,7 @@ import java.lang.reflect.Method
 import java.lang.reflect.Proxy
 import java.util.concurrent.CopyOnWriteArrayList
 import java.nio.file.Path
+import org.lwjgl.opengl.GL11
 
 /**
  * Boots the embedded browser runtime on demand and drives its per-frame work so the web
@@ -107,13 +111,20 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
     private var lastResizeHeight = 0
     private var lastHiddenPump = 0L
     private var loggedCreateFailure = false
+    private var hudBrowser: IBrowser? = null
+    private var hudRequested = false
+    private var hudUrl = ""
+    private var hudTextureFrames = 0
+    private var lastHudTextureId = 0
 
     private val onGameLoop = handler<GameLoopEvent>(always = true, priority = Byte.MIN_VALUE) {
         tickPersistentBrowser()
+        tickHudBrowser()
     }
 
     private val onShutdown = handler<ClientShutdownEvent>(always = true) {
         closePersistentBrowser()
+        closeHudBrowser()
         NextGenClickGuiServer.stop()
     }
 
@@ -640,6 +651,50 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
         closePersistentBrowser()
     }
 
+    @Synchronized
+    fun setHudVisible(visible: Boolean) {
+        if (hudRequested == visible) return
+        hudRequested = visible
+        if (!visible) {
+            closeHudBrowser()
+            return
+        }
+
+        NextGenClickGuiServer.start()
+        hudUrl = NextGenClickGuiServer.screenUrl("hud")
+        ensureStarted()
+    }
+
+    fun renderHudOverlay(): Boolean {
+        if (!hudRequested || state != State.READY || mc.currentScreen != null) return false
+        val browser = hudBrowser ?: return false
+        val textureId = runCatching { browser.getTextureID() }.getOrDefault(0)
+        if (textureId <= 0 || hudTextureFrames < BROWSER_WARMUP_FRAMES) return false
+
+        val resolution = ScaledResolution(mc)
+        GlStateManager.disableDepth()
+        GlStateManager.enableBlend()
+        GlStateManager.tryBlendFuncSeparate(1, 771, 1, 771)
+        GlStateManager.enableTexture2D()
+        GlStateManager.color(1f, 1f, 1f, 1f)
+        GlStateManager.bindTexture(textureId)
+
+        val width = resolution.scaledWidth.toDouble()
+        val height = resolution.scaledHeight.toDouble()
+        val renderer = Tessellator.getInstance().worldRenderer
+        renderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX)
+        renderer.pos(0.0, height, 0.0).tex(0.0, 1.0).endVertex()
+        renderer.pos(width, height, 0.0).tex(1.0, 1.0).endVertex()
+        renderer.pos(width, 0.0, 0.0).tex(1.0, 0.0).endVertex()
+        renderer.pos(0.0, 0.0, 0.0).tex(0.0, 0.0).endVertex()
+        Tessellator.getInstance().draw()
+
+        GlStateManager.bindTexture(0)
+        GlStateManager.disableBlend()
+        GlStateManager.enableDepth()
+        return true
+    }
+
     fun readyApi(): API? =
         if (state == State.READY) runCatching { MCEFApi.getAPI() }.getOrNull() else null
 
@@ -668,6 +723,36 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
 
         val browser = persistentBrowser ?: return
         updateReadyState(browser)
+    }
+
+    private fun tickHudBrowser() {
+        if (!hudRequested || state != State.READY) return
+        ensureHudBrowser()
+        val browser = hudBrowser ?: return
+        if (lastResizeWidth != mc.displayWidth || lastResizeHeight != mc.displayHeight) {
+            lastResizeWidth = mc.displayWidth
+            lastResizeHeight = mc.displayHeight
+        }
+        runCatching { browser.resize(mc.displayWidth, mc.displayHeight) }
+
+        val textureId = runCatching { browser.getTextureID() }.getOrDefault(0)
+        if (textureId <= 0) return
+        if (textureId != lastHudTextureId) {
+            lastHudTextureId = textureId
+            hudTextureFrames = 0
+        }
+        hudTextureFrames++
+    }
+
+    private fun ensureHudBrowser() {
+        if (hudBrowser != null || hudUrl.isBlank()) return
+        val api = readyApi() ?: return
+        hudBrowser = runCatching {
+            api.createBrowser(hudUrl, true).also { it.resize(mc.displayWidth, mc.displayHeight) }
+        }.getOrElse {
+            LOGGER.error("[NextGen] Could not create the web HUD browser", it)
+            null
+        }
     }
 
     private fun ensurePersistentBrowser() {
@@ -747,6 +832,16 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
         browserTextureFrames = 0
         browserReady = false
         lastTextureId = 0
+    }
+
+    private fun closeHudBrowser() {
+        hudBrowser?.let { browser ->
+            runCatching { browser.close() }
+                .onFailure { LOGGER.error("[NextGen] Web HUD browser close failed", it) }
+        }
+        hudBrowser = null
+        hudTextureFrames = 0
+        lastHudTextureId = 0
     }
 
     private val REQUIRED_NATIVE_FILES = arrayOf(

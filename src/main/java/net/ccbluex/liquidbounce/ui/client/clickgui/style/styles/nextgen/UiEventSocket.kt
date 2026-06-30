@@ -6,14 +6,19 @@
 package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nextgen
 
 import com.google.gson.JsonObject
+import com.google.gson.JsonNull
 import net.ccbluex.liquidbounce.event.ClientChange
 import net.ccbluex.liquidbounce.event.ClientChangeBus
 import net.ccbluex.liquidbounce.event.ClientShutdownEvent
+import net.ccbluex.liquidbounce.event.KeyStateEvent
 import net.ccbluex.liquidbounce.event.Listenable
+import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.file.gson.GsonProfiles
+import net.ccbluex.liquidbounce.handler.combat.CombatManager
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
+import net.minecraft.client.Minecraft
 import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
 import java.io.EOFException
@@ -40,6 +45,10 @@ object UiEventSocket : Listenable {
     private val clients = ConcurrentHashMap.newKeySet<Client>()
     private var serverSocket: ServerSocket? = null
     private var acceptThread: Thread? = null
+    private var updateCounter = 0
+    private var lastInventoryHash = 0
+    private var lastBlockCounterHash = 0
+    private var lastTargetId: Int? = null
 
     val port: Int
         @Synchronized get() = serverSocket?.localPort ?: -1
@@ -49,10 +58,64 @@ object UiEventSocket : Listenable {
     }
 
     val onWorld = handler<WorldEvent>(always = true) { event ->
+        updateCounter = 0
+        lastInventoryHash = 0
+        lastBlockCounterHash = 0
+        lastTargetId = null
         ClientChangeBus.publish(ClientChange.WorldState(event.worldClient != null))
     }
 
     val onShutdown = handler<ClientShutdownEvent>(always = true) { stop() }
+
+    val onUpdate = handler<UpdateEvent>(always = true) {
+        if (clients.isEmpty()) return@handler
+
+        updateCounter++
+        if (updateCounter % 2 == 0 && Minecraft.getMinecraft().thePlayer != null) {
+            publish("clientPlayerData", JsonObject().apply {
+                add("playerData", NextGenHudBridge.playerData())
+            })
+
+            val target = CombatManager.target
+            if (target != null) {
+                lastTargetId = target.entityId
+                publish("targetChange", JsonObject().apply {
+                    add("target", NextGenHudBridge.targetData(target))
+                })
+            } else if (lastTargetId != null) {
+                lastTargetId = null
+                publish("targetChange", JsonObject().apply { add("target", JsonNull.INSTANCE) })
+            }
+        }
+
+        if (updateCounter % 5 == 0) {
+            val inventory = NextGenHudBridge.playerInventory()
+            val inventoryHash = inventory.toString().hashCode()
+            if (inventoryHash != lastInventoryHash) {
+                lastInventoryHash = inventoryHash
+                publish("clientPlayerInventory", JsonObject().apply { add("inventory", inventory) })
+            }
+
+            val blockCounter = NextGenHudBridge.blockCounter()
+            val blockCounterHash = blockCounter.toString().hashCode()
+            if (blockCounterHash != lastBlockCounterHash) {
+                lastBlockCounterHash = blockCounterHash
+                publish("blockCountChange", blockCounter)
+            }
+        }
+
+        if (updateCounter % 20 == 0) {
+            publish("fps", JsonObject().apply { addProperty("fps", Minecraft.getDebugFPS()) })
+        }
+    }
+
+    val onKey = handler<KeyStateEvent>(always = true) { event ->
+        if (clients.isEmpty()) return@handler
+        publish("key", JsonObject().apply {
+            addProperty("key", NextGenClickGuiBridge.minecraftKey(event.key))
+            addProperty("action", if (event.pressed) 1 else 0)
+        })
+    }
 
     @Synchronized
     fun start(): Int {

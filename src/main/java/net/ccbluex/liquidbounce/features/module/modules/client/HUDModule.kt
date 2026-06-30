@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element.Companion.MAX_GRADIENT_COLORS
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nextgen.NextGenBrowserRuntime
 import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils
 import net.ccbluex.liquidbounce.utils.client.ServerObserver
 import net.ccbluex.liquidbounce.utils.render.*
@@ -20,6 +21,9 @@ import net.minecraft.util.ResourceLocation
 import java.awt.Color
 
 object HUDModule : Module("HUD", Category.CLIENT, Category.SubCategory.CLIENT_GENERAL) {
+
+    private val renderer by choices("Renderer", arrayOf("Native", "Web", "Both"), "Native")
+        .describe("Select the native HUD, the live browser HUD, or both renderers.")
 
     val customHotbar by boolean("CustomHotbar", true)
         .describe("Replace the vanilla hotbar with a custom one.")
@@ -94,11 +98,13 @@ object HUDModule : Module("HUD", Category.CLIENT, Category.SubCategory.CLIENT_GE
         if (mc.currentScreen is GuiHudDesigner)
             return@handler
 
-        hud.render(false)
+        if (renderer != "Web") hud.render(false)
+        if (renderer != "Native") NextGenBrowserRuntime.renderHudOverlay()
     }
 
     val onUpdate = handler<UpdateEvent> {
-        hud.update()
+        if (renderer != "Web") hud.update()
+        NextGenBrowserRuntime.setHudVisible(renderer != "Native" && mc.theWorld != null && mc.thePlayer != null)
     }
 
     val onKey = handler<KeyStateEvent> { event ->
@@ -120,5 +126,9 @@ object HUDModule : Module("HUD", Category.CLIENT, Category.SubCategory.CLIENT_GE
 
     init {
         state = true
+    }
+
+    override fun onDisable() {
+        NextGenBrowserRuntime.setHudVisible(false)
     }
 }

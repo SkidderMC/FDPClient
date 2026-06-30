@@ -393,6 +393,8 @@ object NextGenClickGuiBridge : MinecraftInstance {
         addProperty("localized", printableKeyName(key))
     }
 
+    fun minecraftKey(keyCode: Int): String = toMinecraftKey(keyCode)
+
     private fun moduleJson(module: Module): JsonObject = JsonObject().apply {
         addProperty("name", module.name)
         addProperty("category", categoryName(module.category))
@@ -747,7 +749,7 @@ object NextGenClickGuiBridge : MinecraftInstance {
         for (setting in settings) {
             val settingObject = setting.asJsonObject
             val valueName = settingObject.get("name")?.asString ?: continue
-            val value = values.firstOrNull { it.name == valueName } ?: continue
+            val value = values.firstOrNull { it.matchesKey(valueName) } ?: continue
             applyValue(value, settingObject.get("value") ?: continue)
         }
     }
@@ -823,7 +825,7 @@ object NextGenClickGuiBridge : MinecraftInstance {
             return
         }
 
-        mc.addScheduledTask { action() }.get(2, TimeUnit.SECONDS)
+        runCatching { mc.addScheduledTask { action() }.get() }
     }
 
     private fun osName(): String {

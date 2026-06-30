@@ -151,6 +151,36 @@ object NextGenClickGuiServer {
             method == "GET" && path == "/client/virtualScreen" ->
                 sendJson(exchange, NextGenClickGuiBridge.virtualScreen())
 
+            method == "POST" && path == "/client/virtualScreen" ->
+                sendNoContent(exchange)
+
+            method == "GET" && path == "/client/player" ->
+                sendJson(exchange, NextGenHudBridge.playerData())
+
+            method == "GET" && path == "/client/player/inventory" ->
+                sendJson(exchange, NextGenHudBridge.playerInventory())
+
+            method == "GET" && path == "/client/crosshair" ->
+                sendJson(exchange, NextGenHudBridge.crosshair())
+
+            method == "GET" && path == "/client/keybinds" ->
+                sendJson(exchange, NextGenHudBridge.keybinds())
+
+            method == "GET" && path == "/client/session" ->
+                sendJson(exchange, NextGenHudBridge.session())
+
+            method == "GET" && path == "/client/components" ->
+                sendJson(exchange, NextGenHudBridge.components(null))
+
+            method == "GET" && path.startsWith("/client/components/") ->
+                sendJson(exchange, NextGenHudBridge.components(decode(path.removePrefix("/client/components/"))))
+
+            method == "GET" && path == "/client/resource/itemTexture" ->
+                sendPng(exchange, NextGenHudBridge.itemTexture(query(exchange, "id") ?: "minecraft:air"))
+
+            method == "GET" && path == "/client/resource/effectTexture" ->
+                sendPng(exchange, NextGenHudBridge.effectTexture(query(exchange, "id") ?: ""))
+
             method == "GET" && path == "/client/spotify" ->
                 sendJson(exchange, NextGenClickGuiBridge.spotifyNowPlaying())
 
@@ -260,6 +290,13 @@ object NextGenClickGuiServer {
 
     private fun sendNoContent(exchange: HttpExchange) {
         exchange.sendResponseHeaders(204, -1)
+    }
+
+    private fun sendPng(exchange: HttpExchange, bytes: ByteArray) {
+        exchange.responseHeaders.set("Content-Type", "image/png")
+        exchange.responseHeaders.set("Cache-Control", "public, max-age=300")
+        exchange.sendResponseHeaders(200, bytes.size.toLong())
+        exchange.responseBody.use { it.write(bytes) }
     }
 
     private fun addCors(exchange: HttpExchange) {
