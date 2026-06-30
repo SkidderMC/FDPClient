@@ -1,0 +1,4 @@
+# Copy this file to local.properties only when the Java 8 runtime is not already selected.
+# Windows example: C:/Program Files/Eclipse Adoptium/jdk-8.0.452.9-hotspot
+# Linux example: /usr/lib/jvm/temurin-8-jdk-amd64
+java.home=

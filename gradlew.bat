@@ -13,6 +13,9 @@ if "%DIRNAME%" == "" set DIRNAME=.
 set APP_BASE_NAME=%~n0
 set APP_HOME=%DIRNAME%
 
+@rem Optional machine-local Java selection. local.properties is intentionally ignored by Git.
+if exist "%APP_HOME%local.properties" for /F "usebackq tokens=1,* delims==" %%A in ("%APP_HOME%local.properties") do if "%%A"=="java.home" set "JAVA_HOME=%%B"
+
 @rem Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
 set DEFAULT_JVM_OPTS=
 

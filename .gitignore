@@ -28,6 +28,8 @@ classes
 # gradle
 build
 .gradle
+.mixin.out
+local.properties
 
 #Netbeans
 .nb-gradle

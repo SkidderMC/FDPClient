@@ -27,6 +27,14 @@ cd "$SAVED" >/dev/null
 APP_NAME="Gradle"
 APP_BASE_NAME=`basename "$0"`
 
+# Optional machine-local Java selection. local.properties is intentionally ignored by Git.
+if [ -f "$APP_HOME/local.properties" ] ; then
+    LOCAL_JAVA_HOME=`sed -n 's/^java\.home=//p' "$APP_HOME/local.properties" | tail -n 1`
+    if [ -n "$LOCAL_JAVA_HOME" ] ; then
+        JAVA_HOME="$LOCAL_JAVA_HOME"
+    fi
+fi
+
 # Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
 DEFAULT_JVM_OPTS=""
 
