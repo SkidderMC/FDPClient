@@ -620,8 +620,14 @@ object NextGenClickGuiBridge : MinecraftInstance {
             // emit a CONFIGURABLE whose children are serialized recursively, so sub-group values
             // actually show up instead of collapsing into a single TEXT field. The group's master
             // toggle ("Enabled") or mode ("Mode") is itself a child value, so it comes along for free,
-            // and gated-off children already drop out via shouldRender() above.
-            is Configurable -> configurable(value.name, value.values.mapNotNull(::settingJson))
+            // and gated-off children already drop out via shouldRender() above. When every child is
+            // gated off for the current mode/style, the group has nothing to show, so it is dropped
+            // entirely instead of leaving an empty header (recursion handles nested-empty groups too).
+            is Configurable -> {
+                val children = value.values.mapNotNull(::settingJson)
+                if (children.isEmpty()) return null
+                configurable(value.name, children)
+            }
 
             else -> settingBase("TEXT", value.name).apply {
                 addProperty("value", value.toText())

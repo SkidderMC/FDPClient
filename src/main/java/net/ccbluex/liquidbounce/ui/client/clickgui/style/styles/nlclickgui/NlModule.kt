@@ -7,7 +7,6 @@ package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui
 
 import net.ccbluex.liquidbounce.config.*
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.core.ValueDispatcher
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.NeverloseGui.Companion.getInstance
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.applyOpacity
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.brighter
@@ -72,51 +71,41 @@ class NlModule(var NlSub: NlSub, var module: Module, var lef: Boolean) {
 
     init {
         this.posx = if (lef) 0 else 170
-        for (setting in ValueDispatcher.allDeep(module)) {
-            if (setting is BoolValue) {
-                this.downwards.add(BoolSetting(setting, this))
-            }
-            if (setting is FloatValue || setting is IntValue || setting is BlockValue) {
-                this.downwards.add(Numbersetting(setting, this))
-            }
-            if (setting is FloatRangeValue || setting is IntRangeValue) {
-                this.downwards.add(RangeSetting(setting, this))
-            }
-            if (setting is ListValue) {
-                this.downwards.add(StringsSetting(setting, this))
-            }
-            if (setting is ColorValue) {
-                this.downwards.add(ColorSetting(setting, this))
-            }
-            if (setting is TextValue) {
-                this.downwards.add(TextSetting(setting, this))
-            }
-            if (setting is FileValue) {
-                this.downwards.add(FileSetting(setting, this))
-            }
-            if (setting is FontValue) {
-                this.downwards.add(FontSetting(setting, this))
-            }
-            if (setting is MultiSelectValue) {
-                this.downwards.add(MultiSelectSetting(setting, this))
-            }
-            if (setting is KeyBindValue) {
-                this.downwards.add(KeyBindSetting(setting, this))
-            }
-            if (setting is Vec3Value) {
-                this.downwards.add(Vec3Setting(setting, this))
-            }
-            if (setting is CurveValue) {
-                this.downwards.add(CurveSetting(setting, this))
-            }
+        for (setting in module.values) {
+            buildDownward(setting)?.let { this.downwards.add(it) }
         }
     }
+
+    fun buildDownward(setting: Value<*>): Downward<*>? = when (setting) {
+        is BoolValue -> BoolSetting(setting, this)
+        is FloatValue, is IntValue, is BlockValue -> Numbersetting(setting, this)
+        is FloatRangeValue, is IntRangeValue -> RangeSetting(setting, this)
+        is ListValue -> StringsSetting(setting, this)
+        is ColorValue -> ColorSetting(setting, this)
+        is TextValue -> TextSetting(setting, this)
+        is FileValue -> FileSetting(setting, this)
+        is FontValue -> FontSetting(setting, this)
+        is MultiSelectValue -> MultiSelectSetting(setting, this)
+        is KeyBindValue -> KeyBindSetting(setting, this)
+        is Vec3Value -> Vec3Setting(setting, this)
+        is CurveValue -> CurveSetting(setting, this)
+        is Configurable -> GroupDownward(setting, this)
+        else -> null
+    }
+
+    /**
+     * A setting renders when it passes its own support gate, and - for a nested group - only when it
+     * actually has something visible inside, so groups whose children are all gated off for the
+     * current mode/style disappear instead of leaving an empty header.
+     */
+    fun isVisible(downward: Downward<*>): Boolean =
+        downward.setting.shouldRender() && (downward !is GroupDownward || downward.hasVisibleContent())
 
 
     fun calcHeight(): Int {
         var h = 30
         for (downward in downwards) {
-            if (downward.setting.shouldRender()) {
+            if (isVisible(downward)) {
                 h += downward.rowHeight()
             }
         }
@@ -190,7 +179,7 @@ class NlModule(var NlSub: NlSub, var module: Module, var lef: Boolean) {
 
         var cheigt = 42
         var hoveredDescription: String? = null
-        for (downward in downwards.stream().filter { s: Downward<*>? -> s!!.setting.shouldRender() }
+        for (downward in downwards.stream().filter { s: Downward<*>? -> isVisible(s!!) }
             .collect(Collectors.toList())) {
             downward.setX(posx)
             downward.setY(calcY() + cheigt)
@@ -283,14 +272,14 @@ class NlModule(var NlSub: NlSub, var module: Module, var lef: Boolean) {
     }
 
     fun released(mx: Int, my: Int, mb: Int) {
-        downwards.stream().filter { e: Downward<*>? -> e!!.setting.shouldRender() }
+        downwards.stream().filter { e: Downward<*>? -> isVisible(e!!) }
             .forEach { e: Downward<*>? -> e!!.mouseReleased(mx, my, mb) }
     }
 
     fun click(mx: Int, my: Int, mb: Int) {
         if (my < y + NeverloseGui.HEADER_HEIGHT || my >= y + h) return
 
-        downwards.stream().filter { e: Downward<*>? -> e!!.setting.shouldRender() }
+        downwards.stream().filter { e: Downward<*>? -> isVisible(e!!) }
             .forEach { e: Downward<*>? -> e!!.mouseClicked(mx, my, mb) }
 
         if (isHovering(
@@ -471,6 +460,87 @@ class NlModule(var NlSub: NlSub, var module: Module, var lef: Boolean) {
 
         override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
             draggingPoint = -1
+        }
+    }
+
+    private class GroupDownward(setting: Configurable, moduleRender: NlModule) :
+        Downward<Configurable>(setting, moduleRender) {
+
+        companion object {
+            const val HEADER_ROW = 20
+        }
+
+        private val children = ArrayList<Downward<*>>()
+
+        init {
+            setting.values.forEach { v ->
+                moduleRender.buildDownward(v)?.let { children.add(it) }
+            }
+        }
+
+        private fun activeChildren() = children.filter { moduleRender.isVisible(it) }
+
+        fun hasVisibleContent(): Boolean = activeChildren().isNotEmpty()
+
+        override fun rowHeight(): Int {
+            var h = HEADER_ROW
+            if (setting.groupExpanded) {
+                for (child in activeChildren()) h += child.rowHeight()
+            }
+            return h
+        }
+
+        private fun layoutChildren() {
+            var offset = HEADER_ROW
+            for (child in activeChildren()) {
+                child.setX((x + 6).toInt())
+                child.setY(y.toInt() + offset)
+                offset += child.rowHeight()
+            }
+        }
+
+        override fun draw(mouseX: Int, mouseY: Int) {
+            val gui = NeverloseGui.getInstance()
+            val mainx = gui.x
+            val mainy = gui.y
+            val textY = (y + getScrollY()).toInt()
+
+            val label = (if (setting.groupExpanded) "- " else "+ ") + setting.name
+            Fonts.Nl_16.drawString(
+                label,
+                (mainx + 100 + x),
+                (mainy + textY + 57).toFloat(),
+                if (gui.light) Color(120, 120, 120).rgb else NeverloseGui.neverlosecolor.rgb
+            )
+
+            if (setting.groupExpanded) {
+                layoutChildren()
+                for (child in activeChildren()) child.draw(mouseX, mouseY)
+            }
+        }
+
+        override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+            val gui = NeverloseGui.getInstance()
+            val rowTop = (gui.y + (y + getScrollY()).toInt() + 54).toFloat()
+            if (mouseButton == 0 && RenderUtil.isHovering((gui.x + 100 + x), rowTop, 150f, 16f, mouseX, mouseY)) {
+                setting.groupExpanded = !setting.groupExpanded
+                return
+            }
+            if (setting.groupExpanded) {
+                layoutChildren()
+                for (child in activeChildren()) child.mouseClicked(mouseX, mouseY, mouseButton)
+            }
+        }
+
+        override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
+            if (setting.groupExpanded) {
+                layoutChildren()
+                for (child in activeChildren()) child.mouseReleased(mouseX, mouseY, state)
+            }
+        }
+
+        override fun keyTyped(typedChar: Char, keyCode: Int) {
+            for (child in activeChildren()) child.keyTyped(typedChar, keyCode)
         }
     }
 }

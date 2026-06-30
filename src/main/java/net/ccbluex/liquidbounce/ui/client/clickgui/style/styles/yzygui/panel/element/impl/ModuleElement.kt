@@ -30,6 +30,7 @@ import net.ccbluex.liquidbounce.config.KeyBindValue
 import net.ccbluex.liquidbounce.config.Vec3Value
 import net.ccbluex.liquidbounce.config.CurveValue
 import net.ccbluex.liquidbounce.config.Value
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBorder
 import org.lwjgl.input.Keyboard
@@ -59,26 +60,8 @@ class ModuleElement(
     var isBindingSelection = false
 
     init {
-        ValueDispatcher.allDeep(module).forEach { value ->
-            val element = when (value) {
-                is BoolValue -> BooleanElement(this, value, parent, x + 4, y, width - 8, 12)
-                is FloatValue -> FloatElement(value, parent, x + 4, y, width - 4, 12)
-                is IntValue -> IntegerElement(value, parent, x + 4, y, width - 4, 12)
-                is FloatRangeValue -> RangeElement(value, parent, x + 4, y, width - 4, 12)
-                is IntRangeValue -> RangeElement(value, parent, x + 4, y, width - 4, 12)
-                is ListValue -> ListElement(this, value, parent, x + 4, y, width - 8, 12)
-                is ColorValue -> ColorElement(this, value, parent, x + 4, y, width - 8, 12)
-                is TextValue -> TextElement(this, value, parent, x + 4, y, width - 8, 12)
-                is FileValue -> FileElement(this, value, parent, x + 4, y, width - 8, 12)
-                is BlockValue -> BlockElement(this, value, parent, x + 4, y, width - 8, 12)
-                is FontValue -> FontElement(this, value, parent, x + 4, y, width - 8, 12)
-                is MultiSelectValue -> MultiSelectElement(this, value, parent, x + 4, y, width - 8, 12)
-                is KeyBindValue -> KeyBindElement(this, value, parent, x + 4, y, width - 8, 12)
-                is Vec3Value -> Vec3Element(this, value, parent, x + 4, y, width - 8, 12)
-                is CurveValue -> CurveElement(this, value, parent, x + 4, y, width - 8, 56)
-                else -> null
-            }
-            element?.let {
+        module.values.forEach { value ->
+            buildElement(value)?.let {
                 elements.add(it)
                 elementValues.add(value)
             }
@@ -86,28 +69,39 @@ class ModuleElement(
         update()
     }
 
+    fun buildElement(value: Value<*>): PanelElement? = when (value) {
+        is BoolValue -> BooleanElement(this, value, parent, x + 4, y, width - 8, 12)
+        is FloatValue -> FloatElement(value, parent, x + 4, y, width - 4, 12)
+        is IntValue -> IntegerElement(value, parent, x + 4, y, width - 4, 12)
+        is FloatRangeValue -> RangeElement(value, parent, x + 4, y, width - 4, 12)
+        is IntRangeValue -> RangeElement(value, parent, x + 4, y, width - 4, 12)
+        is ListValue -> ListElement(this, value, parent, x + 4, y, width - 8, 12)
+        is ColorValue -> ColorElement(this, value, parent, x + 4, y, width - 8, 12)
+        is TextValue -> TextElement(this, value, parent, x + 4, y, width - 8, 12)
+        is FileValue -> FileElement(this, value, parent, x + 4, y, width - 8, 12)
+        is BlockValue -> BlockElement(this, value, parent, x + 4, y, width - 8, 12)
+        is FontValue -> FontElement(this, value, parent, x + 4, y, width - 8, 12)
+        is MultiSelectValue -> MultiSelectElement(this, value, parent, x + 4, y, width - 8, 12)
+        is KeyBindValue -> KeyBindElement(this, value, parent, x + 4, y, width - 8, 12)
+        is Vec3Value -> Vec3Element(this, value, parent, x + 4, y, width - 8, 12)
+        is CurveValue -> CurveElement(this, value, parent, x + 4, y, width - 8, 56)
+        is Configurable -> GroupElement(this, value, parent, x + 4, y, width - 8, MODULE_HEIGHT)
+        else -> null
+    }
+
     private fun update() {
         var elementY = y + height
         activeElements().forEach { (element, _) ->
             element.x = x + 4
             element.y = elementY
-            val actualHeight = when (element) {
-                is ColorElement -> element.getActualHeight()
-                is MultiSelectElement -> element.getActualHeight()
-                else -> element.height
-            }
-            elementY += actualHeight
+            elementY += panelHeight(element)
         }
     }
 
     fun getExtendedHeight(): Float {
         return if (isExtended) {
             val totalHeight = activeElements().sumOf { (element, _) ->
-                when (element) {
-                    is ColorElement -> element.getActualHeight().toDouble()
-                    is MultiSelectElement -> element.getActualHeight().toDouble()
-                    else -> element.height.toDouble()
-                }
+                panelHeight(element).toDouble()
             }.toFloat() + 2
             totalHeight
         } else {
@@ -122,11 +116,7 @@ class ModuleElement(
 
         if (isExtended) {
             moduleHeight += activeElements().sumOf { (element, _) ->
-                when (element) {
-                    is ColorElement -> element.getActualHeight()
-                    is MultiSelectElement -> element.getActualHeight()
-                    else -> element.height
-                }
+                panelHeight(element)
             } + 2
         }
 
@@ -295,7 +285,142 @@ class ModuleElement(
     }
 
     private fun activeElements() =
-        elements.zip(elementValues).filter { (_, value) -> value.shouldRender() }
+        elements.zip(elementValues).filter { (element, value) -> isElementVisible(element, value) }
+}
+
+/**
+ * A value should render when it passes its own support gate, and - for a nested
+ * group - only when it actually has something visible inside, so groups whose
+ * children are all gated off for the current mode/style disappear instead of
+ * leaving an empty header.
+ */
+private fun isElementVisible(element: PanelElement, value: Value<*>): Boolean =
+    value.shouldRender() && (element !is GroupElement || element.hasVisibleContent())
+
+/**
+ * Dynamic on-screen height of a panel element, accounting for the elements that
+ * grow (color picker, multi-select dropdown) and nested groups.
+ */
+private fun panelHeight(element: PanelElement): Int = when (element) {
+    is ColorElement -> element.getActualHeight()
+    is MultiSelectElement -> element.getActualHeight()
+    is GroupElement -> element.getActualHeight()
+    else -> element.height
+}
+
+/**
+ * Collapsible nested value group - YZY GUI
+ * @author opZywl
+ */
+class GroupElement(
+    private val moduleElement: ModuleElement,
+    private val group: Configurable,
+    parent: Panel,
+    x: Int,
+    y: Int,
+    width: Int,
+    height: Int
+) : PanelElement(parent, x, y, width, height) {
+
+    companion object {
+        const val HEADER_HEIGHT = 13
+    }
+
+    private val children = mutableListOf<PanelElement>()
+    private val childValues = mutableListOf<Value<*>>()
+
+    init {
+        group.values.forEach { value ->
+            moduleElement.buildElement(value)?.let {
+                children.add(it)
+                childValues.add(value)
+            }
+        }
+    }
+
+    private fun activeChildren() =
+        children.zip(childValues).filter { (element, value) -> isElementVisible(element, value) }
+
+    fun hasVisibleContent(): Boolean = activeChildren().isNotEmpty()
+
+    fun getActualHeight(): Int {
+        var total = HEADER_HEIGHT
+        if (group.groupExpanded) {
+            total += activeChildren().sumOf { (element, _) -> panelHeight(element) }
+        }
+        return total
+    }
+
+    private fun layoutChildren() {
+        var childY = y + HEADER_HEIGHT
+        activeChildren().forEach { (element, _) ->
+            element.x = x + 4
+            element.y = childY
+            childY += panelHeight(element)
+        }
+    }
+
+    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+        height = getActualHeight()
+
+        val font: FontRenderer = FDPClient.customFontManager["lato-bold-15"] ?: return
+
+        RenderUtils.yzyRectangle(
+            x.toFloat(), y.toFloat(),
+            width.toFloat(), HEADER_HEIGHT.toFloat(),
+            Color(33, 33, 33)
+        )
+
+        font.drawString(
+            group.name,
+            (x + 3).toFloat(),
+            y + (HEADER_HEIGHT / 4.0f) + 0.5f,
+            Color(0xC8C8C8).rgb
+        )
+
+        val indicator = if (group.groupExpanded) "▼" else "▶"
+        font.drawString(
+            indicator,
+            (x + width - font.getWidth(indicator) - 4).toFloat(),
+            y + (HEADER_HEIGHT / 4.0f) + 0.5f,
+            Color(0xC8C8C8).rgb
+        )
+
+        if (group.groupExpanded) {
+            layoutChildren()
+            activeChildren().forEach { (element, _) -> element.drawScreen(mouseX, mouseY, partialTicks) }
+        }
+    }
+
+    override fun mouseClicked(mouseX: Int, mouseY: Int, button: Int) {
+        if (mouseY in y until y + HEADER_HEIGHT && mouseX in x..x + width) {
+            if (button == 0 || button == 1) {
+                group.groupExpanded = !group.groupExpanded
+            }
+            return
+        }
+
+        if (group.groupExpanded) {
+            layoutChildren()
+            activeChildren().forEach { (element, _) ->
+                if (element.isHovering(mouseX, mouseY)) {
+                    element.mouseClicked(mouseX, mouseY, button)
+                }
+            }
+        }
+    }
+
+    override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
+        if (group.groupExpanded) {
+            activeChildren().forEach { (element, _) -> element.mouseReleased(mouseX, mouseY, state) }
+        }
+    }
+
+    override fun keyTyped(character: Char, code: Int) {
+        if (group.groupExpanded) {
+            activeChildren().forEach { (element, _) -> element.keyTyped(character, code) }
+        }
+    }
 }
 
 /**

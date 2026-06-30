@@ -298,7 +298,7 @@ class SettingComponents(private val module: Module) : Component() {
         var count = 0.0
         var hoverDescription: String? = null
 
-        for (setting in ValueDispatcher.visibleDeep(module)) {
+        fun renderSetting(setting: Value<*>) {
             val settingY = roundToHalf(y + (count * rectHeight)).toFloat()
 
             val desc = setting.description
@@ -1518,6 +1518,36 @@ class SettingComponents(private val module: Module) : Component() {
             */
             count++
         }
+
+        fun renderNode(setting: Value<*>) {
+            if (setting is Configurable) {
+                val groupY = roundToHalf(y + (count * rectHeight)).toFloat()
+
+                val label = (if (setting.groupExpanded) "- " else "+ ") + setting.name
+                Fonts.InterBold_18.drawString(label, x + 6, groupY + 5, textColor.rgb)
+
+                val headerHover = isClickable(groupY + 2)
+                        && RenderUtils.isHovering(x + 5, groupY + 2, width - 10, rectHeight, mouseX, mouseY)
+                if (type == GuiEvents.CLICK && headerHover && button == 0) {
+                    setting.groupExpanded = !setting.groupExpanded
+                }
+
+                count += 0.8
+
+                if (setting.groupExpanded) {
+                    for (child in setting.values) {
+                        if (settingVisible(child)) renderNode(child)
+                    }
+                }
+                return
+            }
+            renderSetting(setting)
+        }
+
+        for (setting in ValueDispatcher.visible(module)) {
+            if (settingVisible(setting)) renderNode(setting)
+        }
+
         settingSize = count
 
         if (type == GuiEvents.DRAW) {
@@ -1562,6 +1592,14 @@ class SettingComponents(private val module: Module) : Component() {
             2 -> target.z = parsed
         }
     }
+
+    /**
+     * A setting renders when it passes its own support gate, and - for a nested group - only when it
+     * has at least one visible descendant, so groups whose children are all gated off for the current
+     * mode/style disappear instead of leaving an empty header.
+     */
+    private fun settingVisible(value: Value<*>): Boolean =
+        value.shouldRender() && (value !is Configurable || value.values.any { settingVisible(it) })
 
     private fun isClickable(y: Float): Boolean {
         return y > panelLimitY && y < panelLimitY + 17 + Main.allowedClickGuiHeight
