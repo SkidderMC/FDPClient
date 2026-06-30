@@ -56,6 +56,12 @@ object EasyPearl : Module("EasyPearl", Category.COMBAT, Category.SubCategory.COM
 
     private val options = RotationSettings(this).withoutKeepRotation().withRequestPriority(RotationPriority.HIGH)
 
+    init {
+        group("Target", "OnlyOnUseKey", "ReachableCheck", "MaxDistance")
+        group("Pitch", "MinPitch", "MaxPitch", "PitchStep")
+        group("Throw", "MaxLandingError", "Silent")
+    }
+
     val onRotationUpdate = handler<RotationUpdateEvent> {
         val player = mc.thePlayer ?: return@handler
 

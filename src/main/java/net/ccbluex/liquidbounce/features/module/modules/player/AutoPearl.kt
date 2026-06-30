@@ -68,6 +68,12 @@ object AutoPearl : Module("AutoPearl", Category.PLAYER, Category.SubCategory.PLA
 
     private val options = RotationSettings(this).withoutKeepRotation().withRequestPriority(RotationPriority.HIGH)
 
+    init {
+        group("Target", "Mode", "Range")
+        group("Pitch", "MinPitch", "MaxPitch", "PitchStep")
+        group("Throw", "MaxLandingError", "YawOffset", "Silent")
+    }
+
     val onRotationUpdate = handler<RotationUpdateEvent> {
         val player = mc.thePlayer ?: return@handler
 

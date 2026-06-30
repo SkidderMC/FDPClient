@@ -75,6 +75,12 @@ object LiquidPlace : Module("LiquidPlace", Category.OTHER, Category.SubCategory.
 
     private var targetPosition: BlockPos? = null
 
+    init {
+        group("Liquids", "Water", "Lava", "OnlySource")
+        group("Placement", "OnlyOnUseKey", "Swing", "PlaceDelay")
+        group("Visuals", "TrackCPS", "Mark")
+    }
+
     override fun onDisable() {
         targetPosition = null
     }

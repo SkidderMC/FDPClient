@@ -76,6 +76,12 @@ object AutoBuild : Module("AutoBuild", Category.OTHER, Category.SubCategory.MISC
 
     private val buildPositions = mutableListOf<BlockPos>()
 
+    init {
+        group("Build", "Pattern", "MaxPlacements", "Raycast")
+        group("Placement", "AutoBlock", "Swing", "PlaceDelay")
+        group("Visuals", "TrackCPS", "Mark")
+    }
+
     override fun onDisable() {
         buildPositions.clear()
         SilentHotbar.resetSlot(this)

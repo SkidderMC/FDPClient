@@ -76,6 +76,12 @@ object Surround : Module("Surround", Category.OTHER, Category.SubCategory.MISCEL
 
     private val surroundPositions = mutableListOf<BlockPos>()
 
+    init {
+        group("Placement", "AutoBlock", "Swing", "PlaceDelay", "MaxPlacements")
+        group("Targets", "Down", "Raycast")
+        group("Visuals", "TrackCPS", "Mark")
+    }
+
     override fun onDisable() {
         surroundPositions.clear()
         SilentHotbar.resetSlot(this)

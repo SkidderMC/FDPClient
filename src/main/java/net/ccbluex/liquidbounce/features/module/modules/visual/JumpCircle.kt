@@ -80,6 +80,9 @@ object JumpCircle : Module("JumpCircle", Category.VISUAL, Category.SubCategory.R
         if (animatedGroups.all { it.isEmpty() }) {
             initializeResources()
         }
+        group("Color", "Color", "InnerColor", "OuterColor", "HueOffsetAnim")
+        group("Animation", "CircleRadius", "LifeTime", "AnimationSpeed", "BlackHole")
+        group("Texture", "UseTexture", "Texture", "Deepest Light")
     }
 
     private fun initializeResources() {

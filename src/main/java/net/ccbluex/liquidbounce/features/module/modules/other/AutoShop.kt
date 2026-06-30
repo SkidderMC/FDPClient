@@ -48,6 +48,13 @@ object AutoShop : Module("AutoShop", Category.OTHER, Category.SubCategory.MISCEL
     private val autoClose by boolean("AutoClose", false)
         .describe("Close the GUI once all clicks are done.")
 
+    init {
+        group("SlotList", "Slots", "Repeat", "MaxCycles")
+        group("Click", "ClickButton", "ClickMode", "Delay")
+        group("Title", "TitleFilter", "TitleContains")
+        group("Misc", "AutoClose")
+    }
+
     private val timer = MSTimer()
 
     // Index into the parsed slot list of the next slot to click

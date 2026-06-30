@@ -76,6 +76,13 @@ object HoleFiller : Module("HoleFiller", Category.OTHER, Category.SubCategory.MI
 
     private val options = RotationSettings(this).withRequestPriority(RotationPriority.HIGH)
 
+    init {
+        group("Placement", "AutoBlock", "Swing", "PlaceDelay", "MaxPlacements")
+        group("Detection", "Area", "OnlyWhenInHole", "Raycast")
+        group("Misc", "TrackCPS", "Mark")
+        options.nestInto(group("Rotations"))
+    }
+
     private val timerCounter = MSTimer()
 
     private val fillPositions = mutableListOf<BlockPos>()

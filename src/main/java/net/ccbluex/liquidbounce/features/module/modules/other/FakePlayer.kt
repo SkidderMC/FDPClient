@@ -45,6 +45,13 @@ object FakePlayer : Module("FakePlayer", Category.OTHER, Category.SubCategory.MI
     private val deathDelayTicks by int("DeathDelayTicks", 20, 0..40, suffix = "Ticks") { removeOnDeath }
         .describe("Ticks to wait before removing a dead fake player.")
 
+    init {
+        group("Health", "Health", "InvulnerabilityTicks", "RemoveOnDeath", "DeathDelayTicks")
+        group("Damage", "WeaponDamage", "BaseDamage", "DamageMultiplier")
+        group("Knockback", "Knockback", "SprintKnockback")
+        group("Effects", "CriticalParticles")
+    }
+
     private var fakePlayer: EntityOtherPlayerMP? = null
     private var fakeHealth = 20F
     private var deathTicks = 0

@@ -64,6 +64,12 @@ object AntiVoid : Module("AntiVoid", Category.MOVEMENT, Category.SubCategory.MOV
     private val indicator by boolean("Indicator", true).subjective()
         .describe("Render a marker at the predicted landing spot.")
 
+    init {
+        group("General", "Mode", "MaxFallDistance", "MaxDistanceToSetback", "PredictTicks")
+        group("Blink", "BlinkDelay", "OnScaffold", "TicksDelay", "SimulationTicks")
+        group("Render", "Indicator")
+    }
+
     private var detectedLocation: BlockPos? = null
     private var lastFound = 0F
     private var prevX = 0.0

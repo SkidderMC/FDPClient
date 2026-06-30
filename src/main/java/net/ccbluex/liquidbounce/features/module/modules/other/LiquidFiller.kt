@@ -80,6 +80,13 @@ object LiquidFiller : Module("LiquidFiller", Category.OTHER, Category.SubCategor
 
     private val options = RotationSettings(this).withRequestPriority(RotationPriority.HIGH)
 
+    init {
+        group("Liquids", "Water", "Lava")
+        group("Placing", "AutoBlock", "Swing", "PlaceDelay", "Range", "MaxPlacements", "Raycast")
+        options.nestInto(group("Rotations"))
+        group("Display", "TrackCPS", "Mark")
+    }
+
     private val timerCounter = MSTimer()
 
     private val fillPositions = mutableListOf<BlockPos>()

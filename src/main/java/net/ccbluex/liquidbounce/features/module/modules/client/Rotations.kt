@@ -60,6 +60,15 @@ object Rotations : Module("Rotations", Category.CLIENT, Category.SubCategory.CLI
         debugRotations && debugMode != "Chat"
     }.describe("Color of the server-aim direction vector.")
 
+    init {
+        group("Behavior", "Engine", "Realistic", "Body", "SmoothRotations", "SmoothFactor")
+        group("Ghost", "Ghost", "Color")
+        group(
+            "Debug",
+            "DebugRotations", "DebugMode", "DebugVectorLength", "DebugVectorWidth", "DebugVectorColor"
+        )
+    }
+
     var prevHeadPitch = 0f
     var headPitch = 0f
 

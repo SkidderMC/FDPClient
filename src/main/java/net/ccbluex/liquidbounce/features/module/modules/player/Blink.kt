@@ -43,6 +43,13 @@ object Blink : Module("Blink", Category.PLAYER, Category.SubCategory.PLAYER_ASSI
 
     private var tickCounter = 0
 
+    init {
+        group("General", "Mode", "FakePlayer", "Action")
+        group("Pulse", "Pulse", "PulseDelay")
+        group("Ambush", "Ambush")
+        group("AutoDisable", "AutoDisable", "ResetAfter")
+    }
+
     override fun onEnable() {
         pulseTimer.reset()
         tickCounter = 0

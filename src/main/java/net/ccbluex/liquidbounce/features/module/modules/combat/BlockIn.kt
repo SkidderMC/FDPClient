@@ -85,6 +85,13 @@ object BlockIn : Module("BlockIn", Category.COMBAT, Category.SubCategory.COMBAT_
 
     private val options = RotationSettings(this).withRequestPriority(RotationPriority.HIGH)
 
+    init {
+        group("Placing", "AutoBlock", "Swing", "PlaceDelay", "MaxPlacements")
+        group("Target", "MaxDistance", "CoverHead", "Raycast", "StandaloneTarget")
+        options.nestInto(group("Rotations"))
+        group("Display", "TrackCPS", "Mark")
+    }
+
     private val timerCounter = MSTimer()
 
     private val placePositions = mutableListOf<BlockPos>()

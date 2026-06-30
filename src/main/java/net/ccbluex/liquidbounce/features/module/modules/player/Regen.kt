@@ -58,6 +58,13 @@ object TimeShift : Module(
     private val maximumSpeed by int("MaximumSpeed", 100, 5..200) { fire || badEffects }
         .describe("Cap on packets sent for fire or bad effects.")
 
+    init {
+        group("Mode", "Mode", "Speed", "VanillaTimer", "SpartanPackets", "SpartanTimer")
+        group("Conditions", "Delay", "Health", "Food")
+        group("Pauses", "NoAir", "NoMove", "PauseOnDamage", "PotionEffect")
+        group("Effects", "Fire", "BadEffects", "MaximumSpeed")
+    }
+
     private val timer = MSTimer()
 
     private var resetTimer = false

@@ -56,6 +56,15 @@ object Jesus : Module("Jesus", Category.MOVEMENT, Category.SubCategory.MOVEMENT_
     private val noJump by boolean("NoJump", false)
         .describe("Prevent jumping while standing on liquid.")
 
+    init {
+        group("General", "Mode", "NoJump")
+        group("Motion", "AACFlyMotion", "Jump-Motion")
+        group(
+            "SilentYPort", "SilentYPort-Up", "SilentYPort-Down", "SilentYPort-SpeedModify",
+            "SilentYPort-SpoofGround", "SilentYPort-ConvertGround", "SilentYPort-ConvertDelay"
+        )
+    }
+
     private var nextTick = false
     private var silentYPortNextTick = false
     private val silentYPortTimer = MSTimer()

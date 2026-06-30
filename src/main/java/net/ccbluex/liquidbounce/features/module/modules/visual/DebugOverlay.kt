@@ -30,6 +30,12 @@ object DebugOverlay : Module("DebugOverlay", Category.VISUAL, Category.SubCatego
     private val x by int("X", 4, 0..1000)
     private val y by int("Y", 4, 0..1000)
 
+    init {
+        group("Movement", "Position", "Motion", "Rotation")
+        group("Network", "Network", "Server", "Entities")
+        group("Appearance", "TextColor", "X", "Y")
+    }
+
     val onRender2D = handler<Render2DEvent> {
         val player = mc.thePlayer
         val lines = buildList {

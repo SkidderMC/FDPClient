@@ -133,6 +133,21 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Category.SubCategory
             false
         }
 
+    init {
+        group(
+            "General",
+            "Style", "Scale", "MaxElements", "FadeSpeed",
+            "Scrolls", "SpacedModules", "PanelsForcedInBoundaries"
+        )
+        group("Colors", "Color", "CustomColor")
+        group(
+            "Dropdown",
+            "Header Color", "Outline", "RoundedRect-Radius", "Background Accent",
+            "Scroll Mode", "Setting Accent", "Tab Height"
+        )
+        group("NextGen", "Open In Browser", "Re-download Assets", "Clean Reinstall")
+    }
+
     override fun onEnable() {
         try {
             Keyboard.enableRepeatEvents(true)

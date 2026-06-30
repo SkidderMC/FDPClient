@@ -126,6 +126,16 @@ object HUDModule : Module("HUD", Category.CLIENT, Category.SubCategory.CLIENT_GE
 
     init {
         state = true
+        group(
+            "Hotbar",
+            "CustomHotbar", "SmoothHotbarSlot", "RoundedHotbar-Radius", "Hotbar-Color",
+            "Hotbar-Gradient-Speed", "Max-Hotbar-Gradient-Colors",
+            "HotbarBorder-Highlight-Width", "HotbarBorder-Background-Width"
+        )
+        group("HotbarEffects", "Rainbow-X", "Rainbow-Y", "Gradient-X", "Gradient-Y")
+        group("UIEffects", "UIEffect", "ShadowButton", "UIEffectMode")
+        group("Screen", "Blur", "InventoryParticle")
+        group("Interface", "Renderer", "Bloom Color", "Color")
     }
 
     override fun onDisable() {

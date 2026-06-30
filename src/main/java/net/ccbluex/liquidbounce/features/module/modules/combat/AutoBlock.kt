@@ -54,6 +54,12 @@ object AutoBlock : Module("AutoBlock", Category.COMBAT, Category.SubCategory.COM
     private val rightClickPressed     by boolean("RightClickPressed", false)
         .describe("Only block when right mouse button is pressed.")
 
+    init {
+        group("General", "Mode", "Delay", "Hold", "Range")
+        group("Damage", "OnlyWhenHurt", "Before", "PingCompensation", "CompensationThreshold")
+        group("Input", "LeftClickPressed", "RightClickPressed")
+    }
+
     private val canBlock: Boolean
         get() = canClick && canItemBlock()
     private val physicalBlock: Boolean

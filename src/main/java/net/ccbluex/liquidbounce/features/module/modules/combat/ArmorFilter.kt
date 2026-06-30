@@ -48,6 +48,12 @@ object ArmorFilter : Module("ArmorFilter", Category.COMBAT, Category.SubCategory
     private val minEnchantmentSum by int("MinEnchantmentSum", 0, 0..12)
         .describe("Minimum total enchant levels for allowed armor.")
 
+    init {
+        group("Selection", "Priority", "KeepBackups")
+        group("Dropping", "DropLowDurability", "DropDelay", "DropDurability")
+        group("Filter", "MinMaterial", "MinDurabilityPercent", "MinProtectionLevel", "MinEnchantmentSum")
+    }
+
     private var lastDropTime = 0L
 
     override val tag: String?

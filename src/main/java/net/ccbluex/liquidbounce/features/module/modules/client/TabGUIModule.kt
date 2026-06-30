@@ -41,4 +41,13 @@ object TabGUIModule : Module("TabGUI", Category.CLIENT, Category.SubCategory.CLI
 
     var flagRenderTabOverlay = false
         get() = field && tabShowPlayerSkin
+
+    init {
+        group(
+            "Players",
+            "Show Player Heads", "Move Self To Top", "Show Friends", "Show Enemies", "Show Health"
+        )
+        group("Ping", "Show Ping Numbers", "Show Ping MS Tag", "Ping Text Shadow")
+        group("Layout", "Show Header", "Show Footer", "Scale", "Sorting", "Max Players")
+    }
 }

@@ -58,6 +58,12 @@ object Tracers : Module("Tracers", Category.VISUAL, Category.SubCategory.RENDER_
     private val thruBlocks by boolean("ThruBlocks", true)
         .describe("Draw tracers to entities hidden behind blocks.")
 
+    init {
+        group("Color", "ColorMode", "Color")
+        group("Render", "Thickness", "MaxRenderDistance", "ThruBlocks")
+        group("Filters", "Bots", "Teams", "OnLook", "MaxAngleDifference")
+    }
+
     private val entities by EntityLookup<EntityLivingBase>()
         .filter { isSelected(it, false) }
         .filter { mc.thePlayer.getDistanceSqToEntity(it) <= maxRenderDistanceSq }

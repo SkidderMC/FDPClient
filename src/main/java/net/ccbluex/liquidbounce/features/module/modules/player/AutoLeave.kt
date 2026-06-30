@@ -40,6 +40,11 @@ object AutoLeave : Module("AutoLeave", Category.PLAYER, Category.SubCategory.PLA
     private val delay by int("Delay", 0, 0..10000)
         .describe("Delay before leaving in milliseconds.")
 
+    init {
+        group("Triggers", "OnLowHealth", "Health", "OnPlayersNearby", "Players", "Range")
+        group("Leaving", "Mode", "Command", "Delay", "Notify")
+    }
+
     private var triggered = false
     private var pending = false
     private var pendingReason: String? = null

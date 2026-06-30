@@ -55,6 +55,12 @@ object ItemTags : Module("ItemTags", Category.VISUAL, Category.SubCategory.RENDE
     private val shadow by boolean("Shadow", true)
         .describe("Draw a shadow behind the tag text.")
 
+    init {
+        group("Content", "ShowName", "ShowCount")
+        group("Position", "Scale", "YOffset", "MaxDistance")
+        group("Appearance", "Background", "BackgroundColor", "TextColor", "Shadow")
+    }
+
     private val viewport: IntBuffer = GLAllocation.createDirectIntBuffer(16)
     private val modelview: FloatBuffer = GLAllocation.createDirectFloatBuffer(16)
     private val projection: FloatBuffer = GLAllocation.createDirectFloatBuffer(16)

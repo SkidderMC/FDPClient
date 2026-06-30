@@ -86,6 +86,13 @@ object AutoFarm : Module(
     private val mark by boolean("Mark", false)
         .describe("Render a box around the targeted crop.")
 
+    init {
+        group("Target", "Radius", "ThroughWalls", "WallRange")
+        group("Actions", "Replant", "Bonemeal", "Delay", "SwapBackDelay")
+        group("Misc", "DisableOnFullInventory", "Mark")
+        rotationSettings.nestInto(group("Rotation", "Rotations"))
+    }
+
     /**
      * Set of bone meal dye metadata (white dye color index 15).
      */

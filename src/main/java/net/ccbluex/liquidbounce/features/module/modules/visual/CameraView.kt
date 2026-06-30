@@ -36,6 +36,12 @@ object CameraView : Module("CameraView", Category.VISUAL, Category.SubCategory.R
 
     private var launchY: Double? = null
 
+    init {
+        group("General", "Clip", "View")
+        group("FOV", "LowerThirdPersonFOV", "ThirdPersonFOV")
+        group("Anchor", "CustomY", "SaveLastGroundY", "OnScaffold", "OnF5")
+    }
+
     override fun onEnable() {
         if (view) {
             mc.thePlayer?.run { launchY = posY }

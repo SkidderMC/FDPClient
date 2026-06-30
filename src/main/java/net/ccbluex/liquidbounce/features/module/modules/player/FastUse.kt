@@ -38,6 +38,13 @@ object FastUse : Module("FastUse", Category.PLAYER, Category.SubCategory.PLAYER_
     private val noMove by boolean("NoMove", false)
         .describe("Stop movement while using an item.")
 
+    init {
+        group("General", "Mode")
+        group("Instant/NCP", "Speed", "TickCooldown", "StopInput")
+        group("Custom", "CustomDelay", "CustomSpeed", "CustomTimer")
+        group("Movement", "NoMove")
+    }
+
     private val msTimer = MSTimer()
     private var usedTimer = false
     private var tickCounter = 0

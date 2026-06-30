@@ -70,6 +70,12 @@ object Trajectories : Module("Trajectories", Category.VISUAL, Category.SubCatego
     private val boxColor by color("BoxColor", Color(0, 160, 255, 150))
         .describe("Color of the landing box.")
 
+    init {
+        group("Simulation", "MaxSimulatedTicks", "MaxRenderDistance")
+        group("Targets", "OtherPlayers", "AlwaysShowBow")
+        group("Appearance", "LineWidth", "LandingBox", "LineColor", "BoxColor")
+    }
+
     private data class ProjectileType(val gravity: Float, val drag: Float, val velocity: Float)
 
     val onRender3D = handler<Render3DEvent> {

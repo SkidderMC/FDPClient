@@ -89,6 +89,12 @@ object Step : Module("Step", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MA
 
     private val timer = MSTimer()
 
+    init {
+        group("Step", "Mode", "Height", "JumpHeight")
+        group("Delay", "Delay", "ExtraDelay", "SimulateJump")
+        group("Timer", "Timer", "UseDynamicTimer")
+    }
+
     override fun onDisable() {
         val thePlayer = mc.thePlayer ?: return
 

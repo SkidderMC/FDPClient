@@ -41,6 +41,13 @@ object InventoryTracker : Module("InventoryTracker", Category.OTHER, Category.Su
     private val shadow by boolean("Shadow", true)
         .describe("Draw a shadow behind the log text.")
 
+    init {
+        group("Log", "MaxEntries", "Lifetime", "FadeTime")
+        group("Display", "ShowSlot", "ShowCount")
+        group("Position", "X", "Y")
+        group("Rendering", "Font", "Shadow")
+    }
+
     private class LogEntry(val text: String, val time: Long)
 
     private val log = ArrayDeque<LogEntry>()

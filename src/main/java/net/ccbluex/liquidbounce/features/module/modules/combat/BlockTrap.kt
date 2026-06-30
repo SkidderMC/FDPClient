@@ -83,6 +83,13 @@ object BlockTrap : Module("BlockTrap", Category.COMBAT, Category.SubCategory.COM
 
     private val options = RotationSettings(this).withRequestPriority(RotationPriority.HIGH)
 
+    init {
+        group("Placing", "AutoBlock", "Swing", "PlaceDelay", "MaxPlacements")
+        group("Trap", "Range", "TrapLegs", "TrapAbove", "Raycast")
+        options.nestInto(group("Rotations"))
+        group("Display", "TrackCPS", "Mark")
+    }
+
     private val timerCounter = MSTimer()
 
     private val trapPositions = mutableListOf<BlockPos>()

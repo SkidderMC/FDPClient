@@ -47,6 +47,12 @@ object MurderMystery : Module("MurderMystery", Category.OTHER, Category.SubCateg
     private val detectiveColor by color("DetectiveColor", Color(0, 144, 255))
         .describe("Highlight color used for the detective.")
 
+    init {
+        group("Detection", "Mode", "Detective")
+        group("Visuals", "ESP", "Box", "MurdererColor", "DetectiveColor")
+        group("Alerts", "Chat", "Sound")
+    }
+
     private val murdererPlayers = HashSet<UUID>()
     private val bowPlayers = HashSet<UUID>()
 

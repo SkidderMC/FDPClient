@@ -57,6 +57,12 @@ object GameDetector : Module("GameDetector", Category.CLIENT, Category.SubCatego
     private val scoreboard by boolean("ScoreboardCheck", false)
         .describe("Detect lobby keywords in the scoreboard.")
 
+    init {
+        group("PlayerChecks", "GameModeCheck", "CapabilitiesCheck", "InvisibilityCheck")
+        group("WorldChecks", "TabListCheck", "TeamsCheck", "EntityCheck", "ScoreboardCheck")
+        group("Compass", "CompassCheck", "CheckAllSlots", "Slot")
+    }
+
     private val WHITELISTED_SUBSTRINGS = arrayOf(":", "Vazio!", "§6§lRumble Box", "§5§lDivine Drop")
 
     private var isPlaying = false

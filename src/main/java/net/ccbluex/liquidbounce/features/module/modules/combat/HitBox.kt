@@ -38,6 +38,12 @@ object HitBox : Module("HitBox", Category.COMBAT, Category.SubCategory.COMBAT_RA
     private val animalSize by float("AnimalSize", 0.4F, 0F..1F) { targetAnimals }
         .describe("Extra hitbox size for animals.")
 
+    init {
+        group("Players", "TargetPlayers", "PlayerSize", "FriendSize", "TeamMateSize", "BotSize")
+        group("Mobs", "TargetMobs", "MobSize")
+        group("Animals", "TargetAnimals", "AnimalSize")
+    }
+
     fun determineSize(entity: Entity): Float {
         return when (entity) {
             is EntityPlayer -> {

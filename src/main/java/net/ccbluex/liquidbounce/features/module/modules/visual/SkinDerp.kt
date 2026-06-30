@@ -33,6 +33,11 @@ object SkinDerp : Module("SkinDerp", Category.VISUAL, Category.SubCategory.RENDE
     private val cape by boolean("Cape", true)
         .describe("Include the cape in the randomization.")
 
+    init {
+        group("Behavior", "Sync", "Delay")
+        group("Parts", "Hat", "Jacket", "LeftPants", "RightPants", "LeftSleeve", "RightSleeve", "Cape")
+    }
+
     private var savedParts = emptySet<EnumPlayerModelParts>()
     private var tickCounter = 0
 

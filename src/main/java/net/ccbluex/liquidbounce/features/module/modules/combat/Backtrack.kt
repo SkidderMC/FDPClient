@@ -106,6 +106,13 @@ object Backtrack : Module("Backtrack", Category.COMBAT, Category.SubCategory.COM
     private val maximumCachedPositions by int("MaxCachedPositions", 10, 1..20) { mode == "Legacy" }
         .describe("Max past positions cached per player.")
 
+    init {
+        group("General", "Mode", "MaxDelay")
+        group("Legacy", "Caching mode", "MaxCachedPositions")
+        group("Modern", "NextBacktrackDelay", "MinDelay", "Style", "Distance", "Smart")
+        group("ESP", "ESP-Mode", "WireFrame-Width")
+    }
+
     // Memory leak fix: Enforce strict limits on collections
     private const val MAX_PACKET_QUEUE_SIZE = 50
     private const val MAX_POSITIONS_SIZE = 100

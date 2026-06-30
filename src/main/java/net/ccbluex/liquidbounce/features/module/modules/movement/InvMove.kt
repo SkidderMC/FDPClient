@@ -65,6 +65,13 @@ object InvMove : Module("InvMove", Category.MOVEMENT, Category.SubCategory.MOVEM
     private val inventoryMotion by float("InventoryMotion", 1F, 0F..2F)
         .describe("Motion multiplier applied while in the inventory.")
 
+    init {
+        group("Bypasses", "AACAdditionPro", "Intave")
+        group("PacketSaving", "SaveC0E", "NoSprintWhenClosed")
+        group("NoMove", "SilentlyCloseAndReopen", "ReopenOnClick")
+        group("Misc", "NotInChests", "InventoryMotion")
+    }
+
     private val affectedBindings = arrayOf(
         mc.gameSettings.keyBindForward,
         mc.gameSettings.keyBindBack,
