@@ -1,7 +1,7 @@
 <script lang="ts">
-    import LiquidBounceLogo from "../../../../components/LiquidBounceLogo.svelte";
+    import FDPLogo from "../../../../components/FDPLogo.svelte";
 
-    const idBase = `lb-logo-${Math.random().toString(36).slice(2, 9)}`;
+    const idBase = `fdp-logo-${Math.random().toString(36).slice(2, 9)}`;
     const bannerGradientId = `${idBase}-banner`;
     const bannerTextGradientId = `${idBase}-banner-text`;
 
@@ -9,7 +9,7 @@
 </script>
 
 <div class="animated-logo">
-    <LiquidBounceLogo
+    <FDPLogo
         width="261.263px"
         height="98px"
         badgeFill={`url(#${bannerGradientId})`}
@@ -47,13 +47,13 @@
                 />
             </linearGradient>
         </svelte:fragment>
-    </LiquidBounceLogo>
+    </FDPLogo>
 
     <div class="divider"></div>
 
     <div class="message">
         <div>Thank you for <span>{anniversary} Years</span></div>
-        <div>of LiquidBounce!</div>
+        <div>of FDPClient!</div>
     </div>
 </div>
 

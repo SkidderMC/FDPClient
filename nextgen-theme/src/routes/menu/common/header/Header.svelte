@@ -1,5 +1,5 @@
 <script lang="ts">
-    import LiquidBounceLogo from "../../../../components/LiquidBounceLogo.svelte";
+    import FDPLogo from "../../../../components/FDPLogo.svelte";
     import Account from "./account/Account.svelte";
     import AnimatedLogo from "./AnimatedLogo.svelte";
     import Notifications from "./Notifications.svelte";
@@ -58,7 +58,7 @@
     {#if $location === "/title" && isAnniversary()}
         <AnimatedLogo/>
     {:else}
-        <LiquidBounceLogo
+        <FDPLogo
             width="261.263px"
             height="98px"
             badgeFill="var(--accent-color)"

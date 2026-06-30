@@ -1,8 +1,8 @@
 {
-  "id": "liquidbounce",
-  "name": "LiquidBounce",
+  "id": "fdpclient",
+  "name": "FDPClient",
   "version": "0.1.0",
-  "authors": ["CCBlueX"],
+  "authors": ["SkidderMC"],
   "colors": {
     "Accent": "#4677ff",
     "Tint": "#000000"

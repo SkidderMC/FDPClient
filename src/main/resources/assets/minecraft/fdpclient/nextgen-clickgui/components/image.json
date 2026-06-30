@@ -12,7 +12,7 @@
     {
       "type": "TEXT",
       "name": "URL",
-      "value": "https://liquidbounce.net/images/logos/logo.svg"
+      "value": "img/clickgui/icon-client.svg"
     },
     {
       "type": "FLOAT",

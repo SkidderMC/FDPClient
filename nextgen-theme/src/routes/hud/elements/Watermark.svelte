@@ -1,8 +1,8 @@
 <script lang="ts">
-    import LiquidBounceLogo from "../../../components/LiquidBounceLogo.svelte";
+    import FDPLogo from "../../../components/FDPLogo.svelte";
 </script>
 
-<LiquidBounceLogo
+<FDPLogo
     width="165px"
     height="61.8917px"
     badgeFill="var(--accent-color)"

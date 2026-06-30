@@ -1,10 +1,10 @@
 <script>
-    import LiquidBounceLogo from "../../components/LiquidBounceLogo.svelte";
+    import FDPLogo from "../../components/FDPLogo.svelte";
     import {fade} from 'svelte/transition';
 </script>
 
 <div class="watermark" in:fade={{ duration: 100 }} out:fade={{ duration: 100 }}>
-    <LiquidBounceLogo
+    <FDPLogo
         width="165px"
         height="61.8917px"
         badgeFill="var(--accent-color)"

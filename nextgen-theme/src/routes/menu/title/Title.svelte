@@ -27,8 +27,8 @@
 
             if (clientUpdate.update) {
                 notification.set({
-                    title: `LiquidBounce ${clientUpdate.update.clientVersion} has been released!`,
-                    message: `Download it from liquidbounce.net!`,
+                    title: `FDPClient ${clientUpdate.update.clientVersion} has been released!`,
+                    message: `A new FDPClient build is available.`,
                     error: false,
                     delay: 99999999
                 });
@@ -68,7 +68,7 @@
                         <ChildButton title="Realms" icon="realms" {parentHovered}
                                      on:click={() => openScreen("multiplayer_realms")}/>
                     </MainButton>
-                    <MainButton title="LiquidBounce" icon="liquidbounce" on:click={toggleButtons} index={2}/>
+                    <MainButton title="FDPClient" icon="liquidbounce" on:click={toggleButtons} index={2}/>
                     <MainButton title="Options" icon="options" on:click={() => openScreen("options")} index={3}/>
                 {:else if clientButtonsShown}
                     <MainButton title="Proxy Manager" icon="proxymanager" on:click={() => openScreen("proxymanager")}
@@ -94,7 +94,7 @@
                     <IconButton title="Discord" icon="discord" on:click={() => browse("MAINTAINER_DISCORD")}/>
                     <IconButton title="Twitter" icon="twitter" on:click={() => browse("MAINTAINER_TWITTER")}/>
                     <IconButton title="YouTube" icon="youtube" on:click={() => browse("MAINTAINER_YOUTUBE")}/>
-                    <IconTextButton title="liquidbounce.net" icon="icon-liquidbounce.net.svg"
+                    <IconTextButton title="FDPClient" icon="icon-liquidbounce.net.svg"
                                     on:click={() => browse("CLIENT_WEBSITE")}/>
                 </ButtonContainer>
             </div>
