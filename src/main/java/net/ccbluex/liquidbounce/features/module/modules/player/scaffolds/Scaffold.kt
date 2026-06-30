@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.player.scaffolds
 
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.event.async.loopSequence
 import net.ccbluex.liquidbounce.features.module.Category
@@ -343,6 +344,74 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
         .describe("Highlight the block about to be placed.")
     private val trackCPS by boolean("TrackCPS", false).subjective()
         .describe("Show the current placement clicks-per-second.")
+
+    private val generalGroup = Configurable("General")
+    private val placementGroup = Configurable("Placement")
+    private val autoBlockGroup = Configurable("AutoBlock")
+    private val modesGroup = Configurable("Modes")
+    private val godBridgeGroup = Configurable("GodBridge")
+    private val rotationsGroup = Configurable("Rotations")
+    private val movementGroup = Configurable("Movement")
+    private val eagleGroup = Configurable("Eagle")
+    private val zitterGroup = Configurable("Zitter")
+    private val safeWalkGroup = Configurable("SafeWalk")
+    private val visualsGroup = Configurable("Visuals")
+
+    init {
+        moveValues(generalGroup,
+            "ScaffoldMode", "AutoF5", "Timer", "SpeedModifier")
+
+        moveValues(placementGroup,
+            "PlaceDelay", "Delay", "DoExtraClicks", "SimulateDoubleClicking", "ExtraClickCPS",
+            "PlacementAttempt", "SearchMode", "MinDist", "BlockSafe")
+
+        moveValues(autoBlockGroup,
+            "AutoBlock", "SortByHighestAmount", "EarlySwitch", "SlotAmountBeforeSwitch")
+
+        moveValues(modesGroup,
+            "BreezilyEdge", "OmniDirectionalExpand", "ExpandLength", "TicksUntilRotation",
+            "StartHorizontally", "HorizontalPlacementsRange", "VerticalPlacementsRange", "JumpTicksRange")
+
+        moveValues(godBridgeGroup,
+            "WaitForRotations", "UseOptimizedPitch", "GodBridgePitch", "JumpAutomatically",
+            "BlocksToJumpRange", "GodBridgeMovementMode")
+
+        options.nestInto(rotationsGroup)
+        moveValues(rotationsGroup,
+            "JumpRotations", "AACYawOffset", "CustomYaw", "CustomPitch", "AdvancedYawMode",
+            "AdvancedPitchMode", "AdvancedYawOffset", "AdvancedYawMoveOffset", "AdvancedYawStatic",
+            "AdvancedYawRoundValue", "AdvancedPitchOffset", "AdvancedPitchStatic", "ConsiderInventory",
+            "RotationTiming")
+
+        moveValues(movementGroup,
+            "Sprint", "SprintMode", "Swing", "Down", "AutoJump", "AllowClutching",
+            "HorizontalClutchBlocks", "VerticalClutchBlocks", "SpeedLimiter", "SpeedLimit", "Slow",
+            "SlowOnlyGround", "SlowSpeed", "JumpStrafe", "JumpStraightStrafe", "JumpDiagonalStrafe")
+
+        moveValues(eagleGroup,
+            "Eagle", "EagleMode", "AdjustedSneakSpeed", "EagleSpeed", "EagleSprint", "BlocksToEagle",
+            "EagleEdgeDistance", "UseMaxSneakTime", "MaxSneakTicks", "BlockSneakingAgainUntilOnGround")
+
+        moveValues(zitterGroup,
+            "Zitter", "ZitterSpeed", "ZitterStrength", "ZitterTicks", "UseSneakMidAir")
+
+        moveValues(safeWalkGroup,
+            "SameY", "JumpOnUserInput", "SafeWalk", "AirSafe")
+
+        moveValues(visualsGroup,
+            "Mark", "TrackCPS")
+
+        addValues(listOf(
+            generalGroup, placementGroup, autoBlockGroup, modesGroup, godBridgeGroup, rotationsGroup,
+            movementGroup, eagleGroup, zitterGroup, safeWalkGroup, visualsGroup,
+        ))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.firstOrNull { it.matchesKey(name) }?.let(group::addValue)
+        }
+    }
 
     // Target placement
     var placeRotation: PlaceRotation? = null

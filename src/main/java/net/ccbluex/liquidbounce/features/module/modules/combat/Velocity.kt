@@ -257,6 +257,62 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
     private val swingMode by choices("SwingMode", arrayOf("Off", "Normal", "Packet"), "Normal") { mode == "Click" }
         .describe("How to swing when clicking in Click mode.")
 
+    private val generalGroup = Configurable("General")
+    private val reverseGroup = Configurable("Reverse")
+    private val aacGroup = Configurable("AAC")
+    private val jumpGroup = Configurable("Jump")
+    private val delayGroup = Configurable("Delay")
+    private val tickGroup = Configurable("Tick")
+    private val grimGroup = Configurable("Grim")
+    private val miscGroup = Configurable("Misc")
+
+    init {
+        moveValues(generalGroup,
+            "Mode", "Horizontal", "Vertical", "OnlyGround", "OnlyCombat", "noFire",
+            "OverrideDirection", "OverrideDirectionYaw", "PauseOnExplosion", "TicksToPause")
+
+        moveValues(reverseGroup,
+            "ReverseStrength", "SmoothReverseStrength", "onLook", "Range", "MaxAngleDifference")
+
+        moveValues(aacGroup,
+            "AACPushXZReducer", "AACPushYReducer", "AACv4MotionReducer", "AAC4ReduceAmount",
+            "AAC5ReduceAmount", "ReduceAmount", "Factor", "HurtTime")
+
+        moveValues(jumpGroup,
+            "DisableInAir", "Chance", "JumpCooldownMode", "TicksUntilJump", "ReceivedHitsUntilJump",
+            "HurtTime")
+
+        moveValues(delayGroup,
+            "SpoofDelay", "Delayed-Delay", "Delayed-Blink", "Delayed-BlinkOutgoing",
+            "Delayed-DelayTransaction")
+
+        moveValues(tickGroup,
+            "VelocityTick", "TickReductionAmount", "ResetMotionY", "TickBypass",
+            "LimitMaxMotion", "MaxXZMotion", "MaxYMotion")
+
+        moveValues(grimGroup,
+            "GrimC07-Always", "GrimC07-OnlyBreakAir", "GrimC07-BreakOnWorld", "GrimC07-SendC03",
+            "GrimC07-Send1.17C06", "GrimC07-FlagPauseTime", "GrimVerticalMode", "SmartVelo",
+            "C0F", "C0FPacketAmount", "CallEvent", "Via")
+
+        moveValues(miscGroup,
+            "ModifyTimer", "Timer", "CancelHorizontalVelocity", "CancelVerticalVelocity",
+            "PhaseHeight", "PhaseOnlyGround", "PhaseMode", "SideStrafeStrafe", "SideStrafeFace",
+            "Clicks", "HurtTimeToClick", "WhenFacingEnemyOnly", "IgnoreBlocking", "ClickRange",
+            "SwingMode")
+
+        addValues(listOf(
+            generalGroup, reverseGroup, aacGroup, jumpGroup, delayGroup, tickGroup,
+            grimGroup, miscGroup,
+        ))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.firstOrNull { it.matchesKey(name) }?.let(group::addValue)
+        }
+    }
+
     /**
      * VALUES
      */

@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.event.async.loopSequence
 import net.ccbluex.liquidbounce.event.async.waitTicks
@@ -298,6 +299,66 @@ object Flight : Module("Flight", Category.MOVEMENT, Category.SubCategory.MOVEMEN
     // Visuals
     private val mark by boolean("Mark", true).subjective()
         .describe("Draw a platform marker at the start height.")
+
+    private val modesGroup = Configurable("Modes")
+    private val vanillaGroup = Configurable("Vanilla")
+    private val clipGroup = Configurable("Clip")
+    private val ncpGroup = Configurable("NCP")
+    private val aacGroup = Configurable("AAC")
+    private val verusGroup = Configurable("Verus")
+    private val blocksMcGroup = Configurable("BlocksMC")
+    private val fireballGroup = Configurable("Fireball")
+    private val serversGroup = Configurable("Servers")
+    private val renderGroup = Configurable("Render")
+
+    init {
+        moveValues(modesGroup, "DeprecatedMode", "Mode")
+
+        moveValues(vanillaGroup,
+            "VanillaSpeed", "VanillaVerticalSpeed", "VanillaKickBypass",
+            "Smooth", "Speed", "Vertical", "KickBypass", "KickBypassMode",
+            "KickBypass-MotionSpeed", "NoClip", "SpoofGround",
+            "FakeGround-NoJump", "FakeGround-JumpUpY", "FunCraft-Timer")
+
+        moveValues(clipGroup,
+            "ClipX", "ClipY", "ClipZ", "ClipDelay", "ClipMotionX", "ClipMotionY",
+            "ClipMotionZ", "ClipSpoofGround", "ClipGroundWhenClip", "ClipTimer")
+
+        moveValues(ncpGroup,
+            "NCPMotion", "BlockDrop-HorizontalSpeed", "BlockDrop-VerticalSpeed")
+
+        moveValues(aacGroup,
+            "AAC1.9.10-Speed", "AAC3.0.5-Fast", "AAC3.3.12-Motion", "AAC3.3.13-Motion")
+
+        moveValues(verusGroup,
+            "Damage", "TimerSlow", "BoostTicks", "BoostMotion", "YBoost",
+            "VerusDamageSpeed", "VerusDamageBoostMode", "VerusDamageBoost3-ReDamage")
+
+        moveValues(blocksMcGroup,
+            "Stable", "TimerSlowed", "BoostSpeed", "ExtraSpeed", "StopOnLanding",
+            "StopOnNoMove", "Debug")
+
+        options.nestInto(fireballGroup)
+        moveValues(fireballGroup,
+            "PitchMode", "Pitch", "InvertYaw", "AutoFireball", "Swing",
+            "MaxFireballTry", "FireballThrow", "EdgeThreshold", "AutoJump")
+
+        moveValues(serversGroup,
+            "Hypixel-Boost", "Hypixel-BoostDelay", "Hypixel-BoostTimer", "NeruxVace-Ticks")
+
+        moveValues(renderGroup, "Mark")
+
+        addValues(listOf(
+            modesGroup, vanillaGroup, clipGroup, ncpGroup, aacGroup, verusGroup,
+            blocksMcGroup, fireballGroup, serversGroup, renderGroup,
+        ))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.firstOrNull { it.matchesKey(name) }?.let(group::addValue)
+        }
+    }
 
     var wasFired = false
     var firePosition: BlockPos? = null

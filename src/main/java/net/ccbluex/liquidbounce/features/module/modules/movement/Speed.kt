@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
@@ -491,8 +492,67 @@ object Speed : Module("Speed", Category.MOVEMENT, Category.SubCategory.MOVEMENT_
     override val tag
         get() = mode.get()
 
+    private val jumpGroup = Configurable("Jump")
+    private val modesGroup = Configurable("Modes")
+    private val customGroup = Configurable("Custom")
+    private val intaveGroup = Configurable("Intave")
+    private val matrixGroup = Configurable("Matrix")
+    private val verusGroup = Configurable("Verus")
+    private val vulcanGroup = Configurable("Vulcan")
+    private val uncpGroup = Configurable("UNCP")
+    private val serverGroup = Configurable("Server")
+
     init {
-        addValue(SpeedYawOffset)
+        moveValues(jumpGroup,
+            "AvoidCornerBump", "PreventDeadlyJump", "MaximumSafeFall")
+
+        moveValues(modesGroup,
+            "DeprecatedMode", "Mode")
+
+        moveValues(customGroup,
+            "CustomBehavior", "CustomY", "CustomGroundStrafe", "CustomAirStrafe", "CustomGroundTimer",
+            "CustomAirTimerTick", "CustomAirTimer", "CustomSpeed", "CustomDoLaunchSpeed", "CustomLaunchSpeed",
+            "CustomLaunchMoveBeforeJump", "CustomDoMinimumSpeed", "CustomMinimumSpeed", "CustomAddYMotion",
+            "CustomDoModifyJumpY", "CustomUpTimer", "CustomJumpTimer", "CustomDownTimer", "CustomUpAirSpeed",
+            "CustomDownAirSpeed", "CustomStrafe", "PlusBoostMode", "PlusMultiplyAmount", "CustomGroundStay",
+            "CustomGroundResetXZ", "CustomDoJump", "CustomPressSpaceKeyOnGround", "CustomPressSpaceKeyInAir",
+            "CustomUsePreMotion", "ResetXZ", "ResetY", "NotOnConsuming", "NotOnFalling", "NotOnVoid")
+
+        moveValues(intaveGroup,
+            "Boost", "InitialBoostMultiplier", "StrafeStrength", "GroundTimer", "AirTimer")
+
+        moveValues(matrixGroup,
+            "Matrix-Mode", "GroundStrafe-Hop2", "VelocBoost-6.6.1", "TimerBoost-6.6.1", "UsePreMotion6.6.1",
+            "ExtraGroundBoost")
+
+        moveValues(verusGroup,
+            "Verus-Mode", "YPort-Speed", "YPort2-Speed", "LatestVerusHop-CustomSpeed",
+            "LatestVerusHop-JumpMovementFactorWithPotion", "LatestVerusHop-JumpMovementFactorWithoutPotion",
+            "LatestVerusHop-FrictionWithPotion", "LatestVerusHop-FrictionWithoutPotion",
+            "LatestVerusHop-SpeedWithPotion", "LatestVerusHop-SpeedWithoutPotion", "LatestVerusHop-DamageBoost",
+            "LatestVerusHop-BoostSpeed")
+
+        moveValues(vulcanGroup,
+            "Vulcan-Mode", "Boost-Delay", "Ground-Boost")
+
+        moveValues(uncpGroup,
+            "PullDown", "OnTick", "OnHurt", "ShouldBoost", "TimerBoost", "DamageBoost", "AirStrafe")
+
+        moveValues(serverGroup,
+            "CubeCraft-PortLength", "Glide", "FullStrafe", "DamageLowHop", "SafeY", "LowHop")
+
+        serverGroup.addValue(SpeedYawOffset)
+
+        addValues(listOf(
+            jumpGroup, modesGroup, customGroup, intaveGroup, matrixGroup, verusGroup, vulcanGroup,
+            uncpGroup, serverGroup,
+        ))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.filter { it.matchesKey(name) }.forEach(group::addValue)
+        }
     }
 
     private val modeModule
