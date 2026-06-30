@@ -127,13 +127,6 @@ object DashTrail : Module("DashTrail", Category.VISUAL, Category.SubCategory.REN
             renderGroup, timingGroup, shapeGroup, colorGroup, visibilityGroup,
         ))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.filter { it.matchesKey(name) }.forEach(group::addValue)
-        }
-    }
-
     private fun loadDashCubicTextures() {
         val totalDashTextures = 21
         for (i in 0 until totalDashTextures) {

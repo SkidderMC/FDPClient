@@ -92,13 +92,6 @@ object AutoRod : Module("AutoRod", Category.COMBAT, Category.SubCategory.COMBAT_
 
         addValues(listOf(targetingGroup, healthGroup, timingGroup))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.filter { it.matchesKey(name) }.forEach(group::addValue)
-        }
-    }
-
     val onUpdate = handler<UpdateEvent> {
         // Check if player is using rod
         val usingRod = (mc.thePlayer.isUsingItem && mc.thePlayer.heldItem?.item == Items.fishing_rod) || rodInUse

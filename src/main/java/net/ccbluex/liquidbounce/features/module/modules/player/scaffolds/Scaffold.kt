@@ -406,13 +406,6 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
             movementGroup, eagleGroup, zitterGroup, safeWalkGroup, visualsGroup,
         ))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.firstOrNull { it.matchesKey(name) }?.let(group::addValue)
-        }
-    }
-
     // Target placement
     var placeRotation: PlaceRotation? = null
 

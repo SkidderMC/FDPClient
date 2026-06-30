@@ -62,13 +62,6 @@ object DamageParticle : Module("DamageParticle", Category.VISUAL, Category.SubCa
 
         addValues(listOf(particleGroup, motionGroup, coloringGroup))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.filter { it.matchesKey(name) }.forEach(group::addValue)
-        }
-    }
-
     private const val MAX_PARTICLES = 100
     private const val MAX_HEALTH_DATA_SIZE = 200
 

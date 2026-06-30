@@ -125,13 +125,6 @@ object Nuker : Module("Nuker", Category.OTHER, Category.SubCategory.MISCELLANEOU
 
         addValues(listOf(targetingGroup, breakingGroup, rotationsGroup, renderGroup))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.filter { it.matchesKey(name) }.forEach(group::addValue)
-        }
-    }
-
     val onUpdate = handler<UpdateEvent> {
         // Pause breaking while a container GUI is open
         if (!ignoreOpenInventory && mc.currentScreen is GuiContainer) {

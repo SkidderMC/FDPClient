@@ -169,13 +169,6 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, Category.SubCategor
             stealingGroup, delaysGroup, noMoveGroup, renderGroup, debugGroup
         ))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.filter { it.matchesKey(name) }.forEach(group::addValue)
-        }
-    }
-
     private var progress: Float? = null
         set(value) {
             field = value?.coerceIn(0f, 1f)

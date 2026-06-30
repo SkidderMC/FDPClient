@@ -76,13 +76,6 @@ object Sprint : Module("Sprint", Category.MOVEMENT, Category.SubCategory.MOVEMEN
 
         addValues(listOf(generalGroup, directionsGroup, conditionsGroup, serverSideGroup))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.firstOrNull { it.matchesKey(name) }?.let(group::addValue)
-        }
-    }
-
     override val tag
         get() = mode
 

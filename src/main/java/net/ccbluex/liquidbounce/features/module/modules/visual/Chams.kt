@@ -48,13 +48,6 @@ object Chams : Module("Chams", Category.VISUAL, Category.SubCategory.RENDER_OVER
 
         addValues(listOf(applyGroup, renderGroup))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.filter { it.matchesKey(name) }.forEach(group::addValue)
-        }
-    }
-
     fun preHandRender() {
         GL11.glDisable(3553)
         GL11.glEnable(3042)

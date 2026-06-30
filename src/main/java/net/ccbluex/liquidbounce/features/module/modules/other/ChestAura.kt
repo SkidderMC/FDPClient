@@ -112,13 +112,6 @@ object ChestAura : Module("ChestAura", Category.OTHER, Category.SubCategory.MISC
 
         addValues(listOf(targetsGroup, rangeGroup, rotationsGroup, displayGroup))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.filter { it.matchesKey(name) }.forEach(group::addValue)
-        }
-    }
-
     var tileTarget: TileTarget? = null
     private val timer = MSTimer()
 

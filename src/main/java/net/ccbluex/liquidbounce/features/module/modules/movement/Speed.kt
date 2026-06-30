@@ -548,13 +548,6 @@ object Speed : Module("Speed", Category.MOVEMENT, Category.SubCategory.MOVEMENT_
             uncpGroup, serverGroup,
         ))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.filter { it.matchesKey(name) }.forEach(group::addValue)
-        }
-    }
-
     private val modeModule
         get() = speedModes.selectedMode(mode.get())
 

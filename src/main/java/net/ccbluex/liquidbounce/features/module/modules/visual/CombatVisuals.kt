@@ -209,13 +209,6 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, Category.SubCate
             hitParticlesGroup, hitSoundGroup,
         ))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.filter { it.matchesKey(name) }.forEach(group::addValue)
-        }
-    }
-
     // variables
     private val targetList = HashMap<EntityLivingBase, Long>()
     private val combat = CombatManager

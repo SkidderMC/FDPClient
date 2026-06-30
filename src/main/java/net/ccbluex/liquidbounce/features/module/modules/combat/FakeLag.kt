@@ -89,13 +89,6 @@ object FakeLag : Module("FakeLag", Category.COMBAT, Category.SubCategory.COMBAT_
 
         addValues(listOf(timingGroup, conditionsGroup, lineRenderGroup, modelRenderGroup))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.filter { it.matchesKey(name) }.forEach(group::addValue)
-        }
-    }
-
     private val packetQueue = Queues.newArrayDeque<QueueData>()
     private val positions = Queues.newArrayDeque<PositionData>()
     private val resetTimer = MSTimer()

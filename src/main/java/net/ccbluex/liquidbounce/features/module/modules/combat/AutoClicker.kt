@@ -94,13 +94,6 @@ object AutoClicker : Module("AutoClicker", Category.COMBAT, Category.SubCategory
             clickGroup, jitterGroup, leftInputGroup, rightClickGroup, timingGroup,
         ))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.filter { it.matchesKey(name) }.forEach(group::addValue)
-        }
-    }
-
     private var rightDelay = generateNewClickTime()
     private var rightLastSwing = 0L
     private var leftDelay = generateNewClickTime()

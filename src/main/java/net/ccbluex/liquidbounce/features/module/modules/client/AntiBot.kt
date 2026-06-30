@@ -127,13 +127,6 @@ object AntiBot : Module("AntiBot", Category.CLIENT, Category.SubCategory.CLIENT_
             tabGroup, nameGroup, movementGroup, combatGroup, lifetimeGroup, positionGroup,
         ))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.firstOrNull { it.matchesKey(name) }?.let(group::addValue)
-        }
-    }
-
     private val groundList = mutableSetOf<Int>()
     private val airList = mutableSetOf<Int>()
     private val invalidGroundList = mutableMapOf<Int, Int>()

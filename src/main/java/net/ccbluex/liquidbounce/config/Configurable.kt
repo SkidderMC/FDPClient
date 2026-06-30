@@ -46,6 +46,16 @@ open class Configurable(
         return true
     }
 
+    fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) values.filter { it.matchesKey(name) }.forEach(group::addValue)
+    }
+
+    fun group(name: String, vararg names: String): Configurable =
+        Configurable(name).also { moveValues(it, *names); addValue(it) }
+
+    fun group(parent: Configurable, name: String, vararg names: String): Configurable =
+        Configurable(name).also { moveValues(it, *names); parent.addValue(it) }
+
     fun findDeep(valueName: String): Value<*>? {
         for (value in values) {
             if (value.matchesKey(valueName)) return value

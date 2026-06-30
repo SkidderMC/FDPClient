@@ -116,13 +116,6 @@ object TargetStrafe : Module("TargetStrafe", Category.MOVEMENT, Category.SubCate
 
         addValues(listOf(strafeGroup, renderGroup, colorGroup))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.filter { it.matchesKey(name) }.forEach(group::addValue)
-        }
-    }
-
     private fun getThemeColor(index: Int): Color {
         return ColorUtils.fade(Color(customColor1.rgb), index * 10, 100)
     }

@@ -75,13 +75,6 @@ object AutoSoup : Module("AutoSoup", Category.PLAYER, Category.SubCategory.PLAYE
 
         addValues(listOf(eatingGroup, bowlGroup, refillGroup))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.filter { it.matchesKey(name) }.forEach(group::addValue)
-        }
-    }
-
     private val timer = MSTimer()
     private val startTimer = MSTimer()
     private val closeTimer = MSTimer()

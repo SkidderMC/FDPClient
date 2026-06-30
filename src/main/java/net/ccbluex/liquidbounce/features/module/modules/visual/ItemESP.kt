@@ -85,13 +85,6 @@ object ItemESP : Module("ItemESP", Category.VISUAL, Category.SubCategory.RENDER_
             renderGroup, glowGroup, filtersGroup, tracersGroup, textGroup,
         ))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.filter { it.matchesKey(name) }.forEach(group::addValue)
-        }
-    }
-
     private val maxDistanceSq
         get() = maxDistance.toDouble().pow(2.0)
 

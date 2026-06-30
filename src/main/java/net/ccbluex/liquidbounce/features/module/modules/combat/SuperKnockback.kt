@@ -86,13 +86,6 @@ object SuperKnockback : Module("SuperKnockback", Category.COMBAT, Category.SubCa
             generalGroup, wTapGroup, sprintTap2Group, conditionsGroup,
         ))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.filter { it.matchesKey(name) }.forEach(group::addValue)
-        }
-    }
-
     private var ticks = 0
     private var forceSprintState = 0
     private val timer = MSTimer()

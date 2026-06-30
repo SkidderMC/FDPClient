@@ -72,13 +72,6 @@ object Crosshair : Module("Crosshair", Category.VISUAL, Category.SubCategory.REN
 
         addValues(listOf(generalGroup, crossGroup, csgoGroup, dotGroup, circleGroup))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.firstOrNull { it.matchesKey(name) }?.let(group::addValue)
-        }
-    }
-
     val onRender2D = handler<Render2DEvent> {
         // Only draw in first person while actually in the world.
         if (mc.gameSettings.thirdPersonView != 0 || mc.currentScreen != null || mc.thePlayer == null) {

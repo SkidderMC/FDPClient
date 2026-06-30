@@ -99,13 +99,6 @@ object PointerESP : Module("PointerESP", Category.VISUAL, Category.SubCategory.R
 
         addValues(listOf(renderGroup, arrowGroup, colorGroup, distanceGroup, targetsGroup))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.firstOrNull { it.matchesKey(name) }?.let(group::addValue)
-        }
-    }
-
     val onRender2D = handler<Render2DEvent> { event ->
         if (dimension != "2d") return@handler
 

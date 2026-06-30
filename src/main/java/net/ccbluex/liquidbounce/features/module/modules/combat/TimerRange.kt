@@ -187,13 +187,6 @@ object TimerRange : Module("TimerRange", Category.COMBAT, Category.SubCategory.C
             conditionsGroup, renderGroup,
         ))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.filter { it.matchesKey(name) }.forEach(group::addValue)
-        }
-    }
-
     override fun onDisable() {
         shouldResetTimer()
         BlinkUtils.unblink()

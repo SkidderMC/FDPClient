@@ -95,13 +95,6 @@ object ArmorSwap : Module("ArmorSwap", Category.COMBAT, Category.SubCategory.COM
 
         addValues(listOf(generalGroup, thresholdsGroup, organizerGroup, inventoryGroup))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.firstOrNull { it.matchesKey(name) }?.let(group::addValue)
-        }
-    }
-
     private val toReplace = BooleanArray(4)
     private var workState = State.Idle
     private var lastActionTime = 0L

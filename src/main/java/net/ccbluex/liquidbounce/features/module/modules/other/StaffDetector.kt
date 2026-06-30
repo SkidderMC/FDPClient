@@ -93,13 +93,6 @@ object StaffDetector : Module("StaffDetector", Category.OTHER, Category.SubCateg
 
         addValues(listOf(serverGroup, detectionGroup, spectatorGroup, autoLeaveGroup, notificationGroup))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.filter { it.matchesKey(name) }.forEach(group::addValue)
-        }
-    }
-
     // Memory leak fix: Limit detection history
     private const val MAX_DETECTION_HISTORY = 50
 

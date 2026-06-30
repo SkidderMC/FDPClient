@@ -76,13 +76,6 @@ object NoRender : Module("NoRender", Category.VISUAL, Category.SubCategory.RENDE
 
 		addValues(listOf(entityFilterGroup, rangeGroup, blockGroup))
 	}
-
-	private fun moveValues(group: Configurable, vararg names: String) {
-		for (name in names) {
-			values.filter { it.matchesKey(name) }.forEach(group::addValue)
-		}
-	}
-
 	// Stores hidden blocks and their original states
 	private val hiddenBlocks: MutableMap<BlockPos, IBlockState> = mutableMapOf()
 

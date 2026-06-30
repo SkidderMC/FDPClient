@@ -75,13 +75,6 @@ object HoleESP : Module("HoleESP", Category.VISUAL, Category.SubCategory.RENDER_
 
         addValues(listOf(scanGroup, detectionGroup, colorsGroup, renderGroup))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.filter { it.matchesKey(name) }.forEach(group::addValue)
-        }
-    }
-
     private val horizontalFacings = EnumFacing.values().filter { it.axis != EnumFacing.Axis.Y }
 
     private val holes = ArrayList<Hole>()

@@ -105,13 +105,6 @@ object StorageESP : Module("StorageESP", Category.VISUAL, Category.SubCategory.R
 
         addValues(listOf(modeGroup, colorGroup, glowGroup, filtersGroup, typesGroup))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.filter { it.matchesKey(name) }.forEach(group::addValue)
-        }
-    }
-
     private fun getColor(tileEntity: TileEntity): Color? {
         return if (espColorMode == "Custom") {
             when {

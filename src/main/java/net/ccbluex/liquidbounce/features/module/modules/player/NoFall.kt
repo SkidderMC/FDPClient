@@ -170,13 +170,6 @@ object NoFall : Module("NoFall", Category.PLAYER, Category.SubCategory.PLAYER_CO
 
         addValues(listOf(mlgGroup, blinkGroup, variantsGroup))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.firstOrNull { it.matchesKey(name) }?.let(group::addValue)
-        }
-    }
-
     var currentMlgBlock: BlockPos? = null
     var retrievingPos: Vec3? = null
     var wasTimer = false

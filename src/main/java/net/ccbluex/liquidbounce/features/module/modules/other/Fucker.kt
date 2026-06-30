@@ -137,13 +137,6 @@ object Fucker : Module("Fucker", Category.OTHER, Category.SubCategory.MISCELLANE
             targetingGroup, breakingGroup, ownBedGroup, rotationsGroup, renderGroup
         ))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.filter { it.matchesKey(name) }.forEach(group::addValue)
-        }
-    }
-
     /**
      * VALUES
      */

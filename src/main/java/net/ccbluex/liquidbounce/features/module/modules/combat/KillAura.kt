@@ -450,13 +450,6 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
             autoBlockingGroup, failSwingGroup, targetRenderingGroup,
         ))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.firstOrNull { it.matchesKey(name) }?.let(group::addValue)
-        }
-    }
-
     /**
      * MODULE
      */

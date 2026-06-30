@@ -172,13 +172,6 @@ object ESP2D : Module("ESP2D", Category.VISUAL, Category.SubCategory.RENDER_OVER
             boxGroup, colorGroup, healthGroup, textGroup, itemsGroup, renderGroup,
         ))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.firstOrNull { it.matchesKey(name) }?.let(group::addValue)
-        }
-    }
-
     override fun onDisable() {
         collectedEntities.clear()
     }

@@ -52,13 +52,6 @@ object Derp : Module("Derp", Category.VISUAL, Category.SubCategory.RENDER_SELF) 
 
         addValues(listOf(yawGroup, pitchGroup, generalGroup))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.filter { it.matchesKey(name) }.forEach(group::addValue)
-        }
-    }
-
     private var spinYaw = 0f
     private var jitterTick = 0
 

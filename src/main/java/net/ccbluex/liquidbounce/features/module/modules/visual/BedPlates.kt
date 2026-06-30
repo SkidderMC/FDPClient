@@ -152,13 +152,6 @@ object BedPlates : Module("BedPlates", Category.VISUAL, Category.SubCategory.REN
 
         addValues(listOf(renderGroup, textGroup, backgroundGroup))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.filter { it.matchesKey(name) }.forEach(group::addValue)
-        }
-    }
-
     private val bedStates = ConcurrentHashMap<BlockPos, BedState>()
 
     private data class SurroundingBlock(

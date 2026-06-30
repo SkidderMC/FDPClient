@@ -105,13 +105,6 @@ object FlagCheck : Module("FlagCheck", Category.OTHER, Category.SubCategory.MISC
             generalGroup, ghostBlockGroup, rubberbandGroup, outputGroup, renderGroup,
         ))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.filter { it.matchesKey(name) }.forEach(group::addValue)
-        }
-    }
-
     private var lastCheckTime = 0L
 
     private var flagCount = 0

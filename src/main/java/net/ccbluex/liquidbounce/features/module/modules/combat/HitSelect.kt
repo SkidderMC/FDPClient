@@ -132,13 +132,6 @@ object HitSelect : Module("HitSelect", Category.COMBAT, Category.SubCategory.COM
             generalGroup, modesGroup, cancelRatesGroup, missGuardGroup, clickPredictionGroup
         ))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.filter { it.matchesKey(name) }.forEach(group::addValue)
-        }
-    }
-
     // ────────────────────────────────────────────────────────────────────────────
     // EntitySnapshot — per-entity ring-buffer
     // ────────────────────────────────────────────────────────────────────────────

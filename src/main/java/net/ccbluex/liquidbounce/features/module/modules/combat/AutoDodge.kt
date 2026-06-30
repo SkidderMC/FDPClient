@@ -98,13 +98,6 @@ object AutoDodge : Module("AutoDodge", Category.COMBAT, Category.SubCategory.COM
 
         addValues(listOf(detectionGroup, evasionGroup, visualsGroup))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.filter { it.matchesKey(name) }.forEach(group::addValue)
-        }
-    }
-
     private data class HitInfo(val tick: Int, val prevArrowPos: Vec3, val arrowVelocity: Vec3)
 
     private data class DodgePlan(

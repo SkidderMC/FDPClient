@@ -106,13 +106,6 @@ object Animations : Module("Animations", Category.CLIENT, Category.SubCategory.C
             swingGroup, itemOffsetGroup, handPositionGroup, itemRotationGroup,
         ))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.filter { it.matchesKey(name) }.forEach(group::addValue)
-        }
-    }
-
     fun getAnimation() = animations.firstOrNull { it.name == animationMode }
 
 }

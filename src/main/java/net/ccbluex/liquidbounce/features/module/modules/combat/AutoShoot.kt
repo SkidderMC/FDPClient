@@ -88,13 +88,6 @@ object AutoShoot : Module("AutoShoot", Category.COMBAT, Category.SubCategory.COM
 
         addValues(listOf(targetingGroup, bowGroup, throwableGroup, aimGroup))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.filter { it.matchesKey(name) }.forEach(group::addValue)
-        }
-    }
-
     private val throwTimer = MSTimer()
 
     private var target: Entity? = null

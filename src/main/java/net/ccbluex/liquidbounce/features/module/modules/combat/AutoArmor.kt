@@ -127,13 +127,6 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, Category.SubCategory.COM
             manualGroup, highlightGroup,
         ))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.filter { it.matchesKey(name) }.forEach(group::addValue)
-        }
-    }
-
     @Volatile
     private var pendingManualArmorRequest: ManualArmorRequest? = null
 

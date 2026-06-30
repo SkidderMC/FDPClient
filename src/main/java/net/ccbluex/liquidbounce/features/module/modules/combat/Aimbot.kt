@@ -149,13 +149,6 @@ object Aimbot : Module("Aimbot", Category.COMBAT, Category.SubCategory.COMBAT_LE
             aimGroup, rotationsGroup, aimPointGroup, predictionGroup, jitterGroup
         ))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.filter { it.matchesKey(name) }.forEach(group::addValue)
-        }
-    }
-
     val onMotion = handler<MotionEvent> { event ->
         if (event.eventState != EventState.POST) return@handler
 

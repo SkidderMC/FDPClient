@@ -82,13 +82,6 @@ object Gapple : Module("Gapple", Category.PLAYER, Category.SubCategory.PLAYER_CO
 
         addValues(listOf(modeGroup, triggerGroup, delaysGroup, checksGroup))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.firstOrNull { it.matchesKey(name) }?.let(group::addValue)
-        }
-    }
-
     override fun onEnable() {
         eating = -1
 	prevSlot = -1

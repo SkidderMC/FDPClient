@@ -71,13 +71,6 @@ object Particles : Module("Particles", Category.VISUAL, Category.SubCategory.REN
             appearanceGroup, spawnGroup, physicsGroup, bounceGroup,
         ))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.filter { it.matchesKey(name) }.forEach(group::addValue)
-        }
-    }
-
     private const val MAX_PARTICLES = 200
     private val particles = mutableListOf<Particle>()
     private var lastSpawn = 0L

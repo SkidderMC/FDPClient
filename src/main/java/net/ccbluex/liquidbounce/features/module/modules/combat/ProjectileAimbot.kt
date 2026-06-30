@@ -132,13 +132,6 @@ object ProjectileAimbot : Module("ProjectileAimbot", Category.COMBAT, Category.S
 
         addValues(listOf(itemsGroup, aimingGroup, rotationsGroup, renderGroup))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.filter { it.matchesKey(name) }.forEach(group::addValue)
-        }
-    }
-
     override fun onDisable() {
         target = null
     }

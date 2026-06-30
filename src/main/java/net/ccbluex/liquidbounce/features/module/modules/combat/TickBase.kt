@@ -76,13 +76,6 @@ object TickBase : Module("TickBase", Category.COMBAT, Category.SubCategory.COMBA
             generalGroup, balanceGroup, attackGroup, timingGroup, renderGroup,
         ))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.filter { it.matchesKey(name) }.forEach(group::addValue)
-        }
-    }
-
     private var ticksToSkip = 0
     private var tickBalance = 0f
     private var reachedTheLimit = false

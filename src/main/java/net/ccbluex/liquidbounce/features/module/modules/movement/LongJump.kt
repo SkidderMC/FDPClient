@@ -157,13 +157,6 @@ object LongJump : Module("LongJump", Category.MOVEMENT, Category.SubCategory.MOV
             oldNcpDamageGroup, oldMatrixHurtGroup, vulcanGroup
         ))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.filter { it.matchesKey(name) }.forEach(group::addValue)
-        }
-    }
-
     var jumped = false
     var canBoost = false
     var teleported = false

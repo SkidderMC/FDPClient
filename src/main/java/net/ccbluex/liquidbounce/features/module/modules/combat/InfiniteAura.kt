@@ -209,13 +209,6 @@ object InfiniteAura : Module(name = "InfiniteAura", category = Category.COMBAT, 
             swingGroup, renderGroup,
         ))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.firstOrNull { it.matchesKey(name) }?.let(group::addValue)
-        }
-    }
-
     var target: EntityLivingBase? = null
     private var hittable = false
     private val prevTargetEntities = mutableListOf<Int>()

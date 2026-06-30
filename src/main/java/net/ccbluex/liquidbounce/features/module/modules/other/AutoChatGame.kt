@@ -78,13 +78,6 @@ object AutoChatGame : Module("AutoChatGame", Category.OTHER, Category.SubCategor
 
         addValues(listOf(apiGroup, triggerGroup, timingGroup, behaviorGroup))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.filter { it.matchesKey(name) }.forEach(group::addValue)
-        }
-    }
-
     private val chatBuffer = mutableListOf<String>()
     private val triggerTimer = MSTimer().apply { zero() }
     private val cooldownTimer = MSTimer().apply { zero() }

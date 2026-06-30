@@ -353,13 +353,6 @@ object Flight : Module("Flight", Category.MOVEMENT, Category.SubCategory.MOVEMEN
             blocksMcGroup, fireballGroup, serversGroup, renderGroup,
         ))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.firstOrNull { it.matchesKey(name) }?.let(group::addValue)
-        }
-    }
-
     var wasFired = false
     var firePosition: BlockPos? = null
 

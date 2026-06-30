@@ -142,13 +142,6 @@ object Notifier : Module("Notifier", Category.OTHER, Category.SubCategory.MISCEL
             armorAndInvisGroup,
         ))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.firstOrNull { it.matchesKey(name) }?.let(group::addValue)
-        }
-    }
-
     private val alertTimer = MSTimer()
     private val drinkers = arrayListOf<EntityLivingBase>()
 

@@ -90,13 +90,6 @@ object AutoPot : Module("AutoPot", Category.PLAYER, Category.SubCategory.PLAYER_
 
         addValues(listOf(generalGroup, potionsGroup, inventoryGroup, combatGroup))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.firstOrNull { it.matchesKey(name) }?.let(group::addValue)
-        }
-    }
-
     private val msTimer = MSTimer()
     private val combatTimer = MSTimer()
     private var potion = -1

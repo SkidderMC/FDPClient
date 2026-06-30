@@ -91,13 +91,6 @@ object SmartEat : Module(
 
         addValues(listOf(triggersGroup, safetyGroup, goldenApplesGroup, slotSwapGroup))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.firstOrNull { it.matchesKey(name) }?.let(group::addValue)
-        }
-    }
-
     private var prevSlot = -1
     private var eatingSlot = -1
     private var eatTicks = 0

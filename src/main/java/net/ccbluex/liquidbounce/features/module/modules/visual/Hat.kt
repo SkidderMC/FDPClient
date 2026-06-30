@@ -110,13 +110,6 @@ object ChineseHat : Module("ChineseHat", Category.VISUAL, Category.SubCategory.R
             generalGroup, colorGroup, coneGroup, haloGroup, orbsGroup, visibilityGroup
         ))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.filter { it.matchesKey(name) }.forEach(group::addValue)
-        }
-    }
-
     private val entityLookup by EntityLookup<EntityLivingBase>()
         .filter { mc.thePlayer.getDistanceSqToEntity(it) <= maxRenderDistance * maxRenderDistance }
         .filter { bots || !isBot(it) }

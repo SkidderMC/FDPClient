@@ -155,13 +155,6 @@ object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER, Category.S
             cleaningGroup, stackLimitsGroup, sortingGroup, inventoryAccessGroup, highlightGroup,
         ))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.filter { it.matchesKey(name) }.forEach(group::addValue)
-        }
-    }
-
     private suspend fun shouldOperate(): Boolean {
         while (true) {
             if (!handleEvents())

@@ -306,13 +306,6 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
             grimGroup, miscGroup,
         ))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.firstOrNull { it.matchesKey(name) }?.let(group::addValue)
-        }
-    }
-
     /**
      * VALUES
      */

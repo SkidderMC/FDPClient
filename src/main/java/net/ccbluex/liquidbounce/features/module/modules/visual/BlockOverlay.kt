@@ -68,13 +68,6 @@ object BlockOverlay : Module("BlockOverlay", Category.VISUAL, Category.SubCatego
 
         addValues(listOf(renderGroup, colorGroup, slideGroup))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.filter { it.matchesKey(name) }.forEach(group::addValue)
-        }
-    }
-
     private var currentBox: AxisAlignedBB? = null
     private var previousBox: AxisAlignedBB? = null
     private var lastChange = 0L

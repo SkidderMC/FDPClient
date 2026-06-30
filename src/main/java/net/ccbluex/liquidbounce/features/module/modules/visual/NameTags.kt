@@ -157,13 +157,6 @@ object NameTags : Module("NameTags", Category.VISUAL, Category.SubCategory.RENDE
             textGroup, healthGroup, itemsGroup, backgroundGroup, borderGroup, renderGroup,
         ))
     }
-
-    private fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) {
-            values.firstOrNull { it.matchesKey(name) }?.let(group::addValue)
-        }
-    }
-
     private var maxRenderDistanceSq = 0.0
         set(value) {
             field = if (value <= 0.0) maxRenderDistance.toDouble().pow(2.0) else value
