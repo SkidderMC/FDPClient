@@ -42,7 +42,8 @@ class Panel(
             return value
 
         val settingsWidth =
-            if (open) elements.filterIsInstance<ModuleElement>().maxOfOrNull { if (it.showSettings) it.settingsWidth else 0 } ?: 0
+            if (open || ClickGui.search.active) displayedElements().filterIsInstance<ModuleElement>()
+                .maxOfOrNull { if (it.showSettings) it.settingsWidth else 0 } ?: 0
             else 0
 
         return value.clamp(0, (ScaledResolution(mc).scaledWidth / scale - width - settingsWidth).roundToInt())
@@ -54,8 +55,8 @@ class Panel(
         var yPos = height + 4
         var panelHeight = height + fade
 
-        if (open)
-            for (element in elements) {
+        if (open || ClickGui.search.active)
+            for (element in displayedElements()) {
                 if (element.isVisible) {
                     if (element is ModuleElement && element.showSettings && element.settingsHeight != 0) {
                         val relativeSettingsHeight = yPos + element.settingsHeight
@@ -70,7 +71,7 @@ class Panel(
 
     var drag = false
     val scrollbar
-        get() = elements.size > maxElements
+        get() = displayedElements().size > maxElements
 
     var isVisible = true
     var fade = 0
@@ -91,13 +92,19 @@ class Panel(
     private var scroll = 0
         set(value) {
             // How many elements should be hidden
-            val hiddenCount = elements.size - maxElements
+            val hiddenCount = displayedElements().size - maxElements
             // Don't overscroll
             field = if (hiddenCount > 0) min(hiddenCount, value.coerceAtLeast(0)) else 0
         }
 
     fun drawScreenAndClick(mouseX: Int, mouseY: Int, mouseButton: Int? = null): Boolean {
         if (!isVisible) return false
+
+        val displayedElements = displayedElements()
+        if (ClickGui.search.active && displayedElements.isEmpty()) {
+            elements.forEach { it.isVisible = false }
+            return false
+        }
 
         updateElementsHeight()
 
@@ -113,7 +120,8 @@ class Panel(
 
         val visibleRange = getVisibleRange()
 
-        elements.forEachIndexed { index, element ->
+        elements.forEach { it.isVisible = false }
+        displayedElements.forEachIndexed { index, element ->
             if (index in visibleRange) {
                 element.isVisible = true
                 element.setLocation(x, yPos)
@@ -146,6 +154,7 @@ class Panel(
 
     fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int): Boolean {
         if (!isVisible) return false
+        if (ClickGui.search.active && displayedElements().isEmpty()) return false
 
         if (mouseButton == 1 && isHovered(mouseX, mouseY)) {
             open = !open
@@ -153,7 +162,7 @@ class Panel(
             return true
         }
 
-        if (elements.any { it.y <= y + fade && it.mouseClicked(mouseX, mouseY, mouseButton) }) {
+        if (displayedElements().any { it.y <= y + fade && it.mouseClicked(mouseX, mouseY, mouseButton) }) {
             // Update panel pos not to extend beyond border.
             updatePos = true
             return true
@@ -167,12 +176,13 @@ class Panel(
 
         drag = false
 
-        if (!open) return false
+        if (!open && !ClickGui.search.active) return false
 
-        return elements.any { it.y <= y + fade && it.mouseReleased(mouseX, mouseY, button) }
+        return displayedElements().any { it.y <= y + fade && it.mouseReleased(mouseX, mouseY, button) }
     }
 
     fun handleScroll(mouseX: Int, mouseY: Int, wheel: Int): Boolean {
+        if (ClickGui.search.active && displayedElements().isEmpty()) return false
         if (mouseX in x..x + width && mouseY in y..y + height + elementsHeight) {
             if (wheel < 0) scroll++
             else scroll--
@@ -183,13 +193,13 @@ class Panel(
     }
 
     fun updateFade(delta: Int) {
-        fade += ((if (open) 0.4f else -0.4f) * delta * fadeSpeed).roundToInt()
+        fade += ((if (open || ClickGui.search.active) 0.4f else -0.4f) * delta * fadeSpeed).roundToInt()
     }
 
     private fun updateElementsHeight() {
         var height = 0
 
-        for ((count, element) in elements.withIndex()) {
+        for ((count, element) in displayedElements().withIndex()) {
             if (count >= maxElements) break
             height += element.height + 1
         }
@@ -198,9 +208,18 @@ class Panel(
     }
 
     fun getVisibleRange(): IntRange {
-        val dropLastCount = elements.size - maxElements - scroll
+        val size = displayedElements().size
+        if (size == 0) return 1..0
 
-        return max(scroll + min(dropLastCount, 0), 0)..elements.lastIndex - max(dropLastCount, 0)
+        val first = scroll.coerceIn(0, max(size - maxElements, 0))
+        return first..min(size - 1, first + maxElements - 1)
+    }
+
+    private fun displayedElements(): List<Element> {
+        if (!ClickGui.search.active) return elements
+        return elements.filter { element ->
+            element is ModuleElement && ClickGui.search.matches(element.module)
+        }
     }
 
     fun isHovered(mouseX: Int, mouseY: Int) = mouseX in x..x + width && mouseY in y..y + height

@@ -34,12 +34,22 @@ import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.util.StringUtils
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
+import org.lwjgl.input.Keyboard
 import java.awt.Color
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
 @SideOnly(Side.CLIENT)
 object BlackStyle : Style() {
+    private var bindingValue: KeyBindValue? = null
+
+    fun captureKey(keyCode: Int): Boolean {
+        val value = bindingValue ?: return false
+        value.set(if (keyCode == Keyboard.KEY_ESCAPE) Keyboard.KEY_NONE else keyCode)
+        bindingValue = null
+        return true
+    }
+
     override fun drawPanel(mouseX: Int, mouseY: Int, panel: Panel) {
         drawBorderedRect(
             panel.x, panel.y - 3, panel.x + panel.width, panel.y + 17, 3, Color(20, 20, 20).rgb, Color(20, 20, 20).rgb
@@ -226,6 +236,105 @@ object BlackStyle : Style() {
                             if (!value.openList) {
                                 yPos += 1
                             }
+                        }
+
+                        is MultiSelectValue -> {
+                            val selected = value.get()
+                            val text = "${value.name} (${selected.size}/${value.choices.size})"
+                            moduleElement.settingsWidth = fontSemibold35.getStringWidth(text) + 16
+
+                            if (mouseButton == 0 && mouseX in minX..maxX && mouseY in yPos..yPos + fontSemibold35.fontHeight) {
+                                value.openList = !value.openList
+                                clickSound()
+                                return true
+                            }
+
+                            fontSemibold35.drawString(text, minX + 2, yPos + 2, Color.WHITE.rgb)
+                            fontSemibold35.drawString(if (value.openList) "-" else "+", maxX - 6, yPos + 2, Color.WHITE.rgb)
+                            yPos += fontSemibold35.fontHeight + 1
+
+                            if (value.openList) {
+                                value.choices.forEach { choice ->
+                                    val choiceText = "${if (value.isSelected(choice)) "[x]" else "[ ]"} $choice"
+                                    moduleElement.settingsWidth = maxOf(
+                                        moduleElement.settingsWidth,
+                                        fontSemibold35.getStringWidth(choiceText) + 12
+                                    )
+                                    if (mouseButton == 0 && mouseX in minX..maxX && mouseY in yPos..yPos + 10) {
+                                        value.toggle(choice)
+                                        clickSound()
+                                        return true
+                                    }
+                                    fontSemibold35.drawString(
+                                        choiceText,
+                                        minX + 4,
+                                        yPos + 1,
+                                        if (value.isSelected(choice)) Color.WHITE.rgb else Color.GRAY.rgb
+                                    )
+                                    yPos += 10
+                                }
+                            }
+                        }
+
+                        is KeyBindValue -> {
+                            val listening = bindingValue === value
+                            val text = "${value.name}\u00A7f: ${if (listening) "Press a key..." else value.keyName} [${value.actionMode.name.lowercase()}]"
+                            moduleElement.settingsWidth = fontSemibold35.getStringWidth(text) + 8
+
+                            if (mouseX in minX..maxX && mouseY in yPos..yPos + 12) {
+                                when (mouseButton) {
+                                    0 -> {
+                                        bindingValue = if (listening) null else value
+                                        clickSound()
+                                        return true
+                                    }
+                                    1 -> {
+                                        value.setActionMode(
+                                            if (value.actionMode == KeyBindActionMode.TOGGLE) KeyBindActionMode.HOLD
+                                            else KeyBindActionMode.TOGGLE
+                                        )
+                                        clickSound()
+                                        return true
+                                    }
+                                }
+                            }
+
+                            fontSemibold35.drawString(text, minX + 2, yPos + 2, if (listening) Color.YELLOW.rgb else Color.WHITE.rgb)
+                            yPos += 12
+                        }
+
+                        is Vec2Value, is Vec3Value, is MutableListValue -> {
+                            val currentText = when (value) {
+                                is MutableListValue -> value.get().joinToString(", ")
+                                else -> value.toText()
+                            }
+                            val activeEditor = chosenText?.takeIf { it.value === value }
+                            val shownText = activeEditor?.string ?: currentText
+                            val prefix = "${value.name}\u00A7f: "
+                            moduleElement.settingsWidth = fontSemibold35.getStringWidth(prefix + shownText) + 8
+                            val valueX = minX + 2 + fontSemibold35.getStringWidth(prefix)
+
+                            if (mouseButton == 0 && mouseX in valueX..maxX && mouseY in yPos..yPos + 12) {
+                                chosenText = EditableText(value, currentText, onUpdate = { input ->
+                                    when (value) {
+                                        is Vec2Value -> input.split(',').map(String::trim).takeIf { it.size == 2 }
+                                            ?.mapNotNull(String::toDoubleOrNull)?.takeIf { it.size == 2 }
+                                            ?.let { value.set(doubleArrayOf(it[0], it[1])) }
+                                        is Vec3Value -> input.split(',').map(String::trim).takeIf { it.size == 3 }
+                                            ?.mapNotNull(String::toDoubleOrNull)?.takeIf { it.size == 3 }
+                                            ?.let { value.set(doubleArrayOf(it[0], it[1], it[2])) }
+                                        is MutableListValue -> value.set(
+                                            input.split(',').map(String::trim).filter(String::isNotEmpty)
+                                        )
+                                        else -> Unit
+                                    }
+                                })
+                                return true
+                            }
+
+                            fontSemibold35.drawString(prefix, minX + 2, yPos + 2, Color.WHITE.rgb)
+                            fontSemibold35.drawString(shownText, valueX, yPos + 2, if (activeEditor != null) Color.YELLOW.rgb else Color.WHITE.rgb)
+                            yPos += 12
                         }
 
                         is FloatValue -> {

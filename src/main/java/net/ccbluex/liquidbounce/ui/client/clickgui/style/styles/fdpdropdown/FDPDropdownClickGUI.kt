@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.FDPClient.CLIENT_NAME
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColor
+import net.ccbluex.liquidbounce.ui.client.clickgui.ModuleSearch
 import net.ccbluex.liquidbounce.ui.client.clickgui.sidegui.SideGui
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.impl.SettingComponents
 import net.ccbluex.liquidbounce.utils.animations.Animation
@@ -24,6 +25,7 @@ import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.input.Mouse
+import org.lwjgl.input.Keyboard
 import java.awt.Color
 
 /**
@@ -38,16 +40,18 @@ class FDPDropdownClickGUI : GuiScreen() {
     private lateinit var configHover: DecelerateAnimation
 
     private val hudIcon = ResourceLocation("${CLIENT_NAME.lowercase()}/custom_hud_icon.png")
+    private val search = ModuleSearch()
 
     private var categoryPanels: MutableList<DropdownCategory>? = null
     private var isInitialized = false
 
     override fun initGui() {
         try {
+            Keyboard.enableRepeatEvents(true)
             if (categoryPanels == null || Main.reloadModules || !isInitialized) {
                 categoryPanels = mutableListOf<DropdownCategory>().apply {
                     Category.entries.forEach { category ->
-                        add(DropdownCategory(category))
+                        add(DropdownCategory(category, search))
                     }
                 }
                 Main.reloadModules = false
@@ -73,6 +77,7 @@ class FDPDropdownClickGUI : GuiScreen() {
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
         try {
+            if (search.keyTyped(typedChar, keyCode, isCtrlKeyDown())) return
             if (keyCode == 1) {
                 openingAnimation.direction = Direction.BACKWARDS
                 fadeAnimation.direction = openingAnimation.direction
@@ -110,6 +115,7 @@ class FDPDropdownClickGUI : GuiScreen() {
                 }
                 sideGui.drawScreen(mouseX, mouseY, partialTicks, (255 * fadeAnimation.output).toInt().coerceIn(0, 255))
                 net.ccbluex.liquidbounce.ui.client.clickgui.ClickGuiHeader.draw(sideGui, this@FDPDropdownClickGUI, mouseX, mouseY)
+                search.draw(fontRendererObj, width, height, Color(guiColor).rgb)
             }
             drawBloom(mouseX - 5, mouseY - 5, 10, 10, 16, Color(guiColor, true))
             super.drawScreen(mouseX, mouseY, partialTicks)
@@ -120,6 +126,7 @@ class FDPDropdownClickGUI : GuiScreen() {
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         try {
+            if (search.mouseClicked(mouseX, mouseY, mouseButton)) return
             if (net.ccbluex.liquidbounce.ui.client.clickgui.ClickGuiHeader.handleClick(mouseX, mouseY)) return
             val oldFocus = sideGui.focused
             sideGui.mouseClicked(mouseX, mouseY, mouseButton)
@@ -155,6 +162,12 @@ class FDPDropdownClickGUI : GuiScreen() {
         isInitialized = false
         categoryPanels?.clear()
         categoryPanels = null
+    }
+
+    override fun onGuiClosed() {
+        search.unfocus()
+        Keyboard.enableRepeatEvents(false)
+        super.onGuiClosed()
     }
 
     override fun doesGuiPauseGame() = false

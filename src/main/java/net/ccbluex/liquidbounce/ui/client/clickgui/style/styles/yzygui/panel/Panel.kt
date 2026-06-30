@@ -82,6 +82,9 @@ class Panel(
 
     fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         try {
+            val visibleElements = visibleElements()
+            if (parent.search.active && visibleElements.isEmpty()) return
+
             if (isDragging) {
                 val newX = mouseX + lastX
                 val newY = mouseY + lastY
@@ -93,8 +96,8 @@ class Panel(
 
             var panelHeight = height.toFloat()
 
-            for (element in elements) {
-                if (isExtended) {
+            for (element in visibleElements) {
+                if (isExtended || parent.search.active) {
                     panelHeight += element.height.toFloat()
                 }
                 panelHeight += element.getExtendedHeight()
@@ -137,9 +140,9 @@ class Panel(
                 println("Error rendering textures for panel ${category.name}: ${e.message}")
             }
 
-            if (isExtended) {
+            if (isExtended || parent.search.active) {
                 var addition = height
-                elements.forEach { element ->
+                visibleElements.forEach { element ->
                     element.x = x + 1
                     element.y = y + addition
                     element.drawScreen(mouseX, mouseY, partialTicks)
@@ -152,6 +155,9 @@ class Panel(
     }
 
     fun mouseClicked(mouseX: Int, mouseY: Int, button: Int) {
+        val visibleElements = visibleElements()
+        if (parent.search.active && visibleElements.isEmpty()) return
+
         if (isHovering(mouseX, mouseY)) {
             when (button) {
                 0 -> {
@@ -161,8 +167,8 @@ class Panel(
                 }
                 1 -> {
                     var clickedOnElement = false
-                    if (isExtended) {
-                        elements.forEach { element ->
+                    if (isExtended || parent.search.active) {
+                        visibleElements.forEach { element ->
                             if (element.isHovering(mouseX, mouseY)) {
                                 clickedOnElement = true
                                 return@forEach
@@ -190,18 +196,18 @@ class Panel(
             }
         }
 
-        if (isExtended) {
-            elements.forEach { it.mouseClicked(mouseX, mouseY, button) }
+        if (isExtended || parent.search.active) {
+            visibleElements.forEach { it.mouseClicked(mouseX, mouseY, button) }
         }
     }
 
     fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
         isDragging = false
-        if (isExtended) elements.forEach { it.mouseReleased(mouseX, mouseY, state) }
+        if (isExtended || parent.search.active) visibleElements().forEach { it.mouseReleased(mouseX, mouseY, state) }
     }
 
     fun keyTyped(character: Char, code: Int) {
-        if (isExtended) elements.forEach { it.keyTyped(character, code) }
+        if (isExtended || parent.search.active) visibleElements().forEach { it.keyTyped(character, code) }
     }
 
     fun updateFade(delta: Int) {
@@ -223,7 +229,7 @@ class Panel(
     }
 
     fun hasActiveOverlay(): Boolean {
-        return elements.any { element ->
+        return visibleElements().any { element ->
             element.isExtended && element.isBindingSelection
         }
     }
@@ -244,6 +250,11 @@ class Panel(
         elements.forEach { element ->
             element.isExtended = moduleStates[element.module.name] ?: false
         }
+    }
+
+    fun visibleElements(): List<ModuleElement> {
+        if (!parent.search.active) return elements
+        return elements.filter { parent.search.matches(it.module) }
     }
 
     companion object {

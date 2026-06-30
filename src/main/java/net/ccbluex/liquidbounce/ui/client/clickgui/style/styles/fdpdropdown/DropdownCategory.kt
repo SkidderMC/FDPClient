@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule
 import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule.clickHeight
 import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule.scrollMode
+import net.ccbluex.liquidbounce.ui.client.clickgui.ModuleSearch
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.impl.ModuleRect
 import net.ccbluex.liquidbounce.utils.animations.Animation
 import net.ccbluex.liquidbounce.utils.animations.Direction
@@ -30,7 +31,10 @@ import kotlin.math.min
  * Each panel can be dragged and displays modules. Now includes a small outline
  * around the category's top bar if enabled in [ClickGUIModule].
  */
-class DropdownCategory(private val category: Category) : Screen {
+class DropdownCategory(
+    private val category: Category,
+    private val search: ModuleSearch
+) : Screen {
 
     private val rectWidth = 110f
     private val categoryRectHeightBase = 18f
@@ -65,13 +69,16 @@ class DropdownCategory(private val category: Category) : Screen {
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
         // Pass key events to each ModuleRect
-        moduleRects?.forEach { it.keyTyped(typedChar, keyCode) }
+        visibleModuleRects().forEach { it.keyTyped(typedChar, keyCode) }
     }
 
     /**
      * Draws the category's top bar and then the module list (with scrolling).
      */
     override fun drawScreen(mouseX: Int, mouseY: Int) {
+        val visibleModuleRects = visibleModuleRects()
+        if (search.active && visibleModuleRects.isEmpty()) return
+
         // Convert the animation output to an alpha [0..255]
         val animClamp = max(0.0, min(255.0, 255 * (animation?.output ?: 0.0))).toFloat()
         val alphaAnimation = animClamp.toInt()
@@ -181,7 +188,7 @@ class DropdownCategory(private val category: Category) : Screen {
         var count = 0.0
 
         // Draw each module rect (with sub-settings)
-        moduleRects?.forEach { moduleRect ->
+        visibleModuleRects.forEach { moduleRect ->
             val animation = moduleAnimMap[moduleRect]
             animation?.direction = if (moduleRect.module.expanded) Direction.FORWARDS else Direction.BACKWARDS
 
@@ -209,6 +216,8 @@ class DropdownCategory(private val category: Category) : Screen {
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, button: Int) {
+        if (search.active && visibleModuleRects().isEmpty()) return
+
         // Let user drag top bar
         val canDrag = RenderUtils.isHovering(
             category.drag.x, category.drag.y, rectWidth, categoryRectHeight, mouseX, mouseY
@@ -216,7 +225,7 @@ class DropdownCategory(private val category: Category) : Screen {
         category.drag.onClick(mouseX, mouseY, button, canDrag)
 
         // Pass click to each module
-        moduleRects?.forEach { it.mouseClicked(mouseX, mouseY, button) }
+        visibleModuleRects().forEach { it.mouseClicked(mouseX, mouseY, button) }
     }
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
@@ -224,6 +233,12 @@ class DropdownCategory(private val category: Category) : Screen {
         category.drag.onRelease(state)
 
         // Pass release to each module
-        moduleRects?.forEach { it.mouseReleased(mouseX, mouseY, state) }
+        visibleModuleRects().forEach { it.mouseReleased(mouseX, mouseY, state) }
+    }
+
+    private fun visibleModuleRects(): List<ModuleRect> {
+        val modules = moduleRects.orEmpty()
+        if (!search.active) return modules
+        return modules.filter { search.matches(it.module) }
     }
 }

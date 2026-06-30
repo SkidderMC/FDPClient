@@ -52,6 +52,7 @@ object ClickGui : GuiScreen() {
     val panels = linkedSetOf<Panel>()
     private val hudIcon = ResourceLocation("${CLIENT_NAME.lowercase()}/custom_hud_icon.png")
     var style: Style = BlackStyle
+    val search = ModuleSearch()
     private var mouseX = 0
         set(value) {
             field = value.coerceAtLeast(0)
@@ -197,6 +198,7 @@ object ClickGui : GuiScreen() {
         }
 
         drawBloom(mouseX - 5, mouseY - 5, 10, 10, 16, Color(guiColor))
+        search.draw(fontRendererObj, width, height, Color(guiColor).rgb)
 
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
@@ -216,6 +218,8 @@ object ClickGui : GuiScreen() {
     }
 
     public override fun mouseClicked(x: Int, y: Int, mouseButton: Int) {
+        if (search.mouseClicked(x, y, mouseButton)) return
+
         if (mouseButton == 0 && x in 5..50 && y in height - 50..height - 5) {
             mc.displayGuiScreen(GuiHudDesigner())
             return
@@ -273,6 +277,13 @@ object ClickGui : GuiScreen() {
     }
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
+        val currentStyle = style
+        if (currentStyle is BlackStyle && currentStyle.captureKey(keyCode)) {
+            return
+        }
+
+        if (search.keyTyped(typedChar, keyCode, isCtrlKeyDown())) return
+
         // Close ClickGUI by using its key bind.
         if (keyCode in arrayOf(ClickGUIModule.keyBind, Keyboard.KEY_ESCAPE)) {
             if (style.chosenText != null) {
@@ -298,6 +309,7 @@ object ClickGui : GuiScreen() {
 
     override fun onGuiClosed() {
         autoScrollY = null
+        search.unfocus()
         saveConfig(clickGuiConfig)
         Keyboard.enableRepeatEvents(false)
         for (panel in panels) panel.fade = 0
@@ -305,6 +317,7 @@ object ClickGui : GuiScreen() {
 
     override fun initGui() {
         ignoreClosing = true
+        Keyboard.enableRepeatEvents(true)
     }
 
     fun Int.clamp(min: Int, max: Int): Int = this.coerceIn(min, max.coerceAtLeast(0))

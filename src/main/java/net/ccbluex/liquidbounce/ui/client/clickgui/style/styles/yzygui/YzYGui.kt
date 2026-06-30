@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.FDPClient.CLIENT_NAME
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColor
+import net.ccbluex.liquidbounce.ui.client.clickgui.ModuleSearch
 import net.ccbluex.liquidbounce.ui.client.clickgui.sidegui.SideGui
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.category.yzyCategory
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.manager.GUIManager
@@ -22,6 +23,7 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawImage
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.input.Mouse
+import org.lwjgl.input.Keyboard
 import java.awt.Color
 import java.io.IOException
 
@@ -34,6 +36,7 @@ class YzYGui(private val clickGui: ClickGUIModule) : GuiScreen() {
     private val guiManager: GUIManager = FDPClient.guiManager
     private val sideGui = SideGui()
     private val hudIcon = ResourceLocation("${CLIENT_NAME.lowercase()}/custom_hud_icon.png")
+    val search = ModuleSearch()
     private var lastMS: Long = System.currentTimeMillis()
     private var yShift = 0
     private var slide: Double = 0.0
@@ -77,6 +80,7 @@ class YzYGui(private val clickGui: ClickGUIModule) : GuiScreen() {
 
     override fun initGui() {
         super.initGui()
+        Keyboard.enableRepeatEvents(true)
         slide = 0.0
         progress = 0.0
         lastMS = System.currentTimeMillis()
@@ -91,6 +95,8 @@ class YzYGui(private val clickGui: ClickGUIModule) : GuiScreen() {
 
     override fun onGuiClosed() {
         super.onGuiClosed()
+        search.unfocus()
+        Keyboard.enableRepeatEvents(false)
 
         try {
             mc.gameSettings.guiScale = clickGui.lastScale
@@ -150,6 +156,8 @@ class YzYGui(private val clickGui: ClickGUIModule) : GuiScreen() {
                 box.drawScreen(mouseX, mouseY, partialTicks)
             }
 
+            search.draw(fontRendererObj, width, height, Color(guiColor).rgb)
+
             lastMS = System.currentTimeMillis()
 
             drawBloom(mouseX - 5, mouseY - 5, 10, 10, 16, Color(guiColor))
@@ -164,6 +172,7 @@ class YzYGui(private val clickGui: ClickGUIModule) : GuiScreen() {
     @Throws(IOException::class)
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         try {
+            if (search.mouseClicked(mouseX, mouseY, mouseButton)) return
             if (net.ccbluex.liquidbounce.ui.client.clickgui.ClickGuiHeader.handleClick(mouseX, mouseY)) return
             bindInputBox?.let { box ->
                 if (box.mouseClicked(mouseX, mouseY, mouseButton)) {
@@ -175,8 +184,8 @@ class YzYGui(private val clickGui: ClickGUIModule) : GuiScreen() {
 
             if (mouseButton == 2) { // Middle click
                 panels.forEach { panel ->
-                    if (panel.isExtended) {
-                        panel.elements.forEach { element ->
+                    if (panel.isExtended || search.active) {
+                        panel.visibleElements().forEach { element ->
                             if (element.isHovering(mouseX, adjustedMouseY)) {
                                 startBindSelection(element.module, mouseX, mouseY)
                                 return
@@ -225,6 +234,8 @@ class YzYGui(private val clickGui: ClickGUIModule) : GuiScreen() {
                 }
                 return
             }
+
+            if (search.keyTyped(typedChar, keyCode, isCtrlKeyDown())) return
 
             super.keyTyped(typedChar, keyCode)
             panels.forEach { it.keyTyped(typedChar, keyCode) }
