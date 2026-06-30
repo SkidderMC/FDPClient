@@ -138,6 +138,14 @@ object NextGenClickGuiServer {
             method == "GET" && path == "/client/global" ->
                 sendJson(exchange, NextGenClickGuiBridge.globalSettings())
 
+            method == "GET" && path == "/client/spoofer" ->
+                sendJson(exchange, NextGenClickGuiBridge.moduleSettings("BrandSpoofer"))
+
+            method == "PUT" && path == "/client/spoofer" -> {
+                NextGenClickGuiBridge.applyModuleSettings("BrandSpoofer", exchange.bodyText())
+                sendNoContent(exchange)
+            }
+
             method == "PUT" && path == "/client/global" -> {
                 NextGenClickGuiBridge.applyGlobalSettings(exchange.bodyText())
                 sendNoContent(exchange)
@@ -218,6 +226,153 @@ object NextGenClickGuiServer {
                 NextGenClickGuiBridge.browsePath(exchange.bodyText())
                 sendNoContent(exchange)
             }
+
+            method == "POST" && path == "/client/browse" -> {
+                NextGenMenuBridge.browse(exchange.bodyText())
+                sendNoContent(exchange)
+            }
+
+            method == "POST" && path == "/client/exit" -> {
+                NextGenMenuBridge.exit()
+                sendNoContent(exchange)
+            }
+
+            method == "PUT" && path == "/client/screen" -> {
+                NextGenMenuBridge.openScreen(exchange.bodyText())
+                sendNoContent(exchange)
+            }
+
+            method == "DELETE" && path == "/client/screen" -> {
+                NextGenMenuBridge.closeScreen()
+                sendNoContent(exchange)
+            }
+
+            method == "GET" && path == "/client/servers" ->
+                sendJson(exchange, NextGenMenuBridge.servers())
+
+            method == "POST" && path == "/client/servers/connect" -> {
+                NextGenMenuBridge.connectServer(exchange.bodyText())
+                sendNoContent(exchange)
+            }
+
+            method == "PUT" && path == "/client/servers/add" -> {
+                NextGenMenuBridge.addServer(exchange.bodyText())
+                sendNoContent(exchange)
+            }
+
+            method == "PUT" && path == "/client/servers/edit" -> {
+                NextGenMenuBridge.editServer(exchange.bodyText())
+                sendNoContent(exchange)
+            }
+
+            method == "DELETE" && path == "/client/servers/remove" -> {
+                NextGenMenuBridge.removeServer(exchange.bodyText())
+                sendNoContent(exchange)
+            }
+
+            method == "POST" && path == "/client/servers/order" -> {
+                NextGenMenuBridge.orderServers(exchange.bodyText())
+                sendNoContent(exchange)
+            }
+
+            method == "GET" && path == "/client/protocols" ->
+                sendJson(exchange, NextGenMenuBridge.protocols())
+
+            method == "GET" && path == "/client/protocols/protocol" ->
+                sendJson(exchange, NextGenMenuBridge.protocol())
+
+            method == "PUT" && path == "/client/protocols/protocol" -> sendNoContent(exchange)
+
+            method == "GET" && path == "/client/accounts" ->
+                sendJson(exchange, NextGenMenuBridge.accounts())
+
+            method == "POST" && path == "/client/accounts/new/cracked" -> {
+                NextGenMenuBridge.addCrackedAccount(exchange.bodyText())
+                sendNoContent(exchange)
+            }
+
+            method == "POST" && (path == "/client/accounts/new/session" ||
+                path == "/client/accounts/new/altening" || path.startsWith("/client/accounts/new/microsoft")) -> {
+                NextGenMenuBridge.openNativeAltManager()
+                sendNoContent(exchange)
+            }
+
+            method == "POST" && path == "/client/accounts/order" -> {
+                NextGenMenuBridge.orderAccounts(exchange.bodyText())
+                sendNoContent(exchange)
+            }
+
+            method == "DELETE" && path == "/client/account" -> {
+                NextGenMenuBridge.removeAccount(exchange.bodyText())
+                sendNoContent(exchange)
+            }
+
+            method == "POST" && path == "/client/account/login" -> {
+                NextGenMenuBridge.loginAccount(exchange.bodyText())
+                sendNoContent(exchange)
+            }
+
+            method == "POST" && path == "/client/account/login/cracked" -> {
+                NextGenMenuBridge.directCrackedLogin(exchange.bodyText())
+                sendNoContent(exchange)
+            }
+
+            method == "POST" && path == "/client/account/login/session" -> {
+                NextGenMenuBridge.openNativeAltManager()
+                sendNoContent(exchange)
+            }
+
+            method == "POST" && path == "/client/account/restore" -> {
+                NextGenMenuBridge.restoreSession()
+                sendNoContent(exchange)
+            }
+
+            (method == "PUT" || method == "DELETE") && path == "/client/account/favorite" -> sendNoContent(exchange)
+
+            method == "POST" && path == "/client/account/random-name" ->
+                sendJson(exchange, NextGenMenuBridge.randomName())
+
+            method == "GET" && path == "/client/worlds" ->
+                sendJson(exchange, NextGenMenuBridge.worlds())
+
+            method == "POST" && path == "/client/worlds/join" -> {
+                NextGenMenuBridge.openWorld(exchange.bodyText())
+                sendNoContent(exchange)
+            }
+
+            method == "POST" && path == "/client/worlds/edit" -> {
+                NextGenMenuBridge.editWorld(exchange.bodyText())
+                sendNoContent(exchange)
+            }
+
+            method == "POST" && path == "/client/worlds/delete" -> {
+                NextGenMenuBridge.removeWorld(exchange.bodyText())
+                sendNoContent(exchange)
+            }
+
+            method == "GET" && path == "/client/proxies" ->
+                sendJson(exchange, NextGenMenuBridge.emptyProxies())
+
+            method == "GET" && path == "/client/proxy" ->
+                sendJson(exchange, JsonObject().apply { addProperty("error", "No proxy transport is configured") }, 404)
+
+            path.startsWith("/client/prox") -> {
+                NextGenMenuBridge.rejectProxyOperation()
+                sendNoContent(exchange)
+            }
+
+            method == "GET" && path == "/client/update" ->
+                sendJson(exchange, NextGenMenuBridge.update())
+
+            method == "POST" && path == "/client/reconnect" -> {
+                NextGenMenuBridge.reconnect()
+                sendNoContent(exchange)
+            }
+
+            method == "POST" && path == "/client/shader" -> sendNoContent(exchange)
+
+            method == "GET" && path == "/client/resource" ->
+                sendPng(exchange, NextGenHudBridge.resource(query(exchange, "id") ?: "minecraft:textures/misc/unknown_server.png"))
 
             else -> sendJson(exchange, JsonObject().apply {
                 addProperty("error", "No NextGen ClickGUI endpoint for $method $path")

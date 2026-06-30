@@ -19,6 +19,7 @@ import org.lwjgl.opengl.GL11
 
 class NextGenClickGuiScreen(
     private val virtualRoute: String = "clickgui",
+    private val nativeFallback: GuiScreen? = null,
 ) : GuiScreen() {
 
     private var currentUrl = ""
@@ -42,7 +43,7 @@ class NextGenClickGuiScreen(
         ThemeManager.open(virtualRoute)
         layoutButtons()
 
-        browserMode = ClickGUIModule.nextGenInBrowser
+        browserMode = virtualRoute == "clickgui" && ClickGUIModule.nextGenInBrowser
         if (browserMode) {
             openExternally()
             return
@@ -250,7 +251,7 @@ class NextGenClickGuiScreen(
     private fun handleFallbackInput() {
         while (Keyboard.next()) {
             if (Keyboard.getEventKeyState() && Keyboard.getEventKey() == Keyboard.KEY_ESCAPE) {
-                mc.displayGuiScreen(null)
+                closeScreen()
                 return
             }
         }
@@ -280,7 +281,7 @@ class NextGenClickGuiScreen(
         ThemeManager.close(virtualRoute)
         NextGenBrowserRuntime.detach()
         Keyboard.enableRepeatEvents(false)
-        if (ClickGUIModule.lastScale > 0) {
+        if (virtualRoute == "clickgui" && ClickGUIModule.lastScale > 0) {
             mc.gameSettings.guiScale = ClickGUIModule.lastScale
         }
     }
@@ -303,7 +304,7 @@ class NextGenClickGuiScreen(
             val pressed = Keyboard.getEventKeyState()
 
             if (pressed && keyCode == Keyboard.KEY_ESCAPE) {
-                mc.displayGuiScreen(null)
+                closeScreen()
                 return
             }
 
@@ -376,6 +377,14 @@ class NextGenClickGuiScreen(
         if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)) modifiers = modifiers or 0x80
         if (Keyboard.isKeyDown(Keyboard.KEY_LMENU) || Keyboard.isKeyDown(Keyboard.KEY_RMENU)) modifiers = modifiers or 0x200
         return modifiers
+    }
+
+    fun closeScreen() {
+        if (nativeFallback != null) {
+            NextGenVirtualScreenRouter.displayNative(nativeFallback)
+        } else {
+            mc.displayGuiScreen(null)
+        }
     }
 
     private data class Rect(val x: Int = 0, val y: Int = 0, val w: Int = 0, val h: Int = 0) {

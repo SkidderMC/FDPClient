@@ -99,6 +99,13 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Category.SubCategory
     }
         .describe("Open the menu in an external browser window.")
 
+    private val nextGenVirtualScreens by multiSelect(
+        "Virtual Screens",
+        arrayOf("Title", "Multiplayer", "Singleplayer", "AltManager", "Disconnected", "Inventory"),
+        setOf("Title", "Multiplayer", "Singleplayer", "AltManager", "Disconnected", "Inventory"),
+    ) { style == "NextGen" }
+        .describe("Native screens rendered by the active web theme, each with an automatic native fallback.")
+
     // Momentary action: flips on, kicks off a fresh asset download/retry, then bounces back off so it
     // reads like a button. Stays visible after a failure (even from another style) so the in-game
     // browser can always be recovered, and a failed attempt's reason is shown on the NextGen fallback
@@ -145,7 +152,7 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Category.SubCategory
             "Header Color", "Outline", "RoundedRect-Radius", "Background Accent",
             "Scroll Mode", "Setting Accent", "Tab Height"
         )
-        group("NextGen", "Open In Browser", "Re-download Assets", "Clean Reinstall")
+        group("NextGen", "Open In Browser", "Virtual Screens", "Re-download Assets", "Clean Reinstall")
     }
 
     override fun onEnable() {
@@ -231,6 +238,10 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Category.SubCategory
 
         NextGenBrowserRuntime.preload(NextGenClickGuiServer.start())
     }
+
+    fun shouldUseVirtualScreen(route: String): Boolean =
+        style.equals("NextGen", ignoreCase = true) &&
+            nextGenVirtualScreens.any { it.equals(route, ignoreCase = true) }
 
     private fun updateStyle() {
         clickGui.style = when (style) {

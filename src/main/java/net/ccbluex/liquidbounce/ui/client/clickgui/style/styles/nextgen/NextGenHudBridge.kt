@@ -150,6 +150,11 @@ object NextGenHudBridge : MinecraftInstance {
         return atlas.getSubimage(x, y, 18, 18).toPng()
     }
 
+    fun resource(identifier: String): ByteArray = runCatching {
+        val location = net.minecraft.util.ResourceLocation(identifier)
+        mc.resourceManager.getResource(location).inputStream.use { it.readBytes() }
+    }.getOrElse { transparentPng() }
+
     private fun playerData(player: EntityPlayer): JsonObject = livingData(player).apply {
         addProperty("selectedSlot", player.inventory.currentItem)
         addProperty("gameMode", if (player === mc.thePlayer) {
