@@ -26,8 +26,11 @@ import net.montoyo.mcef.api.API
 import net.montoyo.mcef.api.IBrowser
 import net.montoyo.mcef.api.MCEFApi
 import java.io.File
+import java.io.FileInputStream
+import java.io.IOException
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
+import java.security.MessageDigest
 import java.util.concurrent.CopyOnWriteArrayList
 import java.nio.file.Path
 import org.lwjgl.opengl.GL11
@@ -335,27 +338,25 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
         progress.takeIf { it in 0.0..100.0 }?.let { append(" · ").append(it.toInt()).append('%') }
     }
 
-    private fun hasNativeRuntime(): Boolean =
-        REQUIRED_NATIVE_FILES.all { fileName ->
+    private fun hasNativeRuntime(): Boolean {
+        val requiredFilesPresent = REQUIRED_NATIVE_FILES.all { fileName ->
             File(mc.mcDataDir, fileName).let { it.isFile && it.length() > 0L }
         }
+        if (!requiredFilesPresent) return false
+
+        val checksumManifest = File(File(mc.mcDataDir, "config"), SHA256_MANIFEST_NAME)
+        return !checksumManifest.isFile || verifyLocalSha256Manifest(mc.mcDataDir, checksumManifest)
+    }
 
     /**
-     * Routes MCEF's downloader through montoyo's plain-HTTP mirror. We boot the browser by calling
-     * the proxy directly, bypassing the mod pre-init that would set up HTTPS; the mirror's HTTPS
-     * certificate chains to a root (ISRG) that the old Java 8 bundled by most launchers does not
-     * trust, so HTTPS downloads fail the handshake and a fresh install falls into virtual mode. The
-     * mirror serves the exact same files over HTTP, which needs no TLS and works on every runtime,
-     * so we force it.
-     *
-     * We deliberately do NOT touch any process-wide SSL state here: a previous attempt overrode the
-     * JVM default HTTPS factory and broke Minecraft's own Mojang authentication ("Cannot contact
-     * authentication server"), which blocked multiplayer. This stays scoped to MCEF only.
+     * Keeps MCEF's own fallback endpoint deterministic. MixinMcefUtil handles the ordered mirror pool
+     * for deliberate installs, including user/operator mirrors and the Java-8-compatible HTTP fallback.
+     * No process-wide SSL state is changed, so Mojang authentication remains isolated from MCEF.
      */
     private fun configureMcefDownload() {
         MCEF.SECURE_MIRRORS_ONLY = false
         MCEF.FORCE_MIRROR = HTTP_MIRROR
-        LOGGER.info("[NextGen] In-game browser download routed through the HTTP mirror ($HTTP_MIRROR).")
+        LOGGER.info("[NextGen] In-game browser download configured with primary endpoint $HTTP_MIRROR.")
     }
 
     private fun resetMcefVirtualState() {
@@ -397,6 +398,7 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
         // letting a stale mcef2.json be served back as a "success".
         targets += File(rootDir, "mcef2.new")
         targets += File(rootDir, "mcef2.json")
+        targets += File(File(rootDir, "config"), SHA256_MANIFEST_NAME)
 
         targets.forEach { deleteNativeTarget(rootDir, it) }
         deleteNativeTarget(rootDir, File(File(rootDir, "config"), "mcefFiles.lst"))
@@ -462,6 +464,7 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
         val remoteConfigClass = Class.forName(REMOTE_CONFIG_CLASS)
         val remoteConfig = remoteConfigClass.getDeclaredConstructor().newInstance()
         remoteConfigClass.getMethod("load").invoke(remoteConfig)
+        val expectedChecksums = readRemoteChecksums(remoteConfigClass, remoteConfig, File(root))
 
         val updateFileListing =
             remoteConfigClass.getMethod("updateFileListing", File::class.java, Boolean::class.javaPrimitiveType)
@@ -502,8 +505,114 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
             }
             null
         }
-        remoteConfigClass.getMethod("downloadMissing", listenerClass).invoke(remoteConfig, listener)
+        if (remoteConfigClass.getMethod("downloadMissing", listenerClass).invoke(remoteConfig, listener) != true) {
+            throw IOException("MCEF reported an incomplete native download")
+        }
+
+        verifyRemoteChecksums(expectedChecksums)
+        writeLocalSha256Manifest(File(root), expectedChecksums.keys)
         updateFileListing.invoke(remoteConfig, configDirectory, true)
+    }
+
+    /** Reads the SHA-1 values supplied by MCEF's platform manifest before its missing-file pass mutates the list. */
+    private fun readRemoteChecksums(remoteConfigClass: Class<*>, remoteConfig: Any, root: File): Map<File, String> {
+        val resourcesField = remoteConfigClass.getDeclaredField("resources").apply { isAccessible = true }
+        val resources = resourcesField.get(remoteConfig) as? Iterable<*>
+            ?: throw IOException("MCEF resource manifest is not iterable")
+        val rootPath = root.canonicalFile.toPath()
+        val checksums = linkedMapOf<File, String>()
+
+        resources.forEach { resource ->
+            resource ?: return@forEach
+            val resourceClass = resource.javaClass
+            val fileName = resourceClass.getMethod("getFileName").invoke(resource)?.toString().orEmpty()
+            val checksum = resourceClass.getDeclaredField("sum").apply { isAccessible = true }
+                .get(resource)?.toString()?.trim().orEmpty()
+            if (fileName.isEmpty() || !checksum.matches(SHA1_PATTERN)) {
+                throw IOException("Invalid MCEF checksum entry for '$fileName'")
+            }
+
+            val target = File(root, fileName).canonicalFile
+            if (!target.toPath().startsWith(rootPath)) {
+                throw IOException("MCEF manifest attempted to escape the game directory: $fileName")
+            }
+            checksums[target] = checksum
+        }
+
+        if (checksums.isEmpty()) throw IOException("MCEF platform manifest contains no resources")
+        return checksums
+    }
+
+    private fun verifyRemoteChecksums(expectedChecksums: Map<File, String>) {
+        detail = "Verifying browser asset checksums..."
+        expectedChecksums.forEach { (file, expected) ->
+            val actual = digest(file, "SHA-1")
+            if (!actual.equals(expected, ignoreCase = true)) {
+                file.delete()
+                throw IOException("MCEF checksum mismatch for ${file.name}")
+            }
+        }
+        LOGGER.info("[NextGen] Verified ${expectedChecksums.size} browser assets against the MCEF manifest.")
+    }
+
+    /**
+     * Stores a stronger local attestation after the remote SHA-1 manifest has been validated. Subsequent
+     * launches verify every native with SHA-256 before adopting the cached runtime.
+     */
+    private fun writeLocalSha256Manifest(root: File, files: Collection<File>) {
+        val configDirectory = File(root, "config").apply { mkdirs() }
+        val manifest = File(configDirectory, SHA256_MANIFEST_NAME)
+        val temporary = File(configDirectory, "$SHA256_MANIFEST_NAME.tmp")
+        val rootPath = root.canonicalFile.toPath()
+        val lines = files.sortedBy { it.path }.map { file ->
+            val relative = rootPath.relativize(file.canonicalFile.toPath()).toString().replace('\\', '/')
+            "${digest(file, "SHA-256")}  $relative"
+        }
+
+        temporary.writeText(lines.joinToString("\n", postfix = "\n"))
+        if (manifest.exists() && !manifest.delete()) {
+            throw IOException("Could not replace the MCEF SHA-256 manifest")
+        }
+        if (!temporary.renameTo(manifest)) {
+            temporary.delete()
+            throw IOException("Could not install the MCEF SHA-256 manifest")
+        }
+    }
+
+    private fun verifyLocalSha256Manifest(root: File, manifest: File): Boolean = runCatching {
+        val rootPath = root.canonicalFile.toPath()
+        var verified = 0
+        manifest.useLines { lines ->
+            lines.filter { it.isNotBlank() && !it.startsWith('#') }.forEach { line ->
+                val separator = line.indexOf("  ")
+                if (separator != 64) throw IOException("Malformed MCEF SHA-256 manifest")
+                val expected = line.substring(0, separator)
+                val relative = line.substring(separator + 2)
+                val file = File(root, relative).canonicalFile
+                if (!file.toPath().startsWith(rootPath) || !digest(file, "SHA-256").equals(expected, true)) {
+                    throw IOException("Cached MCEF asset failed SHA-256 verification: $relative")
+                }
+                verified++
+            }
+        }
+        if (verified == 0) throw IOException("Empty MCEF SHA-256 manifest")
+        true
+    }.onFailure {
+        LOGGER.warn("[NextGen] Cached browser integrity check failed; damaged assets will be re-downloaded.", it)
+    }.getOrDefault(false)
+
+    private fun digest(file: File, algorithm: String): String {
+        if (!file.isFile) throw IOException("Missing MCEF asset: ${file.absolutePath}")
+        val digest = MessageDigest.getInstance(algorithm)
+        FileInputStream(file).use { input ->
+            val buffer = ByteArray(64 * 1024)
+            while (true) {
+                val read = input.read(buffer)
+                if (read < 0) break
+                if (read > 0) digest.update(buffer, 0, read)
+            }
+        }
+        return digest.digest().joinToString("") { byte -> "%02x".format(byte.toInt() and 0xFF) }
     }
 
     private fun initOnRenderThread() {
@@ -872,7 +981,9 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
         "swiftshader"
     )
 
-    private const val HTTP_MIRROR = "http://montoyo.net/jcef"
+    private const val HTTP_MIRROR = "https://montoyo.net/jcef"
+    private const val SHA256_MANIFEST_NAME = "mcefFiles.sha256"
+    private val SHA1_PATTERN = Regex("^[0-9a-fA-F]{40}$")
 
     private const val BROWSER_WARMUP_MILLIS = 450L
     private const val BROWSER_WARMUP_FRAMES = 3
