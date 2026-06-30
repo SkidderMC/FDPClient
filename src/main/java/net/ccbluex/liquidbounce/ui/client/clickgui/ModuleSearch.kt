@@ -37,6 +37,7 @@ class ModuleSearch {
             listOf(
                 module.name,
                 module.spacedName,
+                module.aliases.joinToString(" "),
                 module.category.displayName,
                 module.subCategory.displayName,
                 module.description
