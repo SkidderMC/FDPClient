@@ -123,8 +123,10 @@ object ESP : Module("ESP", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY)
                     }
                     // Draw only when at least one corner projected (minX<=maxX rules out the all-failed
                     // sentinels) and the box actually overlaps the screen rect [0,w] x [0,h].
-                    if (minX <= maxX && minY <= maxY &&
-                        maxX >= 0f && minX <= mc.displayWidth && maxY >= 0f && minY <= mc.displayHeight) {
+                    val hasProjectedBounds = minX <= maxX && minY <= maxY
+                    val overlapsHorizontally = maxX >= 0f && minX <= mc.displayWidth
+                    val overlapsVertically = maxY >= 0f && minY <= mc.displayHeight
+                    if (hasProjectedBounds && overlapsHorizontally && overlapsVertically) {
                         glColor4f(color.red / 255f, color.green / 255f, color.blue / 255f, 1f)
                         glBegin(GL_LINE_LOOP)
                         glVertex2f(minX, minY)

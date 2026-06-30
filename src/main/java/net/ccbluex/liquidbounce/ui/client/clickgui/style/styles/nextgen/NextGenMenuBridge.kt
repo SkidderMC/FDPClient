@@ -40,6 +40,7 @@ import java.util.Base64
 import java.util.Locale
 
 /** Implements menu-facing REST operations for the web theme using the 1.8.9 client APIs. */
+@Suppress("TooManyFunctions") // REST boundary: one small operation per public endpoint keeps routing explicit.
 object NextGenMenuBridge : MinecraftInstance {
 
     private val parser = JsonParser()
