@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.MoveEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.handler
@@ -79,6 +80,30 @@ object AutoDodge : Module("AutoDodge", Category.COMBAT, Category.SubCategory.COM
     private const val JUMP_MOTION = 0.42
 
     private var timerActive = false
+
+    private val detectionGroup = Configurable("Detection")
+    private val evasionGroup = Configurable("Evasion")
+    private val visualsGroup = Configurable("Visuals")
+
+    init {
+        moveValues(detectionGroup, "Range", "Lookahead", "HitboxExpansion")
+
+        moveValues(evasionGroup,
+            "Evade", "AllowRotationChange", "AllowJump", "AllowTimer", "TimerSpeed",
+            "DodgeWithInventoryOpen", "DodgeWhileUsingItem")
+
+        moveValues(visualsGroup,
+            "ShowTrajectory", "ShowSuggestion", "SuggestionDistance", "ThroughWalls",
+            "LineWidth", "TrajectoryColor", "SuggestionColor")
+
+        addValues(listOf(detectionGroup, evasionGroup, visualsGroup))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.filter { it.matchesKey(name) }.forEach(group::addValue)
+        }
+    }
 
     private data class HitInfo(val tick: Int, val prevArrowPos: Vec3, val arrowVelocity: Vec3)
 

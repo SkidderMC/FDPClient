@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.other
 
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.handler
@@ -75,6 +76,29 @@ object BedDefender : Module("BedDefender", Category.OTHER, Category.SubCategory.
         .describe("Count each placement toward the CPS counter.")
     private val mark by boolean("Mark", false)
         .describe("Render a box around the targeted block.")
+
+    private val placingGroup = Configurable("Placing")
+    private val rotationsGroup = Configurable("Rotations")
+    private val sneakGroup = Configurable("Sneak")
+    private val miscGroup = Configurable("Misc")
+
+    init {
+        moveValues(placingGroup,
+            "AutoBlock", "Swing", "PlaceDelay", "MaxLayers", "AllowChests", "Raycast", "Scanner")
+
+        options.nestInto(rotationsGroup)
+
+        moveValues(sneakGroup, "OnSneakOnly", "AutoSneak")
+        moveValues(miscGroup, "TrackCPS", "Mark")
+
+        addValues(listOf(placingGroup, rotationsGroup, sneakGroup, miscGroup))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.filter { it.matchesKey(name) }.forEach(group::addValue)
+        }
+    }
 
     private val defenceBlocks = mutableListOf<BlockPos>()
     private val bedTopPositions = mutableListOf<BlockPos>()

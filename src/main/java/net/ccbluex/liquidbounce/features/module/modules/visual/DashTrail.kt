@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
 import net.ccbluex.liquidbounce.FDPClient.CLIENT_NAME
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.EntityMovementEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
@@ -98,10 +99,39 @@ object DashTrail : Module("DashTrail", Category.VISUAL, Category.SubCategory.REN
     private val tessellator: Tessellator = Tessellator.getInstance()
     private val worldRenderer: WorldRenderer = tessellator.worldRenderer
 
+    private val renderGroup = Configurable("Render")
+    private val timingGroup = Configurable("Timing")
+    private val shapeGroup = Configurable("Shape")
+    private val colorGroup = Configurable("Color")
+    private val visibilityGroup = Configurable("Visibility")
+
     init {
         loadDashCubicTextures()
         loadDashCubicAnimatedTextures()
         randomGenerator.setSeed(1234567891L)
+
+        moveValues(renderGroup,
+            "RenderSelf", "Render Players", "Dash Segments", "Dash Dots", "Bloom")
+
+        moveValues(timingGroup, "Anim Time", "Time")
+
+        moveValues(shapeGroup,
+            "Scale", "Density", "MaxDashPerTick", "MaxCubics", "Opacity")
+
+        moveValues(colorGroup, "Color", "OuterColor", "RainbowSpread")
+
+        moveValues(visibilityGroup,
+            "OnLook", "MaxAngleDifference", "MaxRenderDistance")
+
+        addValues(listOf(
+            renderGroup, timingGroup, shapeGroup, colorGroup, visibilityGroup,
+        ))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.filter { it.matchesKey(name) }.forEach(group::addValue)
+        }
     }
 
     private fun loadDashCubicTextures() {

@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.Render2DEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.handler
@@ -63,6 +64,33 @@ object ItemESP : Module("ItemESP", Category.VISUAL, Category.SubCategory.RENDER_
         .describe("Vertical offset of the item text.")
     private val backgroundAlpha by int("BackgroundAlpha", 0, 0..255) { itemText }
         .describe("Opacity of the text background.")
+
+    private val renderGroup = Configurable("Render")
+    private val glowGroup = Configurable("Glow")
+    private val filtersGroup = Configurable("Filters")
+    private val tracersGroup = Configurable("Tracers")
+    private val textGroup = Configurable("Text")
+
+    init {
+        moveValues(renderGroup, "Mode", "Color", "MaxDistance", "MergeIntersecting")
+        moveValues(glowGroup,
+            "Glow-Renderscale", "Glow-Radius", "Glow-Fade", "Glow-Target-Alpha")
+        moveValues(filtersGroup,
+            "MaxRenderDistance", "OnLook", "MaxAngleDifference", "ThruBlocks")
+        moveValues(tracersGroup, "Tracers", "TracerThickness")
+        moveValues(textGroup,
+            "ItemText", "Scale", "ItemCounts", "Font", "Shadow", "YOffset", "BackgroundAlpha")
+
+        addValues(listOf(
+            renderGroup, glowGroup, filtersGroup, tracersGroup, textGroup,
+        ))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.filter { it.matchesKey(name) }.forEach(group::addValue)
+        }
+    }
 
     private val maxDistanceSq
         get() = maxDistance.toDouble().pow(2.0)

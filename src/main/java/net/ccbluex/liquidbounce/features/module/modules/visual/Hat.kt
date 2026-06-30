@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
@@ -83,6 +84,38 @@ object ChineseHat : Module("ChineseHat", Category.VISUAL, Category.SubCategory.R
         .describe("Color teammates differently.")
     private val thruBlocks by boolean("ThruBlocks", true)
         .describe("Render hats through walls.")
+
+    private val generalGroup = Configurable("General")
+    private val colorGroup = Configurable("Color")
+    private val coneGroup = Configurable("Cone")
+    private val haloGroup = Configurable("Halo")
+    private val orbsGroup = Configurable("Orbs")
+    private val visibilityGroup = Configurable("Visibility")
+
+    init {
+        moveValues(generalGroup,
+            "Shape", "PlayerHeight", "RenderSelf", "Bots", "Teams", "ThruBlocks")
+
+        moveValues(colorGroup, "Color")
+
+        moveValues(coneGroup, "UseChineseHatTexture", "ConeWidth", "ConeHeight")
+
+        moveValues(haloGroup, "HaloRadius", "HaloThickness")
+
+        moveValues(orbsGroup, "OrbsRadius", "OrbsSize", "OrbsCount", "OrbsSpinSpeed")
+
+        moveValues(visibilityGroup, "MaxRenderDistance", "OnLook", "MaxAngleDifference")
+
+        addValues(listOf(
+            generalGroup, colorGroup, coneGroup, haloGroup, orbsGroup, visibilityGroup
+        ))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.filter { it.matchesKey(name) }.forEach(group::addValue)
+        }
+    }
 
     private val entityLookup by EntityLookup<EntityLivingBase>()
         .filter { mc.thePlayer.getDistanceSqToEntity(it) <= maxRenderDistance * maxRenderDistance }

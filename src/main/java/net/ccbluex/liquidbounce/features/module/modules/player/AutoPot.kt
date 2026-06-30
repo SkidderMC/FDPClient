@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.player
 
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.AttackEvent
 import net.ccbluex.liquidbounce.event.RotationUpdateEvent
 import net.ccbluex.liquidbounce.event.handler
@@ -72,6 +73,28 @@ object AutoPot : Module("AutoPot", Category.PLAYER, Category.SubCategory.PLAYER_
 
         withRequestPriority(RotationPriority.CRITICAL)
         immediate = true
+    }
+
+    private val generalGroup = Configurable("General")
+    private val potionsGroup = Configurable("Potions")
+    private val inventoryGroup = Configurable("Inventory")
+    private val combatGroup = Configurable("Combat")
+
+    init {
+        moveValues(generalGroup, "Health", "Delay", "GroundDistance", "Mode")
+        moveValues(potionsGroup,
+            "HealPotion", "RegenPotion", "FireResPotion", "StrengthPotion", "JumpPotion", "SpeedPotion")
+        moveValues(inventoryGroup, "OpenInv", "SimulateInventory")
+        options.nestInto(combatGroup)
+        moveValues(combatGroup, "NotDuringCombat", "CombatPauseTime")
+
+        addValues(listOf(generalGroup, potionsGroup, inventoryGroup, combatGroup))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.firstOrNull { it.matchesKey(name) }?.let(group::addValue)
+        }
     }
 
     private val msTimer = MSTimer()

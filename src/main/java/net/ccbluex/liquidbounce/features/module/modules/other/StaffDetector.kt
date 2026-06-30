@@ -9,6 +9,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import net.ccbluex.liquidbounce.FDPClient.CLIENT_CLOUD
 import net.ccbluex.liquidbounce.FDPClient.hud
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.event.handler
@@ -76,6 +77,28 @@ object StaffDetector : Module("StaffDetector", Category.OTHER, Category.SubCateg
         .describe("Skip auto-leave while you are in a game.")
     private val warn by choices("Warn", arrayOf("Chat", "Notification"), "Chat")
         .describe("Where staff warnings are displayed.")
+
+    private val serverGroup = Configurable("Server")
+    private val detectionGroup = Configurable("Detection")
+    private val spectatorGroup = Configurable("Spectator")
+    private val autoLeaveGroup = Configurable("AutoLeave")
+    private val notificationGroup = Configurable("Notification")
+
+    init {
+        moveValues(serverGroup, "StaffMode")
+        moveValues(detectionGroup, "TAB", "Packet", "Velocity", "Vanish", "ShowInTabList")
+        moveValues(spectatorGroup, "StaffSpectator", "OtherSpectator")
+        moveValues(autoLeaveGroup, "AutoLeave", "InGame")
+        moveValues(notificationGroup, "Warn")
+
+        addValues(listOf(serverGroup, detectionGroup, spectatorGroup, autoLeaveGroup, notificationGroup))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.filter { it.matchesKey(name) }.forEach(group::addValue)
+        }
+    }
 
     // Memory leak fix: Limit detection history
     private const val MAX_DETECTION_HISTORY = 50

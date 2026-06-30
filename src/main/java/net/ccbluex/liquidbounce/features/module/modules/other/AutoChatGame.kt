@@ -10,6 +10,7 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.EventState
 import net.ccbluex.liquidbounce.event.MotionEvent
 import net.ccbluex.liquidbounce.event.PacketEvent
@@ -63,6 +64,26 @@ object AutoChatGame : Module("AutoChatGame", Category.OTHER, Category.SubCategor
 
     private val prompt by text("Prompt", defaultPrompt)
         .describe("System prompt that instructs the model how to play.")
+
+    private val apiGroup = Configurable("Api")
+    private val triggerGroup = Configurable("Trigger")
+    private val timingGroup = Configurable("Timing")
+    private val behaviorGroup = Configurable("Behavior")
+
+    init {
+        moveValues(apiGroup, "BaseUrl", "ApiKey", "Model")
+        moveValues(triggerGroup, "TriggerSentence", "IncludeTrigger", "BufferTime")
+        moveValues(timingGroup, "ReactionTime", "Cooldown")
+        moveValues(behaviorGroup, "ServerName", "AnswerTemplate", "Prompt")
+
+        addValues(listOf(apiGroup, triggerGroup, timingGroup, behaviorGroup))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.filter { it.matchesKey(name) }.forEach(group::addValue)
+        }
+    }
 
     private val chatBuffer = mutableListOf<String>()
     private val triggerTimer = MSTimer().apply { zero() }

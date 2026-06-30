@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.player
 
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
@@ -67,6 +68,27 @@ object Gapple : Module("Gapple", Category.PLAYER, Category.SubCategory.PLAYER_CO
     private var tryHeal = false
     private var prevSlot = -1
     private var switchBack = false
+
+    private val modeGroup = Configurable("Mode")
+    private val triggerGroup = Configurable("Trigger")
+    private val delaysGroup = Configurable("Delays")
+    private val checksGroup = Configurable("Checks")
+
+    init {
+        moveValues(modeGroup, "Mode", "LegitCompletion", "FastEat", "FastEatDelay")
+        moveValues(triggerGroup, "TriggerMode", "HealthPercent", "Health")
+        moveValues(delaysGroup, "MinDelay", "MaxDelay", "MinRegenSec", "WaitRegen")
+        moveValues(checksGroup, "OnlyOnGround", "InvCheck", "NoAbsorption")
+
+        addValues(listOf(modeGroup, triggerGroup, delaysGroup, checksGroup))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.firstOrNull { it.matchesKey(name) }?.let(group::addValue)
+        }
+    }
+
     override fun onEnable() {
         eating = -1
 	prevSlot = -1

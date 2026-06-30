@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.config.Value
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
@@ -67,6 +68,30 @@ object SuperKnockback : Module("SuperKnockback", Category.COMBAT, Category.SubCa
         .describe("Only boost when moving straight forward.")
     private val onlyWhenTargetGoesBack by boolean("OnlyWhenTargetGoesBack", false)
         .describe("Only boost when the target is moving away.")
+
+    private val generalGroup = Configurable("General")
+    private val wTapGroup = Configurable("WTap")
+    private val sprintTap2Group = Configurable("SprintTap2")
+    private val conditionsGroup = Configurable("Conditions")
+
+    init {
+        moveValues(generalGroup, "Chance", "Delay", "HurtTime", "Mode")
+        moveValues(wTapGroup, "TicksUntilBlock", "ReSprintTicks", "TargetDistance")
+        moveValues(sprintTap2Group, "PressBackTicks", "ReleaseBackTicks")
+        moveValues(conditionsGroup,
+            "MinRotationDiffFromEnemyToIgnore", "OnlyGround", "OnlyMove",
+            "OnlyMoveForward", "OnlyWhenTargetGoesBack")
+
+        addValues(listOf(
+            generalGroup, wTapGroup, sprintTap2Group, conditionsGroup,
+        ))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.filter { it.matchesKey(name) }.forEach(group::addValue)
+        }
+    }
 
     private var ticks = 0
     private var forceSprintState = 0

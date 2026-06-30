@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.features.module.modules.combat
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.inventory.InventoryManager
@@ -78,6 +79,28 @@ object ArmorSwap : Module("ArmorSwap", Category.COMBAT, Category.SubCategory.COM
     private val noMove by +InventoryManager.noMoveValue
     private val noMoveAir by +InventoryManager.noMoveAirValue
     private val noMoveGround by +InventoryManager.noMoveGroundValue
+
+    private val generalGroup = Configurable("General")
+    private val thresholdsGroup = Configurable("Thresholds")
+    private val organizerGroup = Configurable("Organizer")
+    private val inventoryGroup = Configurable("Inventory")
+
+    init {
+        moveValues(generalGroup, "Delay", "MultiSwap", "OpenInventory", "AutoDrop")
+        moveValues(thresholdsGroup, "SwapAll", "Percentage", "Helmet", "Chest", "Legs", "Boots")
+        moveValues(organizerGroup,
+            "InventoryOrganizer", "HelmetSlot", "ChestSlot", "LegsSlot", "BootsSlot")
+        moveValues(inventoryGroup,
+            "StartDelay", "CloseDelay", "NoMoveClicks", "NoClicksInAir", "NoClicksOnGround")
+
+        addValues(listOf(generalGroup, thresholdsGroup, organizerGroup, inventoryGroup))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.firstOrNull { it.matchesKey(name) }?.let(group::addValue)
+        }
+    }
 
     private val toReplace = BooleanArray(4)
     private var workState = State.Idle

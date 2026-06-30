@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.features.module.modules.combat
 
 import kotlinx.coroutines.Dispatchers
 import net.ccbluex.liquidbounce.event.*
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.async.waitTicks
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
@@ -56,6 +57,31 @@ object TickBase : Module("TickBase", Category.COMBAT, Category.SubCategory.COMBA
         .describe("Draw a line along the predicted tick path.")
     private val lineColor by color("LineColor", Color.GREEN) { line }.subjective()
         .describe("Color of the predicted tick path line.")
+
+    private val generalGroup = Configurable("General")
+    private val balanceGroup = Configurable("Balance")
+    private val attackGroup = Configurable("Attack")
+    private val timingGroup = Configurable("Timing")
+    private val renderGroup = Configurable("Render")
+
+    init {
+        moveValues(generalGroup, "Mode", "OnlyOnKillAura", "Changes")
+        moveValues(balanceGroup,
+            "BalanceMaxValue", "BalanceRecoveryIncrement", "MaxTicksAtATime")
+        moveValues(attackGroup, "RangeToAttack", "ForceGround")
+        moveValues(timingGroup, "PauseAfterTick", "RecoilTime", "PauseOnFlag")
+        moveValues(renderGroup, "Line", "LineColor")
+
+        addValues(listOf(
+            generalGroup, balanceGroup, attackGroup, timingGroup, renderGroup,
+        ))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.filter { it.matchesKey(name) }.forEach(group::addValue)
+        }
+    }
 
     private var ticksToSkip = 0
     private var tickBalance = 0f

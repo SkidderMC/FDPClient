@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.other
 
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
@@ -85,6 +86,31 @@ object FlagCheck : Module("FlagCheck", Category.OTHER, Category.SubCategory.MISC
         .describe("Draw a shadow behind the server-position text.")
     private val notInFirstPerson by boolean("NotInFirstPerson", false) { renderServerPos == "Box" }
         .describe("Hide the server-position box in first person.")
+
+    private val generalGroup = Configurable("General")
+    private val ghostBlockGroup = Configurable("GhostBlock")
+    private val rubberbandGroup = Configurable("Rubberband")
+    private val outputGroup = Configurable("Output")
+    private val renderGroup = Configurable("Render")
+
+    init {
+        moveValues(generalGroup, "RenderServerPos-Mode", "ResetCounterTicks")
+        moveValues(ghostBlockGroup, "GhostBlock-Check", "GhostBlockDelay")
+        moveValues(rubberbandGroup, "Rubberband-Check", "RubberBandThreshold")
+        moveValues(outputGroup, "ChatMessage", "Notification")
+        moveValues(renderGroup,
+            "Scale", "Font", "Shadow", "NotInFirstPerson", "TextColor", "BoxColor")
+
+        addValues(listOf(
+            generalGroup, ghostBlockGroup, rubberbandGroup, outputGroup, renderGroup,
+        ))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.filter { it.matchesKey(name) }.forEach(group::addValue)
+        }
+    }
 
     private var lastCheckTime = 0L
 

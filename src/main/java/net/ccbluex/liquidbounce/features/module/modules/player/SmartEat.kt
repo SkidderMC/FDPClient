@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.player
 
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
@@ -75,6 +76,27 @@ object SmartEat : Module(
     // Safety cap for the eat animation; a vanilla food item finishes in 32 ticks.
     private val maxEatTicks by int("MaxEatTicks", 40, 32..60, "ticks")
         .describe("Max ticks to spend on one eat animation.")
+
+    private val triggersGroup = Configurable("Triggers")
+    private val safetyGroup = Configurable("Safety")
+    private val goldenApplesGroup = Configurable("GoldenApples")
+    private val slotSwapGroup = Configurable("SlotSwap")
+
+    init {
+        moveValues(triggersGroup, "MinHunger", "EatWhenLowHealth", "MinHealth", "MaxEatTicks")
+        moveValues(safetyGroup, "OnlyWhenSafe", "PauseOnCombat", "CombatRange")
+        moveValues(goldenApplesGroup,
+            "EatGoldenApples", "EatNotchApples", "PreferGoldenAppleHealth", "PreferNotchAppleHealth")
+        moveValues(slotSwapGroup, "Silent", "SwapBackDelay", "SwapBack")
+
+        addValues(listOf(triggersGroup, safetyGroup, goldenApplesGroup, slotSwapGroup))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.firstOrNull { it.matchesKey(name) }?.let(group::addValue)
+        }
+    }
 
     private var prevSlot = -1
     private var eatingSlot = -1

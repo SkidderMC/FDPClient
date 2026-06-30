@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.Render2DEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.handler
@@ -55,6 +56,24 @@ object BlockOverlay : Module("BlockOverlay", Category.VISUAL, Category.SubCatego
         .describe("Easing curve for the slide animation.")
     private val slideTime by int("SlideTime", 150, 1..1000) { slideAnim }
         .describe("Duration of the slide animation in ms.")
+
+    private val renderGroup = Configurable("Render")
+    private val colorGroup = Configurable("Color")
+    private val slideGroup = Configurable("Slide")
+
+    init {
+        moveValues(renderGroup, "Mode", "SideOnly", "Depth3D", "Thickness", "Info")
+        moveValues(colorGroup, "Color", "SeparateOutlineColor", "OutlineColor")
+        moveValues(slideGroup, "Slide", "SlideEasing", "SlideTime")
+
+        addValues(listOf(renderGroup, colorGroup, slideGroup))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.filter { it.matchesKey(name) }.forEach(group::addValue)
+        }
+    }
 
     private var currentBox: AxisAlignedBB? = null
     private var previousBox: AxisAlignedBB? = null

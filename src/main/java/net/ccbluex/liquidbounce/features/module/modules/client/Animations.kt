@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.client
 
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations.animations
@@ -88,6 +89,29 @@ object Animations : Module("Animations", Category.CLIENT, Category.SubCategory.C
         .describe("How fast the held item rotates.")
 
     var delay = 0f
+
+    private val swingGroup = Configurable("Swing")
+    private val itemOffsetGroup = Configurable("ItemOffset")
+    private val handPositionGroup = Configurable("HandPosition")
+    private val itemRotationGroup = Configurable("ItemRotation")
+
+    init {
+        moveValues(swingGroup, "Mode", "OddSwing", "SwingSpeed")
+        moveValues(itemOffsetGroup, "ItemScale", "X", "Y", "Z", "Scale")
+        moveValues(handPositionGroup,
+            "PositionRotationX", "PositionRotationY", "PositionRotationZ")
+        moveValues(itemRotationGroup, "ItemRotate", "ItemRotateMode", "RotateSpeed")
+
+        addValues(listOf(
+            swingGroup, itemOffsetGroup, handPositionGroup, itemRotationGroup,
+        ))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.filter { it.matchesKey(name) }.forEach(group::addValue)
+        }
+    }
 
     fun getAnimation() = animations.firstOrNull { it.name == animationMode }
 

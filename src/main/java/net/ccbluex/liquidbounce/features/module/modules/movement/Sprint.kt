@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
@@ -60,6 +61,27 @@ object Sprint : Module("Sprint", Category.MOVEMENT, Category.SubCategory.MOVEMEN
         .describe("Do not send sprint start/stop packets.")
 
     private var isSprinting = false
+
+    private val generalGroup = Configurable("General")
+    private val directionsGroup = Configurable("Directions")
+    private val conditionsGroup = Configurable("Conditions")
+    private val serverSideGroup = Configurable("ServerSide")
+
+    init {
+        moveValues(generalGroup, "Mode", "OnlyOnSprintPress", "AlwaysCorrectSprint", "NoPackets")
+        moveValues(directionsGroup,
+            "AllDirections", "JumpDirections", "AllDirectionsLimitSpeed", "AllDirectionsLimitSpeedOnlyGround")
+        moveValues(conditionsGroup, "Blindness", "UsingItem", "Inventory", "Food")
+        moveValues(serverSideGroup, "CheckServerSide", "CheckServerSideOnlyGround")
+
+        addValues(listOf(generalGroup, directionsGroup, conditionsGroup, serverSideGroup))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.firstOrNull { it.matchesKey(name) }?.let(group::addValue)
+        }
+    }
 
     override val tag
         get() = mode

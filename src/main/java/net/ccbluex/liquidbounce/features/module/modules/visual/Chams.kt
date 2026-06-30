@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import org.lwjgl.opengl.GL11
@@ -36,6 +37,23 @@ object Chams : Module("Chams", Category.VISUAL, Category.SubCategory.RENDER_OVER
         .describe("Main chams color.")
     val behindColor by color("Behind", Color(255, 0, 0)) { !legacyMode && (colorModeValue== "Custom" || colorModeValue== "Fade") && behindColorModeValue == "Custom" }
         .describe("Custom color for parts behind walls.")
+
+    private val applyGroup = Configurable("Apply")
+    private val renderGroup = Configurable("Render")
+
+    init {
+        moveValues(applyGroup, "Targets", "Chests", "Items", "Hand", "LocalPlayer")
+        moveValues(renderGroup,
+            "Color", "Textured", "Legacy-Mode", "Behind-Color", "Behind")
+
+        addValues(listOf(applyGroup, renderGroup))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.filter { it.matchesKey(name) }.forEach(group::addValue)
+        }
+    }
 
     fun preHandRender() {
         GL11.glDisable(3553)

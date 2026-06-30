@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.AttackEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
@@ -72,6 +73,33 @@ object AutoClicker : Module("AutoClicker", Category.COMBAT, Category.SubCategory
         .describe("Keep clicking while using/eating an item.")
     private val delayPostStopUse by int("DelayPostStopUse", 0, 0..2000, suffix = "ms") { !onItemUse }
         .describe("Delay before resuming clicks after item use stops.")
+
+    private val clickGroup = Configurable("Click")
+    private val jitterGroup = Configurable("Jitter")
+    private val leftInputGroup = Configurable("LeftInput")
+    private val rightClickGroup = Configurable("RightClick")
+    private val timingGroup = Configurable("Timing")
+
+    init {
+        moveValues(clickGroup,
+            "SimulateDoubleClicking", "CPS", "HurtTime", "Right", "Left")
+        moveValues(jitterGroup, "Jitter")
+        moveValues(leftInputGroup,
+            "RequiresNoInput", "MaxAngleDifference", "Range", "OnlyBlock")
+        moveValues(rightClickGroup, "OnlyBlocks")
+        moveValues(timingGroup,
+            "DelayStart", "OnItemUse", "DelayPostStopUse")
+
+        addValues(listOf(
+            clickGroup, jitterGroup, leftInputGroup, rightClickGroup, timingGroup,
+        ))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.filter { it.matchesKey(name) }.forEach(group::addValue)
+        }
+    }
 
     private var rightDelay = generateNewClickTime()
     private var rightLastSwing = 0L

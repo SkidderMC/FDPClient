@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
@@ -123,6 +124,45 @@ object LongJump : Module("LongJump", Category.MOVEMENT, Category.SubCategory.MOV
         .describe("Only boost when taking damage in Vulcan mode.")
     val vulcanSelfDamage by boolean("Vulcan-SelfDamage", true) { mode == "Vulcan" }
         .describe("Deal self damage to trigger the Vulcan boost.")
+
+    private val generalGroup = Configurable("General")
+    private val timerGroup = Configurable("Timer")
+    private val boostGroup = Configurable("Boost")
+    private val ncpLatestGroup = Configurable("NCPLatest")
+    private val oldNcpDamageGroup = Configurable("OldNCPDamage")
+    private val oldMatrixHurtGroup = Configurable("OldMatrixHurt")
+    private val vulcanGroup = Configurable("Vulcan")
+
+    init {
+        moveValues(generalGroup,
+            "Mode", "NCPBoost", "AutoJump", "AutoJumpNotWhileUsingItem", "AutoDisable", "LegacyWarn")
+
+        moveValues(timerGroup, "GlobalTimer", "TimerOnlyAir", "ResetTimerOnGround")
+
+        moveValues(boostGroup, "Boost-Speed", "Boost-JumpBoost", "Boost-StrafeBoost")
+
+        moveValues(ncpLatestGroup,
+            "NCPLatest-Boost", "NCPLatest-Blink", "NCPLatest-OldMMC", "NCPLatest-Warn")
+
+        moveValues(oldNcpDamageGroup,
+            "OldNCPDamage-Mode", "OldNCPDamage-BoostSpeed", "OldNCPDamage-Boost", "OldNCPDamage-DamageInstant")
+
+        moveValues(oldMatrixHurtGroup, "OldMatrixHurt-BoostSpeed", "OldMatrixHurt-Ticks")
+
+        moveValues(vulcanGroup,
+            "Vulcan-RepeatTimes", "Vulcan-Distance", "Vulcan-OnlyDamage", "Vulcan-SelfDamage")
+
+        addValues(listOf(
+            generalGroup, timerGroup, boostGroup, ncpLatestGroup,
+            oldNcpDamageGroup, oldMatrixHurtGroup, vulcanGroup
+        ))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.filter { it.matchesKey(name) }.forEach(group::addValue)
+        }
+    }
 
     var jumped = false
     var canBoost = false

@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.MoveEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.StrafeEvent
@@ -97,6 +98,30 @@ object TargetStrafe : Module("TargetStrafe", Category.MOVEMENT, Category.SubCate
     var doStrafe = false
 
     private var callBackYaw = 0.0
+
+    private val strafeGroup = Configurable("Strafe")
+    private val renderGroup = Configurable("Render")
+    private val colorGroup = Configurable("Color")
+
+    init {
+        moveValues(strafeGroup,
+            "ThirdPersonView", "Radius", "RadiusMode", "OnlyOnGround", "HoldSpace",
+            "OnlySpeed", "Speed", "Points")
+
+        moveValues(renderGroup, "RenderMode", "Mark", "LineWidth")
+
+        moveValues(colorGroup,
+            "Color-Mode", "Custom-Color-1", "Custom-Color-2", "Fade-Color-1",
+            "Fade-Color-2", "Fade-Distance")
+
+        addValues(listOf(strafeGroup, renderGroup, colorGroup))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.filter { it.matchesKey(name) }.forEach(group::addValue)
+        }
+    }
 
     private fun getThemeColor(index: Int): Color {
         return ColorUtils.fade(Color(customColor1.rgb), index * 10, 100)

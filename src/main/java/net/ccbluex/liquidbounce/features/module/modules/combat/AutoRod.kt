@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
@@ -73,6 +74,30 @@ object AutoRod : Module("AutoRod", Category.COMBAT, Category.SubCategory.COMBAT_
 
     private var rodInUse = false
     private var switchBack = -1
+
+    private val targetingGroup = Configurable("Targeting")
+    private val healthGroup = Configurable("Health")
+    private val timingGroup = Configurable("Timing")
+
+    init {
+        moveValues(targetingGroup,
+            "FacingEnemy", "ActivationDistance", "ScanExtraRange", "EnemiesNearby",
+            "MinTargetHealth", "OnUsingItem")
+
+        moveValues(healthGroup,
+            "IgnoreOnEnemyLowHealth", "HealthFromScoreboard", "Absorption",
+            "PlayerHealthThreshold", "EnemyHealthThreshold", "EscapeHealthThreshold")
+
+        moveValues(timingGroup, "PushDelay", "PullbackDelay", "Cooldown", "HitTimeout")
+
+        addValues(listOf(targetingGroup, healthGroup, timingGroup))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.filter { it.matchesKey(name) }.forEach(group::addValue)
+        }
+    }
 
     val onUpdate = handler<UpdateEvent> {
         // Check if player is using rod

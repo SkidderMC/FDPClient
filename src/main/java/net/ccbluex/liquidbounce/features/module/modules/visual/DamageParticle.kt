@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
@@ -44,6 +45,29 @@ object DamageParticle : Module("DamageParticle", Category.VISUAL, Category.SubCa
         .describe("Custom color for the particle text.")
     private val shadowMode by choices("Shadow", arrayOf("Normal", "Default", "Vanilla", "Outline", "None"), "Outline") { colorMode != "Damage" }
         .describe("Shadow style for the particle text.")
+
+    private val particleGroup = Configurable("Particle")
+    private val motionGroup = Configurable("Motion")
+    private val coloringGroup = Configurable("Coloring")
+
+    init {
+        moveValues(particleGroup,
+            "AliveTicks", "Size", "OffsetDistance", "RandomRotation", "ThroughWalls")
+
+        moveValues(motionGroup,
+            "RiseSpeed", "Fade")
+
+        moveValues(coloringGroup,
+            "ColourType", "Color", "Shadow")
+
+        addValues(listOf(particleGroup, motionGroup, coloringGroup))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.filter { it.matchesKey(name) }.forEach(group::addValue)
+        }
+    }
 
     private const val MAX_PARTICLES = 100
     private const val MAX_HEALTH_DATA_SIZE = 200

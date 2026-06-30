@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.RotationUpdateEvent
 import net.ccbluex.liquidbounce.event.handler
@@ -107,6 +108,36 @@ object ProjectileAimbot : Module("ProjectileAimbot", Category.COMBAT, Category.S
         .describe("Draw a marker on the current target.")
 
     private var target: Entity? = null
+
+    private val itemsGroup = Configurable("Items")
+    private val aimingGroup = Configurable("Aiming")
+    private val rotationsGroup = Configurable("Rotations")
+    private val renderGroup = Configurable("Render")
+
+    init {
+        moveValues(itemsGroup, "Bow", "Egg", "Snowball", "EnderPearl", "OtherItems")
+
+        moveValues(aimingGroup,
+            "Range", "ThroughWalls", "ThroughWallsRange", "Priority", "GravityType",
+            "Predict", "PredictSize", "DragCorrection")
+
+        options.nestInto(rotationsGroup)
+        randomization.nestInto(rotationsGroup)
+        moveValues(rotationsGroup,
+            "UsePointTracker", "HighestBodyPointToTarget", "LowestBodyPointToTarget",
+            "HorizontalBodySearchRange", "ExemptBoxParts", "ExemptBestHitVector", "Delay",
+            "Lazy", "Gaussian", "Extrapolation", "Resolution")
+
+        moveValues(renderGroup, "Mark")
+
+        addValues(listOf(itemsGroup, aimingGroup, rotationsGroup, renderGroup))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.filter { it.matchesKey(name) }.forEach(group::addValue)
+        }
+    }
 
     override fun onDisable() {
         target = null

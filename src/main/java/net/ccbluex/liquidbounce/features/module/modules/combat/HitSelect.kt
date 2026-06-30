@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
@@ -105,6 +106,38 @@ object HitSelect : Module("HitSelect", Category.COMBAT, Category.SubCategory.COM
         .describe("Base level of adaptive prediction. Higher values mean more aggressive prediction.")
     private val semiVelocityThreshold by float("SemiVelocityThreshold", 0.06f, 0.01f..0.3f) { !useServerAttackTime && clickPredMode == "Semi" }
         .describe("Velocity threshold to use for semi prediction. Entities moving slower than this are always considered hittable.")
+
+    private val generalGroup = Configurable("General")
+    private val modesGroup = Configurable("Modes")
+    private val cancelRatesGroup = Configurable("CancelRates")
+    private val missGuardGroup = Configurable("MissGuard")
+    private val clickPredictionGroup = Configurable("ClickPrediction")
+
+    init {
+        moveValues(generalGroup,
+            "Mode", "FakeSwing", "UseServerAttackTime", "PingCompensation", "PingBuffer",
+            "BurstCount", "PauseDuration", "WaitForFirstHit")
+
+        moveValues(modesGroup, "HitLaterInTrades", "DisableDuringKnockback")
+
+        moveValues(cancelRatesGroup, "CancelRate", "MissedSwingCancel")
+
+        moveValues(missGuardGroup, "MissGuard", "MissBuffer")
+
+        moveValues(clickPredictionGroup,
+            "ClickPredMode", "ClickPredRange", "AngularTolerance", "AdaptiveBase",
+            "SemiVelocityThreshold")
+
+        addValues(listOf(
+            generalGroup, modesGroup, cancelRatesGroup, missGuardGroup, clickPredictionGroup
+        ))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.filter { it.matchesKey(name) }.forEach(group::addValue)
+        }
+    }
 
     // ────────────────────────────────────────────────────────────────────────────
     // EntitySnapshot — per-entity ring-buffer

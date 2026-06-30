@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.other
 
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
@@ -110,6 +111,39 @@ object Fucker : Module("Fucker", Category.OTHER, Category.SubCategory.MISCELLANE
 
     private val posOutline by boolean("PosOutline", false)
         .describe("Draw the overlay as an outline instead of a box.")
+
+    private val targetingGroup = Configurable("Targeting")
+    private val breakingGroup = Configurable("Breaking")
+    private val ownBedGroup = Configurable("OwnBed")
+    private val rotationsGroup = Configurable("Rotations")
+    private val renderGroup = Configurable("Render")
+
+    init {
+        moveValues(targetingGroup,
+            "Hypixel", "Block", "ThroughWalls", "Range", "Action", "Surroundings", "Instant")
+
+        moveValues(breakingGroup,
+            "SwitchDelay", "Swing", "NoHit", "Delay", "IgnoreOpenInventory", "IgnoreUsingItem")
+
+        moveValues(ownBedGroup, "IgnoreOwnBed", "MaxBedDistance")
+
+        options.nestInto(rotationsGroup)
+
+        moveValues(renderGroup,
+            "BlockProgress", "Scale", "Font", "Shadow", "Color", "Render-Pos", "RenderPos Color",
+            "PosProcess", "PosOutline")
+
+        addValues(listOf(
+            targetingGroup, breakingGroup, ownBedGroup, rotationsGroup, renderGroup
+        ))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.filter { it.matchesKey(name) }.forEach(group::addValue)
+        }
+    }
+
     /**
      * VALUES
      */

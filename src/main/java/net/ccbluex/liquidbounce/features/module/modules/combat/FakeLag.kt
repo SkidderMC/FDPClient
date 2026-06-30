@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
 import com.google.common.collect.Queues
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
@@ -67,6 +68,33 @@ object FakeLag : Module("FakeLag", Category.COMBAT, Category.SubCategory.COMBAT_
         .describe("Draw a box at your server-side position.")
     private val serverPosBoxColor by color("ServerPosBoxColor", Color(0, 160, 255, 130)) { serverPosBox }
         .describe("Color of the server position box.")
+
+    private val timingGroup = Configurable("Timing")
+    private val conditionsGroup = Configurable("Conditions")
+    private val lineRenderGroup = Configurable("LineRender")
+    private val modelRenderGroup = Configurable("ModelRender")
+
+    init {
+        moveValues(timingGroup,
+            "Delay", "RecoilTime")
+
+        moveValues(conditionsGroup,
+            "MinAllowedDistToEnemy", "BlinkOnAction", "PauseOnNoMove", "PauseOnChest")
+
+        moveValues(lineRenderGroup,
+            "Line", "LineColor")
+
+        moveValues(modelRenderGroup,
+            "RenderModel", "ServerPosBox", "ServerPosBoxColor")
+
+        addValues(listOf(timingGroup, conditionsGroup, lineRenderGroup, modelRenderGroup))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.filter { it.matchesKey(name) }.forEach(group::addValue)
+        }
+    }
 
     private val packetQueue = Queues.newArrayDeque<QueueData>()
     private val positions = Queues.newArrayDeque<PositionData>()

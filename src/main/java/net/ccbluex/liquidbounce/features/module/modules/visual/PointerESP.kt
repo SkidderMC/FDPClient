@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.Render2DEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.handler
@@ -78,6 +79,32 @@ object PointerESP : Module("PointerESP", Category.VISUAL, Category.SubCategory.R
         .filter { bot || !isBot(it) }
         .filter { team || !Teams.isInYourTeam(it) }
         .filter { EntityUtils.isSelected(it, false) }
+
+    private val renderGroup = Configurable("Render")
+    private val arrowGroup = Configurable("Arrow")
+    private val colorGroup = Configurable("Color")
+    private val distanceGroup = Configurable("Distance")
+    private val targetsGroup = Configurable("Targets")
+
+    init {
+        moveValues(renderGroup, "Dimension", "Mode", "Thickness")
+        moveValues(arrowGroup, "ArrowSize", "ArrowAngle", "ArrowRadius")
+
+        colorGroup.addValue(colors)
+        colorGroup.addValue(healthColors)
+        moveValues(colorGroup, "Health-Mode", "Absorption", "HealthFromScoreboard")
+
+        moveValues(distanceGroup, "DistanceAlpha", "AlphaMin", "MaxRenderDistance")
+        moveValues(targetsGroup, "Team", "TeamColor", "Bots")
+
+        addValues(listOf(renderGroup, arrowGroup, colorGroup, distanceGroup, targetsGroup))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.firstOrNull { it.matchesKey(name) }?.let(group::addValue)
+        }
+    }
 
     val onRender2D = handler<Render2DEvent> { event ->
         if (dimension != "2d") return@handler

@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
@@ -71,6 +72,28 @@ object AutoShoot : Module("AutoShoot", Category.COMBAT, Category.SubCategory.COM
         .describe("Solve the launch angle with per-tick air drag for better long-range accuracy.")
 
     private val options = RotationSettings(this).withRequestPriority(RotationPriority.HIGH)
+
+    private val targetingGroup = Configurable("Targeting")
+    private val bowGroup = Configurable("Bow")
+    private val throwableGroup = Configurable("Throwable")
+    private val aimGroup = Configurable("Aim")
+
+    init {
+        moveValues(targetingGroup, "Range", "ThroughWalls", "ThroughWallsRange", "Priority")
+        moveValues(bowGroup, "Bow", "Charge", "Predict", "PredictSize")
+        moveValues(throwableGroup, "Throwable", "ThrowDelay")
+
+        options.nestInto(aimGroup)
+        moveValues(aimGroup, "AimOffThreshold", "DragCorrection")
+
+        addValues(listOf(targetingGroup, bowGroup, throwableGroup, aimGroup))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.filter { it.matchesKey(name) }.forEach(group::addValue)
+        }
+    }
 
     private val throwTimer = MSTimer()
 

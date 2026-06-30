@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.other
 
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
@@ -104,6 +105,32 @@ object Nuker : Module("Nuker", Category.OTHER, Category.SubCategory.MISCELLANEOU
     private var nukedCount = 0
 
     var currentDamage = 0F
+
+    private val targetingGroup = Configurable("Targeting")
+    private val breakingGroup = Configurable("Breaking")
+    private val rotationsGroup = Configurable("Rotations")
+    private val renderGroup = Configurable("Render")
+
+    init {
+        moveValues(targetingGroup,
+            "AllBlocks", "Block", "Radius", "ThroughWalls", "Priority", "Layer")
+
+        moveValues(breakingGroup,
+            "HitDelay", "Nuke", "NukeDelay", "SwingMode", "IgnoreOpenInventory")
+
+        options.nestInto(rotationsGroup)
+
+        moveValues(renderGroup,
+            "BlockProgress", "Scale", "Font", "Shadow", "Color")
+
+        addValues(listOf(targetingGroup, breakingGroup, rotationsGroup, renderGroup))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.filter { it.matchesKey(name) }.forEach(group::addValue)
+        }
+    }
 
     val onUpdate = handler<UpdateEvent> {
         // Pause breaking while a container GUI is open

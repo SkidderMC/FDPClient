@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.client
 
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.AttackEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.handler
@@ -64,6 +65,29 @@ object TargetFocus : Module("TargetFocus", Category.CLIENT, Category.SubCategory
         automatic && (mode == "BreakArmor" || mode == "Both")
     }
         .describe("Weight given to breaking armor in target scoring.")
+
+    private val targetGroup = Configurable("Target")
+    private val browseGroup = Configurable("Browse")
+    private val scoringGroup = Configurable("Scoring")
+
+    init {
+        moveValues(targetGroup,
+            "Name", "AllEntities", "Automatic", "Mode")
+
+        moveValues(browseGroup,
+            "BrowseMode", "BrowseHits", "BrowseTimeMs", "ClearBrowseCache", "ShowBrowsedPlayers")
+
+        moveValues(scoringGroup,
+            "BothHealthWeight", "BothArmorWeight", "ConsiderDurability", "BreakArmorPriority")
+
+        addValues(listOf(targetGroup, browseGroup, scoringGroup))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.filter { it.matchesKey(name) }.forEach(group::addValue)
+        }
+    }
 
     private var lockedTargetName = ""
     private var browseClanKey = ""

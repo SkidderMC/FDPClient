@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.features.module.modules.visual
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.event.async.loopSequence
@@ -125,6 +126,38 @@ object BedPlates : Module("BedPlates", Category.VISUAL, Category.SubCategory.REN
         .describe("Horizontal scale of the gradient effect.")
     private val gradientY by float("Gradient-Y", -1000F, -2000F..2000F) { backgroundMode == "Gradient" }
         .describe("Vertical scale of the gradient effect.")
+
+    private val renderGroup = Configurable("Render")
+    private val textGroup = Configurable("Text")
+    private val backgroundGroup = Configurable("Background")
+
+    init {
+        moveValues(renderGroup,
+            "RenderYOffset", "MaxRenderDistance", "MaxLayers", "MaxCount", "Scale", "Compact",
+            "ShowBed", "HighlightUnbreakable", "IgnoreAdjacent", "PreventOverlap", "Outline",
+            "Rounded-Radius")
+
+        moveValues(textGroup, "Text-ColorMode", "TextColor", "Text-Gradient-Speed",
+            "Max-Text-Gradient-Colors",
+            "Text-Gradient1", "Text-Gradient2", "Text-Gradient3", "Text-Gradient4", "Text-Gradient5",
+            "Text-Gradient6", "Text-Gradient7", "Text-Gradient8", "Text-Gradient9",
+            "Font", "ShadowText")
+
+        moveValues(backgroundGroup, "Background-Mode", "BackgroundColor", "Background-Gradient-Speed",
+            "Max-Background-Gradient-Colors",
+            "Background-Gradient1", "Background-Gradient2", "Background-Gradient3", "Background-Gradient4",
+            "Background-Gradient5", "Background-Gradient6", "Background-Gradient7", "Background-Gradient8",
+            "Background-Gradient9",
+            "Rainbow-X", "Rainbow-Y", "Gradient-X", "Gradient-Y")
+
+        addValues(listOf(renderGroup, textGroup, backgroundGroup))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.filter { it.matchesKey(name) }.forEach(group::addValue)
+        }
+    }
 
     private val bedStates = ConcurrentHashMap<BlockPos, BedState>()
 

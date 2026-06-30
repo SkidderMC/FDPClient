@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.player
 
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.GameTickEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
@@ -57,6 +58,29 @@ object AutoSoup : Module("AutoSoup", Category.PLAYER, Category.SubCategory.PLAYE
 
     private val bowl by choices("Bowl", arrayOf("Drop", "Move"), "Drop")
         .describe("What to do with the empty bowl after eating.")
+
+    private val eatingGroup = Configurable("Eating")
+    private val bowlGroup = Configurable("Bowl")
+    private val refillGroup = Configurable("Refill")
+
+    init {
+        moveValues(eatingGroup,
+            "Health", "Delay")
+
+        moveValues(bowlGroup,
+            "Bowl", "DropOnNextTick")
+
+        moveValues(refillGroup,
+            "Refill", "RefillMode", "StartDelay", "AutoClose", "AutoCloseNoSoup", "CloseDelay")
+
+        addValues(listOf(eatingGroup, bowlGroup, refillGroup))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.filter { it.matchesKey(name) }.forEach(group::addValue)
+        }
+    }
 
     private val timer = MSTimer()
     private val startTimer = MSTimer()

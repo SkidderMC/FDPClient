@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.features.module.modules.other
 
 import kotlinx.coroutines.delay
 import net.ccbluex.liquidbounce.FDPClient.hud
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.Render2DEvent
 import net.ccbluex.liquidbounce.event.handler
@@ -142,6 +143,38 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, Category.SubCategor
         .describe("Where to print stealing debug messages.")
     private val itemStolenDebug by boolean("ItemStolen-Debug", false) { chestDebug != "Off" }.subjective()
         .describe("Log each stolen item with its slot and delay.")
+
+    private val stealingGroup = Configurable("Stealing")
+    private val delaysGroup = Configurable("Delays")
+    private val noMoveGroup = Configurable("NoMove")
+    private val renderGroup = Configurable("Render")
+    private val debugGroup = Configurable("Debug")
+
+    init {
+        moveValues(stealingGroup,
+            "SmartDelay", "DelayMultiplier", "SmartOrder", "SimulateShortStop", "AutoClose",
+            "Order", "QuickSwaps", "OnFull", "RandomSlot", "ChestTitle", "Furnace")
+
+        moveValues(delaysGroup, "Delay", "StartDelay", "CloseDelay")
+
+        moveValues(noMoveGroup, "NoMoveClicks", "NoClicksInAir", "NoClicksOnGround")
+
+        moveValues(renderGroup,
+            "ProgressBar", "SilentGUI", "SilentView", "Highlight-Slot", "BackgroundColor",
+            "Border-Strength", "BorderColor")
+
+        moveValues(debugGroup, "Chest-Debug", "ItemStolen-Debug")
+
+        addValues(listOf(
+            stealingGroup, delaysGroup, noMoveGroup, renderGroup, debugGroup
+        ))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.filter { it.matchesKey(name) }.forEach(group::addValue)
+        }
+    }
 
     private var progress: Float? = null
         set(value) {

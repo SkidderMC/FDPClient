@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
@@ -140,6 +141,46 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
         teleportValue && teleportMode == "Decrease"
     }
         .describe("Fraction of speed to reduce on each teleport.")
+
+    private val swordGroup = Configurable("Sword")
+    private val consumeGroup = Configurable("Consume")
+    private val bowGroup = Configurable("Bow")
+    private val aac4Group = Configurable("AAC4")
+    private val blocksGroup = Configurable("Blocks")
+    private val teleportGroup = Configurable("Teleport")
+    private val generalGroup = Configurable("General")
+
+    init {
+        moveValues(swordGroup,
+            "SwordMode", "ReblinkTicks", "BlockForwardMultiplier", "BlockStrafeMultiplier")
+
+        moveValues(consumeGroup,
+            "ConsumeMode", "ConsumeForwardMultiplier", "ConsumeStrafeMultiplier",
+            "ConsumeFood", "ConsumeDrink")
+
+        moveValues(bowGroup,
+            "BowMode", "BowForwardMultiplier", "BowStrafeMultiplier")
+
+        moveValues(aac4Group, "AAC4-C07", "AAC4-C08", "AAC4-OnGround")
+
+        moveValues(blocksGroup, "SoulSand", "LiquidPush")
+
+        moveValues(teleportGroup,
+            "Teleport", "TeleportMode", "TeleportNoApply", "Teleport-CustomSpeed",
+            "Teleport-CustomY", "Teleport-DecreasePercent")
+
+        moveValues(generalGroup, "AntiSwitchItem", "OnlyGround", "OnlyMove")
+
+        addValues(listOf(
+            swordGroup, consumeGroup, bowGroup, aac4Group, blocksGroup, teleportGroup, generalGroup
+        ))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.filter { it.matchesKey(name) }.forEach(group::addValue)
+        }
+    }
 
     private var shouldSwap = false
     private var shouldBlink = true

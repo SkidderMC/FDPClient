@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.MotionEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.handler
@@ -58,6 +59,29 @@ object NoRender : Module("NoRender", Category.VISUAL, Category.SubCategory.RENDE
 	// The specific block selected by its ID
 	private val specificBlockValue by block("SpecificBlock", 1)
 		.describe("The block type to hide from view.")
+
+	private val entityFilterGroup = Configurable("EntityFilter")
+	private val rangeGroup = Configurable("Range")
+	private val blockGroup = Configurable("Block")
+
+	init {
+		moveValues(entityFilterGroup,
+			"AllEntities", "Items", "Players", "Mobs", "Animals", "ArmorStand")
+
+		moveValues(rangeGroup,
+			"AutoReset", "MaxRenderRange")
+
+		moveValues(blockGroup,
+			"Block", "SpecificBlock")
+
+		addValues(listOf(entityFilterGroup, rangeGroup, blockGroup))
+	}
+
+	private fun moveValues(group: Configurable, vararg names: String) {
+		for (name in names) {
+			values.filter { it.matchesKey(name) }.forEach(group::addValue)
+		}
+	}
 
 	// Stores hidden blocks and their original states
 	private val hiddenBlocks: MutableMap<BlockPos, IBlockState> = mutableMapOf()

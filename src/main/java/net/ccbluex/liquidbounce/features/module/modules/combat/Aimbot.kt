@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.EventState
 import net.ccbluex.liquidbounce.event.MotionEvent
 import net.ccbluex.liquidbounce.event.handler
@@ -119,6 +120,41 @@ object Aimbot : Module("Aimbot", Category.COMBAT, Category.SubCategory.COMBAT_LE
     }
 
     private val clickTimer = MSTimer()
+
+    private val aimGroup = Configurable("Aim")
+    private val rotationsGroup = Configurable("Rotations")
+    private val aimPointGroup = Configurable("AimPoint")
+    private val predictionGroup = Configurable("Prediction")
+    private val jitterGroup = Configurable("Jitter")
+
+    init {
+        moveValues(aimGroup,
+            "Range", "FOV", "HorizontalAim", "VerticalAim", "Lock", "OnClick", "BreakBlocks")
+
+        rotationOptions.nestInto(rotationsGroup)
+        moveValues(rotationsGroup,
+            "Legitimize", "MaxAngleChange", "InViewMaxAngleChange", "MinRotationDifference",
+            "MinRotationDifferenceResetTiming")
+
+        moveValues(aimPointGroup,
+            "HighestBodyPointToTarget", "LowestBodyPointToTarget", "HorizontalBodySearchRange",
+            "Center", "Headlock", "HeadBlockHeight", "UsePointTracker", "Extrapolation", "Resolution")
+
+        moveValues(predictionGroup,
+            "GenerateSpotBasedOnDistance", "PredictClientMovement", "PredictEnemyPosition")
+
+        moveValues(jitterGroup, "Jitter", "JitterYawMultiplier", "JitterPitchMultiplier")
+
+        addValues(listOf(
+            aimGroup, rotationsGroup, aimPointGroup, predictionGroup, jitterGroup
+        ))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.filter { it.matchesKey(name) }.forEach(group::addValue)
+        }
+    }
 
     val onMotion = handler<MotionEvent> { event ->
         if (event.eventState != EventState.POST) return@handler

@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.other
 
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
@@ -94,6 +95,29 @@ object ChestAura : Module("ChestAura", Category.OTHER, Category.SubCategory.MISC
 
     private val openInfo by choices("OpenInfo", arrayOf("Off", "Self", "Other", "Everyone"), "Off")
         .describe("Print who opens chests and how long it took.")
+
+    private val targetsGroup = Configurable("Targets")
+    private val rangeGroup = Configurable("Range")
+    private val rotationsGroup = Configurable("Rotations")
+    private val displayGroup = Configurable("Display")
+
+    init {
+        moveValues(targetsGroup, "Chest", "EnderChest", "IgnoreLootedChests", "DetectChestRefill")
+        moveValues(rangeGroup,
+            "Range", "Delay", "ThroughWalls", "ThroughWallsRange", "MinDistanceFromOpponent")
+
+        options.nestInto(rotationsGroup)
+
+        moveValues(displayGroup, "VisualSwing", "OpenInfo")
+
+        addValues(listOf(targetsGroup, rangeGroup, rotationsGroup, displayGroup))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.filter { it.matchesKey(name) }.forEach(group::addValue)
+        }
+    }
 
     var tileTarget: TileTarget? = null
     private val timer = MSTimer()

@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.Render2DEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
@@ -55,6 +56,28 @@ object Crosshair : Module("Crosshair", Category.VISUAL, Category.SubCategory.REN
 
     private val crosshairColor by color("Color", Color(255, 255, 255), rainbow = true)
         .describe("Color of the crosshair.")
+
+    private val generalGroup = Configurable("General")
+    private val crossGroup = Configurable("Cross")
+    private val csgoGroup = Configurable("CSGO")
+    private val dotGroup = Configurable("Dot")
+    private val circleGroup = Configurable("Circle")
+
+    init {
+        moveValues(generalGroup, "Style", "HideVanilla", "Outline", "Color")
+        moveValues(crossGroup, "Size", "Gap", "Thickness", "CenterDot")
+        moveValues(csgoGroup, "DynamicGap", "SprintGap")
+        moveValues(dotGroup, "DotRadius")
+        moveValues(circleGroup, "Filled", "Radius", "CircleWidth")
+
+        addValues(listOf(generalGroup, crossGroup, csgoGroup, dotGroup, circleGroup))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.firstOrNull { it.matchesKey(name) }?.let(group::addValue)
+        }
+    }
 
     val onRender2D = handler<Render2DEvent> {
         // Only draw in first person while actually in the world.

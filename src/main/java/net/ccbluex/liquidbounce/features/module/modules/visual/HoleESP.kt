@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.handler
@@ -53,6 +54,33 @@ object HoleESP : Module("HoleESP", Category.VISUAL, Category.SubCategory.RENDER_
 
     private val maxHoles by int("MaxHoles", 128, 1..512)
         .describe("Maximum number of holes to render at once.")
+
+    private val scanGroup = Configurable("Scan")
+    private val detectionGroup = Configurable("Detection")
+    private val colorsGroup = Configurable("Colors")
+    private val renderGroup = Configurable("Render")
+
+    init {
+        moveValues(scanGroup,
+            "HorizontalRange", "VerticalRange", "MinDepth")
+
+        moveValues(detectionGroup,
+            "Detect1x2", "OnlyBedrock")
+
+        moveValues(colorsGroup,
+            "Color1x1", "ColorBedrock", "Color1x2")
+
+        moveValues(renderGroup,
+            "Outline", "MaxHoles")
+
+        addValues(listOf(scanGroup, detectionGroup, colorsGroup, renderGroup))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.filter { it.matchesKey(name) }.forEach(group::addValue)
+        }
+    }
 
     private val horizontalFacings = EnumFacing.values().filter { it.axis != EnumFacing.Axis.Y }
 

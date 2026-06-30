@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.features.module.modules.visual
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.async.loopSequence
 import net.ccbluex.liquidbounce.event.handler
@@ -44,6 +45,29 @@ object BedProtectionESP : Module("BedProtectionESP", Category.VISUAL, Category.S
 
     private val color by color("Color", Color(96, 96, 96))
         .describe("Color of the protection layer boxes.")
+
+    private val searchGroup = Configurable("Search")
+    private val layersGroup = Configurable("Layers")
+    private val renderGroup = Configurable("Render")
+
+    init {
+        moveValues(searchGroup,
+            "TargetBlock", "Radius", "BlockLimit", "BlocksUnderTarget")
+
+        moveValues(layersGroup,
+            "LayerRenderMode", "MaxProtectionLayers")
+
+        moveValues(renderGroup,
+            "RenderTargetBlocks", "Outline", "Thickness", "Color")
+
+        addValues(listOf(searchGroup, layersGroup, renderGroup))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.filter { it.matchesKey(name) }.forEach(group::addValue)
+        }
+    }
 
     @Volatile
     private var targetBlocks = emptySet<BlockPos>()

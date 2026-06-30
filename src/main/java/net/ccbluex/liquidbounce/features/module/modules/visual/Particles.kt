@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.AttackEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
@@ -54,6 +55,28 @@ object Particles : Module("Particles", Category.VISUAL, Category.SubCategory.REN
 
     private val color by color("Color", Color.RED)
         .describe("Color of the spawned particles.")
+
+    private val appearanceGroup = Configurable("Appearance")
+    private val spawnGroup = Configurable("Spawn")
+    private val physicsGroup = Configurable("Physics")
+    private val bounceGroup = Configurable("Bounce")
+
+    init {
+        moveValues(appearanceGroup, "Size", "Shape", "RandomRotation", "Color")
+        moveValues(spawnGroup, "MinCount", "MaxCount")
+        moveValues(physicsGroup, "Motion", "Drag", "GravityFactor")
+        moveValues(bounceGroup, "BounceX", "BounceY", "BounceZ")
+
+        addValues(listOf(
+            appearanceGroup, spawnGroup, physicsGroup, bounceGroup,
+        ))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.filter { it.matchesKey(name) }.forEach(group::addValue)
+        }
+    }
 
     private const val MAX_PARTICLES = 200
     private val particles = mutableListOf<Particle>()

@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
@@ -37,6 +38,26 @@ object Derp : Module("Derp", Category.VISUAL, Category.SubCategory.RENDER_SELF) 
         .describe("Clamp pitch to a server-safe range.")
     private val notDuringSprint by boolean("NotDuringSprint", true)
         .describe("Disable the effect while sprinting.")
+
+    private val yawGroup = Configurable("Yaw")
+    private val pitchGroup = Configurable("Pitch")
+    private val generalGroup = Configurable("General")
+
+    init {
+        moveValues(yawGroup,
+            "YawMode", "StaticYaw", "YawOffset", "SpinSpeed",
+            "JitterForwardTicks", "JitterBackwardTicks")
+        moveValues(pitchGroup, "PitchMode", "StaticPitch", "PitchOffset")
+        moveValues(generalGroup, "SafePitch", "NotDuringSprint")
+
+        addValues(listOf(yawGroup, pitchGroup, generalGroup))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.filter { it.matchesKey(name) }.forEach(group::addValue)
+        }
+    }
 
     private var spinYaw = 0f
     private var jitterTick = 0

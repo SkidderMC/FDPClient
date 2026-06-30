@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.player
 
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
@@ -153,6 +154,28 @@ object NoFall : Module("NoFall", Category.PLAYER, Category.SubCategory.PLAYER_CO
         .describe("Render fall simulation debug visuals.")
     val fakePlayer by boolean("FakePlayer", true) { mode == "Blink" }.subjective()
         .describe("Spawn a fake player while blinking.")
+
+    private val mlgGroup = Configurable("MLG")
+    private val blinkGroup = Configurable("Blink")
+    private val variantsGroup = Configurable("Variants")
+
+    init {
+        options.nestInto(mlgGroup)
+        moveValues(mlgGroup,
+            "Mode", "MinMLGHeight", "RetrieveDelayTicks", "MaxRetrievalWaitingTime", "AutoMLG", "Swing")
+        moveValues(blinkGroup,
+            "CheckFallDistance", "FallDistance", "AutoOff", "SimulationDebug", "FakePlayer")
+        moveValues(variantsGroup,
+            "SafeNoFall", "MotionFlag-MotionSpeed", "PhaseOffset", "Indicator")
+
+        addValues(listOf(mlgGroup, blinkGroup, variantsGroup))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.firstOrNull { it.matchesKey(name) }?.let(group::addValue)
+        }
+    }
 
     var currentMlgBlock: BlockPos? = null
     var retrievingPos: Vec3? = null

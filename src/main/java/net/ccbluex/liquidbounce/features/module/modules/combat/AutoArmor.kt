@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.features.module.modules.combat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.KeyStateEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
@@ -99,6 +100,39 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, Category.SubCategory.COM
 
     val borderStrength by +InventoryManager.borderStrength
     val borderColor by +InventoryManager.borderColor
+
+    private val generalGroup = Configurable("General")
+    private val inventoryGroup = Configurable("Inventory")
+    private val swapGroup = Configurable("Swap")
+    private val noMoveGroup = Configurable("NoMove")
+    private val hotbarGroup = Configurable("Hotbar")
+    private val manualGroup = Configurable("Manual")
+    private val highlightGroup = Configurable("Highlight")
+
+    init {
+        moveValues(generalGroup, "Mode", "Delay", "MinItemAge")
+        moveValues(inventoryGroup,
+            "InvOpen", "SimulateInventory", "AutoClose", "PostInventoryCloseDelay",
+            "StartDelay", "CloseDelay")
+        moveValues(swapGroup, "SmartSwap", "DropOldArmor")
+        moveValues(noMoveGroup, "NoMoveClicks", "NoClicksInAir", "NoClicksOnGround")
+        moveValues(hotbarGroup, "Hotbar", "DelayedSlotSwitch", "NotInContainers")
+        moveValues(manualGroup,
+            "ManualSwap", "ManualSelection", "ManualCycle", "ManualUseArmorFilter",
+            "ManualIgnoreMinItemAge", "HelmetBind", "ChestplateBind", "LeggingsBind", "BootsBind")
+        moveValues(highlightGroup, "Highlight-Slot", "Border-Strength", "BorderColor")
+
+        addValues(listOf(
+            generalGroup, inventoryGroup, swapGroup, noMoveGroup, hotbarGroup,
+            manualGroup, highlightGroup,
+        ))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.filter { it.matchesKey(name) }.forEach(group::addValue)
+        }
+    }
 
     @Volatile
     private var pendingManualArmorRequest: ManualArmorRequest? = null

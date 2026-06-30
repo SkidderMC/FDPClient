@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.features.module.modules.player
 
 import kotlinx.coroutines.delay
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.config.ListValue
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
@@ -124,6 +125,42 @@ object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER, Category.S
     private val SORTING_VALUES: Array<ListValue> = arrayOf(
         slot1Value, slot2Value, slot3Value, slot4Value, slot5Value, slot6Value, slot7Value, slot8Value, slot9Value
     )
+
+    private val cleaningGroup = Configurable("Cleaning")
+    private val stackLimitsGroup = Configurable("StackLimits")
+    private val sortingGroup = Configurable("Sorting")
+    private val inventoryAccessGroup = Configurable("InventoryAccess")
+    private val highlightGroup = Configurable("Highlight")
+
+    init {
+        moveValues(cleaningGroup,
+            "Drop", "MergeStacks", "RepairEquipment", "RandomSlot", "IgnoreVehicles",
+            "OnlyGoodPotions", "Delay", "MinItemAge")
+
+        moveValues(stackLimitsGroup,
+            "LimitStackCounts", "MaxBlockStacks", "MaxFoodStacks", "MaxThrowableStacks",
+            "MaxArrows", "MaxPotionStacks", "MaxFishingRodStacks", "Greedy")
+
+        moveValues(sortingGroup,
+            "Sort", "Slot1", "Slot2", "Slot3", "Slot4", "Slot5", "Slot6", "Slot7", "Slot8", "Slot9")
+
+        moveValues(inventoryAccessGroup,
+            "InvOpen", "SimulateInventory", "AutoClose", "PostInventoryCloseDelay", "StartDelay",
+            "CloseDelay", "NoMoveClicks", "NoClicksInAir", "NoClicksOnGround")
+
+        moveValues(highlightGroup,
+            "HighlightUseful", "Highlight-Slot", "Border-Strength", "BorderColor")
+
+        addValues(listOf(
+            cleaningGroup, stackLimitsGroup, sortingGroup, inventoryAccessGroup, highlightGroup,
+        ))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.filter { it.matchesKey(name) }.forEach(group::addValue)
+        }
+    }
 
     private suspend fun shouldOperate(): Boolean {
         while (true) {

@@ -81,6 +81,37 @@ object StorageESP : Module("StorageESP", Category.VISUAL, Category.SubCategory.R
     private val sign by boolean("Sign", false)
         .describe("Highlight signs.")
 
+    private val modeGroup = Configurable("Mode")
+    private val colorGroup = Configurable("Color")
+    private val glowGroup = Configurable("Glow")
+    private val filtersGroup = Configurable("Filters")
+    private val typesGroup = Configurable("Types")
+
+    init {
+        moveValues(modeGroup,
+            "Mode", "Outline", "MergeAdjacent", "Tracers", "TracerThickness", "RequiresChestStealer")
+
+        moveValues(colorGroup, "ESP-Color", "Color")
+
+        moveValues(glowGroup,
+            "Glow-Renderscale", "Glow-Radius", "Glow-Fade", "Glow-Target-Alpha")
+
+        moveValues(filtersGroup,
+            "MaxRenderDistance", "OnLook", "MaxAngleDifference", "ThruBlocks")
+
+        moveValues(typesGroup,
+            "Chest", "EnderChest", "Furnace", "Dispenser", "Hopper", "EnchantmentTable",
+            "BrewingStand", "Sign")
+
+        addValues(listOf(modeGroup, colorGroup, glowGroup, filtersGroup, typesGroup))
+    }
+
+    private fun moveValues(group: Configurable, vararg names: String) {
+        for (name in names) {
+            values.filter { it.matchesKey(name) }.forEach(group::addValue)
+        }
+    }
+
     private fun getColor(tileEntity: TileEntity): Color? {
         return if (espColorMode == "Custom") {
             when {
