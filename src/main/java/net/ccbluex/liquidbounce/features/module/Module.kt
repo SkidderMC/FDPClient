@@ -5,8 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module
 
-import net.ccbluex.liquidbounce.FDPClient.isLoadingConfig
-import net.ccbluex.liquidbounce.FDPClient.isStarting
 import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.config.ConfigSystem
 import net.ccbluex.liquidbounce.event.Listenable
@@ -18,17 +16,10 @@ import net.ccbluex.liquidbounce.file.FileManager.modulesConfig
 import net.ccbluex.liquidbounce.file.FileManager.saveConfig
 import net.ccbluex.liquidbounce.file.FileManager.valuesConfig
 import net.ccbluex.liquidbounce.handler.lang.translation
-import net.ccbluex.liquidbounce.ui.client.hud.HUD.addNotification
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Arraylist
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
-import net.ccbluex.liquidbounce.utils.client.asResourceLocation
 import net.ccbluex.liquidbounce.utils.client.chat
-import net.ccbluex.liquidbounce.utils.client.playSound
 import net.ccbluex.liquidbounce.utils.extensions.toLowerCamelCase
-import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextFloat
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils
 import net.ccbluex.liquidbounce.utils.timing.TickedActions.clearTicked
 import org.lwjgl.input.Keyboard
@@ -77,7 +68,7 @@ open class Module(
     // Module information
 
     // Get normal or spaced name
-    fun getName(spaced: Boolean = Arraylist.spacedModulesValue.get()) = if (spaced) spacedName else name
+    fun getName(spaced: Boolean = false) = if (spaced) spacedName else name
 
     var keyBind = defaultKeyBind
         set(keyBind) {
@@ -124,7 +115,7 @@ open class Module(
             LOGGER.error("Failed to reset all values", any)
             chat("Failed to reset all values: ${any.message}")
         } finally {
-            addNotification(Notification("Successfully reset all settings from ${this@Module.name}", "Successfully reset all settings from ${this@Module.name}", Type.SUCCESS, 1000))
+            ModuleFeedback.settingsReset(this@Module.name)
             saveConfig(valuesConfig)
         }
         return@onChange false
@@ -141,6 +132,14 @@ open class Module(
             if (field == value)
                 return
 
+            // Gated-off "enable" (canBeEnabled = false, e.g. ClickGUI/HudDesigner one-shot modules):
+            // run the one-shot action only. No toggle/sound/notification and the field stays false, so
+            // it never looks or sounds enabled when it actually isn't.
+            if (value && !canBeEnabled) {
+                onEnable()
+                return
+            }
+
             val previousState = field
 
             // Call toggle
@@ -149,20 +148,18 @@ open class Module(
             // Clear ticked actions
             clearTicked()
 
-            // Play sound and add notification
-            if (!isStarting) {
-                mc.playSound("random.click".asResourceLocation())
-
-                addNotification(Notification(name,"${if (value) "Enabled" else "Disabled"} §r$name", if (value) Type.SUCCESS else Type.ERROR, 1000))
-            }
-
-            // Call on enabled or disabled
+            // Call on enabled or disabled. Set the backing field BEFORE onEnable() so coroutines/workers
+            // started in onEnable that read `state` see the enabled value (avoids the start-then-exit race).
             if (value) {
-                onEnable()
-
-                if (canBeEnabled) {
-                    field = true
-                    startEnabledEffects()
+                field = true
+                try {
+                    onEnable()
+                    if (field) startEnabledEffects()
+                } catch (throwable: Throwable) {
+                    field = false
+                    enabledEffectJobs.forEach(Job::cancel)
+                    enabledEffectJobs.clear()
+                    throw throwable
                 }
             } else {
                 enabledEffectJobs.forEach(Job::cancel)
@@ -172,19 +169,16 @@ open class Module(
                 field = false
             }
 
+            ModuleFeedback.toggled(name, field)
+
             // Save module state
             saveConfig(modulesConfig)
 
-            if (field != previousState && !isLoadingConfig) {
+            if (field != previousState && !ConfigSystem.isLoadingConfig) {
                 ClientChangeBus.publish(ClientChange.ModuleState(name, field, isHidden))
             }
         }
 
-
-    // HUD
-    val hue = nextFloat()
-    var slide = 0F
-    var yAnim = 0f
 
     // Tag
     open val tag: String?

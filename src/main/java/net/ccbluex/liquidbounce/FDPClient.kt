@@ -110,11 +110,6 @@ object FDPClient {
     }
 
     var isStarting = true
-    var isLoadingConfig: Boolean
-        get() = ConfigSystem.isLoadingConfig
-        set(value) {
-            ConfigSystem.isLoadingConfig = value
-        }
 
     // Managers
     val moduleManager = ModuleManager
@@ -176,7 +171,6 @@ object FDPClient {
      */
     fun startClient() {
         isStarting = true
-        isLoadingConfig = true
 
         LOGGER.info("Launching...")
 
@@ -297,7 +291,7 @@ object FDPClient {
             // (only a config-profile switch via FileManager.load ever cleared it), which suppressed
             // every live ValueState notification - so in-game changes (binds, settings) never reached
             // the NextGen web ClickGUI until a full reload.
-            isLoadingConfig = false
+            ConfigSystem.completeInitialLoading()
 
             if (!FileManager.firstStart && FileManager.backedup) {
                 SharedScopes.IO.launch {
