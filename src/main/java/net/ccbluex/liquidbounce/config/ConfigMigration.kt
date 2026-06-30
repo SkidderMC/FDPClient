@@ -29,8 +29,9 @@ object ConfigMigration {
      * the nested object from matching legacy flat keys so old profiles retain every setting.
      */
     fun findValue(moduleJson: JsonObject, value: Value<*>): JsonElement? {
-        direct(moduleJson, value)?.let { return it }
-        if (value !is Configurable) return null
+        val directHit = direct(moduleJson, value)
+        if (value !is Configurable) return directHit
+        if (directHit != null && directHit.isJsonObject) return directHit
 
         val migrated = JsonObject()
         for (child in value.values) {
