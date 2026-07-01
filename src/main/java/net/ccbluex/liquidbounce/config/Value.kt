@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.file.FileManager.valuesConfig
 import net.ccbluex.liquidbounce.event.ClientChange
 import net.ccbluex.liquidbounce.event.ClientChangeBus
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
+import net.ccbluex.liquidbounce.handler.lang.translation
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
@@ -55,7 +56,10 @@ sealed class Value<T>(
     protected var descriptionField: String? = null
 
     open val description: String?
-        get() = descriptionField
+        get() = descriptionField ?: translation(
+            "value.generic.description",
+            name.replace(Regex("(?<=[a-z0-9])(?=[A-Z])"), " ")
+        )
 
     /**
      * Sets the hover description. Concrete value types override this to return their own type so

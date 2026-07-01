@@ -235,7 +235,7 @@ open class Module(
     /**
      * Get value by [valueName]
      */
-    fun getValue(valueName: String) = values.find { it.matchesKey(valueName) }
+    fun getValue(valueName: String) = findDeep(valueName)
 
     /**
      * Get value via `module[valueName]`

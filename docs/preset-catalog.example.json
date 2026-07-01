@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "presets": [
+    {
+      "id": "example-network",
+      "name": "Example Network",
+      "description": "Replace this entry with a reviewed settings bundle.",
+      "url": "presets/example-network.txt",
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "servers": ["*.example.net", "example.net"],
+      "anticheats": ["generic"]
+    }
+  ]
+}

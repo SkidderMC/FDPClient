@@ -14,15 +14,15 @@ class AnticheatModeAdvisorTest {
     @Test
     fun `auto profile resolves observed anti cheats`() {
         assertEquals(AnticheatProfile.GRIM, AnticheatModeAdvisor.resolve("Auto", "GrimAC"))
-        assertEquals(AnticheatProfile.NCP, AnticheatModeAdvisor.resolve("Auto", "Watchdog"))
+        assertEquals(AnticheatProfile.WATCHDOG, AnticheatModeAdvisor.resolve("Auto", "Watchdog"))
         assertEquals(AnticheatProfile.VULCAN, AnticheatModeAdvisor.resolve("Auto", "Vulcan"))
     }
 
     @Test
     fun `explicit profile filters unsafe legacy modes`() {
-        val modes = arrayOf("Simple", "Grim", "GrimVertical", "Cancel")
+        val modes = arrayOf("Legit", "Jump", "Simple", "Grim", "GrimVertical", "Cancel")
         assertArrayEquals(
-            arrayOf("Grim", "GrimVertical"),
+            arrayOf("Legit", "Jump", "Grim"),
             AnticheatModeAdvisor.filteredModes("Velocity", "Grim", null, modes)
         )
         assertEquals(

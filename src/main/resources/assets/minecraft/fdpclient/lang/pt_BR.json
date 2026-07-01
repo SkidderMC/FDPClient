@@ -4,6 +4,7 @@
     "Zywl"
   ],
   "translations": {
+    "value.generic.description": "Configura %s.",
     "menu.altManager": "Gerenciador de Autenticação",
     "menu.mods": "Mods",
     "menu.serverStatus": "Status do Servidor",

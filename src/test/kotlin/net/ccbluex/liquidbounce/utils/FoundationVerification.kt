@@ -17,6 +17,7 @@ import net.ccbluex.liquidbounce.config.LongValue
 import net.ccbluex.liquidbounce.config.ModeValueGroup
 import net.ccbluex.liquidbounce.config.MutableListValue
 import net.ccbluex.liquidbounce.config.Vec2Value
+import net.ccbluex.liquidbounce.config.ValueOrganizer
 import net.ccbluex.liquidbounce.features.command.builder.ParameterBuilder
 import net.ccbluex.liquidbounce.features.command.builder.buildCommand
 import net.ccbluex.liquidbounce.file.gson.Exclude
@@ -35,6 +36,9 @@ import net.ccbluex.liquidbounce.utils.rotation.ModernRotationEngine
 import net.ccbluex.liquidbounce.utils.client.AnticheatModeAdvisor
 import net.ccbluex.liquidbounce.utils.client.AnticheatProfile
 import net.ccbluex.liquidbounce.utils.client.ModeRisk
+import net.ccbluex.liquidbounce.handler.api.PresetCatalog
+import net.ccbluex.liquidbounce.handler.api.CatalogPreset
+import net.ccbluex.liquidbounce.handler.api.PresetCatalogService
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
 import net.minecraft.util.AxisAlignedBB
@@ -54,6 +58,8 @@ object FoundationVerification {
         verifyChangeBus()
         verifyValueTypes()
         verifyModeChoices()
+        verifyAutomaticValueOrganization()
+        verifyPresetCatalogMatching()
         verifyComparatorChain()
         verifyNeuralSmoother()
         verifyAnticheatAdvice()
@@ -64,15 +70,16 @@ object FoundationVerification {
         check(AnticheatModeAdvisor.resolve("Auto", "Grim") == AnticheatProfile.GRIM)
         check(AnticheatModeAdvisor.resolve("Auto", "NoCheatPlus") == AnticheatProfile.NCP)
 
-        val all = arrayOf("Simple", "Grim", "GrimVertical", "Cancel")
+        val all = arrayOf("Legit", "Jump", "Grim", "GrimVertical", "Cancel")
         val filtered = AnticheatModeAdvisor.filteredModes("Velocity", "Grim", null, all)
-        check(filtered.contentEquals(arrayOf("Grim", "GrimVertical")))
+        check(filtered.contentEquals(arrayOf("Legit", "Jump", "Grim")))
         check(AnticheatModeAdvisor.filteredModes("Velocity", "Auto", null, all).contentEquals(all))
 
         val safe = AnticheatModeAdvisor.assess("Criticals", "Jump", "Grim", null)
         val unsafe = AnticheatModeAdvisor.assess("Criticals", "Packet", "Grim", null)
         check(safe.risk == ModeRisk.RECOMMENDED)
         check(unsafe.risk == ModeRisk.LIKELY_DETECTED && unsafe.recommendedMode == "Jump")
+        check(AnticheatModeAdvisor.resolve("Auto", "Hypixel Watchdog") == AnticheatProfile.WATCHDOG)
     }
 
     private fun verifyGeometry() {
@@ -216,6 +223,41 @@ object FoundationVerification {
         check(first.selected && !second.selected && lifecycle == listOf("A+"))
         group.modeValue.set("B", saveImmediately = false)
         check(!first.selected && second.selected && lifecycle == listOf("A+", "A-", "B+"))
+    }
+
+    private fun verifyAutomaticValueOrganization() {
+        val root = Configurable("Legacy")
+        root.float("Range", 3f, 1f..6f)
+        root.float("ScanDistance", 6f, 1f..12f)
+        root.int("Delay", 2, 0..20)
+        root.int("Cooldown", 4, 0..20)
+        root.color("BoxColor", 0xFFFFFFFF.toInt())
+
+        val groups = ValueOrganizer.organize(root)
+        check(groups.map { it.name } == listOf("Range", "Timing"))
+        check(root.findDeep("Range") != null && root.findDeep("Cooldown") != null)
+        check(root.values.filterIsInstance<Configurable>().flatMap { it.values }.size == 4)
+        check(root.values.any { it.name == "BoxColor" })
+
+        val explicit = Configurable("Explicit")
+        explicit.addValue(Configurable("Custom"))
+        explicit.int("One", 1, 0..2)
+        explicit.int("Two", 1, 0..2)
+        explicit.int("Three", 1, 0..2)
+        check(ValueOrganizer.organize(explicit).isEmpty())
+    }
+
+    private fun verifyPresetCatalogMatching() {
+        val preset = CatalogPreset(
+            id = "example",
+            url = "presets/example.txt",
+            sha256 = PresetCatalogService.digest("safe".toByteArray()),
+            servers = listOf("*.example.net"),
+        )
+        val catalog = PresetCatalog(presets = listOf(preset))
+        check(PresetCatalogService.findForServer(catalog, "play.example.net:25565") === preset)
+        check(PresetCatalogService.findForServer(catalog, "notexample.net") == null)
+        check(PresetCatalogService.domainMatches("example.net", "*.example.net"))
     }
 
     private fun verifyComparatorChain() {

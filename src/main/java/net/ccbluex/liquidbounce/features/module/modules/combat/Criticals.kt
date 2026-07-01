@@ -32,7 +32,7 @@ private val CRITICAL_MODES = arrayOf(
 object Criticals : Module("Criticals", Category.COMBAT, Category.SubCategory.COMBAT_LEGIT) {
 
     private val antiCheatValue = choices(
-        "AntiCheat", arrayOf("Auto", "All", "NCP", "AAC", "Grim", "Vulcan"), "Auto"
+        "AntiCheat", arrayOf("Auto", "All", "NCP", "AAC", "Grim", "Vulcan", "Watchdog", "Verus", "Matrix", "Intave", "Spartan", "Polar"), "Auto"
     ).onChanged { refreshModeChoices(force = true) }
         .describe("Filter critical modes by a detected or explicitly selected anti-cheat family.")
     private val antiCheat by antiCheatValue

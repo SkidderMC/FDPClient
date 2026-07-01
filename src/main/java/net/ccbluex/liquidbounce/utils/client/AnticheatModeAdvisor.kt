@@ -8,7 +8,9 @@ package net.ccbluex.liquidbounce.utils.client
 import java.util.Locale
 
 enum class AnticheatProfile(val displayName: String) {
-    NCP("NCP"), AAC("AAC"), GRIM("Grim"), VULCAN("Vulcan"), GENERIC("Generic")
+    NCP("NCP"), AAC("AAC"), GRIM("Grim"), VULCAN("Vulcan"), WATCHDOG("Watchdog"),
+    VERUS("Verus"), MATRIX("Matrix"), INTAVE("Intave"), SPARTAN("Spartan"), POLAR("Polar"),
+    GENERIC("Generic")
 }
 
 enum class ModeRisk {
@@ -23,6 +25,19 @@ data class ModeAdvice(
 
 /** Curated compatibility data. It deliberately does not label legacy packet tricks as bypasses. */
 object AnticheatModeAdvisor {
+
+    private val profileMatchers = listOf<(String) -> AnticheatProfile?>(
+        { value -> AnticheatProfile.NCP.takeIf { value == "ncp" || "nocheatplus" in value } },
+        { value -> AnticheatProfile.AAC.takeIf { value.startsWith("aac") } },
+        { value -> AnticheatProfile.GRIM.takeIf { "grim" in value } },
+        { value -> AnticheatProfile.VULCAN.takeIf { "vulcan" in value } },
+        { value -> AnticheatProfile.WATCHDOG.takeIf { "watchdog" in value || "hypixel" in value } },
+        { value -> AnticheatProfile.VERUS.takeIf { "verus" in value } },
+        { value -> AnticheatProfile.MATRIX.takeIf { "matrix" in value } },
+        { value -> AnticheatProfile.INTAVE.takeIf { "intave" in value } },
+        { value -> AnticheatProfile.SPARTAN.takeIf { "spartan" in value } },
+        { value -> AnticheatProfile.POLAR.takeIf { "polar" in value } },
+    )
 
     private data class Compatibility(
         val recommended: List<String>,
@@ -42,13 +57,19 @@ object AnticheatModeAdvisor {
             listOf("AACZero", "AAC5.2.0", "AAC5.2.0Combat")
         ),
         AnticheatProfile.GRIM to Compatibility(
-            listOf("Grim", "Legit", "Jump"),
-            listOf("GrimVertical", "GrimC07", "GrimC03")
+            listOf("Legit"),
+            listOf("Jump", "Grim")
         ),
         AnticheatProfile.VULCAN to Compatibility(
             listOf("Vulcan", "Legit", "Jump", "Simple"),
             listOf("Tick", "Reverse")
         ),
+        AnticheatProfile.WATCHDOG to Compatibility(listOf("Legit", "Jump"), listOf("Simple")),
+        AnticheatProfile.VERUS to Compatibility(listOf("Legit", "Jump"), listOf("Tick", "Reverse")),
+        AnticheatProfile.MATRIX to Compatibility(listOf("Legit", "Jump"), listOf("MatrixReduce")),
+        AnticheatProfile.INTAVE to Compatibility(listOf("Legit", "Jump"), listOf("IntaveReduce", "Intave")),
+        AnticheatProfile.SPARTAN to Compatibility(listOf("Legit", "Jump"), listOf("Simple")),
+        AnticheatProfile.POLAR to Compatibility(listOf("Legit", "Jump")),
     )
 
     private val criticals = mapOf(
@@ -67,6 +88,12 @@ object AnticheatModeAdvisor {
         AnticheatProfile.VULCAN to Compatibility(
             listOf("Jump", "LowJump", "Visual"), listOf("Packet")
         ),
+        AnticheatProfile.WATCHDOG to Compatibility(listOf("Jump", "Visual"), listOf("LowJump")),
+        AnticheatProfile.VERUS to Compatibility(listOf("Jump", "LowJump", "Visual")),
+        AnticheatProfile.MATRIX to Compatibility(listOf("Jump", "LowJump", "Visual")),
+        AnticheatProfile.INTAVE to Compatibility(listOf("Jump", "Visual"), listOf("LowJump")),
+        AnticheatProfile.SPARTAN to Compatibility(listOf("Jump", "LowJump", "Visual")),
+        AnticheatProfile.POLAR to Compatibility(listOf("Jump", "Visual"), listOf("LowJump")),
     )
 
     fun resolve(selection: String, observed: String?): AnticheatProfile {
@@ -106,12 +133,6 @@ object AnticheatModeAdvisor {
 
     private fun profileFromName(name: String?): AnticheatProfile? {
         val normalized = name?.lowercase(Locale.ROOT)?.filter(Char::isLetterOrDigit) ?: return null
-        return when {
-            normalized == "ncp" || "nocheatplus" in normalized || "watchdog" in normalized -> AnticheatProfile.NCP
-            normalized.startsWith("aac") -> AnticheatProfile.AAC
-            "grim" in normalized -> AnticheatProfile.GRIM
-            "vulcan" in normalized || "oldvulcan" in normalized -> AnticheatProfile.VULCAN
-            else -> null
-        }
+        return profileMatchers.firstNotNullOfOrNull { matcher -> matcher(normalized) }
     }
 }

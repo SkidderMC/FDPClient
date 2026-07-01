@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.event.GameTickEvent
 import net.ccbluex.liquidbounce.event.KeyStateEvent
 import net.ccbluex.liquidbounce.event.Listenable
+import net.ccbluex.liquidbounce.config.ValueOrganizer
 import net.ccbluex.liquidbounce.features.command.CommandManager.registerCommand
 import net.ccbluex.liquidbounce.utils.client.ClassUtils
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
@@ -58,6 +59,7 @@ object ModuleManager : Listenable, Collection<Module> by MODULE_REGISTRY {
      */
     fun registerModule(module: Module) {
         MODULE_REGISTRY += module
+        ValueOrganizer.organize(module)
         generateCommand(module)
     }
 

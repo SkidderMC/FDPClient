@@ -78,17 +78,20 @@ object FightBot : Module("FightBot", Category.COMBAT, Category.SubCategory.COMBA
         thread?.interrupt()
         backThread?.interrupt()
         mc.gameSettings.keyBindForward.pressed = false
+        mc.gameSettings.keyBindUseItem.pressed = false
+        entity = null
     }
 
     val onAttack = handler<AttackEvent> {
+        val target = entity ?: return@handler
+        val closeEnough = target.getDistanceToEntity(mc.thePlayer) < 3.5f
         when (blockMode.lowercase()) {
             "skill" -> {
-                if (mc.thePlayer.experienceLevel >= 100 && entity?.getDistanceToEntity(mc.thePlayer)!! < 3.5f)
-                    mc.gameSettings.keyBindUseItem.pressed = true
+                mc.gameSettings.keyBindUseItem.pressed = mc.thePlayer.experienceLevel >= 100 && closeEnough
             }
 
             "always" -> {
-                mc.gameSettings.keyBindUseItem.pressed = entity?.getDistanceToEntity(mc.thePlayer)!! < 3.5f
+                mc.gameSettings.keyBindUseItem.pressed = closeEnough
             }
         }
     }
@@ -167,6 +170,7 @@ object FightBot : Module("FightBot", Category.COMBAT, Category.SubCategory.COMBA
                     discoveredTargets.sortBy { mc.thePlayer.getDistanceToEntityBox(it) }
                     witherTargets.sortBy { mc.thePlayer.getDistanceToEntityBox(it) }
                     val entity = discoveredTargets[0]
+                    this.entity = entity
 
                     if (thread?.isAlive != true) {
                         thread = thread(name = "FightBot-Find") {
@@ -197,6 +201,8 @@ object FightBot : Module("FightBot", Category.COMBAT, Category.SubCategory.COMBA
                         if (mc.thePlayer.onGround && autoJumpValue) mc.thePlayer.jump()
                     }
                 } else {
+                    this.entity = null
+                    if (blockMode != "Manual") mc.gameSettings.keyBindUseItem.pressed = false
                     when (findWay.lowercase()) {
                         "point" -> {
                             if (getDistanceToPos(mainPos[0], mainPos[1], mainPos[2], mc.thePlayer) > 2) {
