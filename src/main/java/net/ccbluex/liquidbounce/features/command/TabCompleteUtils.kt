@@ -6,6 +6,9 @@
 package net.ccbluex.liquidbounce.features.command
 
 import net.ccbluex.liquidbounce.FDPClient.moduleManager
+import net.ccbluex.liquidbounce.config.Configurable
+import net.ccbluex.liquidbounce.config.FontValue
+import net.ccbluex.liquidbounce.config.Value
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance.Companion.mc
 import net.minecraft.block.Block
 import net.minecraft.item.Item
@@ -47,13 +50,34 @@ object TabCompleteUtils {
         match(prefix, moduleManager.map { it.name })
 
     /**
-     * Value names of the module identified by [moduleName] matching [prefix].
-     * Returns empty if the module is unknown. Font values are excluded because the
-     * value command does not expose them, matching ModuleCommand behaviour.
+     * Leaf value names of the module identified by [moduleName] matching [prefix].
+     * Returns empty if the module is unknown. Values are flattened out of their
+     * [Configurable] groups so nested settings are offered directly; font values and
+     * non-renderable values (unsupported, excluded or hidden) are filtered out so
+     * suggestions only ever offer values the value command can actually set, matching
+     * ModuleCommand behaviour. Names are emitted lowercase to mirror the value
+     * command's own completion output.
      */
     fun moduleValues(moduleName: String, prefix: String): List<String> {
         val module = moduleManager[moduleName] ?: return emptyList()
-        return match(prefix, module.values.map { it.name })
+        return match(prefix, leafValues(module.values).map { it.name.lowercase() })
+    }
+
+    private fun leafValues(values: Collection<Value<*>>): List<Value<*>> {
+        val leaves = mutableListOf<Value<*>>()
+
+        for (value in values) {
+            if (value is FontValue || !value.shouldRender()) continue
+
+            if (value is Configurable) {
+                leaves += leafValues(value.values)
+                continue
+            }
+
+            leaves += value
+        }
+
+        return leaves
     }
 
     /**
