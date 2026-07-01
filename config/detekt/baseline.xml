@@ -39,12 +39,11 @@
     <ID>ComplexCondition:ColorElement.kt$ColorElement$mouseX &gt;= rgbaTextX &amp;&amp; mouseX &lt;= rgbaTextX + maxWidth &amp;&amp; mouseY &gt;= rgbaTextY &amp;&amp; mouseY &lt;= rgbaTextY + rgbaTextHeight</ID>
     <ID>ComplexCondition:CombatVisuals.kt$CombatVisuals$thePlayer.fallDistance &gt; 0F &amp;&amp; !thePlayer.onGround &amp;&amp; !thePlayer.isOnLadder &amp;&amp; !thePlayer.isInWater &amp;&amp; !thePlayer.isPotionActive( Potion.blindness ) &amp;&amp; thePlayer.ridingEntity == null || Criticals.handleEvents() &amp;&amp; Criticals.msTimer.hasTimePassed( Criticals.delay ) &amp;&amp; !thePlayer.isInWater &amp;&amp; !thePlayer.isInLava &amp;&amp; !thePlayer.isInWeb</ID>
     <ID>ComplexCondition:Configurable.kt$Configurable$value.excluded || (!include.subjectiveValues &amp;&amp; value.subjective) || (!include.hiddenValues &amp;&amp; value.hidden) || (!include.keyBindings &amp;&amp; value is KeyBindValue) || (!include.filePaths &amp;&amp; value is FileValue)</ID>
-    <ID>ComplexCondition:Criticals.kt$Criticals$!thePlayer.onGround || thePlayer.isOnLadder || thePlayer.isInWeb || thePlayer.isInLiquid || thePlayer.ridingEntity != null || entity.hurtTime &gt; hurtTime || Flight.handleEvents() || !msTimer.hasTimePassed(delay)</ID>
+    <ID>ComplexCondition:Criticals.kt$Criticals$!thePlayer.onGround || thePlayer.isOnLadder || thePlayer.isInWeb || thePlayer.isInLiquid || thePlayer.ridingEntity != null || entity.hurtTime &gt; hurtTime || Flight.handleEvents() || !msTimer.hasTimePassed(delay) || (onlyWhileSprinting &amp;&amp; !thePlayer.isSprinting)</ID>
     <ID>ComplexCondition:CustomSpeed.kt$CustomSpeed$notOnVoid &amp;&amp; fallingPlayer.findCollision(500) == null || notOnFalling &amp;&amp; player.fallDistance &gt; 2.5f || notOnConsuming &amp;&amp; player.isUsingItem &amp;&amp; (heldItem.item is ItemFood || heldItem.item is ItemPotion || heldItem.item is ItemBucketMilk)</ID>
     <ID>ComplexCondition:Damage.kt$Damage$packet is S19PacketEntityStatus &amp;&amp; event.eventType == EventState.RECEIVE &amp;&amp; packet.opCode == 2.toByte() &amp;&amp; packet.entityId == player.entityId</ID>
     <ID>ComplexCondition:Disabler.kt$Disabler$cancelC03 &amp;&amp; !(packet is C04PacketPlayerPosition || packet is C05PacketPlayerLook || packet is C06PacketPlayerPosLook)</ID>
-    <ID>ComplexCondition:ESP.kt$ESP$minX &gt; 0 || minY &gt; 0 || maxX &lt;= mc.displayWidth || maxY &lt;= mc.displayWidth</ID>
-    <ID>ComplexCondition:ESP2D.kt$ESP2D$armorNumber &amp;&amp; (!hover || entity.entityItem == mc.thePlayer!!.heldItem || isHovering(minX, maxX, minY, maxY, scaledResolution))</ID>
+    <ID>ComplexCondition:ESP2D.kt$ESP2D$armorNumber &amp;&amp; (!hover || entity.entityItem == mc.thePlayer?.heldItem || isHovering(minX, maxX, minY, maxY, scaledResolution))</ID>
     <ID>ComplexCondition:ESP2D.kt$ESP2D$e != null &amp;&amp; !e.isDead &amp;&amp; (EntityUtils.isSelected(e, false) || (localPlayer &amp;&amp; e is EntityPlayerSP &amp;&amp; mc.gameSettings.thirdPersonView != 0) || (droppedItems &amp;&amp; e is EntityItem))</ID>
     <ID>ComplexCondition:ESP2D.kt$ESP2D$healthNumber &amp;&amp; (!hover || entity === mc.thePlayer || isHovering(minX, maxX, minY, maxY, scaledResolution))</ID>
     <ID>ComplexCondition:ESP2D.kt$ESP2D$isLiving &amp;&amp; armorItems &amp;&amp; (!hover || entity === mc.thePlayer || isHovering(minX, maxX, minY, maxY, scaledResolution))</ID>
@@ -93,6 +92,7 @@
     <ID>ComplexCondition:KillAura.kt$KillAura$blockStatus &amp;&amp; (!uncpAutoBlock || !blinkAutoBlock) || shouldPrioritize()</ID>
     <ID>ComplexCondition:KillAura.kt$KillAura$blockStatus &amp;&amp; autoBlock == "Packet" &amp;&amp; releaseAutoBlock &amp;&amp; !ignoreTickRule</ID>
     <ID>ComplexCondition:KillAura.kt$KillAura$cancelRun || (noInventoryAttack &amp;&amp; (mc.currentScreen is GuiContainer || System.currentTimeMillis() - containerOpen &lt; noInventoryDelay))</ID>
+    <ID>ComplexCondition:KillAura.kt$KillAura$previousTarget != null &amp;&amp; isSelected(previousTarget, true) &amp;&amp; thePlayer.getDistanceToEntityBox(previousTarget) &lt;= maxRange &amp;&amp; (fov &gt;= 180f || thePlayer.isLookingOn(previousTarget, fov.toDouble())) &amp;&amp; Backtrack.runWithNearestTrackedDistance(previousTarget) { updateRotations(previousTarget) }</ID>
     <ID>ComplexCondition:KillAura.kt$KillAura$raycastEntity != null &amp;&amp; raycastEntity is EntityLivingBase &amp;&amp; (!(raycastEntity is EntityPlayer &amp;&amp; raycastEntity.isClientFriend()))</ID>
     <ID>ComplexCondition:KillAura.kt$KillAura$thePlayer.isBlocking &amp;&amp; (autoBlock == "Off" &amp;&amp; blockStatus || autoBlock == "Packet" &amp;&amp; releaseAutoBlock)</ID>
     <ID>ComplexCondition:KillAura.kt$KillAura$wasBlocking &amp;&amp; !blockStatus &amp;&amp; (releaseAutoBlock &amp;&amp; !ignoreTickRule || autoBlock == "Off")</ID>
@@ -171,6 +171,7 @@
     <ID>ComplexCondition:SuperKnockback.kt$SuperKnockback$onlyMove &amp;&amp; (!player.isMoving || onlyMoveForward &amp;&amp; player.movementInput.moveStrafe != 0f)</ID>
     <ID>ComplexCondition:SuperKnockback.kt$SuperKnockback$player.isSprinting &amp;&amp; player.serverSprintState &amp;&amp; !blockInput &amp;&amp; !startWaiting</ID>
     <ID>ComplexCondition:TargetFocus.kt$TargetFocus$lockedTargetName.isEmpty() || currentTarget == null || !isRenderableCandidate(currentTarget) || HideClans.isAlly(currentTarget)</ID>
+    <ID>ComplexCondition:TargetLock.kt$TargetLock$sticky &amp;&amp; target != lockedEntity &amp;&amp; isLockValid(lockedEntity) &amp;&amp; !lockTimer.hasTimePassed(switchDelay)</ID>
     <ID>ComplexCondition:TargetStrafe.kt$TargetStrafe$!doStrafe || (ongroundValue &amp;&amp; !mc.thePlayer.onGround) || !canStrafe()</ID>
     <ID>ComplexCondition:Teams.kt$Teams$scoreboard &amp;&amp; thePlayer.team != null &amp;&amp; entity.team != null &amp;&amp; thePlayer.team.isSameTeam(entity.team)</ID>
     <ID>ComplexCondition:Teleport.kt$Teleport$endPos != null &amp;&amp; (player.isSneaking || !needSneak || mode in noSneakModes)</ID>
@@ -181,9 +182,9 @@
     <ID>ComplexCondition:Tower.kt$Tower$towerModeValues.get() == "None" || notOnMoveValues.get() &amp;&amp; player.isMoving || onJumpValues.get() &amp;&amp; !mc.gameSettings.keyBindJump.isKeyDown</ID>
     <ID>ComplexCondition:Tower.kt$Tower$towerModeValues.get() == "Vulcan2.9.0" &amp;&amp; packet is C04PacketPlayerPosition &amp;&amp; !player.isMoving &amp;&amp; player.ticksExisted % 2 == 0</ID>
     <ID>ComplexCondition:UNCPHopNew.kt$UNCPHopNew$!player.isMoving || player.isInLiquid || player.isInWeb || player.isOnLadder</ID>
+    <ID>ComplexCondition:Velocity.kt$Velocity$!ServerObserver.hasRecentLagBack &amp;&amp; !player.isJumping &amp;&amp; nextInt(endExclusive = 100) &lt; chance &amp;&amp; shouldJump() &amp;&amp; player.isSprinting &amp;&amp; player.onGround &amp;&amp; player.hurtTime == 9</ID>
     <ID>ComplexCondition:Velocity.kt$Velocity$!delayedBlink &amp;&amp; delayedDelayTransaction &amp;&amp; packet is S32PacketConfirmTransaction &amp;&amp; delayedVelocityTick == player.ticksExisted</ID>
     <ID>ComplexCondition:Velocity.kt$Velocity$!force &amp;&amp; delayedBlink &amp;&amp; delayedBlinkActive &amp;&amp; !delayedBlinkTimer.hasTimePassed(delayedDelay.toLong())</ID>
-    <ID>ComplexCondition:Velocity.kt$Velocity$!player.isJumping &amp;&amp; nextInt(endExclusive = 100) &lt; chance &amp;&amp; shouldJump() &amp;&amp; player.isSprinting &amp;&amp; player.onGround &amp;&amp; player.hurtTime == 9</ID>
     <ID>ComplexCondition:Velocity.kt$Velocity$(packet is S12PacketEntityVelocity &amp;&amp; thePlayer.entityId == packet.entityID &amp;&amp; packet.motionY &gt; 0 &amp;&amp; (packet.motionX != 0 || packet.motionZ != 0)) || (packet is S27PacketExplosion &amp;&amp; (thePlayer.motionY + packet.field_149153_g) &gt; 0.0 &amp;&amp; ((thePlayer.motionX + packet.field_149152_f) != 0.0 || (thePlayer.motionZ + packet.field_149159_h) != 0.0))</ID>
     <ID>ComplexCondition:Velocity.kt$Velocity$Disabler.handleEvents() &amp;&amp; Disabler.verusCombat &amp;&amp; (!Disabler.onlyCombat || Disabler.isOnCombat)</ID>
     <ID>ComplexCondition:Velocity.kt$Velocity$delayedBlink &amp;&amp; delayedBlinkActive &amp;&amp; packet.javaClass.simpleName.startsWith("S", ignoreCase = true) &amp;&amp; player.ticksExisted &gt; 10</ID>
@@ -296,6 +297,7 @@
     <ID>CyclomaticComplexMethod:KillAura.kt$KillAura$private fun shouldPrioritize(): Boolean</ID>
     <ID>CyclomaticComplexMethod:KillAura.kt$KillAura$private fun startBlocking(interactEntity: Entity, interact: Boolean, fake: Boolean = false)</ID>
     <ID>CyclomaticComplexMethod:KillAura.kt$KillAura$private fun updateHittable()</ID>
+    <ID>CyclomaticComplexMethod:KillAura.kt$KillAura$private fun updateTarget()</ID>
     <ID>CyclomaticComplexMethod:LiquidBounceLegacyTH.kt$LiquidBounceLegacyTH$override fun drawTarget(entity: EntityLivingBase)</ID>
     <ID>CyclomaticComplexMethod:LocalThemesCommand.kt$LocalThemesCommand$override fun execute(args: Array&lt;String&gt;)</ID>
     <ID>CyclomaticComplexMethod:MLG.kt$MLG$override fun onRotationUpdate()</ID>
@@ -469,7 +471,6 @@
     <ID>ForbiddenComment:InventoryCleaner.kt$InventoryCleaner$// TODO: max potion, vehicle, ..., stacks?</ID>
     <ID>ForbiddenComment:InventoryManager.kt$InventoryManager$// TODO: This could be at start of each action?</ID>
     <ID>ForbiddenComment:KillAura.kt$KillAura$// TODO: Make block range independent from attack range</ID>
-    <ID>ForbiddenComment:ModuleCommand.kt$ModuleCommand$// TODO: branch completion</ID>
     <ID>ForbiddenComment:NCPBHop.kt$NCPBHop$//TODO: Recode this mess</ID>
     <ID>ForbiddenComment:NoFluid.kt$NoFluid$// TODO:only do this for blocks that player touched</ID>
     <ID>ForbiddenComment:NoSlow.kt$NoSlow$// TODO: Not sure how to fix random grim simulation flag. (Seem to only happen in Loyisa).</ID>
@@ -880,6 +881,7 @@
     <ID>LoopWithTooManyJumpStatements:ItemUtils.kt$ItemUtils$for</ID>
     <ID>LoopWithTooManyJumpStatements:LiquidFiller.kt$LiquidFiller$for</ID>
     <ID>LoopWithTooManyJumpStatements:LogoffSpot.kt$LogoffSpot$for</ID>
+    <ID>LoopWithTooManyJumpStatements:ModuleCommand.kt$ModuleCommand$for</ID>
     <ID>LoopWithTooManyJumpStatements:MurderMystery.kt$MurderMystery$for</ID>
     <ID>LoopWithTooManyJumpStatements:NameTags.kt$NameTags$for</ID>
     <ID>LoopWithTooManyJumpStatements:NextGenClickGuiBridge.kt$NextGenClickGuiBridge$for</ID>
@@ -901,6 +903,7 @@
     <ID>LoopWithTooManyJumpStatements:StorageESP.kt$StorageESP$for</ID>
     <ID>LoopWithTooManyJumpStatements:StrongholdFinder.kt$StrongholdFinder$for</ID>
     <ID>LoopWithTooManyJumpStatements:Surround.kt$Surround$for</ID>
+    <ID>LoopWithTooManyJumpStatements:TabCompleteUtils.kt$TabCompleteUtils$for</ID>
     <ID>LoopWithTooManyJumpStatements:Teams.kt$Teams$for</ID>
     <ID>LoopWithTooManyJumpStatements:Trajectories.kt$Trajectories$for</ID>
     <ID>LoopWithTooManyJumpStatements:Trajectories.kt$Trajectories$while</ID>
@@ -974,7 +977,6 @@
     <ID>NestedBlockDepth:MacroCommand.kt$MacroCommand$override fun execute(args: Array&lt;String&gt;)</ID>
     <ID>NestedBlockDepth:MatrixSpeeds.kt$MatrixSpeeds$override fun onUpdate()</ID>
     <ID>NestedBlockDepth:ModuleCommand.kt$ModuleCommand$override fun execute(args: Array&lt;String&gt;)</ID>
-    <ID>NestedBlockDepth:ModuleCommand.kt$ModuleCommand$override fun tabComplete(args: Array&lt;String&gt;): List&lt;String&gt;</ID>
     <ID>NestedBlockDepth:NameProtect.kt$NameProtect$fun handleTextMessage(text: String): String</ID>
     <ID>NestedBlockDepth:NameTags.kt$NameTags$private fun renderNameTag3D(entity: EntityLivingBase, isRenderingSelf: Boolean, name: String)</ID>
     <ID>NestedBlockDepth:NeverloseGui.kt$NeverloseGui$override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int)</ID>

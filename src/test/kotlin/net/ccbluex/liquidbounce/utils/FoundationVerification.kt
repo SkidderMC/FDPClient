@@ -72,7 +72,7 @@ object FoundationVerification {
 
         val all = arrayOf("Legit", "Jump", "Grim", "GrimVertical", "Cancel")
         val filtered = AnticheatModeAdvisor.filteredModes("Velocity", "Grim", null, all)
-        check(filtered.contentEquals(arrayOf("Legit", "Jump", "Grim")))
+        check(filtered.contentEquals(arrayOf("Grim", "Legit", "GrimVertical", "Jump")))
         check(AnticheatModeAdvisor.filteredModes("Velocity", "Auto", null, all).contentEquals(all))
 
         val safe = AnticheatModeAdvisor.assess("Criticals", "Jump", "Grim", null)

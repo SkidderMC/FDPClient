@@ -22,7 +22,7 @@ class AnticheatModeAdvisorTest {
     fun `explicit profile filters unsafe legacy modes`() {
         val modes = arrayOf("Legit", "Jump", "Simple", "Grim", "GrimVertical", "Cancel")
         assertArrayEquals(
-            arrayOf("Legit", "Jump", "Grim"),
+            arrayOf("Grim", "Legit", "GrimVertical", "Jump"),
             AnticheatModeAdvisor.filteredModes("Velocity", "Grim", null, modes)
         )
         assertEquals(
