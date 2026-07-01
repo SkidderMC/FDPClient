@@ -102,7 +102,7 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Category.SubCategory
     private val nextGenVirtualScreens by multiSelect(
         "Virtual Screens",
         arrayOf("Multiplayer", "Singleplayer", "AltManager", "Disconnected", "Inventory"),
-        setOf("Multiplayer", "Singleplayer", "AltManager", "Disconnected", "Inventory"),
+        setOf(),
     ) { style == "NextGen" }
         .describe("Native screens rendered by the active web theme, each with an automatic native fallback.")
 
