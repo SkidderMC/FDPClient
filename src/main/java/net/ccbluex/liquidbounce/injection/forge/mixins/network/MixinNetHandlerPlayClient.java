@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.network;
 
+import com.mojang.authlib.GameProfile;
 import io.netty.buffer.Unpooled;
 import net.ccbluex.liquidbounce.event.EntityMovementEvent;
 import net.ccbluex.liquidbounce.event.EventManager;
@@ -28,6 +29,7 @@ import net.minecraft.client.gui.GuiDownloadTerrain;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.network.NetHandlerPlayClient;
+import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
@@ -254,6 +256,25 @@ public abstract class MixinNetHandlerPlayClient {
 
         if (entity != null)
             EventManager.INSTANCE.call(new EntityMovementEvent(entity));
+    }
+
+    /**
+     * Null-safe spawn: if a player's tab-list entry (ADD_PLAYER) has not been applied yet - e.g. the
+     * server sends SPAWN_PLAYER in the same burst or during tab-list churn (Sumo arena resets) - vanilla
+     * does {@code getPlayerInfo(uuid).getGameProfile()} and NPE-crashes. Spawn with a fallback profile
+     * carrying the real UUID instead, so the player is still created and visible (skin resolves by UUID).
+     * This closes the crash the old deferred-spawn workaround guarded, without its downside of dropping
+     * spawns entirely (which made players invisible - issue #1568).
+     */
+    @Redirect(
+        method = "handleSpawnPlayer",
+        at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/NetworkPlayerInfo;getGameProfile()Lcom/mojang/authlib/GameProfile;")
+    )
+    private GameProfile fdp$spawnPlayerFallbackProfile(NetworkPlayerInfo playerInfo, S0CPacketSpawnPlayer packetIn) {
+        if (playerInfo != null) {
+            return playerInfo.getGameProfile();
+        }
+        return new GameProfile(packetIn.getPlayer(), "player-" + packetIn.getPlayer().toString().substring(0, 8));
     }
 
     @Inject(method = "handlePlayerPosLook", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/EntityPlayer;setPositionAndRotation(DDDFF)V", shift = At.Shift.BEFORE))
