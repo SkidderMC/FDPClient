@@ -65,10 +65,10 @@ object NextGenMenuBridge : MinecraftInstance {
         val url = when (target.uppercase(Locale.ROOT)) {
             "MAINTAINER_GITHUB" -> FDPClient.CLIENT_GITHUB
             "MAINTAINER_DISCORD" -> "https://discord.com/invite/3XRFGeqEYD"
-            "CLIENT_WEBSITE" -> "https://fdpclient.club"
+            "CLIENT_WEBSITE" -> "https://fdpinfo.github.io/"
             "MAINTAINER_FORUM" -> "https://github.com/SkidderMC/FDPClient/discussions"
-            "MAINTAINER_TWITTER" -> "https://x.com/fdpclient"
-            "MAINTAINER_YOUTUBE" -> "https://www.youtube.com/@fdpclient"
+            "MAINTAINER_TWITTER" -> "https://lucas-lima.xyz"
+            "MAINTAINER_YOUTUBE" -> "https://www.youtube.com/@opZywl"
             else -> return
         }
         MiscUtils.showURL(url)
