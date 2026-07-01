@@ -216,10 +216,12 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Category.SubCategory
         try {
             fdpDropdownGui?.onGuiClosed()
             yzyGui?.onGuiClosed()
-            if (mc.currentScreen === nextGenGui) {
-                mc.displayGuiScreen(null)
-            } else {
-                nextGenGui?.onGuiClosed()
+            nextGenGui?.let { screen ->
+                if (mc.currentScreen === screen) {
+                    mc.displayGuiScreen(null)
+                } else {
+                    screen.onGuiClosed()
+                }
             }
             neverloseGui = null
             NextGenBrowserRuntime.releasePersistentBrowser()
