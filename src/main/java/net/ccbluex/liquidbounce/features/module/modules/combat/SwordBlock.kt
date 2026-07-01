@@ -4,6 +4,7 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.item.ItemSword
 
@@ -19,8 +20,15 @@ object SwordBlock : Module("SwordBlock", Category.COMBAT, Category.SubCategory.C
         .describe("When to keep the sword block active.")
     private val keepWhileManualUse by boolean("KeepWhileManualUse", true)
         .describe("Do not override a manual right-click hold.")
+    private val linger by int("Linger", 200, 0..1000) { mode == "WhileAttacking" }
+        .describe("Keep blocking for this long after the target is lost, in milliseconds.")
 
     private var forcedBlocking = false
+    private val lingerTimer = MSTimer()
+
+    override fun onEnable() {
+        lingerTimer.reset()
+    }
 
     override fun onDisable() {
         releaseBlock()
@@ -38,9 +46,12 @@ object SwordBlock : Module("SwordBlock", Category.COMBAT, Category.SubCategory.C
             return@handler
         }
 
+        val engaged = KillAura.handleEvents() && (KillAura.target != null || KillAura.blockStatus)
+        if (engaged) lingerTimer.reset()
+
         val shouldBlock = holdingSword && when (mode) {
             "Always" -> true
-            else -> KillAura.handleEvents() || KillAura.blockStatus
+            else -> engaged || !lingerTimer.hasTimePassed(linger)
         }
 
         if (shouldBlock) {

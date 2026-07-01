@@ -13,9 +13,11 @@ import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isSelected
+import net.ccbluex.liquidbounce.utils.extensions.isLookingOn
 import net.ccbluex.liquidbounce.utils.extensions.withAlpha
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawEntityBoxESP
+import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.minecraft.entity.EntityLivingBase
 import java.awt.Color
 
@@ -30,6 +32,14 @@ object TargetLock : Module("TargetLock", Category.COMBAT, Category.SubCategory.C
 
     private val maxRange by float("MaxRange", 20F, 8F..40F)
         .describe("Drop the lock if the target gets farther than this.")
+    private val sticky by boolean("Sticky", true)
+        .describe("Keep the current lock until it becomes invalid before switching.")
+    private val switchDelay by int("SwitchDelay", 200, 0..2000) { sticky }
+        .describe("Minimum time to hold a lock before a new attack can steal it.")
+    private val fovGuard by boolean("FovGuard", false)
+        .describe("Drop the lock when the target leaves the field of view.")
+    private val maxFov by float("MaxFOV", 120F, 30F..180F) { fovGuard }
+        .describe("Field of view in which the lock is kept.")
     private val drawMarker by boolean("Marker", true)
         .describe("Draw a marker on the locked entity.")
     private val rainbowColor by boolean("Rainbow", false) { drawMarker }
@@ -42,6 +52,7 @@ object TargetLock : Module("TargetLock", Category.COMBAT, Category.SubCategory.C
         .describe("Blue component of the marker color.")
 
     private var lockedEntity: EntityLivingBase? = null
+    private val lockTimer = MSTimer()
 
     override val tag
         get() = lockedEntity?.name
@@ -61,15 +72,28 @@ object TargetLock : Module("TargetLock", Category.COMBAT, Category.SubCategory.C
             return false
         }
 
-        return thePlayer.getDistanceToEntity(entity) <= maxRange
+        if (thePlayer.getDistanceToEntity(entity) > maxRange) {
+            return false
+        }
+
+        return !fovGuard || thePlayer.isLookingOn(entity, maxFov.toDouble())
     }
 
     @Suppress("unused")
     private val onAttack = handler<AttackEvent> { event ->
         val target = event.targetEntity
 
-        if (target is EntityLivingBase && isSelected(target, true)) {
+        if (target !is EntityLivingBase || !isSelected(target, true)) {
+            return@handler
+        }
+
+        if (sticky && target != lockedEntity && isLockValid(lockedEntity) && !lockTimer.hasTimePassed(switchDelay)) {
+            return@handler
+        }
+
+        if (target != lockedEntity) {
             lockedEntity = target
+            lockTimer.reset()
         }
     }
 
@@ -79,6 +103,7 @@ object TargetLock : Module("TargetLock", Category.COMBAT, Category.SubCategory.C
 
         if (!isLockValid(locked)) {
             lockedEntity = null
+            lockTimer.reset()
             return@handler
         }
 

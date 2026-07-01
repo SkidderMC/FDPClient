@@ -491,14 +491,16 @@ object Backtrack : Module("Backtrack", Category.COMBAT, Category.SubCategory.COM
     }
 
     private fun handlePackets() {
+        val cutoff = System.currentTimeMillis() - supposedDelay
+
         packetQueue.removeAll { (packet, timestamp) ->
-            if (timestamp <= System.currentTimeMillis() - supposedDelay) {
+            if (timestamp <= cutoff) {
                 PacketUtils.schedulePacketProcess(packet)
                 true
             } else false
         }
 
-        positions.removeAll { (_, timestamp) -> timestamp < System.currentTimeMillis() - supposedDelay }
+        positions.removeAll { (_, timestamp) -> timestamp <= cutoff }
     }
 
     private fun handlePacketsRange() {
@@ -509,36 +511,37 @@ object Backtrack : Module("Backtrack", Category.COMBAT, Category.SubCategory.COM
             return
         }
 
+        val hardCutoff = System.currentTimeMillis() - supposedDelay
+        val cutoff = time.coerceAtLeast(hardCutoff)
+
         packetQueue.removeAll { (packet, timestamp) ->
-            if (timestamp <= time) {
+            if (timestamp <= cutoff) {
                 PacketUtils.schedulePacketProcess(packet)
                 true
             } else false
         }
 
-        positions.removeAll { (_, timestamp) -> timestamp < time }
+        positions.removeAll { (_, timestamp) -> timestamp <= cutoff }
     }
 
     private fun getRangeTime(): Long {
         val target = this.target ?: return 0L
+        val player = mc.thePlayer ?: return -1L
 
-        var time = 0L
-        var found = false
+        val targetPos = target.currPos
 
-        for (data in positions) {
-            time = data.second
+        var time = -1L
 
-            val targetPos = target.currPos
-
+        for (data in positions.reversed()) {
             val targetBox = target.hitBox.offset(data.first - targetPos)
 
-            if (mc.thePlayer.getDistanceToBox(targetBox) in distance) {
-                found = true
+            if (player.getDistanceToBox(targetBox) in distance) {
+                time = data.second
                 break
             }
         }
 
-        return if (found) time else -1L
+        return time
     }
 
     private fun clearPackets(handlePackets: Boolean = true, stopRendering: Boolean = true) {

@@ -18,6 +18,7 @@ import net.ccbluex.liquidbounce.utils.client.*
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPackets
 import net.ccbluex.liquidbounce.utils.extensions.*
+import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextFloat
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextInt
 import net.ccbluex.liquidbounce.utils.movement.MovementUtils
 import net.ccbluex.liquidbounce.utils.movement.MovementUtils.isOnGround
@@ -94,6 +95,10 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
         .describe("Only modify knockback while in combat.")
     private val noFire by boolean("noFire", false)
         .describe("Disable knockback modification while burning.")
+    private val respectSetbacks by boolean("RespectSetbacks", true)
+        .describe("Take full knockback for a short window after a server correction so the reduction is not what triggered it.")
+    private val setbackGrace by int("SetbackGrace", 350, 0..3000) { respectSetbacks }
+        .describe("How long, in milliseconds, to accept full knockback after a correction.")
     private val overrideDirection by choices("OverrideDirection", arrayOf("None", "Hard", "Offset"), "None")
         .describe("Force knockback in a chosen direction.")
     private val overrideDirectionYaw by float("OverrideDirectionYaw", 0F, -180F..180F) { overrideDirection != "None" }
@@ -224,6 +229,15 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
     private val ticksToPause by int("TicksToPause", 20, 1..50) { pauseOnExplosion }
         .describe("How many ticks to pause after an explosion.")
 
+    private val simpleJitter by boolean("SimpleJitter", false) { mode == "Simple" }
+        .describe("Add bounded per-hit variance so the reduction is not a fixed signature.")
+    private val simpleJitterAmount by float("SimpleJitterAmount", 0.04f, 0f..0.2f) { mode == "Simple" && simpleJitter }
+        .describe("Maximum random swing applied on top of the configured percentages.")
+    private val simplePingScale by boolean("SimplePingScale", false) { mode == "Simple" }
+        .describe("Let higher latency keep slightly more knockback so movement stays believable.")
+    private val simplePingScaleAmount by float("SimplePingScaleAmount", 0.25f, 0f..1f) { mode == "Simple" && simplePingScale }
+        .describe("How strongly latency relaxes the reduction (0 = off, 1 = full).")
+
     // TODO: Could this be useful in other modes? (Jump?)
     // Limits
     private val limitMaxMotionValue = boolean("LimitMaxMotion", false) { mode == "Simple" }
@@ -288,6 +302,7 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
     init {
         moveValues(generalGroup,
             "AntiCheat", "Mode", "Horizontal", "Vertical", "OnlyGround", "OnlyCombat", "noFire",
+            "RespectSetbacks", "SetbackGrace",
             "OverrideDirection", "OverrideDirectionYaw", "PauseOnExplosion", "TicksToPause")
 
         moveValues(reverseGroup,
@@ -307,7 +322,8 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
 
         moveValues(tickGroup,
             "VelocityTick", "TickReductionAmount", "ResetMotionY", "TickBypass",
-            "LimitMaxMotion", "MaxXZMotion", "MaxYMotion")
+            "LimitMaxMotion", "MaxXZMotion", "MaxYMotion",
+            "SimpleJitter", "SimpleJitterAmount", "SimplePingScale", "SimplePingScaleAmount")
 
         moveValues(grimGroup,
             "GrimAdaptive-Horizontal", "GrimAdaptive-Uncertainty", "GrimAdaptive-SetbackCooldown",
@@ -1511,7 +1527,21 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
             return true
         }
 
-        return noFire && player.isBurning
+        if (noFire && player.isBurning) {
+            return true
+        }
+
+        return isInsideSetbackGrace()
+    }
+
+    private fun isInsideSetbackGrace(): Boolean {
+        if (!respectSetbacks || setbackGrace <= 0 || ServerObserver.lastLagBackAt <= 0L) {
+            return false
+        }
+
+        val latency = ServerObserver.ping.coerceAtLeast(0)
+        val window = setbackGrace + (latency / 2).coerceAtMost(1000)
+        return System.currentTimeMillis() - ServerObserver.lastLagBackAt < window
     }
 
     private fun applyDirectionOverride(packet: S12PacketEntityVelocity) {
@@ -1637,6 +1667,29 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
         hud.addNotification(Notification("Velocity compatibility", message, Type.WARNING, 4500))
     }
 
+    private fun effectiveSimpleFactor(base: Float): Float {
+        if (base == 0f || (!simpleJitter && !simplePingScale)) {
+            return base
+        }
+
+        var factor = base
+
+        if (simplePingScale && simplePingScaleAmount > 0f) {
+            val latency = ServerObserver.ping.coerceAtLeast(0)
+            val pingRelax = (latency / 400.0).coerceIn(0.0, 1.0)
+            val tps = ServerObserver.tps.takeIf(Double::isFinite) ?: 20.0
+            val tpsRelax = ((20.0 - tps) / 10.0).coerceIn(0.0, 1.0)
+            val relax = maxOf(pingRelax, tpsRelax) * simplePingScaleAmount
+            factor += ((1f - base) * relax).toFloat()
+        }
+
+        if (simpleJitter && simpleJitterAmount > 0f) {
+            factor += nextFloat(-simpleJitterAmount, simpleJitterAmount)
+        }
+
+        return factor.coerceIn(0f, 1f)
+    }
+
     private fun isInsideGrimSetbackCooldown(): Boolean =
         ServerObserver.lastLagBackAt > 0L &&
             System.currentTimeMillis() - ServerObserver.lastLagBackAt < grimSetbackCooldown
@@ -1716,7 +1769,7 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
         val player = mc.thePlayer ?: return@handler
 
         if (mode == "Jump" && hasReceivedVelocity) {
-            if (!player.isJumping && nextInt(endExclusive = 100) < chance && shouldJump() && player.isSprinting && player.onGround && player.hurtTime == 9) {
+            if (!ServerObserver.hasRecentLagBack && !player.isJumping && nextInt(endExclusive = 100) < chance && shouldJump() && player.isSprinting && player.onGround && player.hurtTime == 9) {
                 player.tryJump()
                 limitUntilJump = 0
             }
@@ -1813,6 +1866,9 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
 
     private fun handleVelocity(event: PacketEvent) {
         val packet = event.packet
+
+        val horizontal = effectiveSimpleFactor(this.horizontal)
+        val vertical = effectiveSimpleFactor(this.vertical)
 
         if (packet is S12PacketEntityVelocity) {
             // Always cancel event and handle motion from here

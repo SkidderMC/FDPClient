@@ -139,6 +139,8 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
     )
     private val targetMode by choices("TargetMode", arrayOf("Single", "Switch", "Multi"), "Switch")
         .describe("How many targets to engage at once.")
+    private val stickyTarget by boolean("StickyTarget", false) { targetMode == "Single" }
+        .describe("Keep the current target while valid instead of re-picking each tick.")
     private val limitedMultiTargets by int("LimitedMultiTargets", 0, 0..50) { targetMode == "Multi" }
         .describe("Max targets to hit in multi mode, 0 is no limit.")
     private val maxSwitchFOV by float("MaxSwitchFOV", 90f, 30f..180f) { targetMode == "Switch" }
@@ -416,7 +418,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
             "NoBlocking", "BlinkCheck")
         targetGroup.addValue(targetFiltersGroup)
         moveValues(targetGroup,
-            "TargetMode", "LimitedMultiTargets", "MaxSwitchFOV", "SwitchDelay", "Priority",
+            "TargetMode", "StickyTarget", "LimitedMultiTargets", "MaxSwitchFOV", "SwitchDelay", "Priority",
             "ActivationSlot", "PreferredSlot")
 
         options.nestInto(rotationsGroup)
@@ -898,15 +900,26 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
     private fun updateTarget() {
         if (shouldPrioritize()) return
 
-        // Reset fixed target to null
-        target = null
-
         val switchMode = targetMode == "Switch"
 
         val thePlayer = mc.thePlayer ?: return
 
+        val previousTarget = target?.takeIf { stickyTarget && targetMode == "Single" }
+
+        // Reset fixed target to null
+        target = null
+
         val selectedPriority = TargetPriority.fromName(priority) ?: TargetPriority.ARMOR
         targetTracker.priorities(TargetPriority.TYPE, selectedPriority, TargetPriority.DISTANCE)
+
+        if (previousTarget != null && isSelected(previousTarget, true) &&
+            thePlayer.getDistanceToEntityBox(previousTarget) <= maxRange &&
+            (fov >= 180f || thePlayer.isLookingOn(previousTarget, fov.toDouble())) &&
+            Backtrack.runWithNearestTrackedDistance(previousTarget) { updateRotations(previousTarget) }
+        ) {
+            target = previousTarget
+            return
+        }
 
         targetTracker.select(
             predicate = { entity ->

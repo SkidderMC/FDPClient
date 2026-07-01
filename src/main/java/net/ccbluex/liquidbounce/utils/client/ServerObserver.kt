@@ -121,22 +121,43 @@ object ServerObserver : MinecraftInstance, Listenable {
 
     /**
      * Combines address, discovered plugin names, payload channels, brand and transaction cadence.
-     * A plugin-derived result wins because it is more explicit than packet timing.
+     * A host or plugin derived result wins because it is more explicit than packet timing.
      */
     fun guessAnticheat(address: String? = mc.currentServerData?.serverIP): String? {
-        if (address?.substringBefore(':')?.endsWith("hypixel.net", true) == true) return "Watchdog"
-
-        val tokens = buildList {
-            addAll(plugins)
-            addAll(payloadChannels)
-            serverBrand?.let(::add)
-        }.map { normalize(it) }
-
-        KNOWN_ANTICHEATS.firstOrNull { known ->
-            tokens.any { token -> token.contains(known.token) }
-        }?.let { return it.displayName }
-
+        guessFromHost(address)?.let { return it }
+        guessFromTokens()?.let { return it }
         return guessFromTransactions(transactions)
+    }
+
+    /**
+     * Resolves the fingerprint an assist layer should trust: a non-transaction signal when the
+     * host, plugins, payload channels or brand identify the anti-cheat, otherwise null. Timing
+     * heuristics are intentionally excluded because they are the least reliable evidence.
+     */
+    fun confidentAnticheat(address: String? = mc.currentServerData?.serverIP): String? {
+        guessFromHost(address)?.let { return it }
+        return guessFromTokens()
+    }
+
+    private fun collectTokens(): List<String> = buildList {
+        addAll(plugins)
+        addAll(payloadChannels)
+        serverBrand?.let(::add)
+    }.map { normalize(it) }.filter(String::isNotEmpty)
+
+    private fun guessFromTokens(): String? {
+        val tokens = collectTokens()
+        if (tokens.isEmpty()) return null
+        return KNOWN_ANTICHEATS
+            .filter { known -> tokens.any { token -> token.contains(known.token) } }
+            .maxByOrNull { it.token.length }
+            ?.displayName
+    }
+
+    private fun guessFromHost(address: String?): String? {
+        val host = address?.substringBefore(':')?.lowercase(Locale.ROOT)?.trim() ?: return null
+        if (host.isEmpty()) return null
+        return KNOWN_HOSTS.firstOrNull { host == it.domain || host.endsWith(".${it.domain}") }?.displayName
     }
 
     fun resetSession() {
@@ -250,6 +271,21 @@ object ServerObserver : MinecraftInstance, Listenable {
 
     private data class KnownAnticheat(val token: String, val displayName: String)
 
+    private data class KnownHost(val domain: String, val displayName: String)
+
+    private val KNOWN_HOSTS = listOf(
+        KnownHost("hypixel.net", "Watchdog"),
+        KnownHost("mineplex.com", "Watchdog"),
+        KnownHost("blocksmc.com", "Vulcan"),
+        KnownHost("gommehd.net", "Vulcan"),
+        KnownHost("loyalhg.com", "Vulcan"),
+        KnownHost("minemen.club", "Grim"),
+        KnownHost("pika-network.net", "Grim"),
+        KnownHost("vanitymc.co", "Grim"),
+        KnownHost("mc-central.net", "Intave"),
+        KnownHost("universocraft.com", "Spartan")
+    )
+
     private val KNOWN_ANTICHEATS = listOf(
         KnownAnticheat("nocheatplus", "NoCheatPlus"),
         KnownAnticheat("grimac", "Grim"),
@@ -260,9 +296,16 @@ object ServerObserver : MinecraftInstance, Listenable {
         KnownAnticheat("verus", "Verus"),
         KnownAnticheat("polar", "Polar"),
         KnownAnticheat("karhu", "Karhu"),
+        KnownAnticheat("kauri", "Kauri"),
         KnownAnticheat("themis", "Themis"),
+        KnownAnticheat("horizon", "Horizon"),
+        KnownAnticheat("witherac", "WitherAC"),
+        KnownAnticheat("godseye", "GodsEye"),
+        KnownAnticheat("funnycheck", "FunnyCheck"),
+        KnownAnticheat("abc", "ABC"),
         KnownAnticheat("negativity", "Negativity"),
         KnownAnticheat("anticheatreloaded", "AntiCheatReloaded"),
+        KnownAnticheat("aacadditionpro", "AAC"),
         KnownAnticheat("aac", "AAC")
     )
 }

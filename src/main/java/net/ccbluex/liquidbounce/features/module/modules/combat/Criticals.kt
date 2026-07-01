@@ -25,7 +25,7 @@ import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 
 private val CRITICAL_MODES = arrayOf(
-    "Packet", "NCPPacket", "BlocksMC", "BlocksMC2", "NoGround", "Hop", "TPHop",
+    "Packet", "NCPPacket", "BlocksMC", "BlocksMC2", "NoGround", "Hop", "MiniJump", "TPHop",
     "Jump", "LowJump", "CustomMotion", "Visual"
 )
 
@@ -46,6 +46,10 @@ object Criticals : Module("Criticals", Category.COMBAT, Category.SubCategory.COM
         .describe("Minimum delay between critical hits.")
     private val hurtTime by int("HurtTime", 10, 0..10)
         .describe("Only crit when target hurt-time is at or below this.")
+    private val onlyWhileSprinting by boolean("OnlyWhileSprinting", false)
+        .describe("Restrict critical hits to sprint attacks for a more legit profile.")
+    private val autoSwitchSafest by boolean("AutoSwitchSafest", true)
+        .describe("When a mode is likely detected, fall back to the safest mode for the profile.")
     private val customMotionY by float("Custom-Y", 0.2f, 0.01f..0.42f) { mode == "CustomMotion" }
         .describe("Upward motion used by the custom crit mode.")
 
@@ -54,10 +58,11 @@ object Criticals : Module("Criticals", Category.COMBAT, Category.SubCategory.COM
     private var lastModeWarning = ""
 
     override fun onEnable() {
+        lastModeWarning = ""
         refreshModeChoices(force = true)
         warnAboutMode(mode)
         if (mode == "NoGround")
-            mc.thePlayer.tryJump()
+            mc.thePlayer?.tryJump()
     }
 
     val onAttack = handler<AttackEvent> { event ->
@@ -68,7 +73,8 @@ object Criticals : Module("Criticals", Category.COMBAT, Category.SubCategory.COM
 
             if (!thePlayer.onGround || thePlayer.isOnLadder || thePlayer.isInWeb || thePlayer.isInLiquid ||
                 thePlayer.ridingEntity != null || entity.hurtTime > hurtTime ||
-                Flight.handleEvents() || !msTimer.hasTimePassed(delay)
+                Flight.handleEvents() || !msTimer.hasTimePassed(delay) ||
+                (onlyWhileSprinting && !thePlayer.isSprinting)
             )
                 return@handler
 
@@ -114,6 +120,17 @@ object Criticals : Module("Criticals", Category.COMBAT, Category.SubCategory.COM
                     thePlayer.onGround = false
                 }
 
+                "minijump" -> {
+                    sendPackets(
+                        C04PacketPlayerPosition(x, y + 0.0625, z, false),
+                        C04PacketPlayerPosition(x, y, z, true)
+                    )
+                    thePlayer.motionY = 0.06
+                    thePlayer.fallDistance = 0.06f
+                    thePlayer.onGround = false
+                    thePlayer.onCriticalHit(entity)
+                }
+
                 "tphop" -> {
                     sendPackets(
                         C04PacketPlayerPosition(x, y + 0.02, z, false),
@@ -150,9 +167,14 @@ object Criticals : Module("Criticals", Category.COMBAT, Category.SubCategory.COM
 
         val available = AnticheatModeAdvisor.filteredModes("Criticals", antiCheat, observed, CRITICAL_MODES)
         modeValue.updateValues(available)
-        if (available.none { it.equals(mode, true) }) {
+
+        val safest = safestAvailable(available, observed)
+        val currentlyRisky = autoSwitchSafest && safest != null &&
+            AnticheatModeAdvisor.isRiskyMode("Criticals", mode, antiCheat, observed)
+
+        if (available.none { it.equals(mode, true) } || currentlyRisky) {
             val previous = mode
-            modeValue.set(available.first())
+            modeValue.set(safest ?: available.first())
             if (state && !previous.equals(mode, true)) {
                 hud.addNotification(Notification("Criticals compatibility",
                     "$previous unavailable here; switched to $mode.", Type.WARNING, 4500))
@@ -160,6 +182,12 @@ object Criticals : Module("Criticals", Category.COMBAT, Category.SubCategory.COM
         } else if (state) {
             warnAboutMode(mode)
         }
+    }
+
+    private fun safestAvailable(available: Array<String>, observed: String?): String? {
+        val recommended = AnticheatModeAdvisor.recommendedModes("Criticals", antiCheat, observed)
+        return recommended.firstOrNull { rec -> available.any { it.equals(rec, true) } }
+            ?.let { rec -> available.first { it.equals(rec, true) } }
     }
 
     private fun warnAboutMode(selectedMode: String) {

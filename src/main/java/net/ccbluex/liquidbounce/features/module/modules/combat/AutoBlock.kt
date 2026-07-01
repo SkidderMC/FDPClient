@@ -153,8 +153,10 @@ object AutoBlock : Module("AutoBlock", Category.COMBAT, Category.SubCategory.COM
         // Start blocking on the next tick after the swing
         if (canBlock && !physicalBlock) {
             nextTick {
+                if (physicalBlock) return@nextTick
                 timer.reset()
                 isBlocking = true
+                mc.gameSettings.keyBindUseItem.pressed = true
             }
         }
     }
@@ -181,6 +183,7 @@ object AutoBlock : Module("AutoBlock", Category.COMBAT, Category.SubCategory.COM
         if (canBlock && !physicalBlock) {
             timer.reset()
             isBlocking = true
+            mc.gameSettings.keyBindUseItem.pressed = true
         }
     }
 
@@ -197,8 +200,20 @@ object AutoBlock : Module("AutoBlock", Category.COMBAT, Category.SubCategory.COM
             return@handler
         }
 
-        // Release block once the hold duration has expired
-        if (timer.hasTimeElapsed(hold * 50L)) {
+        // Yield to KillAura's own block handling to avoid conflicting key state.
+        if (KillAura.blockStatus) {
+            isBlocking = false
+            timer.reset()
+            if (!physicalBlock) mc.gameSettings.keyBindUseItem.pressed = false
+            return@handler
+        }
+
+        // Release once the hold expires or the block is no longer valid
+        // (item swapped, no target for Damage mode).
+        val stillValid = canItemBlock() &&
+            (mode != "Damage" || hasTargetInRange())
+
+        if (timer.hasTimeElapsed(hold * 50L) || !stillValid) {
             isBlocking = false
             timer.reset()
         }

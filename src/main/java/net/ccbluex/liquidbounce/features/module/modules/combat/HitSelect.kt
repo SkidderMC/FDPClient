@@ -400,18 +400,26 @@ object HitSelect : Module("HitSelect", Category.COMBAT, Category.SubCategory.COM
      * All modes participate — NOT just Smart. Semi uses [clickPredPrediction]
      * instead of its speed-threshold shortcut because the shortcut only makes
      * sense when vanilla has already confirmed an entity is under the crosshair.
-     * Candidates are sorted by distance; the nearest confirmed hit is returned.
+     * Candidates are sorted by distance; the confirmed hit is chosen with a
+     * stable preference so consecutive clicks agree on one entity: the aura's
+     * active target first, then the previously chosen target, then the nearest.
      */
     private fun scanWithMode(): EntityLivingBase? {
         val player = mc.thePlayer ?: return null
 
-        return snapshots.keys
-            .filter     { !it.isDead && it != player }
-            .sortedBy   { player.getDistanceToEntityBox(it) }
-            .firstOrNull { entity ->
+        val confirmed = snapshots.keys
+            .filter    { !it.isDead && it != player }
+            .sortedBy  { player.getDistanceToEntityBox(it) }
+            .filter    { entity ->
                 if (clickPredMode == "Semi") clickPredPrediction(entity)
                 else predictedClickWillHit(entity)
             }
+
+        val auraTarget = KillAura.target?.takeIf { KillAura.handleEvents() }
+
+        return confirmed.firstOrNull { it == auraTarget }
+            ?: confirmed.firstOrNull { it.entityId == currentTargetId }
+            ?: confirmed.firstOrNull()
     }
 
     // ────────────────────────────────────────────────────────────────────────────

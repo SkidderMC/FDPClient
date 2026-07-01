@@ -29,6 +29,7 @@ import net.ccbluex.liquidbounce.utils.timing.TimeUtils.randomClickDelay
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextBoolean
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextFloat
+import kotlin.reflect.KMutableProperty0
 
 /**
  * AutoClicker module - Automatically clicks for you
@@ -54,6 +55,8 @@ object AutoClicker : Module("AutoClicker", Category.COMBAT, Category.SubCategory
         .describe("Auto click the left mouse button (attack).")
     private val jitter by boolean("Jitter", false)
         .describe("Add small random timing jitter between clicks.")
+    private val humanize by boolean("Humanize", true)
+        .describe("Shape click timing into human-like bursts instead of a flat CPS.")
 
     private val requiresNoInput by boolean("RequiresNoInput", false) { left }
         .describe("Only click when you are not manually clicking.")
@@ -83,7 +86,7 @@ object AutoClicker : Module("AutoClicker", Category.COMBAT, Category.SubCategory
     init {
         moveValues(clickGroup,
             "SimulateDoubleClicking", "CPS", "HurtTime", "Right", "Left")
-        moveValues(jitterGroup, "Jitter")
+        moveValues(jitterGroup, "Jitter", "Humanize")
         moveValues(leftInputGroup,
             "RequiresNoInput", "MaxAngleDifference", "Range", "OnlyBlock")
         moveValues(rightClickGroup, "OnlyBlocks")
@@ -110,6 +113,9 @@ object AutoClicker : Module("AutoClicker", Category.COMBAT, Category.SubCategory
 
     private var shouldJitter = false
 
+    private var leftBurstRemaining = 0
+    private var rightBurstRemaining = 0
+
     private var target: EntityLivingBase? = null
 
     override fun onDisable() {
@@ -119,6 +125,8 @@ object AutoClicker : Module("AutoClicker", Category.COMBAT, Category.SubCategory
         leftHeldSince = 0L
         lastUsingItem = 0L
         lastBlocking = 0L
+        leftBurstRemaining = 0
+        rightBurstRemaining = 0
         target = null
     }
 
@@ -130,7 +138,7 @@ object AutoClicker : Module("AutoClicker", Category.COMBAT, Category.SubCategory
     val onRender3D = handler<Render3DEvent> {
         mc.thePlayer?.let { thePlayer ->
             val time = System.currentTimeMillis()
-            val doubleClick = if (simulateDoubleClicking) RandomUtils.nextInt(-1, 1) else 0
+            val doubleClick = if (simulateDoubleClicking && nextBoolean() && nextBoolean()) 1 else 0
 
             rightHeldSince = if (mc.gameSettings.keyBindUseItem.isKeyDown) {
                 if (rightHeldSince == 0L) time else rightHeldSince
@@ -206,20 +214,40 @@ object AutoClicker : Module("AutoClicker", Category.COMBAT, Category.SubCategory
 
         repeat(1 + doubleClick) {
             KeyBinding.onTick(mc.gameSettings.keyBindAttack.keyCode)
-
-            leftLastSwing = time
-            leftDelay = generateNewClickTime()
         }
+
+        leftLastSwing = time
+        leftDelay = generateNewClickTime(::leftBurstRemaining)
     }
 
     private fun handleRightClick(time: Long, doubleClick: Int) {
         repeat(1 + doubleClick) {
             KeyBinding.onTick(mc.gameSettings.keyBindUseItem.keyCode)
-
-            rightLastSwing = time
-            rightDelay = generateNewClickTime()
         }
+
+        rightLastSwing = time
+        rightDelay = generateNewClickTime(::rightBurstRemaining)
     }
 
-    fun generateNewClickTime() = randomClickDelay(cps.first, cps.last)
+    fun generateNewClickTime(burst: KMutableProperty0<Int> = ::leftBurstRemaining): Int {
+        val base = randomClickDelay(cps.first, cps.last)
+
+        if (!humanize) return base
+
+        val blocking = mc.thePlayer?.let { it.isUsingItem && canItemBlock() } == true
+
+        val shaped = if (burst.get() > 0) {
+            burst.set(burst.get() - 1)
+            (base * RandomUtils.nextDouble(0.62, 0.82)).toInt()
+        } else {
+            burst.set(RandomUtils.nextInt(2, 6))
+            (base * RandomUtils.nextDouble(1.05, 1.35)).toInt()
+        }
+
+        val jittered = if (jitter) (shaped + RandomUtils.nextInt(-8, 9)) else shaped
+
+        val slowed = if (blocking) (jittered * RandomUtils.nextDouble(1.1, 1.4)).toInt() else jittered
+
+        return slowed.coerceAtLeast(1)
+    }
 }
