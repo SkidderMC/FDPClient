@@ -29,7 +29,7 @@ object ServerUtils : MinecraftInstance {
 
     @JvmOverloads
     fun connectToLastServer(noGLContext: Boolean = false) {
-        if (serverData == null) return
+        val server = serverData ?: return
 
         if (noGLContext) {
             SharedScopes.IO.launch {
@@ -38,9 +38,9 @@ object ServerUtils : MinecraftInstance {
                 // You cannot do this in the normal way because of required OpenGL context in current thread.
                 // When you delay a call, it gets run in a new TimerThread.
 
-                val serverAddress = ServerAddress.fromString(serverData!!.serverIP)
+                val serverAddress = ServerAddress.fromString(server.serverIP)
                 mc.theWorld = null
-                mc.setServerData(serverData)
+                mc.setServerData(server)
 
                 val inetAddress = InetAddress.getByName(serverAddress.ip)
                 val networkManager = NetworkManager.createNetworkManagerAndConnect(
@@ -58,7 +58,7 @@ object ServerUtils : MinecraftInstance {
                     C00PacketLoginStart(mc.session.profile)
                 )
             }
-        } else mc.displayGuiScreen(GuiConnecting(net.ccbluex.liquidbounce.ui.client.gui.multiplayer.GuiServerSelect(GuiMainMenu()), mc, serverData))
+        } else mc.displayGuiScreen(GuiConnecting(net.ccbluex.liquidbounce.ui.client.gui.multiplayer.GuiServerSelect(GuiMainMenu()), mc, server))
     }
 
     /**

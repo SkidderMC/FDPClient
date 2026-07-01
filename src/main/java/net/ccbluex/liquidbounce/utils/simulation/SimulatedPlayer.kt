@@ -1202,11 +1202,7 @@ class SimulatedPlayer(
     }
 
     private fun getAttributeMap(): BaseAttributeMap {
-        if (this.attributeMap == null) {
-            this.attributeMap = ServersideAttributeMap()
-        }
-
-        return this.attributeMap!!
+        return this.attributeMap ?: ServersideAttributeMap().also { this.attributeMap = it }
     }
 
     private fun isLivingOnLadder(block: Block?, world: World, pos: BlockPos?, entity: EntityLivingBase): Boolean {

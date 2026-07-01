@@ -463,7 +463,7 @@ object ColorUtils {
         } catch (ignored: java.lang.IllegalArgumentException) {
         }
 
-        return color3!!
+        return requireNotNull(color3) { "Failed to blend colors: $red, $green, $blue" }
     }
 
     fun setColour(colour: Int) {

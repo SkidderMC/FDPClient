@@ -91,7 +91,7 @@ class GuiScripts(private val prevGui: GuiScreen) : AbstractScreen() {
                 }
             } catch (t: Throwable) {
                 LOGGER.error("Something went wrong while importing a script.", t)
-                MiscUtils.showMessageDialog(t.javaClass.name, t.message!!)
+                MiscUtils.showMessageDialog(t.javaClass.name, t.message ?: t.toString())
             }
 
             2 -> try {
@@ -104,21 +104,21 @@ class GuiScripts(private val prevGui: GuiScreen) : AbstractScreen() {
                 }
             } catch (t: Throwable) {
                 LOGGER.error("Something went wrong while deleting a script.", t)
-                MiscUtils.showMessageDialog(t.javaClass.name, t.message!!)
+                MiscUtils.showMessageDialog(t.javaClass.name, t.message ?: t.toString())
             }
 
             3 -> try {
                 reloadScripts()
             } catch (t: Throwable) {
                 LOGGER.error("Something went wrong while reloading all scripts.", t)
-                MiscUtils.showMessageDialog(t.javaClass.name, t.message!!)
+                MiscUtils.showMessageDialog(t.javaClass.name, t.message ?: t.toString())
             }
 
             4 -> try {
                 Desktop.getDesktop().open(scriptsFolder)
             } catch (t: Throwable) {
                 LOGGER.error("Something went wrong while trying to open your scripts folder.", t)
-                MiscUtils.showMessageDialog(t.javaClass.name, t.message!!)
+                MiscUtils.showMessageDialog(t.javaClass.name, t.message ?: t.toString())
             }
 
             5 -> try {

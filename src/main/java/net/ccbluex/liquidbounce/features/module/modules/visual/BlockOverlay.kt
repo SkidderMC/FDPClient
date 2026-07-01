@@ -124,8 +124,9 @@ object BlockOverlay : Module("BlockOverlay", Category.VISUAL, Category.SubCatego
             lastChange = System.currentTimeMillis()
         }
 
-        val renderBox = if (slideAnim && previousBox != null) {
-            lerpBox(previousBox!!, worldBox, slideFactor())
+        val prevBox = previousBox
+        val renderBox = if (slideAnim && prevBox != null) {
+            lerpBox(prevBox, worldBox, slideFactor())
         } else {
             worldBox
         }

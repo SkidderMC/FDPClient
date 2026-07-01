@@ -136,5 +136,5 @@ abstract class Shader : MinecraftInstance {
 
     fun setupUniform(uniformName: String) = setUniform(uniformName, glGetUniformLocation(programId, uniformName))
 
-    fun getUniform(uniformName: String) = uniformsMap[uniformName]!!
+    fun getUniform(uniformName: String) = uniformsMap.getValue(uniformName)
 }

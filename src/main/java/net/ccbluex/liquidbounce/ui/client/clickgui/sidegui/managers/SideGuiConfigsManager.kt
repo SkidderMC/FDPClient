@@ -127,8 +127,9 @@ object SideGuiConfigsManager {
                 Fonts.InterBold_26.drawString("No local configurations available.", configX, configY, RenderUtils.applyOpacity(-1, alpha / 255f))
             }
         } else {
-            if (!autoSettingsList.isNullOrEmpty()) {
-                for (autoSetting in autoSettingsList!!) {
+            val onlineSettings = autoSettingsList
+            if (!onlineSettings.isNullOrEmpty()) {
+                for (autoSetting in onlineSettings) {
                     drawSingleConfigButton(mouseX, mouseY, alpha, configX, configY, buttonWidth, buttonHeight) {
                         Fonts.InterBold_26.drawString(autoSetting.name, configX + 5, configY + 5, RenderUtils.applyOpacity(-1, alpha / 255f))
                         if (RenderUtils.isHovering(configX, configY, buttonWidth, buttonHeight, mouseX, mouseY) && Mouse.isButtonDown(0)) {

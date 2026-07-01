@@ -69,9 +69,7 @@ object KeyBindManager : AbstractScreen() {
         }
 
         // render key tab
-        if (nowDisplayKey != null) {
-            nowDisplayKey!!.renderTab()
-        }
+        nowDisplayKey?.renderTab()
 
         glPopMatrix()
 
@@ -79,13 +77,15 @@ object KeyBindManager : AbstractScreen() {
         if (Mouse.hasWheel()) {
             val wheel = Mouse.getDWheel()
             if (wheel != 0) { // Not scroll wheel, just normal mouse movement
-                if (popUI != null) {
-                    popUI!!.onStroll(width, height, mouseX, mouseY, wheel)
-                } else if (nowDisplayKey != null) {
+                val currentPopUI = popUI
+                val currentKey = nowDisplayKey
+                if (currentPopUI != null) {
+                    currentPopUI.onStroll(width, height, mouseX, mouseY, wheel)
+                } else if (currentKey != null) {
                     val scaledMouseX = (mouseX - width * 0.2f) / scale
                     val scaledMouseY = (mouseY - (height * 0.2f + fontSemibold40.height * 2.3f)) / scale
 
-                    nowDisplayKey!!.stroll(scaledMouseX, scaledMouseY, wheel)
+                    currentKey.stroll(scaledMouseX, scaledMouseY, wheel)
                 }
             }
         }
@@ -95,12 +95,14 @@ object KeyBindManager : AbstractScreen() {
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        if (popUI == null) {
+        val currentPopUI = popUI
+        if (currentPopUI == null) {
             val scale = ((width * 0.8f) - (width * 0.2f)) / baseWidth
             val scaledMouseX = (mouseX - width * 0.2f) / scale
             val scaledMouseY = (mouseY - (height * 0.2f + fontSemibold40.height * 2.3f)) / scale
 
-            if (nowDisplayKey == null) {
+            val currentKey = nowDisplayKey
+            if (currentKey == null) {
                 // click out of area
                 if (scaledMouseX < 0 || scaledMouseY < 0 || scaledMouseX > baseWidth || scaledMouseY > baseHeight) {
                     mc.displayGuiScreen(null)
@@ -117,10 +119,10 @@ object KeyBindManager : AbstractScreen() {
                     }
                 }
             } else {
-                nowDisplayKey!!.click(scaledMouseX, scaledMouseY)
+                currentKey.click(scaledMouseX, scaledMouseY)
             }
         } else {
-            popUI!!.onClick(width, height, mouseX, mouseY)
+            currentPopUI.onClick(width, height, mouseX, mouseY)
         }
     }
 

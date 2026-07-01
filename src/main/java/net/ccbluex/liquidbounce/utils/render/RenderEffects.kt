@@ -159,7 +159,7 @@ object RenderEffects : MinecraftInstance {
         glEnable(GL_BLEND)
 
         if (shadowCache.containsKey(identifier)) {
-            val texId: Int = shadowCache.get(identifier)!!
+            val texId: Int = shadowCache.getValue(identifier)
             bindTexture(texId)
         } else {
             val original = BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB)

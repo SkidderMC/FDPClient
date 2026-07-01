@@ -92,7 +92,7 @@ class ProjectileSolver(
         }
 
         if (roots.isEmpty()) return null
-        val selectedTime = if (arc == ProjectileArc.LOW) roots.minOrNull()!! else roots.maxOrNull()!!
+        val selectedTime = if (arc == ProjectileArc.LOW) roots.min() else roots.max()
         val velocity = requiredVelocity(displacement, selectedTime)
         return ProjectileSolution(
             velocity = velocity,

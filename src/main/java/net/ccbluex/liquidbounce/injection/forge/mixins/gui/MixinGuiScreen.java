@@ -26,7 +26,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -154,12 +153,8 @@ public abstract class MixinGuiScreen {
         drawHoveringText(Collections.singletonList("§c§l" + clickEvent.getAction().getCanonicalName().toUpperCase() + ": §a" + clickEvent.getValue()), x, y - (hoverEvent != null ? 17 : 0));
     }
 
-    /**
-     * @author CCBlueX (superblaubeere27)
-     * @reason Making it possible for other mixins to receive actions
-     */
-    @Overwrite
-    protected void actionPerformed(GuiButton button) {
+    @Inject(method = "actionPerformed", at = @At("HEAD"))
+    protected void injectActionPerformed(GuiButton button, final CallbackInfo callbackInfo) {
         injectedActionPerformed(button);
     }
 

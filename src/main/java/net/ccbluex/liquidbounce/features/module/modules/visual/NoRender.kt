@@ -84,8 +84,7 @@ object NoRender : Module("NoRender", Category.VISUAL, Category.SubCategory.RENDE
 
 	// Event to control entity rendering
     val onMotion = handler<MotionEvent> {
-		for (en in mc.theWorld.loadedEntityList) {
-			val entity = en!!
+		for (entity in mc.theWorld.loadedEntityList) {
 			if (shouldStopRender(entity))
 				entity.renderDistanceWeight = 0.0
 			else if (autoResetValue)
@@ -151,8 +150,8 @@ object NoRender : Module("NoRender", Category.VISUAL, Category.SubCategory.RENDE
 				|| (mobsValue && entity.isMob())
 				|| (animalsValue && entity.isAnimal())
 				|| (armorStandValue && entity is EntityArmorStand))
-				&& entity != mc.thePlayer!!
-				&& (mc.thePlayer!!.getDistanceToEntityBox(entity).toFloat() > maxRenderRange)
+				&& entity != mc.thePlayer
+				&& (mc.thePlayer.getDistanceToEntityBox(entity).toFloat() > maxRenderRange)
 	}
 
 	// Resets rendering when the module is disabled
@@ -167,9 +166,8 @@ object NoRender : Module("NoRender", Category.VISUAL, Category.SubCategory.RENDE
 		currentBlock = null
 
 		// Restore entity rendering
-		for (en in mc.theWorld.loadedEntityList) {
-			val entity = en!!
-			if (entity != mc.thePlayer!! && entity.renderDistanceWeight <= 0.0)
+		for (entity in mc.theWorld.loadedEntityList) {
+			if (entity != mc.thePlayer && entity.renderDistanceWeight <= 0.0)
 				entity.renderDistanceWeight = 1.0
 		}
 	}

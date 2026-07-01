@@ -130,13 +130,13 @@ data class EditableText(
     fun selectionActive() = selectionStart != null && selectionEnd != null
 
     private fun deleteSelectionIfActive() {
-        if (selectionActive()) {
-            val start = minOf(selectionStart!!, selectionEnd!!)
-            val end = maxOf(selectionStart!!, selectionEnd!!)
-            string = string.take(start) + string.drop(end)
-            cursorIndex = start
-            clearSelection()
-        }
+        val selStart = selectionStart ?: return
+        val selEnd = selectionEnd ?: return
+        val start = minOf(selStart, selEnd)
+        val end = maxOf(selStart, selEnd)
+        string = string.take(start) + string.drop(end)
+        cursorIndex = start
+        clearSelection()
     }
 
     private fun clearSelection() {
@@ -159,9 +159,13 @@ data class EditableText(
             }
 
             keyCode == Keyboard.KEY_C && isCtrlPressed() && selectionActive() -> {
-                val start = minOf(selectionStart!!, selectionEnd!!)
-                val end = maxOf(selectionStart!!, selectionEnd!!)
-                setClipboardString(string.substring(start, end))
+                val selStart = selectionStart
+                val selEnd = selectionEnd
+                if (selStart != null && selEnd != null) {
+                    val start = minOf(selStart, selEnd)
+                    val end = maxOf(selStart, selEnd)
+                    setClipboardString(string.substring(start, end))
+                }
             }
 
             keyCode == Keyboard.KEY_V && isCtrlPressed() -> {

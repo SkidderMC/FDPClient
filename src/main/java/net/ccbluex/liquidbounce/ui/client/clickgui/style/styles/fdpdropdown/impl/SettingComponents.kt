@@ -166,14 +166,16 @@ class SettingComponents(private val module: Module) : Component() {
     }
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
-        if (binding != null) {
-            binding!!.keyBind = KeyCapture.resolve(keyCode)
+        val bindingModule = binding
+        if (bindingModule != null) {
+            bindingModule.keyBind = KeyCapture.resolve(keyCode)
             binding = null
             return
         }
 
-        if (bindingKeyValue != null) {
-            bindingKeyValue!!.set(KeyCapture.resolve(keyCode))
+        val keyValue = bindingKeyValue
+        if (keyValue != null) {
+            keyValue.set(KeyCapture.resolve(keyCode))
             bindingKeyValue = null
             return
         }
@@ -201,66 +203,67 @@ class SettingComponents(private val module: Module) : Component() {
             return
         }
 
-        if (chosenText != null) {
+        val text = chosenText
+        if (text != null) {
             if (keyCode == Keyboard.KEY_ESCAPE) {
                 chosenText = null
                 return
             }
             when (keyCode) {
                 Keyboard.KEY_LEFT -> {
-                    chosenText!!.cursorIndex = max(chosenText!!.cursorIndex - 1, 0)
+                    text.cursorIndex = max(text.cursorIndex - 1, 0)
                 }
                 Keyboard.KEY_RIGHT -> {
-                    chosenText!!.cursorIndex = min(chosenText!!.cursorIndex + 1, chosenText!!.string.length)
+                    text.cursorIndex = min(text.cursorIndex + 1, text.string.length)
                 }
                 Keyboard.KEY_BACK -> {
-                    if (chosenText!!.string.isNotEmpty()) {
-                        chosenText!!.cursorIndex = chosenText!!.cursorIndex.coerceIn(0, chosenText!!.string.length)
-                        if (chosenText!!.cursorIndex > 0) {
-                            val removalStart = chosenText!!.cursorIndex - 1
-                            val removalEnd = chosenText!!.cursorIndex
-                            if (removalStart < removalEnd && removalEnd <= chosenText!!.string.length) {
-                                chosenText!!.string = chosenText!!.string.removeRange(removalStart, removalEnd)
-                                chosenText!!.cursorIndex = removalStart
+                    if (text.string.isNotEmpty()) {
+                        text.cursorIndex = text.cursorIndex.coerceIn(0, text.string.length)
+                        if (text.cursorIndex > 0) {
+                            val removalStart = text.cursorIndex - 1
+                            val removalEnd = text.cursorIndex
+                            if (removalStart < removalEnd && removalEnd <= text.string.length) {
+                                text.string = text.string.removeRange(removalStart, removalEnd)
+                                text.cursorIndex = removalStart
                             }
                         }
                     }
                 }
                 Keyboard.KEY_DELETE -> {
-                    if (chosenText!!.string.isNotEmpty()) {
-                        chosenText!!.cursorIndex = chosenText!!.cursorIndex.coerceIn(0, chosenText!!.string.length - 1)
-                        if (chosenText!!.cursorIndex < chosenText!!.string.length) {
-                            val removalStart = chosenText!!.cursorIndex
-                            val removalEnd = chosenText!!.cursorIndex + 1
-                            if (removalStart < removalEnd && removalEnd <= chosenText!!.string.length) {
-                                chosenText!!.string = chosenText!!.string.removeRange(removalStart, removalEnd)
+                    if (text.string.isNotEmpty()) {
+                        text.cursorIndex = text.cursorIndex.coerceIn(0, text.string.length - 1)
+                        if (text.cursorIndex < text.string.length) {
+                            val removalStart = text.cursorIndex
+                            val removalEnd = text.cursorIndex + 1
+                            if (removalStart < removalEnd && removalEnd <= text.string.length) {
+                                text.string = text.string.removeRange(removalStart, removalEnd)
                             }
                         }
                     }
                 }
                 else -> {
                     if (!typedChar.isISOControl()) {
-                        chosenText!!.cursorIndex = chosenText!!.cursorIndex.coerceIn(0, chosenText!!.string.length)
-                        val insertionIndex = chosenText!!.cursorIndex
-                        chosenText!!.string =
-                            chosenText!!.string.substring(0, insertionIndex) +
+                        text.cursorIndex = text.cursorIndex.coerceIn(0, text.string.length)
+                        val insertionIndex = text.cursorIndex
+                        text.string =
+                            text.string.substring(0, insertionIndex) +
                                     typedChar +
-                                    chosenText!!.string.substring(insertionIndex)
-                        chosenText!!.cursorIndex = insertionIndex + 1
+                                    text.string.substring(insertionIndex)
+                        text.cursorIndex = insertionIndex + 1
                     }
                 }
             }
 
-            val value = chosenText!!.value
+            val value = text.value
             if (value is TextValue || value is ColorValue) {
                 when (value) {
-                    is TextValue -> value.set(chosenText!!.string, true)
+                    is TextValue -> value.set(text.string, true)
                     is ColorValue -> {
                         try {
-                            val numericString = chosenText!!.string.filter { it.isDigit() }
+                            val numericString = text.string.filter { it.isDigit() }
                             if (numericString.isNotEmpty()) {
                                 val intValue = numericString.toInt().coerceIn(0, 255)
-                                chosenText!!.string = intValue.toString()
+                                text.string = intValue.toString()
                                 when (value.rgbaIndex) {
                                     0 -> value.set(Color(intValue, value.get().green, value.get().blue, value.get().alpha), true)
                                     1 -> value.set(Color(value.get().red, intValue, value.get().blue, value.get().alpha), true)
@@ -268,10 +271,10 @@ class SettingComponents(private val module: Module) : Component() {
                                     3 -> value.set(Color(value.get().red, value.get().green, value.get().blue, intValue), true)
                                 }
                             } else {
-                                chosenText!!.string = "0"
+                                text.string = "0"
                             }
                         } catch (e: NumberFormatException) {
-                            chosenText!!.string = "0"
+                            text.string = "0"
                         }
                     }
                     else -> { }
@@ -1131,7 +1134,7 @@ class SettingComponents(private val module: Module) : Component() {
                             else -> currentColor.alpha.toString()
                         }
                         Fonts.InterMedium_18.drawString("$label:", x + 5, optionY, textColor.rgb)
-                        val valueTextColor = if (chosenText != null && chosenText!!.value == setting && setting.rgbaIndex == index) {
+                        val valueTextColor = if (chosenText?.value == setting && setting.rgbaIndex == index) {
                             Color.WHITE
                         } else {
                             Color.LIGHT_GRAY

@@ -435,7 +435,8 @@ class GuiAltManager(private val prevGui: GuiScreen) : AbstractScreen() {
         fun loadActiveGenerators() {
             try {
                 // Read versions json from cloud
-                activeGenerators += HttpClient.get("$CLIENT_CLOUD/generators.json").jsonBody<Map<String, Boolean>>()!!
+                HttpClient.get("$CLIENT_CLOUD/generators.json").jsonBody<Map<String, Boolean>>()
+                    ?.let { activeGenerators += it }
 
             } catch (throwable: Throwable) {
                 // Print throwable to console

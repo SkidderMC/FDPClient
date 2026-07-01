@@ -18,7 +18,7 @@ object ClassUtils {
      */
     fun hasClass(className: String) =
         if (className in cachedClasses)
-            cachedClasses[className]!!
+            cachedClasses.getValue(className)
         else try {
             Class.forName(className)
             cachedClasses[className] = true
@@ -33,7 +33,7 @@ object ClassUtils {
 
     fun getObjectInstance(clazz: Class<*>): Any {
         clazz.declaredFields.forEach {
-            if (it.name.equals("INSTANCE")) {
+            if (it.name == "INSTANCE") {
                 return it.get(null)
             }
         }

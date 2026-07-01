@@ -388,7 +388,7 @@ object ESP2D : Module("ESP2D", Category.VISUAL, Category.SubCategory.RENDER_OVER
                                 val height = (maxY - minY) * (curD / maxD.toDouble())
                                 newDrawRect(maxX + 1.5, minY - 0.5, maxX + 3.5, maxY + 0.5, backgroundColor.rgb)
                                 newDrawRect(maxX + 2.0, maxY, maxX + 3.0, maxY - height, Color(0, 255, 255).rgb)
-                                if (armorNumber && (!hover || entity.entityItem == mc.thePlayer!!.heldItem || isHovering(minX, maxX, minY, maxY, scaledResolution))) {
+                                if (armorNumber && (!hover || entity.entityItem == mc.thePlayer?.heldItem || isHovering(minX, maxX, minY, maxY, scaledResolution))) {
                                     drawScaledString(
                                         curD.toInt().toString(),
                                         maxX + 4.0,

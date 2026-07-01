@@ -55,14 +55,14 @@ object BrandSpoofer : Module("BrandSpoofer", Category.CLIENT, Category.SubCatego
     )
 
     fun getButtonRenderer(button: GuiButton?): AbstractButtonRenderer? {
-        val lowerCaseButtonValue = buttonValue.get().lowercase(Locale.getDefault())
-        return when (lowerCaseButtonValue) {
-            "rounded" -> RoundedButtonRenderer(button!!)
-            "fdp" -> HyperiumButtonRenderer(button!!)
-            "pvp" -> PvPClientButtonRenderer(button!!)
-            "liquidbounce" -> LiquidButtonRenderer(button!!)
-            "light" -> LunarButtonRenderer(button!!)
-            "dark" -> BlackoutButtonRenderer(button!!)
+        button ?: return null
+        return when (buttonValue.get().lowercase(Locale.getDefault())) {
+            "rounded" -> RoundedButtonRenderer(button)
+            "fdp" -> HyperiumButtonRenderer(button)
+            "pvp" -> PvPClientButtonRenderer(button)
+            "liquidbounce" -> LiquidButtonRenderer(button)
+            "light" -> LunarButtonRenderer(button)
+            "dark" -> BlackoutButtonRenderer(button)
             else -> null // vanilla or unknown
         }
     }
