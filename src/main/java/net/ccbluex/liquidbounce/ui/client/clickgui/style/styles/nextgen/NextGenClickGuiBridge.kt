@@ -396,16 +396,37 @@ object NextGenClickGuiBridge : MinecraftInstance {
     fun minecraftKey(keyCode: Int): String = toMinecraftKey(keyCode)
 
     private fun moduleJson(module: Module): JsonObject = JsonObject().apply {
+        val description = runCatching { module.description }.getOrDefault("")
         addProperty("name", module.name)
         addProperty("category", categoryName(module.category))
         add("keyBind", inputBind(module))
         addProperty("enabled", module.state)
-        addProperty("description", runCatching { module.description }.getOrDefault(""))
+        addProperty("description", description)
         addProperty("hidden", module.isHidden)
         add("aliases", JsonArray().apply {
             module.aliases.forEach { add(JsonPrimitive(it)) }
         })
+        add("keywords", JsonArray().apply {
+            moduleKeywords(module, description).forEach { add(JsonPrimitive(it)) }
+        })
         module.tag?.let { addProperty("tag", it) } ?: add("tag", JsonNull.INSTANCE)
+    }
+
+    private fun moduleKeywords(module: Module, description: String): List<String> {
+        val terms = LinkedHashSet<String>()
+        terms += module.name
+        if (module.spacedName != module.name) {
+            terms += module.spacedName
+        }
+        module.aliases.forEach { terms += it }
+        terms += module.category.displayName
+        terms += categoryName(module.category)
+        terms += module.subCategory.displayName
+        module.tag?.let { terms += it }
+        if (description.isNotBlank()) {
+            terms += description
+        }
+        return terms.filter { it.isNotBlank() }
     }
 
     private fun categoryName(category: Category): String = when (category) {
