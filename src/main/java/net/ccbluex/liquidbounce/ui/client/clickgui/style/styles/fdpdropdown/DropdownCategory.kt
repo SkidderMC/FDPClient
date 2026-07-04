@@ -46,6 +46,9 @@ class DropdownCategory(
     // Opening animation references from outside (for sub-panels)
     var openingAnimation: Animation? = null
 
+    // Whether this category's module list is collapsed (toggled by right-clicking the bar)
+    private var collapsed = false
+
     private var moduleAnimMap = HashMap<ModuleRect, Animation>()
     private var moduleRects: MutableList<ModuleRect>? = null
 
@@ -68,6 +71,7 @@ class DropdownCategory(
     }
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
+        if (collapsed) return
         // Pass key events to each ModuleRect
         visibleModuleRects().forEach { it.keyTyped(typedChar, keyCode) }
     }
@@ -106,9 +110,12 @@ class DropdownCategory(
         }
         Main.allowedClickGuiHeight = allowedHeight
 
+        // Collapsed categories keep only the top bar; the module list reserves no height.
+        val listHeight = if (collapsed) 0f else allowedHeight
+
         /**
          * 2) Draw the outline around the top bar and module list
-         * This will create a single outline around (x, y) -> (x + rectWidth, y + categoryRectHeight + allowedHeight).
+         * This will create a single outline around (x, y) -> (x + rectWidth, y + categoryRectHeight + listHeight).
          */
         if (ClickGUIModule.categoryOutline) {
             val outlineColor = ClickGUIModule.generateColor(0)
@@ -117,7 +124,7 @@ class DropdownCategory(
                 x - 1,
                 y - 1,
                 x + rectWidth + 1,
-                y + categoryRectHeight + allowedHeight + 1,
+                y + categoryRectHeight + listHeight + 1,
                 cornerRadius,
                 outlineColor.rgb
             )
@@ -135,8 +142,14 @@ class DropdownCategory(
         )
 
         Fonts.InterBold_26.drawString(
-            category.name,
+            if (collapsed) "+" else "-",
             x + 5,
+            y + Fonts.InterBold_26.getMiddleOfBox(categoryRectHeight),
+            textColor
+        )
+        Fonts.InterBold_26.drawString(
+            category.name,
+            x + 13,
             y + Fonts.InterBold_26.getMiddleOfBox(categoryRectHeight),
             textColor
         )
@@ -164,6 +177,10 @@ class DropdownCategory(
                 y + Fonts.ICONFONT_20.getMiddleOfBox(categoryRectHeight),
                 textColor
             )
+        }
+
+        if (collapsed) {
+            return
         }
 
         // We'll see if user is hovering over module list
@@ -222,10 +239,19 @@ class DropdownCategory(
         val canDrag = RenderUtils.isHovering(
             category.drag.x, category.drag.y, rectWidth, categoryRectHeight, mouseX, mouseY
         )
+
+        // Right-click the category bar to collapse/expand its module list
+        if (button == 1 && canDrag) {
+            collapsed = !collapsed
+            return
+        }
+
         category.drag.onClick(mouseX, mouseY, button, canDrag)
 
         // Pass click to each module
-        visibleModuleRects().forEach { it.mouseClicked(mouseX, mouseY, button) }
+        if (!collapsed) {
+            visibleModuleRects().forEach { it.mouseClicked(mouseX, mouseY, button) }
+        }
     }
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
