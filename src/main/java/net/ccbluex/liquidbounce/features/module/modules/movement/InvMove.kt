@@ -165,6 +165,9 @@ object InvMove : Module("InvMove", Category.MOVEMENT, Category.SubCategory.MOVEM
 
     override fun onDisable() {
         for (affectedBinding in affectedBindings) affectedBinding.pressed = isButtonPressed(affectedBinding)
+
+        clickWindowList.forEach { PacketUtils.sendPacket(it, false) }
+        clickWindowList.clear()
     }
 
     private fun isButtonPressed(keyBinding: KeyBinding): Boolean {

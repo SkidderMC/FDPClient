@@ -256,8 +256,9 @@ object RotationUtils : MinecraftInstance, Listenable {
      * @return rotation
      */
     fun toRotation(vec: Vec3, predict: Boolean = false, fromEntity: Entity = mc.thePlayer): Rotation {
-        val eyesPos = fromEntity.eyes
-        if (predict) eyesPos.addVector(fromEntity.motionX, fromEntity.motionY, fromEntity.motionZ)
+        val eyesPos = fromEntity.eyes.let {
+            if (predict) it.addVector(fromEntity.motionX, fromEntity.motionY, fromEntity.motionZ) else it
+        }
 
         val (diffX, diffY, diffZ) = vec - eyesPos
         return Rotation(
@@ -445,13 +446,13 @@ object RotationUtils : MinecraftInstance, Listenable {
         }
 
         var (straightLineYaw, straightLinePitch) = run {
-            val baseYawSpeed = abs(yawDiff safeDiv rotationDifference) * hSpeed
-            val basePitchSpeed = abs(pitchDiff safeDiv rotationDifference) * vSpeed
+            var baseYawSpeed = abs(yawDiff safeDiv rotationDifference) * hSpeed
+            var basePitchSpeed = abs(pitchDiff safeDiv rotationDifference) * vSpeed
 
             // Apply imperfect correlation
             if (legitimize) {
-                baseYawSpeed * (0.9F..1.1F).random()
-                basePitchSpeed * (0.9F..1.1F).random()
+                baseYawSpeed *= (0.9F..1.1F).random()
+                basePitchSpeed *= (0.9F..1.1F).random()
             }
 
             baseYawSpeed to basePitchSpeed
