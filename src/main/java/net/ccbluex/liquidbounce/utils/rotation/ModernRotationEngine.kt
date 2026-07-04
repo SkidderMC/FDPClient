@@ -416,9 +416,20 @@ object ModernRotationEngine : MinecraftInstance {
         verticalFactor: Float,
     ): Rotation {
         val delta = rotationDeltaTo(target)
+        val rotationDifference = delta.length()
 
-        val yawStep = delta.deltaYaw.coerceIn(-horizontalFactor, horizontalFactor)
-        val pitchStep = delta.deltaPitch.coerceIn(-verticalFactor, verticalFactor)
+        if (rotationDifference == 0f) {
+            return this
+        }
+
+        // Split the turn-speed budget along the diagonal so yaw and pitch reach the target
+        // together in a straight line, instead of each axis capping at its own factor (which
+        // bends the crosshair path).
+        val straightLineYaw = abs(delta.deltaYaw / rotationDifference) * horizontalFactor
+        val straightLinePitch = abs(delta.deltaPitch / rotationDifference) * verticalFactor
+
+        val yawStep = delta.deltaYaw.coerceIn(-straightLineYaw, straightLineYaw)
+        val pitchStep = delta.deltaPitch.coerceIn(-straightLinePitch, straightLinePitch)
 
         return Rotation(yaw + yawStep, pitch + pitchStep)
     }
