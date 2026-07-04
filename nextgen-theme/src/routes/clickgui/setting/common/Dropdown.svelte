@@ -29,10 +29,10 @@
 <div class="dropdown" class:expanded on:click={() => (expanded = !expanded)}>
     <div class="head" bind:this={dropdownHead}>
         {#if name !== null}
-            <span class="text">{$spaceSeperatedNames ? convertToSpacedString(name) : name}
-                &bull; {$spaceSeperatedNames ? convertToSpacedString(value) : value}</span>
+            <span class="text"><span class="label">{$spaceSeperatedNames ? convertToSpacedString(name) : name}</span>
+                &bull; <span class="value">{$spaceSeperatedNames ? convertToSpacedString(value) : value}</span></span>
         {:else}
-            <span class="text">{$spaceSeperatedNames ? convertToSpacedString(value) : value}</span>
+            <span class="text"><span class="value">{$spaceSeperatedNames ? convertToSpacedString(value) : value}</span></span>
         {/if}
     </div>
 
@@ -71,7 +71,7 @@
 
   .head {
     background-color: var(--clickgui-dropdown-trigger-background-color);
-    padding: 6px 10px;
+    padding: 8px 12px;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -87,6 +87,14 @@
       text-overflow: ellipsis;
       white-space: nowrap;
       margin-right: 20px;
+
+      .label {
+        opacity: 0.65;
+      }
+
+      .value {
+        font-weight: 600;
+      }
     }
 
     .text::after {
