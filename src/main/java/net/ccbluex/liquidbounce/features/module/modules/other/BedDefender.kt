@@ -177,8 +177,12 @@ object BedDefender : Module("BedDefender", Category.OTHER, Category.SubCategory.
                     "packet" -> sendPacket(C0BPacketEntityAction(player, C0BPacketEntityAction.Action.START_SNEAKING))
                 }
 
-                placeBlock(blockPos, raytrace.sideHit, raytrace.hitVec)
-                timerCounter.reset()
+                if (!options.rotationsActive ||
+                    RotationUtils.rotationDifference(rotation) <= RotationUtils.getFixedAngleDelta()
+                ) {
+                    placeBlock(blockPos, raytrace.sideHit, raytrace.hitVec)
+                    timerCounter.reset()
+                }
             } else {
                 when (autoSneak.lowercase()) {
                     "normal" -> mc.gameSettings.keyBindSneak.pressed = true

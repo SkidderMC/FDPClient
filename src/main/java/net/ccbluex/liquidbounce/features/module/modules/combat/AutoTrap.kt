@@ -108,6 +108,10 @@ object AutoTrap : Module("AutoTrap", Category.COMBAT, Category.SubCategory.COMBA
 
         if (options.rotationsActive) {
             setTargetRotation(rotation, options, if (options.keepRotation) options.resetTicks else 1)
+
+            if (RotationUtils.rotationDifference(rotation) > RotationUtils.getFixedAngleDelta()) {
+                return@handler
+            }
         }
 
         if (!timerCounter.hasTimePassed(placeDelay)) {

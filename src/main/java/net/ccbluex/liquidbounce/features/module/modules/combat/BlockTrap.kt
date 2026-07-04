@@ -126,6 +126,10 @@ object BlockTrap : Module("BlockTrap", Category.COMBAT, Category.SubCategory.COM
 
         if (options.rotationsActive) {
             setTargetRotation(rotation, options, if (options.keepRotation) options.resetTicks else 1)
+
+            if (RotationUtils.rotationDifference(rotation) > RotationUtils.getFixedAngleDelta()) {
+                return@handler
+            }
         }
 
         if (!timerCounter.hasTimePassed(placeDelay)) {

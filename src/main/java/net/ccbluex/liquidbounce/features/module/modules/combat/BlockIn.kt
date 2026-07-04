@@ -128,6 +128,10 @@ object BlockIn : Module("BlockIn", Category.COMBAT, Category.SubCategory.COMBAT_
 
             if (options.rotationsActive) {
                 setTargetRotation(rotation, options, if (options.keepRotation) options.resetTicks else 1)
+
+                if (RotationUtils.rotationDifference(rotation) > RotationUtils.getFixedAngleDelta()) {
+                    return@handler
+                }
             }
         }
 

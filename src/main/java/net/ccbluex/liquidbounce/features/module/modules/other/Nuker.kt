@@ -23,6 +23,8 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockDamageText
 import net.ccbluex.liquidbounce.utils.rotation.RotationPriority
 import net.ccbluex.liquidbounce.utils.rotation.RotationSettings
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.faceBlock
+import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.getFixedAngleDelta
+import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.rotationDifference
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.setTargetRotation
 import net.ccbluex.liquidbounce.utils.timing.TickTimer
 import net.minecraft.block.Block
@@ -204,6 +206,12 @@ object Nuker : Module("Nuker", Category.OTHER, Category.SubCategory.MISCELLANEOU
                     val rotation = faceBlock(blockPos) ?: return@handler // In case of a mistake. Prevent flag.
 
                     setTargetRotation(rotation.rotation, options = options)
+
+                    // Don't dig until the server-side rotation actually reaches the block, otherwise
+                    // the digging packets go out at a non-matching look (rotation lands a tick later).
+                    if (rotationDifference(rotation.rotation) > getFixedAngleDelta()) {
+                        return@handler
+                    }
                 }
 
                 // Set next target block
