@@ -150,7 +150,7 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
     { jumpCooldownMode == "ReceivedHits" && mode == "Jump" }
 
     // Ghost Block
-    private val hurtTimeRange by intRange("HurtTime", 1..9, 1..10) {
+    private val hurtTimeRange by intRange("GhostBlockHurtTime", 1..9, 1..10) {
         mode == "GhostBlock"
     }
 
@@ -179,7 +179,7 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
     // IntaveReduce
     private val reduceFactor by float("Factor", 0.6f, 0.6f..1f) { mode == "IntaveReduce" }
         .describe("Motion multiplier for IntaveReduce.")
-    private val hurtTime by int("HurtTime", 9, 1..10) { mode == "IntaveReduce" }
+    private val hurtTime by int("IntaveHurtTime", 9, 1..10) { mode == "IntaveReduce" }
         .describe("Hurt-time at which IntaveReduce applies.")
 
     // Spoof
@@ -310,11 +310,10 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
 
         moveValues(aacGroup,
             "AACPushXZReducer", "AACPushYReducer", "AACv4MotionReducer", "AAC4ReduceAmount",
-            "AAC5ReduceAmount", "ReduceAmount", "Factor", "HurtTime")
+            "AAC5ReduceAmount", "ReduceAmount", "Factor", "IntaveHurtTime")
 
         moveValues(jumpGroup,
-            "DisableInAir", "Chance", "JumpCooldownMode", "TicksUntilJump", "ReceivedHitsUntilJump",
-            "HurtTime")
+            "DisableInAir", "Chance", "JumpCooldownMode", "TicksUntilJump", "ReceivedHitsUntilJump")
 
         moveValues(delayGroup,
             "SpoofDelay", "Delayed-Delay", "Delayed-Blink", "Delayed-BlinkOutgoing",

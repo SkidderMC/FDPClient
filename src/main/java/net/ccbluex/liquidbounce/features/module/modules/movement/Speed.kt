@@ -286,7 +286,7 @@ object Speed : Module("Speed", Category.MOVEMENT, Category.SubCategory.MOVEMENT_
     val initialBoostMultiplier by float("InitialBoostMultiplier", 1f, 0.01f..10f)
     { boost && mode.get() == "IntaveHop14" }
         .describe("Multiplier for the initial speed boost.")
-    val intaveLowHop by boolean("LowHop", true) { mode.get() == "IntaveHop14" }
+    val intaveLowHop by boolean("IntaveLowHop", true) { mode.get() == "IntaveHop14" }
         .describe("Use a lower jump arc.")
     val strafeStrength by float("StrafeStrength", 0.29f, 0.1f..0.29f)
     { mode.get() == "IntaveHop14" }
@@ -377,7 +377,7 @@ object Speed : Module("Speed", Category.MOVEMENT, Category.SubCategory.MOVEMENT_
         .describe("Allow strafing while in the air.")
 
     // MatrixHop Speed
-    val matrixLowHop by boolean("LowHop", true)
+    val matrixLowHop by boolean("MatrixLowHop", true)
     { mode.get() == "MatrixHop" || mode.get() == "MatrixSlowHop" }
         .describe("Use a lower jump arc in the Matrix hop.")
     val extraGroundBoost by float("ExtraGroundBoost", 0.2f, 0f..0.5f)
@@ -391,9 +391,9 @@ object Speed : Module("Speed", Category.MOVEMENT, Category.SubCategory.MOVEMENT_
     // BlocksMCHop Speed
     val fullStrafe by boolean("FullStrafe", true) { mode.get() == "BlocksMCHop" }
         .describe("Use full strafe acceleration.")
-    val bmcLowHop by boolean("LowHop", true) { mode.get() == "BlocksMCHop" }
+    val bmcLowHop by boolean("BmcLowHop", true) { mode.get() == "BlocksMCHop" }
         .describe("Use a lower jump arc.")
-    val bmcDamageBoost by boolean("DamageBoost", true) { mode.get() == "BlocksMCHop" }
+    val bmcDamageBoost by boolean("BmcDamageBoost", true) { mode.get() == "BlocksMCHop" }
         .describe("Boost speed after taking damage.")
     val damageLowHop by boolean("DamageLowHop", false) { mode.get() == "BlocksMCHop" }
         .describe("Use a low hop after taking damage.")
@@ -519,11 +519,11 @@ object Speed : Module("Speed", Category.MOVEMENT, Category.SubCategory.MOVEMENT_
             "CustomUsePreMotion", "ResetXZ", "ResetY", "NotOnConsuming", "NotOnFalling", "NotOnVoid")
 
         moveValues(intaveGroup,
-            "Boost", "InitialBoostMultiplier", "StrafeStrength", "GroundTimer", "AirTimer")
+            "Boost", "InitialBoostMultiplier", "StrafeStrength", "GroundTimer", "AirTimer", "IntaveLowHop")
 
         moveValues(matrixGroup,
             "Matrix-Mode", "GroundStrafe-Hop2", "VelocBoost-6.6.1", "TimerBoost-6.6.1", "UsePreMotion6.6.1",
-            "ExtraGroundBoost")
+            "ExtraGroundBoost", "MatrixLowHop")
 
         moveValues(verusGroup,
             "Verus-Mode", "YPort-Speed", "YPort2-Speed", "LatestVerusHop-CustomSpeed",
@@ -536,10 +536,10 @@ object Speed : Module("Speed", Category.MOVEMENT, Category.SubCategory.MOVEMENT_
             "Vulcan-Mode", "Boost-Delay", "Ground-Boost")
 
         moveValues(uncpGroup,
-            "PullDown", "OnTick", "OnHurt", "ShouldBoost", "TimerBoost", "DamageBoost", "AirStrafe")
+            "PullDown", "OnTick", "OnHurt", "ShouldBoost", "TimerBoost", "DamageBoost", "LowHop", "AirStrafe")
 
         moveValues(serverGroup,
-            "CubeCraft-PortLength", "Glide", "FullStrafe", "DamageLowHop", "SafeY", "LowHop")
+            "CubeCraft-PortLength", "Glide", "FullStrafe", "DamageLowHop", "SafeY", "BmcLowHop", "BmcDamageBoost")
 
         serverGroup.addValue(SpeedYawOffset)
 

@@ -83,7 +83,7 @@ object TimerRange : Module("TimerRange", Category.COMBAT, Category.SubCategory.C
         .describe("Cooldown ticks between boosts in Normal mode.")
 
     // Smart & Modern Mode Range
-    private val range by floatRange("Range", 2.5f..3f, 2f..8f) { timerBoostMode != "Normal" }
+    private val range by floatRange("MinMaxRange", 2.5f..3f, 2f..8f) { timerBoostMode != "Normal" }
         .describe("Attack distance range for Smart and Modern modes.")
 
     private val scanRange by float("ScanRange", 8f, 2f..12f) { timerBoostMode != "Normal" }.onChange { _, new ->
@@ -166,7 +166,7 @@ object TimerRange : Module("TimerRange", Category.COMBAT, Category.SubCategory.C
         moveValues(modesGroup, "TimerMode", "UsePointTracker", "Ticks")
 
         moveValues(rangeGroup,
-            "Range", "CooldownTick", "ScanRange", "TickDelay", "MaxAngleDifference")
+            "Range", "MinMaxRange", "CooldownTick", "ScanRange", "TickDelay", "MaxAngleDifference")
 
         moveValues(timerGroup,
             "TimerBoost", "BoostDelay", "TimerCharged", "ChargedDelay",

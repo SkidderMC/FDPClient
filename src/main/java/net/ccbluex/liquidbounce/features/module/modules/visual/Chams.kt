@@ -23,7 +23,7 @@ object Chams : Module("Chams", Category.VISUAL, Category.SubCategory.RENDER_OVER
 
     val localPlayerValue by boolean("LocalPlayer", true)
         .describe("Apply chams to your own player.")
-    val colorModeValue by choices("Color", arrayOf("Custom", "Fade"), "Custom") { !legacyMode }
+    val colorModeValue by choices("ColorMode", arrayOf("Custom", "Fade"), "Custom") { !legacyMode }
         .describe("Coloring style for the chams.")
 
     val texturedValue by boolean("Textured", true) { !legacyMode }
@@ -44,7 +44,7 @@ object Chams : Module("Chams", Category.VISUAL, Category.SubCategory.RENDER_OVER
     init {
         moveValues(applyGroup, "Targets", "Chests", "Items", "Hand", "LocalPlayer")
         moveValues(renderGroup,
-            "Color", "Textured", "Legacy-Mode", "Behind-Color", "Behind")
+            "ColorMode", "Color", "Textured", "Legacy-Mode", "Behind-Color", "Behind")
 
         addValues(listOf(applyGroup, renderGroup))
     }

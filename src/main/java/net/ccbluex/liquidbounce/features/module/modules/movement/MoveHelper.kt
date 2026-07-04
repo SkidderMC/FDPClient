@@ -32,17 +32,17 @@ object MoveHelper : Module("MoveHelper", Category.MOVEMENT, Category.SubCategory
     // Close Range Settings
     private val closeMode by choices("CloseMode", arrayOf("Interval", "Hit"), "Interval")
         .describe("How to trigger the S-tap at close range.")
-    private val closeInterval by int("Interval", 500, 0..1000) { closeMode == "Interval" }
+    private val closeInterval by int("CloseInterval", 500, 0..1000) { closeMode == "Interval" }
         .describe("Interval timing between close-range S-tap.")
-    private val closeHoldLength by int("Hold", 100, 0..500)
+    private val closeHoldLength by int("CloseHold", 100, 0..500)
         .describe("How long to hold back movement at close range.")
 
     // Far Range Settings
     private val farMode by choices("FarMode", arrayOf("Interval", "Hit"), "Interval")
         .describe("How to trigger the S-tap at far range.")
-    private val farInterval by int("Interval", 500, 0..1000) { farMode == "Interval" }
+    private val farInterval by int("FarInterval", 500, 0..1000) { farMode == "Interval" }
         .describe("Interval timing between far-range S-tap.")
-    private val farHoldLength by int("Hold", 150, 0..500)
+    private val farHoldLength by int("FarHold", 150, 0..500)
         .describe("How long to hold back movement at far range.")
 
     private val onlyWhenHurt by boolean("OnlyWhenHurt", true)
