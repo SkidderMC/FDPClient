@@ -163,6 +163,15 @@ object Speed : Module("Speed", Category.MOVEMENT, Category.SubCategory.MOVEMENT_
 
     val mode = choices("Mode", modesList.modeNames(), "NCPBHop")
         .describe("Speed bypass method to use.")
+        .also {
+            it.onChange { old, new ->
+                if (state && mc.thePlayer != null && old != new) {
+                    speedModes.selectedMode(old).onDisable()
+                    speedModes.selectedMode(new).onEnable()
+                }
+                new
+            }
+        }
 
     // Custom Speed
     val customBehavior by choices("CustomBehavior", arrayOf("Current", "Legacy"), "Current") { mode.get() == "Custom" }

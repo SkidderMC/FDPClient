@@ -104,6 +104,15 @@ object NoFall : Module("NoFall", Category.PLAYER, Category.SubCategory.PLAYER_CO
 
     val mode by choices("Mode", noFallModes.modeNames(), "MLG")
         .describe("No-fall bypass method to use.")
+        .also {
+            it.onChange { old, new ->
+                if (state && mc.thePlayer != null && old != new) {
+                    noFallModes.selectedMode(old).onDisable()
+                    noFallModes.selectedMode(new).onEnable()
+                }
+                new
+            }
+        }
 
     val minFallDistance by float("MinMLGHeight", 5f, 2f..50f) { mode == "MLG" }.subjective()
         .describe("Minimum fall height before MLG triggers.")

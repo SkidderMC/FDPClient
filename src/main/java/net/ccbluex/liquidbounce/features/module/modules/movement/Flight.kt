@@ -128,6 +128,15 @@ object Flight : Module("Flight", Category.MOVEMENT, Category.SubCategory.MOVEMEN
 
     val modeValue = choices("Mode", modesList.modeNames(), "Vanilla")
         .describe("Anticheat-specific fly method to use.")
+        .also {
+            it.onChange { old, new ->
+                if (state && mc.thePlayer != null && old != new) {
+                    flyModes.selectedMode(old).onDisable()
+                    flyModes.selectedMode(new).onEnable()
+                }
+                new
+            }
+        }
     val mode by modeValue
 
     val vanillaSpeed by float("VanillaSpeed", 2f, 0f..10f) {

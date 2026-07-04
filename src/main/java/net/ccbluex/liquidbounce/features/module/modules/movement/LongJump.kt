@@ -63,6 +63,15 @@ object LongJump : Module("LongJump", Category.MOVEMENT, Category.SubCategory.MOV
 
     val mode by choices("Mode", longJumpModes.modeNames(), "NCP")
         .describe("Anticheat bypass method used for the long jump.")
+        .also {
+            it.onChange { old, new ->
+                if (state && mc.thePlayer != null && old != new) {
+                    longJumpModes.selectedMode(old).onDisable()
+                    longJumpModes.selectedMode(new).onEnable()
+                }
+                new
+            }
+        }
     val ncpBoost by float("NCPBoost", 4.25f, 1f..10f) { mode == "NCP" }
         .describe("Forward boost strength for the NCP mode.")
     val autoJumpValue by boolean("AutoJump", true)
