@@ -111,7 +111,11 @@ object NextGenClickGuiBridge : MinecraftInstance {
                     applyModuleBind(module, settingObject.get("value") ?: continue)
                     continue
                 }
-                val value = module.getValue(valueName) ?: continue
+                // The payload mirrors module.values level by level, so resolve direct children
+                // first - findDeep would let a same-named group child shadow a top-level value.
+                val value = module.values.firstOrNull { it.matchesKey(valueName) }
+                    ?: module.getValue(valueName)
+                    ?: continue
                 applyValue(value, settingObject.get("value") ?: continue)
             }
         }

@@ -13,11 +13,13 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.ele
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.YzYGui
 import net.ccbluex.liquidbounce.utils.attack.CPSCounter.isHovering
 import net.ccbluex.liquidbounce.utils.render.Pair
+import net.ccbluex.liquidbounce.utils.render.RenderHelper
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.mc
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.yzyRectangle
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.yzyTexture
 import net.minecraft.client.renderer.GlStateManager.*
 import net.minecraft.util.ResourceLocation
+import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.util.*
 
@@ -62,14 +64,18 @@ class Panel(
 
     fun handleScroll(mouseX: Int, mouseY: Int, wheel: Int): Boolean {
         try {
-            if (mouseX in x..(x + width) && mouseY in y..(y + height + elementsHeight.toInt())) {
+            val contentSpan = if (isExtended || parent.search.active) contentHeight() else 0
+            if (mouseX in x..(x + width) && mouseY in y..(y + height + contentSpan)) {
+                if (maxScrollPx() == 0) return false
                 when {
                     wheel > 0 -> {
-                        dragged = (dragged - 1)
+                        dragged -= 1
+                        scrollPx()
                         return true
                     }
                     wheel < 0 -> {
-                        dragged = (dragged + 1)
+                        dragged += 1
+                        scrollPx()
                         return true
                     }
                 }
@@ -78,6 +84,22 @@ class Panel(
             println("Error handling scroll in panel ${category.name}: ${e.message}")
         }
         return false
+    }
+
+    private fun contentHeight(): Int =
+        visibleElements().sumOf { it.height + it.getExtendedHeight().toInt() }
+
+    private fun maxScrollPx(): Int {
+        if (!isExtended && !parent.search.active) return 0
+        val viewport = parent.height - (y + height) - 4
+        return (contentHeight() - viewport).coerceAtLeast(0)
+    }
+
+    private fun scrollPx(): Int {
+        val max = maxScrollPx()
+        val maxSteps = (max + SCROLL_STEP - 1) / SCROLL_STEP
+        dragged = dragged.coerceIn(0, maxSteps)
+        return (dragged * SCROLL_STEP).coerceAtMost(max)
     }
 
     fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
@@ -141,12 +163,26 @@ class Panel(
             }
 
             if (isExtended || parent.search.active) {
-                var addition = height
+                val scrollOffset = scrollPx()
+                val viewportTop = y + height
+                if (scrollOffset > 0) {
+                    GL11.glEnable(GL11.GL_SCISSOR_TEST)
+                    RenderHelper.scissor(
+                        (x - 1).toDouble(),
+                        viewportTop.toDouble(),
+                        (width + 2).toDouble(),
+                        (parent.height - viewportTop).toDouble()
+                    )
+                }
+                var addition = height - scrollOffset
                 visibleElements.forEach { element ->
                     element.x = x + 1
                     element.y = y + addition
                     element.drawScreen(mouseX, mouseY, partialTicks)
                     addition += element.height + if (element.isExtended) element.getExtendedHeight().toInt() else 0
+                }
+                if (scrollOffset > 0) {
+                    GL11.glDisable(GL11.GL_SCISSOR_TEST)
                 }
             }
         } catch (e: Exception) {
@@ -196,7 +232,7 @@ class Panel(
             }
         }
 
-        if (isExtended || parent.search.active) {
+        if ((isExtended || parent.search.active) && mouseY > y + height) {
             visibleElements.forEach { it.mouseClicked(mouseX, mouseY, button) }
         }
     }
@@ -260,5 +296,6 @@ class Panel(
     companion object {
         const val PANEL_WIDTH: Int = 100
         const val PANEL_HEIGHT: Int = 15
+        const val SCROLL_STEP: Int = ModuleElement.MODULE_HEIGHT
     }
 }

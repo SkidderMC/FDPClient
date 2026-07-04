@@ -301,7 +301,7 @@ class SettingComponents(private val module: Module) : Component() {
         var count = 0.0
         var hoverDescription: String? = null
 
-        fun renderSetting(setting: Value<*>) {
+        fun renderSetting(setting: Value<*>): Boolean {
             val settingY = roundToHalf(y + (count * rectHeight)).toFloat()
 
             val desc = setting.description
@@ -1412,7 +1412,7 @@ class SettingComponents(private val module: Module) : Component() {
 
                 if (type == GuiEvents.CLICK && hoveringKey && button == 0) {
                     bindingKeyValue = setting
-                    return
+                    return true
                 }
 
                 count += 0.5
@@ -1486,7 +1486,7 @@ class SettingComponents(private val module: Module) : Component() {
 
             if (type == GuiEvents.CLICK && hoveringBindRect && button == 0) {
                 binding = module
-                return
+                return true
             }
 
             val animations =
@@ -1520,35 +1520,40 @@ class SettingComponents(private val module: Module) : Component() {
              );
             */
             count++
+            return false
         }
 
-        fun renderNode(setting: Value<*>) {
+        fun renderNode(setting: Value<*>): Boolean {
             if (setting is Configurable) {
                 val groupY = roundToHalf(y + (count * rectHeight)).toFloat()
 
                 val label = (if (setting.groupExpanded) "- " else "+ ") + setting.name
                 Fonts.InterBold_18.drawString(label, x + 6, groupY + 5, textColor.rgb)
 
+                // Hit-box must match the 0.8-row advance, otherwise it bleeds over the first
+                // child row; consuming the toggle click keeps the same pass from re-entering
+                // the freshly expanded children with the same event.
                 val headerHover = isClickable(groupY + 2)
-                        && RenderUtils.isHovering(x + 5, groupY + 2, width - 10, rectHeight, mouseX, mouseY)
+                        && RenderUtils.isHovering(x + 5, groupY + 2, width - 10, rectHeight * 0.8f - 2, mouseX, mouseY)
                 if (type == GuiEvents.CLICK && headerHover && button == 0) {
                     setting.groupExpanded = !setting.groupExpanded
+                    return true
                 }
 
                 count += 0.8
 
                 if (setting.groupExpanded) {
                     for (child in setting.values) {
-                        if (settingVisible(child)) renderNode(child)
+                        if (settingVisible(child) && renderNode(child)) return true
                     }
                 }
-                return
+                return false
             }
-            renderSetting(setting)
+            return renderSetting(setting)
         }
 
         for (setting in ValueDispatcher.visible(module)) {
-            if (settingVisible(setting)) renderNode(setting)
+            if (settingVisible(setting) && renderNode(setting)) return
         }
 
         settingSize = count

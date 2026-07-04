@@ -143,7 +143,7 @@ object BlackStyle : Style() {
         )
 
         // Draw settings
-        val moduleValues = ValueDispatcher.visible(moduleElement.module)
+        val moduleValues = ValueDispatcher.visible(moduleElement.module).filter(::hasVisibleContent)
         if (moduleValues.isNotEmpty()) {
             fontSemibold35.drawString(
                 if (moduleElement.showSettings) "<" else ">",
@@ -1166,11 +1166,10 @@ object BlackStyle : Style() {
 
                 fun renderValue(value: Value<*>): Boolean {
                     if (value is Configurable) {
-                        val children = value.values.filter { it.shouldRender() }
+                        val children = value.values.filter(::hasVisibleContent)
                         if (children.isEmpty()) return false
 
-                        moduleElement.settingsWidth =
-                            maxOf(moduleElement.settingsWidth, fontSemibold35.getStringWidth(value.name) + 16)
+                        moduleElement.settingsWidth = fontSemibold35.getStringWidth(value.name) + 16
 
                         if (mouseButton == 0 && mouseX in minX..maxX && mouseY in yPos..yPos + fontSemibold35.fontHeight) {
                             value.groupExpanded = !value.groupExpanded
@@ -1219,4 +1218,13 @@ object BlackStyle : Style() {
 
         return false
     }
+
+    /**
+     * A value has something to draw when it passes its own support gate and - for a nested
+     * group - at least one descendant does too, so a group of gated-off (or empty) groups
+     * hides instead of leaving a dead header, and the settings arrow only shows when there
+     * is real content behind it.
+     */
+    private fun hasVisibleContent(value: Value<*>): Boolean =
+        value.shouldRender() && (value !is Configurable || value.values.any(::hasVisibleContent))
 }

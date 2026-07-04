@@ -145,7 +145,9 @@ class NlSub(parentCategory: Category?, var subCategory: SubCategory, var y2: Int
     }
 
     fun released(mx: Int, my: Int, mb: Int) {
-        visibleModules.forEach(Consumer { e: NlModule? -> e!!.released(mx, my, mb) })
+        if (this.isSelected) {
+            visibleModules.forEach(Consumer { e: NlModule? -> e!!.released(mx, my, mb) })
+        }
     }
 
     fun click(mx: Int, my: Int, mb: Int) {

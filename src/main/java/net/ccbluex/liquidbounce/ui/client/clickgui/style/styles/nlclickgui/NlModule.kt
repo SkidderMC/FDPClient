@@ -540,6 +540,7 @@ class NlModule(var NlSub: NlSub, var module: Module, var lef: Boolean) {
         }
 
         override fun keyTyped(typedChar: Char, keyCode: Int) {
+            if (!setting.groupExpanded) return
             for (child in activeChildren()) child.keyTyped(typedChar, keyCode)
         }
     }
