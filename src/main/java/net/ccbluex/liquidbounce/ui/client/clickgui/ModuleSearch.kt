@@ -6,10 +6,13 @@
 package net.ccbluex.liquidbounce.ui.client.clickgui
 
 import net.ccbluex.liquidbounce.features.module.Module
+import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.gui.Gui
+import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.util.ChatAllowedCharacters
 import org.lwjgl.input.Keyboard
+import org.lwjgl.input.Mouse
 import java.text.Normalizer
 import java.util.Locale
 
@@ -29,6 +32,13 @@ class ModuleSearch {
     private var fieldTop = 0
     private var fieldRight = 0
     private var fieldBottom = 0
+
+    // Draggable position: -1 means "not placed yet", fall back to the default top-center anchor.
+    private var posX = -1
+    private var posY = -1
+    private var dragging = false
+    private var dragOffsetX = 0
+    private var dragOffsetY = 0
 
     fun matches(module: Module): Boolean {
         if (!active) return true
@@ -78,7 +88,15 @@ class ModuleSearch {
     /** Returns true only when the search field consumed the click. */
     fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int): Boolean {
         val hovered = mouseX in fieldLeft..fieldRight && mouseY in fieldTop..fieldBottom
-        if (mouseButton == 0) focused = hovered
+        if (mouseButton == 0) {
+            focused = hovered
+            if (hovered) {
+                // Clicking grabs the field; holding and moving drags it, a plain click just focuses.
+                dragging = true
+                dragOffsetX = mouseX - fieldLeft
+                dragOffsetY = mouseY - fieldTop
+            }
+        }
         if (!hovered) return false
 
         if (mouseButton == 1) {
@@ -89,8 +107,27 @@ class ModuleSearch {
     }
 
     fun draw(font: FontRenderer, screenWidth: Int, accentColor: Int) {
-        fieldLeft = screenWidth / 2 - FIELD_WIDTH / 2
-        fieldTop = FIELD_MARGIN
+        val mc = Minecraft.getMinecraft()
+        val sr = ScaledResolution(mc)
+
+        if (posX < 0) {
+            posX = screenWidth / 2 - FIELD_WIDTH / 2
+            posY = FIELD_MARGIN
+        }
+
+        if (dragging) {
+            if (Mouse.isButtonDown(0)) {
+                val mouseX = Mouse.getX() * sr.scaledWidth / mc.displayWidth
+                val mouseY = sr.scaledHeight - Mouse.getY() * sr.scaledHeight / mc.displayHeight - 1
+                posX = (mouseX - dragOffsetX).coerceIn(0, screenWidth - FIELD_WIDTH)
+                posY = (mouseY - dragOffsetY).coerceIn(0, sr.scaledHeight - FIELD_HEIGHT)
+            } else {
+                dragging = false
+            }
+        }
+
+        fieldLeft = posX
+        fieldTop = posY
         fieldRight = fieldLeft + FIELD_WIDTH
         fieldBottom = fieldTop + FIELD_HEIGHT
 

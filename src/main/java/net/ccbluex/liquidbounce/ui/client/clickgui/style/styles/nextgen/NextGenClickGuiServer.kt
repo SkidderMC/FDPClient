@@ -391,6 +391,9 @@ object NextGenClickGuiServer {
         }
 
         exchange.responseHeaders.set("Content-Type", mimeType(requested))
+        // Never let the embedded browser cache the UI shell, otherwise a rebuilt theme keeps
+        // showing the old markup; hashed asset names already handle their own busting.
+        exchange.responseHeaders.set("Cache-Control", "no-cache, no-store, must-revalidate")
         exchange.sendResponseHeaders(200, bytes.size.toLong())
         exchange.responseBody.use { it.write(bytes) }
     }

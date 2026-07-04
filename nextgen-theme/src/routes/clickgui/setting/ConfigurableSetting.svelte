@@ -59,16 +59,23 @@
   .title {
     color: var(--clickgui-text-color);
     font-size: 12px;
-    font-weight: 600;
+    font-weight: 700;
+    letter-spacing: 0.2px;
   }
 
   .head {
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    padding: 6px 9px;
+    background-color: var(--clickgui-dropdown-trigger-background-color);
+    border-left: solid 2px var(--clickgui-setting-group-border-color);
+    border-radius: 3px;
+    cursor: pointer;
     transition: ease margin-bottom .2s;
 
     &.expanded {
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
   }
 
