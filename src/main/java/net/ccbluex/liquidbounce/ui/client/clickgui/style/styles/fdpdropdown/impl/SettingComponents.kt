@@ -1527,8 +1527,19 @@ class SettingComponents(private val module: Module) : Component() {
             if (setting is Configurable) {
                 val groupY = roundToHalf(y + (count * rectHeight)).toFloat()
 
-                val label = (if (setting.groupExpanded) "- " else "+ ") + setting.name
-                Fonts.InterBold_18.drawString(label, x + 6, groupY + 5, textColor.rgb)
+                // Section bar behind the group header so nested settings read as a clear block.
+                drawCustomShapeWithRadius(
+                    x + 4, groupY + 2, width - 8, rectHeight * 0.8f - 2, 2f,
+                    RenderUtils.applyOpacity(darkRectHover, .5f)
+                )
+                drawCustomShapeWithRadius(
+                    x + 4, groupY + 2, 2f, rectHeight * 0.8f - 2, 1f,
+                    if (accent) accentedColor2 else textColor
+                )
+
+                val arrow = if (setting.groupExpanded) "-" else "+"
+                Fonts.InterBold_18.drawString(arrow, x + 9, groupY + 5, textColor.rgb)
+                Fonts.InterBold_18.drawString(setting.name, x + 17, groupY + 5, textColor.rgb)
 
                 // Hit-box must match the 0.8-row advance, otherwise it bleeds over the first
                 // child row; consuming the toggle click keeps the same pass from re-entering

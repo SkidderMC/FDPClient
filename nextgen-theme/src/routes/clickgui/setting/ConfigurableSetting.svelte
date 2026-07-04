@@ -37,7 +37,7 @@
     <div class="head" class:expanded on:contextmenu|preventDefault={toggleExpanded}>
         <div class="title">{$spaceSeperatedNames ? convertToSpacedString(setting.name) : setting.name}</div>
         {#if !hideExpandControl}
-            <ExpandArrow bind:expanded />
+            <div class="arrow"><ExpandArrow bind:expanded /></div>
         {/if}
     </div>
 
@@ -61,21 +61,30 @@
     font-size: 12px;
     font-weight: 700;
     letter-spacing: 0.2px;
+    text-align: center;
   }
 
   .head {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
+    position: relative;
     padding: 6px 9px;
-    background-color: var(--clickgui-dropdown-trigger-background-color);
-    border-left: solid 2px var(--clickgui-setting-group-border-color);
+    background-color: var(--clickgui-panel-header-background-color);
+    border-left: solid 2px var(--accent-color);
     border-radius: 3px;
     cursor: pointer;
     transition: ease margin-bottom .2s;
 
     &.expanded {
       margin-bottom: 8px;
+    }
+
+    .arrow {
+      position: absolute;
+      right: 9px;
+      top: 50%;
+      transform: translateY(-50%);
     }
   }
 

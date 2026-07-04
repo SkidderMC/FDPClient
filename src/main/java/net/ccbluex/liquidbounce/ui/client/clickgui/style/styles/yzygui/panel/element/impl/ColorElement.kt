@@ -89,15 +89,23 @@ class ColorElement(
 
         // Main color preview
         RenderUtils.drawRect(previewX1.toFloat(), previewY1.toFloat(), previewX2.toFloat(), previewY2.toFloat(), currentColor.rgb)
+        RenderUtils.drawBorder(
+            previewX1.toFloat(), previewY1.toFloat(), previewX2.toFloat(), previewY2.toFloat(),
+            1f, Color(0, 0, 0, 140).rgb
+        )
 
         // Rainbow preview
-        val rainbowPreviewX2 = previewX1 - previewSize
+        val rainbowPreviewX2 = previewX1 - previewSize - 2
         val rainbowPreviewX1 = rainbowPreviewX2 - previewSize
         if (rainbowPreviewX1 > x + 4) {
             RenderUtils.drawRect(
                 rainbowPreviewX1.toFloat(), previewY1.toFloat(),
                 rainbowPreviewX2.toFloat(), previewY2.toFloat(),
                 ColorUtils.rainbow(setting.opacitySliderY).rgb
+            )
+            RenderUtils.drawBorder(
+                rainbowPreviewX1.toFloat(), previewY1.toFloat(), rainbowPreviewX2.toFloat(), previewY2.toFloat(),
+                1f, Color(0, 0, 0, 140).rgb
             )
         }
 
