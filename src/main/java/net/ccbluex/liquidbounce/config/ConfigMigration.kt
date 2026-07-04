@@ -31,14 +31,17 @@ object ConfigMigration {
     fun findValue(moduleJson: JsonObject, value: Value<*>): JsonElement? {
         val directHit = direct(moduleJson, value)
         if (value !is Configurable) return directHit
-        if (directHit != null && directHit.isJsonObject) return directHit
 
+        // Prefer each child's stored value from the group object, but fill in any child that is
+        // missing from it (e.g. one added after the profile was saved) from its legacy flat key,
+        // so an already-nested profile still picks up newly grouped settings instead of losing them.
+        val stored = directHit as? JsonObject
         val migrated = JsonObject()
         for (child in value.values) {
-            val childElement = findValue(moduleJson, child) ?: continue
+            val childElement = stored?.get(child.name) ?: findValue(moduleJson, child) ?: continue
             migrated.add(child.name, childElement)
         }
-        return migrated.takeIf { it.entrySet().isNotEmpty() }
+        return migrated.takeIf { it.entrySet().isNotEmpty() } ?: directHit
     }
 
     private fun direct(json: JsonObject, value: Value<*>): JsonElement? =
