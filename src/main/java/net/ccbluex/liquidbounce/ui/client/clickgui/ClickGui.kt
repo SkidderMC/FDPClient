@@ -198,7 +198,7 @@ object ClickGui : GuiScreen() {
         }
 
         drawBloom(mouseX - 5, mouseY - 5, 10, 10, 16, Color(guiColor))
-        search.draw(fontRendererObj, width, height, Color(guiColor).rgb)
+        search.draw(fontRendererObj, width, Color(guiColor).rgb)
 
         super.drawScreen(mouseX, mouseY, partialTicks)
     }

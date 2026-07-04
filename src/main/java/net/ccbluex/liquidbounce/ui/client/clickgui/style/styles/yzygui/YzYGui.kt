@@ -156,7 +156,7 @@ class YzYGui(private val clickGui: ClickGUIModule) : GuiScreen() {
                 box.drawScreen(mouseX, mouseY, partialTicks)
             }
 
-            search.draw(fontRendererObj, width, height, Color(guiColor).rgb)
+            search.draw(fontRendererObj, width, Color(guiColor).rgb)
 
             lastMS = System.currentTimeMillis()
 

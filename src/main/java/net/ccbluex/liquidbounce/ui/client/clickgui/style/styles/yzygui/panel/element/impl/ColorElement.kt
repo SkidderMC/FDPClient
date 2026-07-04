@@ -32,11 +32,15 @@ class ColorElement(
     height: Int
 ) : PanelElement(parent, x, y, width, height) {
 
-    private val colorPickerWidth = 75
     private val colorPickerHeight = 50
     private val hueSliderWidth = 7
     private val hueSliderHeight = 50
     private val spacingBetweenSliders = 5
+
+    // Fit the picker (saturation box + hue + opacity sliders) inside the element so it never
+    // spills past the narrow Zywl panel; falls back to the original 75px on wide panels.
+    private val colorPickerWidth: Int
+        get() = (width - 10 - (spacingBetweenSliders + hueSliderWidth) * 2).coerceIn(40, 75)
 
     fun getActualHeight(): Int {
         var totalHeight = 30 // Base height for name and color code

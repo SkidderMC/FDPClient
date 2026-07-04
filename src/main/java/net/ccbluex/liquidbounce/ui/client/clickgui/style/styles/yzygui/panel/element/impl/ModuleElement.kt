@@ -365,17 +365,25 @@ class GroupElement(
 
         val font: FontRenderer = FDPClient.customFontManager["lato-bold-15"] ?: return
 
+        val accent = yzyCategory.of(moduleElement.module.category)?.color ?: Color(90, 120, 255)
+
         RenderUtils.yzyRectangle(
             x.toFloat(), y.toFloat(),
             width.toFloat(), HEADER_HEIGHT.toFloat(),
-            Color(33, 33, 33)
+            Color(22, 22, 22)
+        )
+        // Category-colored accent stripe so the group header reads clearly against the panel.
+        RenderUtils.yzyRectangle(
+            x.toFloat(), y.toFloat(),
+            2f, HEADER_HEIGHT.toFloat(),
+            accent
         )
 
         font.drawString(
             group.name,
-            (x + 3).toFloat(),
+            (x + 5).toFloat(),
             y + (HEADER_HEIGHT / 4.0f) + 0.5f,
-            Color(0xC8C8C8).rgb
+            Color(0xF2F2F2).rgb
         )
 
         val indicator = if (group.groupExpanded) "▼" else "▶"
@@ -383,7 +391,7 @@ class GroupElement(
             indicator,
             (x + width - font.getWidth(indicator) - 4).toFloat(),
             y + (HEADER_HEIGHT / 4.0f) + 0.5f,
-            Color(0xC8C8C8).rgb
+            accent.rgb
         )
 
         if (group.groupExpanded) {

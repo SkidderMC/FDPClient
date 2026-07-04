@@ -115,7 +115,7 @@ class FDPDropdownClickGUI : GuiScreen() {
                 }
                 sideGui.drawScreen(mouseX, mouseY, partialTicks, (255 * fadeAnimation.output).toInt().coerceIn(0, 255))
                 net.ccbluex.liquidbounce.ui.client.clickgui.ClickGuiHeader.draw(sideGui, this@FDPDropdownClickGUI, mouseX, mouseY)
-                search.draw(fontRendererObj, width, height, Color(guiColor).rgb)
+                search.draw(fontRendererObj, width, Color(guiColor).rgb)
             }
             drawBloom(mouseX - 5, mouseY - 5, 10, 10, 16, Color(guiColor, true))
             super.drawScreen(mouseX, mouseY, partialTicks)

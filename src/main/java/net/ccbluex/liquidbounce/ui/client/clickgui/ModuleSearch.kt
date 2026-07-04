@@ -88,9 +88,9 @@ class ModuleSearch {
         return mouseButton == 0 || mouseButton == 1
     }
 
-    fun draw(font: FontRenderer, screenWidth: Int, screenHeight: Int, accentColor: Int) {
+    fun draw(font: FontRenderer, screenWidth: Int, accentColor: Int) {
         fieldLeft = screenWidth / 2 - FIELD_WIDTH / 2
-        fieldTop = screenHeight - FIELD_HEIGHT - FIELD_MARGIN
+        fieldTop = FIELD_MARGIN
         fieldRight = fieldLeft + FIELD_WIDTH
         fieldBottom = fieldTop + FIELD_HEIGHT
 
