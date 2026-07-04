@@ -38,6 +38,15 @@ object Ambience : Module("Ambience", Category.VISUAL, Category.SubCategory.RENDE
 
     private var i = 0L
 
+    private val timeGroup = Configurable("Time")
+    private val worldGroup = Configurable("World")
+
+    init {
+        moveValues(timeGroup, "Mode", "Time", "TimeSpeed", "DynamicSpeed")
+        moveValues(worldGroup, "WeatherMode", "WorldColor", "Color")
+        addValues(listOf(timeGroup, worldGroup))
+    }
+
     override fun onDisable() {
         i = 0
     }

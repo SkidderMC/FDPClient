@@ -6,6 +6,7 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.minecraft.potion.Potion
 import net.minecraft.potion.PotionEffect
+import net.ccbluex.liquidbounce.config.Configurable
 
 object PotionSpoof : Module("PotionSpoof", Category.PLAYER, Category.SubCategory.PLAYER_ASSIST) {
 
@@ -67,6 +68,15 @@ object PotionSpoof : Module("PotionSpoof", Category.PLAYER, Category.SubCategory
         Potion.saturation.id to saturationValue,
         Potion.waterBreathing.id to waterBreathingValue
     )
+
+    private val generalGroup = Configurable("General")
+    private val effectsGroup = Configurable("Effects")
+
+    init {
+        moveValues(generalGroup, "PotionLevel")
+        moveValues(effectsGroup, "Speed", "Slowness", "Haste", "MiningFatigue", "Blindness", "Strength", "JumpBoost", "Weakness", "Regeneration", "Wither", "Resistance", "FireResistance", "Absorption", "HealthBoost", "Poison", "Saturation", "WaterBreathing")
+        addValues(listOf(generalGroup, effectsGroup))
+    }
 
     override fun onDisable() {
         mc.thePlayer ?: return

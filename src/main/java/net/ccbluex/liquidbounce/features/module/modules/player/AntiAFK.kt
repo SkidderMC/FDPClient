@@ -17,6 +17,7 @@ import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.ccbluex.liquidbounce.event.handler
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.client.settings.GameSettings
+import net.ccbluex.liquidbounce.config.Configurable
 
 object AntiAFK : Module("AntiAFK", Category.PLAYER, Category.SubCategory.PLAYER_ASSIST, gameDetecting = false) {
 
@@ -49,6 +50,17 @@ object AntiAFK : Module("AntiAFK", Category.PLAYER, Category.SubCategory.PLAYER_
     private val swingDelayTimer = MSTimer()
     private val delayTimer = MSTimer()
 
+
+    private val generalGroup = Configurable("General")
+    private val rotationGroup = Configurable("Rotation")
+    private val actionsGroup = Configurable("Actions")
+
+    init {
+        moveValues(generalGroup, "Mode", "IgnoreOpenInventory")
+        moveValues(rotationGroup, "Rotate", "RotationDelay", "RotationAngle")
+        moveValues(actionsGroup, "Swing", "SwingDelay", "Jump", "Move")
+        addValues(listOf(generalGroup, rotationGroup, actionsGroup))
+    }
 
     val onUpdate = handler<UpdateEvent> {
         val thePlayer = mc.thePlayer ?: return@handler

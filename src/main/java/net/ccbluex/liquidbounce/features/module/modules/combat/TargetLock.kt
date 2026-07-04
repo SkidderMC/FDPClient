@@ -20,6 +20,7 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawEntityBoxESP
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.minecraft.entity.EntityLivingBase
 import java.awt.Color
+import net.ccbluex.liquidbounce.config.Configurable
 
 /**
  * TargetLock
@@ -56,6 +57,17 @@ object TargetLock : Module("TargetLock", Category.COMBAT, Category.SubCategory.C
 
     override val tag
         get() = lockedEntity?.name
+
+    private val targetingGroup = Configurable("Targeting")
+    private val fOVGroup = Configurable("FOV")
+    private val markerGroup = Configurable("Marker")
+
+    init {
+        moveValues(targetingGroup, "MaxRange", "Sticky", "SwitchDelay")
+        moveValues(fOVGroup, "FovGuard", "MaxFOV")
+        moveValues(markerGroup, "Marker", "Rainbow", "Red", "Green", "Blue")
+        addValues(listOf(targetingGroup, fOVGroup, markerGroup))
+    }
 
     override fun onDisable() {
         lockedEntity = null

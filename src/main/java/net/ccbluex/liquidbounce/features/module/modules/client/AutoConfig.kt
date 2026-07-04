@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.handler.api.PresetCatalogService
 import net.ccbluex.liquidbounce.utils.client.chat
 import kotlin.concurrent.thread
+import net.ccbluex.liquidbounce.config.Configurable
 
 object AutoConfig : Module("AutoConfig", Category.CLIENT, Category.SubCategory.CONFIGS, gameDetecting = false) {
 
@@ -32,6 +33,17 @@ object AutoConfig : Module("AutoConfig", Category.CLIENT, Category.SubCategory.C
         .describe("Suffix appended to the config URL.")
     private val blacklistValue = text("Blacklist", "poke.sexy,loyisa.cn,anticheat-test.com")
         .describe("Comma-separated domains to never load configs for.")
+
+    private val generalGroup = Configurable("General")
+    private val catalogGroup = Configurable("Catalog")
+    private val legacyGroup = Configurable("Legacy")
+
+    init {
+        moveValues(generalGroup, "AutoLoadOnJoin", "Notify", "Blacklist")
+        moveValues(catalogGroup, "CatalogURL", "CatalogSHA256")
+        moveValues(legacyGroup, "AllowLegacyUnsigned", "LegacyBaseURL", "LegacyURLSuffix")
+        addValues(listOf(generalGroup, catalogGroup, legacyGroup))
+    }
 
     private fun currentDomain(): String? {
         val serverData = mc.currentServerData ?: return null

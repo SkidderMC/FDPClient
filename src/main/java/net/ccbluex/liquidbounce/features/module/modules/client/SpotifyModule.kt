@@ -41,6 +41,7 @@ import java.nio.charset.StandardCharsets
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 import java.util.EnumMap
+import net.ccbluex.liquidbounce.config.Configurable
 
 /**
  * Standalone Spotify integration that fetches the currently playing track from the Spotify Web API.
@@ -124,6 +125,15 @@ object SpotifyModule : Module("Spotify", Category.CLIENT, Category.SubCategory.C
 
     val refreshToken: String
         get() = refreshTokenValue.get()
+
+    private val generalGroup = Configurable("General")
+    private val credentialsGroup = Configurable("Credentials")
+
+    init {
+        moveValues(generalGroup, "Mode", "PollInterval", "AutoReconnect", "OpenUI")
+        moveValues(credentialsGroup, "ClientId", "ClientSecret", "RefreshToken", "QuickRefreshToken")
+        addValues(listOf(generalGroup, credentialsGroup))
+    }
 
     override fun onEnable() {
         reloadCredentialsFromDisk()

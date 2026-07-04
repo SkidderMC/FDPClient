@@ -14,6 +14,7 @@ import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.entity.EntityLivingBase
+import net.ccbluex.liquidbounce.config.Configurable
 
 /**
  * MoveHelper module - Assists with movement
@@ -53,6 +54,17 @@ object MoveHelper : Module("MoveHelper", Category.MOVEMENT, Category.SubCategory
 
     override val tag
         get() = activeTicks.coerceAtLeast(0).toString()
+
+    private val generalGroup = Configurable("General")
+    private val closeGroup = Configurable("Close")
+    private val farGroup = Configurable("Far")
+
+    init {
+        moveValues(generalGroup, "Range", "OnlyWhenHurt")
+        moveValues(closeGroup, "CloseMode", "CloseInterval", "CloseHold")
+        moveValues(farGroup, "FarMode", "FarInterval", "FarHold")
+        addValues(listOf(generalGroup, closeGroup, farGroup))
+    }
 
     override fun onDisable() {
         activeTicks = -1

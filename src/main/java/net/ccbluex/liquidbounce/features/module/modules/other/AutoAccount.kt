@@ -26,6 +26,7 @@ import net.minecraft.network.play.server.S45PacketTitle
 import net.minecraft.util.ChatComponentText
 import net.minecraft.util.Session
 import kotlin.time.Duration.Companion.milliseconds
+import net.ccbluex.liquidbounce.config.Configurable
 
 object AutoAccount :
     Module("AutoAccount", Category.OTHER, Category.SubCategory.MISCELLANEOUS,  subjective = true, gameDetecting = false) {
@@ -103,6 +104,19 @@ object AutoAccount :
     }
 
     private var status = Status.WAITING
+
+    private val generalGroup = Configurable("General")
+    private val registerGroup = Configurable("Register")
+    private val loginGroup = Configurable("Login")
+    private val reconnectGroup = Configurable("Reconnect")
+
+    init {
+        moveValues(generalGroup, "AccountMode", "SaveToAlts", "SendDelay", "ReconnectDelay")
+        moveValues(registerGroup, "AutoRegister", "RegisterCommand")
+        moveValues(loginGroup, "AutoLogin", "LoginCommand", "Password")
+        moveValues(reconnectGroup, "AutoSession", "RandomAccountOnStart", "RelogWhenPasswordInvalid", "RelogWhenKicked")
+        addValues(listOf(generalGroup, registerGroup, loginGroup, reconnectGroup))
+    }
 
     private fun relog(info: String = "") {
         // Disconnect from server
