@@ -18,6 +18,8 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockBox
 import net.ccbluex.liquidbounce.utils.rotation.RotationPriority
 import net.ccbluex.liquidbounce.utils.rotation.RotationSettings
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.faceBlock
+import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.getFixedAngleDelta
+import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.rotationDifference
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.setTargetRotation
 import net.ccbluex.liquidbounce.utils.timing.TickTimer
 import net.minecraft.init.Blocks
@@ -105,6 +107,10 @@ object Extinguish : Module("Extinguish", Category.OTHER, Category.SubCategory.MI
             val rotation = faceBlock(target) ?: return@handler
 
             setTargetRotation(rotation.rotation, options = options)
+
+            if (rotationDifference(rotation.rotation) > getFixedAngleDelta()) {
+                return@handler
+            }
         }
 
         swing()
