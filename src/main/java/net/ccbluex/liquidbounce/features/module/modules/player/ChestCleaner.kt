@@ -34,9 +34,9 @@ object ChestCleaner : Module("ChestCleaner", Category.PLAYER, Category.SubCatego
     private val startDelay by intRange("StartDelay", 50..100, 0..500)
         .describe("Random delay before cleaning starts in ms.")
 
-    private val noMove by +InventoryManager.noMoveValue
-    private val noMoveAir by +InventoryManager.noMoveAirValue
-    private val noMoveGround by +InventoryManager.noMoveGroundValue
+    private val noMove by shared(InventoryManager.noMoveValue)
+    private val noMoveAir by shared(InventoryManager.noMoveAirValue)
+    private val noMoveGround by shared(InventoryManager.noMoveGroundValue)
 
     private val timer = MSTimer()
     private var entered = false

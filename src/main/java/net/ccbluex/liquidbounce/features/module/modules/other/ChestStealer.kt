@@ -107,9 +107,9 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, Category.SubCategor
     private val closeDelay by intRange("CloseDelay", 50..100, 0..500)
         .describe("Random delay before the chest is closed.")
 
-    private val noMove by +InventoryManager.noMoveValue
-    private val noMoveAir by +InventoryManager.noMoveAirValue
-    private val noMoveGround by +InventoryManager.noMoveGroundValue
+    private val noMove by shared(InventoryManager.noMoveValue)
+    private val noMoveAir by shared(InventoryManager.noMoveAirValue)
+    private val noMoveGround by shared(InventoryManager.noMoveGroundValue)
 
     private val chestTitle by boolean("ChestTitle", true)
         .describe("Only steal from real chests, not custom GUIs.")

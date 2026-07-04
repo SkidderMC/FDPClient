@@ -28,12 +28,28 @@ open class Configurable(
 
     fun addValue(value: Value<*>) = apply {
         value.owner?.takeIf { it !== this }?.removeValue(value)
-        get().add(value)
+        val list = get()
+        if (value !in list) list.add(value)
         value.owner = this
     }
 
     fun addValues(values: Collection<Value<*>>) = apply {
         values.toList().forEach(::addValue)
+    }
+
+    /**
+     * Exposes a value owned by another container (e.g. a shared manager singleton) in this
+     * container too, without stealing ownership: every sharing container renders and
+     * serializes it, while the canonical owner keeps it.
+     */
+    fun shareValue(value: Value<*>) = apply {
+        val list = get()
+        if (value !in list) list.add(value)
+    }
+
+    fun <T, V : Value<T>> shared(value: V): V {
+        shareValue(value)
+        return value
     }
 
     fun removeValue(value: Value<*>): Boolean {
@@ -49,7 +65,16 @@ open class Configurable(
     }
 
     fun moveValues(group: Configurable, vararg names: String) {
-        for (name in names) values.filter { it.matchesKey(name) }.forEach(group::addValue)
+        for (name in names) values.filter { it.matchesKey(name) }.forEach { value ->
+            if (value.owner === this) {
+                group.addValue(value)
+            } else {
+                // Shared value (owned by another container): relocate this container's view of it
+                // into the group without stealing it from the canonical owner.
+                get().remove(value)
+                group.shareValue(value)
+            }
+        }
     }
 
     fun group(name: String, vararg names: String): Configurable =

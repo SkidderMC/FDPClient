@@ -74,11 +74,11 @@ object ArmorSwap : Module("ArmorSwap", Category.COMBAT, Category.SubCategory.COM
     private val bootsSlot by int("BootsSlot", 4, 1..9) { inventoryOrganizer }
         .describe("Hotbar slot used to store the boots.")
 
-    private val startDelay by +InventoryManager.startDelayValue
-    private val closeDelay by +InventoryManager.closeDelayValue
-    private val noMove by +InventoryManager.noMoveValue
-    private val noMoveAir by +InventoryManager.noMoveAirValue
-    private val noMoveGround by +InventoryManager.noMoveGroundValue
+    private val startDelay by shared(InventoryManager.startDelayValue)
+    private val closeDelay by shared(InventoryManager.closeDelayValue)
+    private val noMove by shared(InventoryManager.noMoveValue)
+    private val noMoveAir by shared(InventoryManager.noMoveAirValue)
+    private val noMoveGround by shared(InventoryManager.noMoveGroundValue)
 
     private val generalGroup = Configurable("General")
     private val thresholdsGroup = Configurable("Thresholds")

@@ -47,13 +47,13 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, Category.SubCategory.COM
     private val minItemAge by int("MinItemAge", 0, 0..2000)
         .describe("Minimum age before an item can be equipped.")
 
-    private val invOpen by +InventoryManager.invOpenValue
-    private val simulateInventory by +InventoryManager.simulateInventoryValue
+    private val invOpen by shared(InventoryManager.invOpenValue)
+    private val simulateInventory by shared(InventoryManager.simulateInventoryValue)
 
-    private val postInventoryCloseDelay by +InventoryManager.postInventoryCloseDelayValue
-    private val autoClose by +InventoryManager.autoCloseValue
-    private val startDelay by +InventoryManager.startDelayValue
-    private val closeDelay by +InventoryManager.closeDelayValue
+    private val postInventoryCloseDelay by shared(InventoryManager.postInventoryCloseDelayValue)
+    private val autoClose by shared(InventoryManager.autoCloseValue)
+    private val startDelay by shared(InventoryManager.startDelayValue)
+    private val closeDelay by shared(InventoryManager.closeDelayValue)
 
     // Keeps armor coverage while preserving the old piece whenever possible.
     val smartSwap by boolean("SmartSwap", true)
@@ -61,9 +61,9 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, Category.SubCategory.COM
     private val dropOldArmor by boolean("DropOldArmor", false)
         .describe("Drop the old armor when swapping.")
 
-    private val noMove by +InventoryManager.noMoveValue
-    private val noMoveAir by +InventoryManager.noMoveAirValue
-    private val noMoveGround by +InventoryManager.noMoveGroundValue
+    private val noMove by shared(InventoryManager.noMoveValue)
+    private val noMoveAir by shared(InventoryManager.noMoveAirValue)
+    private val noMoveGround by shared(InventoryManager.noMoveGroundValue)
 
     private val hotbar by boolean("Hotbar", true)
         .describe("Equip armor directly from the hotbar.")
@@ -95,11 +95,11 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, Category.SubCategory.COM
     private val leggingsBind by bindText("LeggingsBind")
     private val bootsBind by bindText("BootsBind")
 
-    val highlightSlot by +InventoryManager.highlightSlotValue
-    val backgroundColor by +InventoryManager.borderColor
+    val highlightSlot by shared(InventoryManager.highlightSlotValue)
+    val backgroundColor by shared(InventoryManager.backgroundColor)
 
-    val borderStrength by +InventoryManager.borderStrength
-    val borderColor by +InventoryManager.borderColor
+    val borderStrength by shared(InventoryManager.borderStrength)
+    val borderColor by shared(InventoryManager.borderColor)
 
     private val generalGroup = Configurable("General")
     private val inventoryGroup = Configurable("Inventory")

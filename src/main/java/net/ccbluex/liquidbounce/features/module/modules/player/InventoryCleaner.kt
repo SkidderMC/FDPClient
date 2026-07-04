@@ -81,17 +81,17 @@ object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER, Category.S
     private val repairEquipment by boolean("RepairEquipment", true).subjective()
         .describe("Repair tools by merging them in the grid.")
 
-    private val invOpen by +InventoryManager.invOpenValue
-    private val simulateInventory by +InventoryManager.simulateInventoryValue
+    private val invOpen by shared(InventoryManager.invOpenValue)
+    private val simulateInventory by shared(InventoryManager.simulateInventoryValue)
 
-    private val postInventoryCloseDelay by +InventoryManager.postInventoryCloseDelayValue
-    private val autoClose by +InventoryManager.autoCloseValue
-    private val startDelay by +InventoryManager.startDelayValue
-    private val closeDelay by +InventoryManager.closeDelayValue
+    private val postInventoryCloseDelay by shared(InventoryManager.postInventoryCloseDelayValue)
+    private val autoClose by shared(InventoryManager.autoCloseValue)
+    private val startDelay by shared(InventoryManager.startDelayValue)
+    private val closeDelay by shared(InventoryManager.closeDelayValue)
 
-    private val noMove by +InventoryManager.noMoveValue
-    private val noMoveAir by +InventoryManager.noMoveAirValue
-    private val noMoveGround by +InventoryManager.noMoveGroundValue
+    private val noMove by shared(InventoryManager.noMoveValue)
+    private val noMoveAir by shared(InventoryManager.noMoveAirValue)
+    private val noMoveGround by shared(InventoryManager.noMoveGroundValue)
 
     private val randomSlot by boolean("RandomSlot", false)
         .describe("Process slots in random order.")
@@ -103,11 +103,11 @@ object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER, Category.S
     private val maxPotionStacks by int("MaxPotionStacks", 36, 0..36) { limitStackCounts }.subjective()
         .describe("Maximum potion stacks to keep.")
 
-    val highlightSlot by +InventoryManager.highlightSlotValue
-    val backgroundColor by +InventoryManager.borderColor
+    val highlightSlot by shared(InventoryManager.highlightSlotValue)
+    val backgroundColor by shared(InventoryManager.backgroundColor)
 
-    val borderStrength by +InventoryManager.borderStrength
-    val borderColor by +InventoryManager.borderColor
+    val borderStrength by shared(InventoryManager.borderStrength)
+    val borderColor by shared(InventoryManager.borderColor)
 
     val highlightUseful by boolean("HighlightUseful", true).subjective()
         .describe("Highlight useful items in the inventory.")
