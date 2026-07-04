@@ -513,6 +513,7 @@
     <ID>LargeClass:GuiServerSelect.kt$GuiServerSelect : AbstractScreen</ID>
     <ID>LargeClass:GuiSpotifyPlayer.kt$GuiSpotifyPlayer : AbstractScreenListenable</ID>
     <ID>LargeClass:InventoryCleaner.kt$InventoryCleaner : Module</ID>
+    <ID>LargeClass:SpotifyModule.kt$SpotifyModule : Module</ID>
     <ID>LargeClass:KillAura.kt$KillAura : Module</ID>
     <ID>LargeClass:NextGenBrowserRuntime.kt$NextGenBrowserRuntime : MinecraftInstanceListenable</ID>
     <ID>LargeClass:NextGenClickGuiBridge.kt$NextGenClickGuiBridge : MinecraftInstance</ID>
@@ -531,6 +532,7 @@
     <ID>LongMethod:Arraylist.kt$Arraylist$override fun drawElement(): Border?</ID>
     <ID>LongMethod:BedPlates.kt$BedPlates$private fun drawPlate(bedState: BedState)</ID>
     <ID>LongMethod:BlackStyle.kt$BlackStyle$fun renderLeaf(value: Value&lt;*&gt;): Boolean</ID>
+    <ID>LongMethod:SettingComponents.kt$SettingComponents$fun renderSetting(setting: Value&lt;*&gt;): Boolean</ID>
     <ID>LongMethod:Blink.kt$Blink$override fun onPacket(event: PacketEvent)</ID>
     <ID>LongMethod:BlinkUtils.kt$BlinkUtils$fun blink(packet: Packet&lt;*&gt;, event: PacketEvent, sent: Boolean? = true, receive: Boolean? = true)</ID>
     <ID>LongMethod:BoolSetting.kt$BoolSetting$override fun draw(mouseX: Int, mouseY: Int)</ID>
@@ -1343,15 +1345,15 @@
     <ID>UnusedPrivateMember:TargetFocus.kt$TargetFocus$private fun observedTargetHit(target: EntityPlayer?): Boolean</ID>
     <ID>UnusedPrivateMember:TargetStrafe.kt$TargetStrafe$private fun isCloseToPoint(point: Point): Boolean</ID>
     <ID>UnusedPrivateProperty:AWTFontRenderer.kt$AWTFontRenderer.Companion$/** * Should be called each frame or so. Every 600 frames, we run garbage collection * on every active font renderer. */ private val onRender2D = handler&lt;Render2DEvent&gt;(priority = Byte.MIN_VALUE) { if (++gcTicks &gt; GC_TICKS) { activeFontRenderers.forEach { it.collectGarbage() } gcTicks = 0 } }</ID>
-    <ID>UnusedPrivateProperty:ArmorSwap.kt$ArmorSwap$private val noMove by +InventoryManager.noMoveValue</ID>
-    <ID>UnusedPrivateProperty:ArmorSwap.kt$ArmorSwap$private val noMoveAir by +InventoryManager.noMoveAirValue</ID>
-    <ID>UnusedPrivateProperty:ArmorSwap.kt$ArmorSwap$private val noMoveGround by +InventoryManager.noMoveGroundValue</ID>
-    <ID>UnusedPrivateProperty:AutoArmor.kt$AutoArmor$private val autoClose by +InventoryManager.autoCloseValue</ID>
-    <ID>UnusedPrivateProperty:AutoArmor.kt$AutoArmor$private val closeDelay by +InventoryManager.closeDelayValue</ID>
-    <ID>UnusedPrivateProperty:AutoArmor.kt$AutoArmor$private val noMove by +InventoryManager.noMoveValue</ID>
-    <ID>UnusedPrivateProperty:AutoArmor.kt$AutoArmor$private val noMoveAir by +InventoryManager.noMoveAirValue</ID>
-    <ID>UnusedPrivateProperty:AutoArmor.kt$AutoArmor$private val noMoveGround by +InventoryManager.noMoveGroundValue</ID>
-    <ID>UnusedPrivateProperty:AutoArmor.kt$AutoArmor$private val postInventoryCloseDelay by +InventoryManager.postInventoryCloseDelayValue</ID>
+    <ID>UnusedPrivateProperty:ArmorSwap.kt$ArmorSwap$private val noMove by shared(InventoryManager.noMoveValue)</ID>
+    <ID>UnusedPrivateProperty:ArmorSwap.kt$ArmorSwap$private val noMoveAir by shared(InventoryManager.noMoveAirValue)</ID>
+    <ID>UnusedPrivateProperty:ArmorSwap.kt$ArmorSwap$private val noMoveGround by shared(InventoryManager.noMoveGroundValue)</ID>
+    <ID>UnusedPrivateProperty:AutoArmor.kt$AutoArmor$private val autoClose by shared(InventoryManager.autoCloseValue)</ID>
+    <ID>UnusedPrivateProperty:AutoArmor.kt$AutoArmor$private val closeDelay by shared(InventoryManager.closeDelayValue)</ID>
+    <ID>UnusedPrivateProperty:AutoArmor.kt$AutoArmor$private val noMove by shared(InventoryManager.noMoveValue)</ID>
+    <ID>UnusedPrivateProperty:AutoArmor.kt$AutoArmor$private val noMoveAir by shared(InventoryManager.noMoveAirValue)</ID>
+    <ID>UnusedPrivateProperty:AutoArmor.kt$AutoArmor$private val noMoveGround by shared(InventoryManager.noMoveGroundValue)</ID>
+    <ID>UnusedPrivateProperty:AutoArmor.kt$AutoArmor$private val postInventoryCloseDelay by shared(InventoryManager.postInventoryCloseDelayValue)</ID>
     <ID>UnusedPrivateProperty:AutoPearl.kt$AutoPearl$private const val PEARL_SIZE = 0.25</ID>
     <ID>UnusedPrivateProperty:BlockElement.kt$BlockElement$private val element: ModuleElement</ID>
     <ID>UnusedPrivateProperty:CapeService.kt$CapeService$/** * We want to immediately update the owner of the cape and refresh the cape carriers */ private val onNewSession = handler&lt;SessionUpdateEvent&gt;(dispatcher = Dispatchers.IO) { // Check if donator cape is actually enabled and has a transfer code, also make sure the account used is premium. val capeUser = clientCapeUser ?: return@handler if (!UserUtils.isValidTokenOffline(mc.session.token)) return@handler try { // Apply cape to new account val uuid = mc.session.playerID val username = mc.session.username val requestBody = "{\"uuid\":${uuid}}".toRequestBody("application/json".toMediaType()) val request = Request.Builder() .url(SELF_CAPE_URL) .patch(requestBody) .addHeader("Content-Type", "application/json") .addHeader("Authorization", capeUser.token) .build() HttpClient.newCall(request).execute().use { response -&gt; if (response.code == 204) { // HTTP 204 No Content capeUser.uuid = uuid LOGGER.info("[Donator Cape] Successfully transferred cape to $uuid ($username)") } else { LOGGER.info("[Donator Cape] Failed to transfer cape (${response.code})") } } // Refresh cape carriers refreshCapeCarriers(force = true) { LOGGER.info("Cape carriers refreshed after session change.") } } catch (e: Throwable) { LOGGER.error("Failed to handle new session due to error.", e) } }</ID>
@@ -1383,12 +1385,12 @@
     <ID>UnusedPrivateProperty:InfiniteAura.kt$InfiniteAura$private val limitedMultiTargets by int("LimitedMultiTargets", 0, 0..50) { targetMode == "Multi" } .describe("Max targets to hit in multi mode, 0 is no limit.")</ID>
     <ID>UnusedPrivateProperty:InfiniteAura.kt$InfiniteAura$private val onWorld = handler&lt;WorldEvent&gt; { auraJob?.cancel() points.clear() target = null hittable = false prevTargetEntities.clear() synchronized(swingFails) { swingFails.clear() } }</ID>
     <ID>UnusedPrivateProperty:InfiniteAura.kt$InfiniteAura$val diff = sqrt(x * x + y * y + z * z)</ID>
-    <ID>UnusedPrivateProperty:InventoryCleaner.kt$InventoryCleaner$private val autoClose by +InventoryManager.autoCloseValue</ID>
-    <ID>UnusedPrivateProperty:InventoryCleaner.kt$InventoryCleaner$private val closeDelay by +InventoryManager.closeDelayValue</ID>
-    <ID>UnusedPrivateProperty:InventoryCleaner.kt$InventoryCleaner$private val noMove by +InventoryManager.noMoveValue</ID>
-    <ID>UnusedPrivateProperty:InventoryCleaner.kt$InventoryCleaner$private val noMoveAir by +InventoryManager.noMoveAirValue</ID>
-    <ID>UnusedPrivateProperty:InventoryCleaner.kt$InventoryCleaner$private val noMoveGround by +InventoryManager.noMoveGroundValue</ID>
-    <ID>UnusedPrivateProperty:InventoryCleaner.kt$InventoryCleaner$private val postInventoryCloseDelay by +InventoryManager.postInventoryCloseDelayValue</ID>
+    <ID>UnusedPrivateProperty:InventoryCleaner.kt$InventoryCleaner$private val autoClose by shared(InventoryManager.autoCloseValue)</ID>
+    <ID>UnusedPrivateProperty:InventoryCleaner.kt$InventoryCleaner$private val closeDelay by shared(InventoryManager.closeDelayValue)</ID>
+    <ID>UnusedPrivateProperty:InventoryCleaner.kt$InventoryCleaner$private val noMove by shared(InventoryManager.noMoveValue)</ID>
+    <ID>UnusedPrivateProperty:InventoryCleaner.kt$InventoryCleaner$private val noMoveAir by shared(InventoryManager.noMoveAirValue)</ID>
+    <ID>UnusedPrivateProperty:InventoryCleaner.kt$InventoryCleaner$private val noMoveGround by shared(InventoryManager.noMoveGroundValue)</ID>
+    <ID>UnusedPrivateProperty:InventoryCleaner.kt$InventoryCleaner$private val postInventoryCloseDelay by shared(InventoryManager.postInventoryCloseDelayValue)</ID>
     <ID>UnusedPrivateProperty:InventoryManager.kt$InventoryManager$private val managerLoop = loopSequence(dispatcher = Dispatchers.Default, priority = 100) { hasScheduledInLastLoop = false /** * ChestStealer actions */ ChestStealer.stealFromChest() if (ArmorFilter.dropLowDurabilityArmor()) { delay(50) return@loopSequence } if (ArmorSwap.runSwap()) { delay(50) return@loopSequence } /** * AutoArmor actions */ if (AutoArmor.handleManualSwapRequest()) { delay(50) return@loopSequence } AutoArmor.equipFromHotbar() // Following actions require inventory / simulated inventory, ... // TODO: This could be at start of each action? // Don't wait for NoMove not to be violated, check if there is anything to equip from hotbar and such by looping again if (!canClickInventory() || (invOpenValue.get() &amp;&amp; mc.currentScreen !is GuiInventory)) { delay(50) return@loopSequence } canCloseInventory = false AutoArmor.equipFromInventory() /** * InventoryCleaner actions */ // Repair useful equipment by merging in the crafting grid InventoryCleaner.repairEquipment() // Compact multiple small stacks into one to free up inventory space InventoryCleaner.mergeStacks() // Sort hotbar (with useful items without even dropping bad items first) InventoryCleaner.sortHotbar() // Drop bad items to free up inventory space InventoryCleaner.dropGarbage() // Stores which action should be executed to close open inventory or simulated inventory // If no clicks were scheduled throughout any iteration (canCloseInventory == false), then it is null, to prevent closing inventory all the time val action = closingAction ?: run { delay(50) return@loopSequence } // Prepare for closing the inventory delay(closeDelayValue.get().toLong()) // Try to search through inventory one more time, only close when no actions were scheduled in current iteration if (!hasScheduledInLastLoop) { action.run() } }</ID>
     <ID>UnusedPrivateProperty:JumpCircle.kt$JumpCircle$val alpha2 = ((color2.rgb shr 24) and 0xFF) / 255f</ID>
     <ID>UnusedPrivateProperty:KeyBindElement.kt$KeyBindElement$private val element: ModuleElement</ID>
