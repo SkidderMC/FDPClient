@@ -89,7 +89,8 @@ object HoleFiller : Module("HoleFiller", Category.OTHER, Category.SubCategory.MI
     private var targetPosition: BlockPos? = null
 
     override fun onDisable() {
-        fillPositions.clear()
+        RotationUtils.cancelTargetRotation(this)
+                fillPositions.clear()
         targetPosition = null
         SilentHotbar.resetSlot(this)
     }

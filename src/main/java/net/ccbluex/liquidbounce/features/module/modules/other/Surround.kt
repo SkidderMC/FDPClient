@@ -83,7 +83,8 @@ object Surround : Module("Surround", Category.OTHER, Category.SubCategory.MISCEL
     }
 
     override fun onDisable() {
-        surroundPositions.clear()
+        RotationUtils.cancelTargetRotation(this)
+                surroundPositions.clear()
         SilentHotbar.resetSlot(this)
     }
 

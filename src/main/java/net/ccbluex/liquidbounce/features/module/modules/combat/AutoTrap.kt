@@ -75,7 +75,8 @@ object AutoTrap : Module("AutoTrap", Category.COMBAT, Category.SubCategory.COMBA
     private val trapPositions = mutableListOf<BlockPos>()
 
     override fun onDisable() {
-        trapPositions.clear()
+        RotationUtils.cancelTargetRotation(this)
+                trapPositions.clear()
         SilentHotbar.resetSlot(this)
     }
 

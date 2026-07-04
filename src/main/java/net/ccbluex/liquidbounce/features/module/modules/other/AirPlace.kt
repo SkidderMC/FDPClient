@@ -75,7 +75,8 @@ object AirPlace : Module("AirPlace", Category.OTHER, Category.SubCategory.MISCEL
     private var targetPosition: BlockPos? = null
 
     override fun onDisable() {
-        targetPosition = null
+        RotationUtils.cancelTargetRotation(this)
+                targetPosition = null
     }
 
     val onUpdate = handler<UpdateEvent> {

@@ -93,7 +93,8 @@ object LiquidFiller : Module("LiquidFiller", Category.OTHER, Category.SubCategor
     private var targetPosition: BlockPos? = null
 
     override fun onDisable() {
-        fillPositions.clear()
+        RotationUtils.cancelTargetRotation(this)
+                fillPositions.clear()
         targetPosition = null
         SilentHotbar.resetSlot(this)
     }

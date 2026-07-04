@@ -101,6 +101,8 @@ object BedDefender : Module("BedDefender", Category.OTHER, Category.SubCategory.
     private var blockPosition: BlockPos? = null
 
     override fun onDisable() {
+        RotationUtils.cancelTargetRotation(this)
+
         val player = mc.thePlayer ?: return
 
         if (!GameSettings.isKeyDown(mc.gameSettings.keyBindSneak)) {

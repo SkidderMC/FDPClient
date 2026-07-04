@@ -82,7 +82,8 @@ object LiquidPlace : Module("LiquidPlace", Category.OTHER, Category.SubCategory.
     }
 
     override fun onDisable() {
-        targetPosition = null
+        RotationUtils.cancelTargetRotation(this)
+                targetPosition = null
     }
 
     val onUpdate = handler<UpdateEvent> {

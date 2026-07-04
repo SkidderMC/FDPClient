@@ -95,7 +95,8 @@ object BlockTrap : Module("BlockTrap", Category.COMBAT, Category.SubCategory.COM
     private val trapPositions = mutableListOf<BlockPos>()
 
     override fun onDisable() {
-        trapPositions.clear()
+        RotationUtils.cancelTargetRotation(this)
+                trapPositions.clear()
         SilentHotbar.resetSlot(this)
     }
 

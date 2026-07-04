@@ -112,7 +112,7 @@ object SettingsUtils {
                     when (valueName) {
                         "toggle" -> setToggle(module, value)
                         "bind" -> setBind(module, value)
-                        else -> setValue(module, valueName, value, args)
+                        else -> setValue(module, valueName, value)
                     }
                 }
             }
@@ -144,7 +144,7 @@ object SettingsUtils {
     }
 
     // Utility functions for setting values
-    private fun setValue(module: Module, valueName: String, value: String, args: Array<String>) {
+    private fun setValue(module: Module, valueName: String, value: String) {
         val moduleValue = module[valueName]
 
         if (moduleValue == null) {
@@ -201,12 +201,11 @@ object SettingsUtils {
 
             if (value is Configurable) {
                 appendModuleValues(module, value.values, all)
-                continue
-            }
-
-            val valueString = "${module.name} ${value.name} ${value.toText()}"
-            if (valueString.isNotBlank()) {
-                appendLine(valueString)
+            } else {
+                val valueString = "${module.name} ${value.name} ${value.toText()}"
+                if (valueString.isNotBlank()) {
+                    appendLine(valueString)
+                }
             }
         }
     }

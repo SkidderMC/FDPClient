@@ -83,7 +83,8 @@ object AutoBuild : Module("AutoBuild", Category.OTHER, Category.SubCategory.MISC
     }
 
     override fun onDisable() {
-        buildPositions.clear()
+        RotationUtils.cancelTargetRotation(this)
+                buildPositions.clear()
         SilentHotbar.resetSlot(this)
     }
 

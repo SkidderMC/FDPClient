@@ -51,9 +51,6 @@ object Extinguish : Module("Extinguish", Category.OTHER, Category.SubCategory.MI
     private val swingMode by choices("SwingMode", arrayOf("Normal", "Packet", "None"), "Normal")
         .describe("How to swing the arm while extinguishing.")
 
-    private val rotations by boolean("Rotations", true)
-        .describe("Rotate toward the fire before breaking it.")
-
     private val esp by boolean("ESP", true).subjective()
         .describe("Render a box around nearby fire blocks.")
 
@@ -104,7 +101,7 @@ object Extinguish : Module("Extinguish", Category.OTHER, Category.SubCategory.MI
         // Break the closest fire block first
         val target = found.keys.minByOrNull { getCenterDistance(it) } ?: return@handler
 
-        if (rotations && options.rotationsActive) {
+        if (options.rotationsActive) {
             val rotation = faceBlock(target) ?: return@handler
 
             setTargetRotation(rotation.rotation, options = options)

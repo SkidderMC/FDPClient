@@ -97,7 +97,8 @@ object BlockIn : Module("BlockIn", Category.COMBAT, Category.SubCategory.COMBAT_
     private val placePositions = mutableListOf<BlockPos>()
 
     override fun onDisable() {
-        placePositions.clear()
+        RotationUtils.cancelTargetRotation(this)
+                placePositions.clear()
         SilentHotbar.resetSlot(this)
     }
 
