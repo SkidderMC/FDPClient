@@ -40,7 +40,7 @@ object InvMove : Module("InvMove", Category.MOVEMENT, Category.SubCategory.MOVEM
     private val noSprintWhenClosed by boolean("NoSprintWhenClosed", false) { saveC0E }
         .describe("Stop sprinting while the inventory is closed.")
 
-    private val isIntave = (mc.currentScreen is GuiInventory || mc.currentScreen is GuiChest) && intave
+    private val isIntave get() = (mc.currentScreen is GuiInventory || mc.currentScreen is GuiChest) && intave
     private val clickWindowList = ArrayDeque<C0EPacketClickWindow>()
 
     private val noMove by shared(InventoryManager.noMoveValue)

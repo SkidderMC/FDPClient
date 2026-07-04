@@ -99,7 +99,9 @@ object SettingsUtils {
 
                     val moduleName = args[0]
                     val valueName = args[1]
-                    val value = args[2]
+                    // Re-join the remaining tokens so values containing spaces (e.g. text/prompt
+                    // settings) round-trip instead of being truncated at the first space.
+                    val value = StringUtils.toCompleteString(args, 2)
                     val module = moduleManager[moduleName]
 
                     if (module == null) {
@@ -172,15 +174,7 @@ object SettingsUtils {
             for (module in moduleManager) {
                 if (all || !module.subjective) {
                     if (values) {
-                        for (value in module.values) {
-                            if (all || !value.subjective && value.shouldRender()) {
-                                val valueString = "${module.name} ${value.name} ${value.toText()}"
-
-                                if (valueString.isNotBlank()) {
-                                    appendLine(valueString)
-                                }
-                            }
-                        }
+                        appendModuleValues(module, module.values, all)
                     }
 
                     if (states) {
@@ -193,6 +187,28 @@ object SettingsUtils {
                 }
             }
         }.trimEnd()
+    }
+
+    /**
+     * Emit one script line per leaf value, descending into nested groups so a grouped value is
+     * saved under its own name instead of being flattened into a JSON blob of its parent group.
+     */
+    private fun StringBuilder.appendModuleValues(module: Module, values: List<Value<*>>, all: Boolean) {
+        for (value in values) {
+            if (!all && (value.subjective || !value.shouldRender())) {
+                continue
+            }
+
+            if (value is Configurable) {
+                appendModuleValues(module, value.values, all)
+                continue
+            }
+
+            val valueString = "${module.name} ${value.name} ${value.toText()}"
+            if (valueString.isNotBlank()) {
+                appendLine(valueString)
+            }
+        }
     }
 
 }

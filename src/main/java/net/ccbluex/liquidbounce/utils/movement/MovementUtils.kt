@@ -141,6 +141,7 @@ object MovementUtils : MinecraftInstance, Listenable {
     fun updateBlocksPerSecond() {
         if (mc.thePlayer == null || mc.thePlayer.ticksExisted < 1) {
             bps = 0.0
+            return
         }
         val distance = mc.thePlayer.getDistance(lastX, lastY, lastZ)
         lastX = mc.thePlayer.posX

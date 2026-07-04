@@ -120,7 +120,7 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, Category.SubCategory.COM
         moveValues(manualGroup,
             "ManualSwap", "ManualSelection", "ManualCycle", "ManualUseArmorFilter",
             "ManualIgnoreMinItemAge", "HelmetBind", "ChestplateBind", "LeggingsBind", "BootsBind")
-        moveValues(highlightGroup, "Highlight-Slot", "Border-Strength", "BorderColor")
+        moveValues(highlightGroup, "Highlight-Slot", "BackgroundColor", "Border-Strength", "BorderColor")
 
         addValues(listOf(
             generalGroup, inventoryGroup, swapGroup, noMoveGroup, hotbarGroup,

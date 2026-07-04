@@ -185,6 +185,11 @@ object NoFall : Module("NoFall", Category.PLAYER, Category.SubCategory.PLAYER_CO
             retrievingPos = null
         }
 
+        if (wasTimer) {
+            mc.timer.timerSpeed = 1f
+            wasTimer = false
+        }
+
         modeModule.onDisable()
     }
 
