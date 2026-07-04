@@ -883,7 +883,9 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
                 }
 
                 entity = result
-            } else getNearestEntityInRange(clickRange)?.takeIf { isSelected(it, true) }
+            } else {
+                entity = getNearestEntityInRange(clickRange)?.takeIf { isSelected(it, true) }
+            }
         }
 
         entity ?: return@handler
@@ -1907,7 +1909,7 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
             }
         } else if (packet is S27PacketExplosion) {
             // Don't cancel explosions, modify them, they could change blocks in the world
-            if (horizontal != 0f && vertical != 0f) {
+            if (horizontal == 0f && vertical == 0f) {
                 packet.field_149152_f = 0f
                 packet.field_149153_g = 0f
                 packet.field_149159_h = 0f

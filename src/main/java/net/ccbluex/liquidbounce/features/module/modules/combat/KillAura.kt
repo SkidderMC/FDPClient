@@ -650,7 +650,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
                 val wasBlocking = blockStatus
 
                 runAttack(it == 0, it + 1 == maxClicks)
-                clicks--
+                if (clicks > 0) clicks--
 
                 if (wasBlocking && !blockStatus && (releaseAutoBlock && !ignoreTickRule || autoBlock == "Off")) {
                     return@handler
@@ -882,12 +882,9 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
 
         val switchMode = targetMode == "Switch"
 
-        if (!switchMode || switchTimer.hasTimePassed(switchDelay)) {
+        if (switchMode && switchTimer.hasTimePassed(switchDelay)) {
             prevTargetEntities += currentTarget.entityId
-
-            if (switchMode) {
-                switchTimer.reset()
-            }
+            switchTimer.reset()
         }
 
         // Open inventory
@@ -1142,7 +1139,7 @@ private fun updateHittable() {
         ) { entity -> !livingRaycast || entity is EntityLivingBase && entity !is EntityArmorStand }
         
         if (raycastEntity != null && raycastEntity is EntityLivingBase && (!(raycastEntity is EntityPlayer && raycastEntity.isClientFriend()))) {
-            if (raycastIgnored && target != raycastEntity) {
+            if (raycastIgnored && target != raycastEntity && isSelected(raycastEntity, true)) {
                 this.target = raycastEntity
             }
             
