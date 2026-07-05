@@ -71,6 +71,13 @@ object AutoShoot : Module("AutoShoot", Category.COMBAT, Category.SubCategory.COM
     private val dragCorrection by boolean("DragCorrection", false)
         .describe("Solve the launch angle with per-tick air drag for better long-range accuracy.")
 
+    private val requiresKillAura by boolean("RequiresKillAura", false)
+        .describe("Only shoot while KillAura has a target.")
+    private val notDuringCombat by boolean("NotDuringCombat", false)
+        .describe("Hold fire for a moment after taking damage.")
+    private val combatTimeout by int("CombatTimeout", 500, 0..3000) { notDuringCombat }
+        .describe("Milliseconds after taking damage before shooting resumes.")
+
     private val options = RotationSettings(this).withRequestPriority(RotationPriority.HIGH)
 
     private val targetingGroup = Configurable("Targeting")
@@ -79,7 +86,8 @@ object AutoShoot : Module("AutoShoot", Category.COMBAT, Category.SubCategory.COM
     private val aimGroup = Configurable("Aim")
 
     init {
-        moveValues(targetingGroup, "Range", "ThroughWalls", "ThroughWallsRange", "Priority")
+        moveValues(targetingGroup, "Range", "ThroughWalls", "ThroughWallsRange", "Priority",
+            "RequiresKillAura", "NotDuringCombat", "CombatTimeout")
         moveValues(bowGroup, "Bow", "Charge", "Predict", "PredictSize")
         moveValues(throwableGroup, "Throwable", "ThrowDelay")
 
@@ -89,6 +97,7 @@ object AutoShoot : Module("AutoShoot", Category.COMBAT, Category.SubCategory.COM
         addValues(listOf(targetingGroup, bowGroup, throwableGroup, aimGroup))
     }
     private val throwTimer = MSTimer()
+    private val combatTimer = MSTimer()
 
     private var target: Entity? = null
 
@@ -99,6 +108,10 @@ object AutoShoot : Module("AutoShoot", Category.COMBAT, Category.SubCategory.COM
 
     val onUpdate = handler<UpdateEvent> {
         val player = mc.thePlayer ?: return@handler
+
+        if (player.hurtTime > 0) combatTimer.reset()
+        if (requiresKillAura && !(KillAura.handleEvents() && KillAura.target != null)) return@handler
+        if (notDuringCombat && !combatTimer.hasTimePassed(combatTimeout.toLong())) return@handler
 
         target = null
 
