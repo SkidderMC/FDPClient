@@ -17,6 +17,7 @@ import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.client.EntityLookup
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
+import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.draw2D
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawEntityBox
 import net.ccbluex.liquidbounce.utils.render.WorldToScreen
@@ -55,6 +56,8 @@ object ESP : Module("ESP", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY)
         .describe("Color used for friends.")
     private val invisibleColor by color("Invisible Color", Color(255, 255, 255))
         .describe("Color used for invisible entities.")
+    private val colorMode by choices("ColorMode", arrayOf("Static", "Health", "Distance"), "Static")
+        .describe("How the entity color is chosen when no friend/team override applies.")
 
     private val renderFilters = RenderFilterSettings(50, 1..200).also { addValues(it.values) }
 
@@ -188,6 +191,14 @@ object ESP : Module("ESP", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY)
             if (colorTeam) {
                 entity.colorFromDisplayName()?.let {
                     return it
+                }
+            }
+
+            when (colorMode) {
+                "Health" -> return ColorUtils.getHealthColor(entity.health, entity.maxHealth)
+                "Distance" -> {
+                    val distance = mc.thePlayer?.getDistanceToEntity(entity) ?: 0f
+                    return Color(Color.HSBtoRGB((distance / 40f).coerceIn(0f, 0.66f), 1f, 1f))
                 }
             }
         }
