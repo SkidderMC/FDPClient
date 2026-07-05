@@ -90,11 +90,10 @@ class Effects(
 
         for (effect in potions) {
             val potion = Potion.potionTypes[effect.potionID] ?: continue
-            val potionName = I18n.format(potion.name)
             val levelText = if (effect.amplifier > 0)
                 " " + I18n.format("enchantment.level." + (effect.amplifier + 1))
             else ""
-            val nameText = potionName + levelText
+            val nameText = I18n.format(potion.name) + levelText
             val durationText = Potion.getDurationString(effect)
             val nameWidth = Fonts.InterMedium_13.stringWidth(nameText)
             val durationWidth = Fonts.InterMedium_13.stringWidth(durationText)
@@ -124,26 +123,20 @@ class Effects(
 
         for (effect in potions) {
             val potion = Potion.potionTypes[effect.potionID] ?: continue
-            val potionName = I18n.format(potion.name)
             val levelText = if (effect.amplifier > 0)
                 " " + I18n.format("enchantment.level." + (effect.amplifier + 1))
             else ""
-            val nameText = potionName + levelText
+            val nameText = I18n.format(potion.name) + levelText
             val durationText = Potion.getDurationString(effect)
             val durationWidth = Fonts.InterMedium_13.stringWidth(durationText)
             Fonts.InterMedium_13.drawString(nameText, posX + padding, posY + 2, Color.WHITE.rgb)
             Fonts.InterMedium_13.drawString(durationText, posX + maxWidth - padding - durationWidth, posY + 2, Color.WHITE.rgb)
 
             if (durationBar) {
-                val prevMax = modernMaxDuration[effect.potionID] ?: 0
-                val maxDur = maxOf(prevMax, effect.duration).coerceAtLeast(1)
-                modernMaxDuration[effect.potionID] = maxDur
-                val frac = (effect.duration.toFloat() / maxDur.toFloat()).coerceIn(0f, 1f)
+                val md = maxOf(modernMaxDuration[effect.potionID] ?: 0, effect.duration).coerceAtLeast(1).also { modernMaxDuration[effect.potionID] = it }
                 val barY = posY + Fonts.InterMedium_13.height.toFloat() + 1f
-                val barLeft = posX + padding
-                val barRight = posX + maxWidth - padding
-                RenderPrimitives.drawRect(barLeft, barY, barRight, barY + 1.5f, Color(255, 255, 255, 60).rgb)
-                RenderPrimitives.drawRect(barLeft, barY, barLeft + (barRight - barLeft) * frac, barY + 1.5f, getTextColor(0))
+                RenderPrimitives.drawRect(posX + padding, barY, posX + maxWidth - padding, barY + 1.5f, Color(255, 255, 255, 60).rgb)
+                RenderPrimitives.drawRect(posX + padding, barY, posX + padding + (maxWidth - padding * 2) * (effect.duration.toFloat() / md).coerceIn(0f, 1f), barY + 1.5f, getTextColor(0))
             }
 
             posY += Fonts.InterMedium_13.height.toFloat() + padding

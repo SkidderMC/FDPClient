@@ -58,7 +58,7 @@ class Keystrokes : Element("Keystrokes", 2.0, 34.0) {
     data class GridKey(
         val row: Int,
         val column: Int,
-        val text: String,
+        var text: String,
         var scale: Float = 1f,
         val keystrokes: Keystrokes,
         var color: Color = keystrokes.rectColor,
@@ -102,6 +102,7 @@ class Keystrokes : Element("Keystrokes", 2.0, 34.0) {
     private val rightClicks = mutableListOf<Long>()
     private var wasLeftDown = false
     private var wasRightDown = false
+    private var boxSize = 0f
 
     private fun countCps(clicks: MutableList<Long>, isDown: Boolean, wasDown: Boolean): Int {
         val now = System.currentTimeMillis()
@@ -110,7 +111,7 @@ class Keystrokes : Element("Keystrokes", 2.0, 34.0) {
         return clicks.size
     }
 
-    private fun drawKeyBox(gridKey: GridKey, startX: Float, endX: Float, topY: Float, boxSize: Float, label: String) {
+    private fun drawKeyBox(gridKey: GridKey, startX: Float, endX: Float, topY: Float) {
         val fontHeight = (font as? GameFontRenderer)?.height ?: font.FONT_HEIGHT
 
         val scaledBoxSize = boxSize * if (onPressAnimation == "None") 1f else gridKey.scale
@@ -167,10 +168,10 @@ class Keystrokes : Element("Keystrokes", 2.0, 34.0) {
             )
         }
 
-        val textX = (adjustedStartX + adjustedEndX) / 2 - (font.getStringWidth(label) / 2)
+        val textX = (adjustedStartX + adjustedEndX) / 2 - (font.getStringWidth(gridKey.text) / 2)
         val textY = adjustedY + (scaledBoxSize / 2) - (fontHeight / 2)
 
-        font.drawString(label, textX, textY + if (font == mc.fontRendererObj) 0 else 2, textColor.rgb, shadow)
+        font.drawString(gridKey.text, textX, textY + if (font == mc.fontRendererObj) 0 else 2, textColor.rgb, shadow)
     }
 
     override fun drawElement(): Border {
@@ -189,7 +190,7 @@ class Keystrokes : Element("Keystrokes", 2.0, 34.0) {
         val fontHeight = (font as? GameFontRenderer)?.height ?: font.FONT_HEIGHT
         val maxCharWidth = gridLayout.maxOf { it.textWidth }
 
-        val boxSize = maxOf(fontHeight, maxCharWidth).toFloat()
+        boxSize = maxOf(fontHeight, maxCharWidth).toFloat()
 
         gridLayout.forEach { gridKey ->
             val row = gridKey.row
@@ -207,7 +208,7 @@ class Keystrokes : Element("Keystrokes", 2.0, 34.0) {
             val isPressed = movementKeys[key]?.isKeyDown == true
             gridKey.updateState(isPressed)
 
-            drawKeyBox(gridKey, startX, endX, currentY, boxSize, key)
+            drawKeyBox(gridKey, startX, endX, currentY)
         }
 
         val totalWidth = boxSize * 3 + padding * 2
@@ -222,14 +223,17 @@ class Keystrokes : Element("Keystrokes", 2.0, 34.0) {
             wasLeftDown = leftDown
             wasRightDown = rightDown
 
+            leftButton.text = if (showCps) "$leftCps" else "L"
+            rightButton.text = if (showCps) "$rightCps" else "R"
+
             leftButton.updateState(leftDown)
             rightButton.updateState(rightDown)
 
             val mouseY = 4 * (boxSize + padding)
             val half = (totalWidth - padding) / 2
 
-            drawKeyBox(leftButton, 0F, half, mouseY, boxSize, if (showCps) "$leftCps" else "L")
-            drawKeyBox(rightButton, half + padding, totalWidth, mouseY, boxSize, if (showCps) "$rightCps" else "R")
+            drawKeyBox(leftButton, 0F, half, mouseY)
+            drawKeyBox(rightButton, half + padding, totalWidth, mouseY)
 
             bottom = mouseY + boxSize
         }
