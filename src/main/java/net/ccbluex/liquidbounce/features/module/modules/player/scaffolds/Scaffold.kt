@@ -764,13 +764,16 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
             null
         }
 
-        // Gate the placement raycast on the resolved target rotation instead of the live (possibly
-        // still-interpolating) rotation. When smoothing is active the live rotation lags behind the
-        // target for several ticks, so a raycast from it misses the target block and the place never
-        // fires. Using the target rotation here keeps placement reliable while the server-side
-        // rotation is still driven through the normal smoothed setRotation path.
+        // Gate the placement raycast on the rotation the server actually holds this tick
+        // (serverRotation = the last rotation dispatched on the wire), NOT on the still-interpolating
+        // target. The place packet leaves this GameTickEvent before the tick's own movement packet, so
+        // the server re-runs its block raytrace from serverRotation; placing straight from the target
+        // makes that server-side raytrace miss and the placement is silently rejected (the block "tries"
+        // to place but never appears, and stricter anticheat flags the mismatch). We only place once the
+        // smoothed rotation has genuinely reached the block on the server side; the engine keeps driving
+        // the rotation toward the target through the normal setRotation path, so convergence is quick.
         val raycastRotation = onTickRotation
-            ?: (placeRotation?.rotation?.copy()?.fixedSensitivity()?.takeIf { raycastProperly && target != null })
+            ?: (RotationUtils.serverRotation.copy().takeIf { raycastProperly && target != null })
             ?: currRotation
         val raycast = performBlockRaytrace(raycastRotation, mc.playerController.blockReachDistance)
 
@@ -806,27 +809,6 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
                     PlaceInfo(it.blockPos, it.sideHit, it.hitVec)
                 } else {
                     target
-                }
-
-                // Ensure the server sees the placement rotation on this exact tick. The smoothed/arbitrated
-                // rotation path can leave the server-side rotation lagging behind the target, which makes the
-                // server silently reject the placement (the block "tries" to place but never appears). Syncing
-                // the server rotation here keeps placement reliable while the visual rotation stays smoothed.
-                if (onTickRotation == null && currentRotationsActive) {
-                    mc.thePlayer?.let { syncPlayer ->
-                        placeRotation?.rotation?.fixedSensitivity()?.let { placeRot ->
-                            if (rotationDifference(placeRot, RotationUtils.serverRotation) > getFixedAngleDelta()) {
-                                sendPacket(
-                                    C06PacketPlayerPosLook(
-                                        syncPlayer.posX, syncPlayer.posY, syncPlayer.posZ,
-                                        placeRot.yaw, placeRot.pitch, syncPlayer.onGround
-                                    ),
-                                    false
-                                )
-                                RotationUtils.serverRotation = placeRot
-                            }
-                        }
-                    }
                 }
 
                 if (onTickRotation != null && !applyModernOnTickRotation(onTickRotation)) {
