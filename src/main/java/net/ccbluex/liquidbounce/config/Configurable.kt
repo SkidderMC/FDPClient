@@ -84,10 +84,22 @@ open class Configurable(
         Configurable(name).also { moveValues(it, *names); parent.addValue(it) }
 
     fun findDeep(valueName: String): Value<*>? {
+        // Prefer editable leaves over containers. A configurable is allowed to have the same
+        // name as one of its children (for example the SmartAutoBlock group and its toggle).
+        // Returning the group first makes the leaf impossible to address through module
+        // commands and other name-based integrations.
         for (value in values) {
-            if (value.matchesKey(valueName)) return value
-            if (value is Configurable) value.findDeep(valueName)?.let { return it }
+            if (value !is Configurable && value.matchesKey(valueName)) return value
         }
+
+        for (value in values.filterIsInstance<Configurable>()) {
+            value.findDeep(valueName)?.let { return it }
+        }
+
+        for (value in values) {
+            if (value is Configurable && value.matchesKey(valueName)) return value
+        }
+
         return null
     }
 
