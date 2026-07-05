@@ -51,9 +51,7 @@ object TickScheduler : Listenable, MinecraftInstance {
      *
      * @param breakLoop Stop tick the body when it returns `true`
      */
-    fun schedule(breakLoop: BooleanSupplier) {
-        enqueue(null, breakLoop)
-    }
+    fun schedule(breakLoop: BooleanSupplier): Boolean = enqueue(null, breakLoop)
 
     /** Runs [action] after exactly [ticks] client ticks. */
     fun scheduleAfter(ticks: Int, requester: Any? = null, action: () -> Unit = {}): Boolean {
@@ -86,6 +84,10 @@ object TickScheduler : Listenable, MinecraftInstance {
         action: (elapsedTicks: Int) -> Boolean?,
     ): Boolean {
         require(maxTicks == null || maxTicks >= 0) { "Negative maximum tick count: $maxTicks" }
+
+        if (maxTicks == 0) {
+            return true
+        }
 
         var elapsed = 0
         return enqueue(requester, BooleanSupplier {

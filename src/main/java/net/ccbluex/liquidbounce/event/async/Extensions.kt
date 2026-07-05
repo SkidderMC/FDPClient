@@ -20,13 +20,21 @@ fun Listenable.launchSequence(
 ): Job {
     val job = EventManager.launch(dispatcher, block = body)
 
-    TickScheduler.schedule {
+    val scheduled = TickScheduler.scheduleConditional(requester = job) {
         if (!always && !this@launchSequence.handleEvents()) {
             job.cancel()
             true
         } else {
             job.isCompleted
         }
+    }
+
+    job.invokeOnCompletion {
+        TickScheduler.cancel(job)
+    }
+
+    if (!scheduled) {
+        job.cancel(CancellationException("Tick scheduler capacity exhausted"))
     }
 
     return job

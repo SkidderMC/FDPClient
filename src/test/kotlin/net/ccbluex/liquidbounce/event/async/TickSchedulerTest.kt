@@ -5,6 +5,10 @@
  */
 package net.ccbluex.liquidbounce.event.async
 
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import net.ccbluex.liquidbounce.event.EventManager
 import net.ccbluex.liquidbounce.event.GameTickEvent
 import org.junit.Assert.assertEquals
@@ -73,6 +77,59 @@ class TickSchedulerTest {
 
         assertFalse(executed)
         assertFalse(TickScheduler.hasScheduled(requester))
+    }
+
+    @Test
+    fun `cancelled tick suspension stops evaluating its condition`() = runBlocking {
+        var evaluations = 0
+        val job = launch(start = CoroutineStart.UNDISPATCHED) {
+            waitUntil {
+                evaluations++
+                false
+            }
+        }
+
+        tick()
+        assertEquals(1, evaluations)
+
+        job.cancelAndJoin()
+        tick()
+        assertEquals(1, evaluations)
+    }
+
+    @Test
+    fun `conditional wait uses exact tick count and reports interruption`() = runBlocking {
+        val elapsed = mutableListOf<Int>()
+        val timeout = launch(start = CoroutineStart.UNDISPATCHED) {
+            assertTrue(waitConditional(2) {
+                elapsed += it
+                false
+            })
+        }
+
+        tick()
+        assertTrue(timeout.isActive)
+        tick()
+        timeout.join()
+        assertEquals(listOf(1, 2), elapsed)
+
+        val interrupted = launch(start = CoroutineStart.UNDISPATCHED) {
+            assertFalse(waitConditional(5) { it == 2 })
+        }
+        tick()
+        tick()
+        interrupted.join()
+    }
+
+    @Test
+    fun `zero maximum conditional task does not execute`() {
+        var executions = 0
+        assertTrue(TickScheduler.scheduleConditional(maxTicks = 0) {
+            executions++
+            false
+        })
+        tick()
+        assertEquals(0, executions)
     }
 
     private fun tick() {

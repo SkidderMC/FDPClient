@@ -9,7 +9,7 @@ inline fun <T> MutableCollection<T>.removeEach(max: Int = this.size, predicate: 
     var i = 0
     val iterator = iterator()
     while (iterator.hasNext()) {
-        if (i > max) {
+        if (i >= max) {
             break
         }
         val next = iterator.next()

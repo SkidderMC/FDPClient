@@ -21,19 +21,31 @@ suspend inline fun waitUntil(
     crossinline condition: () -> Boolean
 ): Int = suspendCancellableCoroutine { cont ->
     var waitingTick = 0
-    TickScheduler.schedule {
-        waitingTick++
-        try {
-            if (condition()) {
-                cont.resume(waitingTick)
-                true
-            } else {
-                false
-            }
-        } catch (e: Throwable) {
-            cont.resumeWithException(e)
-            true
+
+    cont.invokeOnCancellation {
+        TickScheduler.cancel(cont)
+    }
+
+    val scheduled = TickScheduler.scheduleConditional(requester = cont) {
+        if (!cont.isActive) {
+            return@scheduleConditional true
         }
+
+        waitingTick++
+        runCatching(condition).fold(
+            onSuccess = { complete ->
+                if (complete) cont.resume(waitingTick)
+                complete
+            },
+            onFailure = { throwable ->
+                cont.resumeWithException(throwable)
+                true
+            },
+        )
+    }
+
+    if (!scheduled && cont.isActive) {
+        cont.resumeWithException(IllegalStateException("Tick scheduler capacity exhausted"))
     }
 }
 
@@ -65,8 +77,18 @@ suspend inline fun waitConditional(
     }
 
     var elapsedTicks = 0
-    // `elapsedTicks` in 0 until `ticks`
-    waitUntil { elapsedTicks >= ticks || callback(elapsedTicks++) }
+    var interrupted = false
+    waitUntil {
+        elapsedTicks++
+        interrupted = callback(elapsedTicks)
+        interrupted || elapsedTicks >= ticks
+    }
 
-    return elapsedTicks >= ticks
+    return !interrupted && elapsedTicks >= ticks
+}
+
+/** Waits a fixed amount of client-tick seconds. */
+suspend fun waitSeconds(seconds: Int) {
+    require(seconds >= 0) { "Negative seconds: $seconds" }
+    waitTicks(Math.multiplyExact(seconds, 20))
 }
