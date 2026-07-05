@@ -28,33 +28,45 @@ open class RotationSettings(val moduleOwner: Module, generalApply: () -> Boolean
 
     open val rotationsValue = boolean("Rotations", true) { generalApply() }
     open val applyServerSideValue = boolean("ApplyServerSide", true) { rotationsActive && generalApply() }
-    open val simulateShortStopValue = boolean("SimulateShortStop", false) { rotationsActive && generalApply() }
+    // Legacy-engine-only knobs hide while the Modern engine drives the aim, where their modern
+    // counterparts (AngleSmooth/TurnSpeed/TicksUntilReset/ShortStop/MovementCorrection) apply instead.
+    open val simulateShortStopValue = boolean("SimulateShortStop", false) {
+        rotationsActive && !useModernRotations && generalApply()
+    }
     open val rotationDiffBuildUpToStopValue = float("RotationDiffBuildUpToStop", 180f, 50f..720f) { simulateShortStop }
     open val maxThresholdAttemptsToStopValue = int("MaxThresholdAttemptsToStop", 1, 0..5) { simulateShortStop }
     // Shared by the legacy SimulateShortStop build-up and the modern ShortStop processor.
     open val shortStopDurationValue = intRange("ShortStopDuration", 1..2, 1..5) { simulateShortStop || modernShortStop }
-    open val strafeValue = boolean("Strafe", false) { rotationsActive && applyServerSide && generalApply() }
+    open val strafeValue = boolean("Strafe", false) {
+        rotationsActive && applyServerSide && !useModernRotations && generalApply()
+    }
     open val strictValue = boolean("Strict", false) { strafeValue.isActive() && generalApply() }
     open val keepRotationValue = boolean("KeepRotation", true) { rotationsActive && applyServerSide && generalApply() }
 
     open val resetTicksValue = int("ResetTicks", 1, 1..20) {
-        rotationsActive && applyServerSide && generalApply()
+        rotationsActive && applyServerSide && !useModernRotations && generalApply()
     }
 
-    open val legitimizeValue = boolean("Legitimize", false) { rotationsActive && generalApply() }
+    open val legitimizeValue = boolean("Legitimize", false) {
+        rotationsActive && !useModernRotations && generalApply()
+    }
 
     open val horizontalAngleChangeValue =
-        floatRange("HorizontalAngleChange", 180f..180f, 1f..180f) { rotationsActive && generalApply() }
+        floatRange("HorizontalAngleChange", 180f..180f, 1f..180f) {
+            rotationsActive && !useModernRotations && generalApply()
+        }
     open val verticalAngleChangeValue =
-        floatRange("VerticalAngleChange", 180f..180f, 1f..180f) { rotationsActive && generalApply() }
+        floatRange("VerticalAngleChange", 180f..180f, 1f..180f) {
+            rotationsActive && !useModernRotations && generalApply()
+        }
 
     open val angleResetDifferenceValue = float("AngleResetDifference", 5f.withGCD(), 0.0f..180f) {
-        rotationsActive && applyServerSide && generalApply()
+        rotationsActive && applyServerSide && !useModernRotations && generalApply()
     }
 
     open val minRotationDifferenceValue = float(
         "MinRotationDifference", 2f, 0f..4f
-    ) { rotationsActive && generalApply() }
+    ) { rotationsActive && !useModernRotations && generalApply() }
 
     open val maximumRotationDifferenceValue = float(
         "MaximumRotationDifference", 180f, 1f..180f, "°"
@@ -62,7 +74,7 @@ open class RotationSettings(val moduleOwner: Module, generalApply: () -> Boolean
 
     open val minRotationDifferenceResetTimingValue = choices(
         "MinRotationDifferenceResetTiming", arrayOf("OnStart", "OnSlowDown", "Always"), "OnStart"
-    ) { rotationsActive && generalApply() }
+    ) { rotationsActive && !useModernRotations && generalApply() }
 
     open val rotationEngineValue = choices(
         "Engine", arrayOf("Legacy", "Modern"), "Legacy"

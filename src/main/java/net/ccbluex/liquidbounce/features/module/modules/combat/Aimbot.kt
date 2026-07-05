@@ -22,7 +22,7 @@ import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.rotationDifference
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.searchCenter
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.toRotation
 import net.ccbluex.liquidbounce.utils.rotation.point.PointTracker
-import net.ccbluex.liquidbounce.utils.rotation.RotationSettings
+import net.ccbluex.liquidbounce.utils.rotation.AlwaysRotationSettings
 import net.ccbluex.liquidbounce.utils.simulation.SimulatedPlayer
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.minecraft.entity.Entity
@@ -37,12 +37,16 @@ object Aimbot : Module("Aimbot", Category.COMBAT, Category.SubCategory.COMBAT_LE
         .describe("Adjust yaw to track the target.")
     private val verticalAim by boolean("VerticalAim", true)
         .describe("Adjust pitch to track the target.")
-    private val legitimize by boolean("Legitimize", true) { horizontalAim || verticalAim }
-        .describe("Smooth rotations to look more human.")
-    private val maxAngleChange by float("MaxAngleChange", 10f, 1F..180F) { horizontalAim || verticalAim }
-        .describe("Max degrees the view can turn per tick.")
-    private val inViewMaxAngleChange by float("InViewMaxAngleChange", 35f, 1f..180f) { horizontalAim || verticalAim }
-        .describe("Max turn speed when target is already on screen.")
+    // Legacy-path-only knobs; the Modern engine takes its speeds from the nested RotationSettings.
+    private val legitimize by boolean("Legitimize", true) {
+        (horizontalAim || verticalAim) && !rotationOptions.useModernRotations
+    }.describe("Smooth rotations to look more human.")
+    private val maxAngleChange by float("MaxAngleChange", 10f, 1F..180F) {
+        (horizontalAim || verticalAim) && !rotationOptions.useModernRotations
+    }.describe("Max degrees the view can turn per tick.")
+    private val inViewMaxAngleChange by float("InViewMaxAngleChange", 35f, 1f..180f) {
+        (horizontalAim || verticalAim) && !rotationOptions.useModernRotations
+    }.describe("Max turn speed when target is already on screen.")
     private val generateSpotBasedOnDistance by boolean(
         "GenerateSpotBasedOnDistance", false
     ) { horizontalAim || verticalAim }
@@ -81,11 +85,12 @@ object Aimbot : Module("Aimbot", Category.COMBAT, Category.SubCategory.COMBAT_LE
     private val horizontalBodySearchRange by floatRange("HorizontalBodySearchRange", 0f..1f, 0f..1f) { horizontalAim }
         .describe("Horizontal span of the target body to search.")
 
-    private val minRotationDifference by float("MinRotationDifference", 0f, 0f..2f) { verticalAim || horizontalAim }
-        .describe("Minimum rotation change before turning.")
+    private val minRotationDifference by float("MinRotationDifference", 0f, 0f..2f) {
+        (verticalAim || horizontalAim) && !rotationOptions.useModernRotations
+    }.describe("Minimum rotation change before turning.")
     private val minRotationDifferenceResetTiming by choices(
         "MinRotationDifferenceResetTiming", arrayOf("OnStart", "Always"), "OnStart"
-    ) { verticalAim || horizontalAim }
+    ) { (verticalAim || horizontalAim) && !rotationOptions.useModernRotations }
         .describe("When to reset the minimum rotation difference.")
 
     private val fov by float("FOV", 180F, 1F..180F)
@@ -111,12 +116,21 @@ object Aimbot : Module("Aimbot", Category.COMBAT, Category.SubCategory.COMBAT_LE
 
     private val pointTracker = PointTracker().also { addValues(it.values) }
     private val usePointTracker by boolean("UsePointTracker", false) { horizontalAim || verticalAim }
-    private val rotationOptions = RotationSettings(this) { horizontalAim || verticalAim }.apply {
-        rotationsValue.excludeWithState(true)
+    // AlwaysRotationSettings keeps rotationsActive true after Rotations is excluded; a plain
+    // exclude leaves the delegate reading false and dead-hides the whole settings tree.
+    private val rotationOptions = AlwaysRotationSettings(this) { horizontalAim || verticalAim }.apply {
         applyServerSideValue.excludeWithState(false)
         strafeValue.excludeWithState(false)
         keepRotationValue.excludeWithState(false)
         resetTicksValue.excludeWithState(1)
+        // The legacy path uses the module's own knobs (MaxAngleChange/Legitimize/...); these
+        // unread bundle twins would otherwise collide by name inside the Rotations group.
+        legitimizeValue.excludeWithState(false)
+        simulateShortStopValue.excludeWithState(false)
+        horizontalAngleChangeValue.exclude()
+        verticalAngleChangeValue.exclude()
+        minRotationDifferenceValue.exclude()
+        minRotationDifferenceResetTimingValue.exclude()
     }
 
     private val clickTimer = MSTimer()
