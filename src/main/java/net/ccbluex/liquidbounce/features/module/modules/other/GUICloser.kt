@@ -26,6 +26,10 @@ object GUICloser : Module("GUICloser", Category.OTHER, Category.SubCategory.MISC
         .describe("Also close your own inventory screen.")
     private val printScreenTitle by boolean("PrintScreenTitle", false)
         .describe("Print the title of each closed screen to chat.")
+    private val mode by choices("Mode", arrayOf("All", "Matches", "Contains"), "All")
+        .describe("Close all screens, or only those whose title matches the filter.")
+    private val filter by text("Filter", "") { mode != "All" }
+        .describe("Comma-separated titles or regex to match when not in All mode.")
 
     private var openAt = -1L
 
@@ -43,12 +47,28 @@ object GUICloser : Module("GUICloser", Category.OTHER, Category.SubCategory.MISC
         if (openAt < 0L) {
             openAt = System.currentTimeMillis()
         } else if (System.currentTimeMillis() - openAt >= delay) {
+            val title = (if (screen is GuiChest) screen.lowerChestInventory?.name else screen.javaClass.simpleName)
+                ?: screen.javaClass.simpleName
+
+            if (mode != "All" && !titleMatches(title)) return@handler
+
             if (printScreenTitle) {
-                val title = if (screen is GuiChest) screen.lowerChestInventory?.name else screen.javaClass.simpleName
-                chat("§3Closed screen: §7${title ?: screen.javaClass.simpleName}")
+                chat("§3Closed screen: §7$title")
             }
             mc.displayGuiScreen(null)
             openAt = -1L
+        }
+    }
+
+    private fun titleMatches(title: String): Boolean {
+        val patterns = filter.split(',', '\n').map { it.trim() }.filter { it.isNotEmpty() }
+        if (patterns.isEmpty()) return false
+
+        return patterns.any { pattern ->
+            runCatching {
+                val regex = Regex(pattern, RegexOption.IGNORE_CASE)
+                if (mode == "Matches") regex.matches(title) else regex.containsMatchIn(title)
+            }.getOrDefault(title.contains(pattern, ignoreCase = true))
         }
     }
 
