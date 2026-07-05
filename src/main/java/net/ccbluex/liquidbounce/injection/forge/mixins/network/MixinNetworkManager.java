@@ -6,11 +6,14 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.network;
 
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
 import net.ccbluex.liquidbounce.event.EventManager;
 import net.ccbluex.liquidbounce.event.EventState;
 import net.ccbluex.liquidbounce.event.PacketEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.TabGUIModule;
 import net.ccbluex.liquidbounce.utils.rotation.PostRotationExecutor;
+import net.ccbluex.liquidbounce.utils.rotation.RotationUtils;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.ccbluex.liquidbounce.utils.client.PPSCounter;
@@ -53,6 +56,16 @@ public class MixinNetworkManager {
     @Inject(method = "sendPacket(Lnet/minecraft/network/Packet;)V", at = @At("RETURN"))
     private void sent(Packet<?> packet, CallbackInfo callback) {
         PostRotationExecutor.INSTANCE.onPacketSendCompleted(packet);
+    }
+
+    /**
+     * The single choke point where a packet is truly written to the wire — both the event path
+     * and silent sends (Blink/FakeLag flushes) end up here. Lets the rotation manager track the
+     * rotation the server has actually received, as opposed to the one merely built client-side.
+     */
+    @Inject(method = "dispatchPacket", at = @At("HEAD"))
+    private void dispatched(Packet<?> packet, GenericFutureListener<? extends Future<? super Void>>[] listeners, CallbackInfo callback) {
+        RotationUtils.INSTANCE.onPacketDispatched(packet);
     }
 
 

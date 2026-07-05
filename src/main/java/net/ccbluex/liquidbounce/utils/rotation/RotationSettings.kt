@@ -31,7 +31,8 @@ open class RotationSettings(val moduleOwner: Module, generalApply: () -> Boolean
     open val simulateShortStopValue = boolean("SimulateShortStop", false) { rotationsActive && generalApply() }
     open val rotationDiffBuildUpToStopValue = float("RotationDiffBuildUpToStop", 180f, 50f..720f) { simulateShortStop }
     open val maxThresholdAttemptsToStopValue = int("MaxThresholdAttemptsToStop", 1, 0..5) { simulateShortStop }
-    open val shortStopDurationValue = intRange("ShortStopDuration", 1..2, 1..5) { simulateShortStop }
+    // Shared by the legacy SimulateShortStop build-up and the modern ShortStop processor.
+    open val shortStopDurationValue = intRange("ShortStopDuration", 1..2, 1..5) { simulateShortStop || modernShortStop }
     open val strafeValue = boolean("Strafe", false) { rotationsActive && applyServerSide && generalApply() }
     open val strictValue = boolean("Strict", false) { strafeValue.isActive() && generalApply() }
     open val keepRotationValue = boolean("KeepRotation", true) { rotationsActive && applyServerSide && generalApply() }

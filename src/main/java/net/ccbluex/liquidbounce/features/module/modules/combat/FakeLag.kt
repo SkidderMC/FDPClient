@@ -91,6 +91,11 @@ object FakeLag : Module("FakeLag", Category.COMBAT, Category.SubCategory.COMBAT_
     }
     private val packetQueue = Queues.newArrayDeque<QueueData>()
     private val positions = Queues.newArrayDeque<PositionData>()
+
+    /** Whether outgoing packets are currently being held back (the server is behind the client). */
+    val isLagging
+        get() = state && synchronized(packetQueue) { packetQueue.isNotEmpty() }
+
     private val resetTimer = MSTimer()
     private var wasNearEnemy = false
     private var ignoreWholeTick = false

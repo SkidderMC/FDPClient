@@ -515,6 +515,7 @@
     <ID>LargeClass:InventoryCleaner.kt$InventoryCleaner : Module</ID>
     <ID>LargeClass:SpotifyModule.kt$SpotifyModule : Module</ID>
     <ID>LargeClass:KillAura.kt$KillAura : Module</ID>
+    <ID>LargeClass:RotationUtils.kt$RotationUtils : MinecraftInstanceListenable</ID>
     <ID>LargeClass:NextGenBrowserRuntime.kt$NextGenBrowserRuntime : MinecraftInstanceListenable</ID>
     <ID>LargeClass:NextGenClickGuiBridge.kt$NextGenClickGuiBridge : MinecraftInstance</ID>
     <ID>LargeClass:NoSlow.kt$NoSlow : Module</ID>

@@ -220,9 +220,11 @@ object ModernRotationEngine : MinecraftInstance {
             pitchAcceleration * (-pitchError..pitchError).random() +
             (-pitchConstantError..pitchConstantError).random()
 
+        // No overshoot clamp: the capped-acceleration integrator may fly past the target and get
+        // pulled back next tick, which is the humanlike inertia this model exists to produce.
         return Rotation(
-            currentRotation.yaw + yawStep.coerceIn(-abs(delta.deltaYaw), abs(delta.deltaYaw)),
-            currentRotation.pitch + pitchStep.coerceIn(-abs(delta.deltaPitch), abs(delta.deltaPitch))
+            currentRotation.yaw + yawStep,
+            currentRotation.pitch + pitchStep
         )
     }
 

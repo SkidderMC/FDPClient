@@ -7,10 +7,12 @@ package net.ccbluex.liquidbounce.utils.rotation
 
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.features.module.modules.combat.FakeLag
 import net.ccbluex.liquidbounce.features.module.modules.combat.FastBow
 import net.ccbluex.liquidbounce.features.module.modules.other.NoRotateSet
 import net.ccbluex.liquidbounce.features.module.modules.client.Rotations
 import net.ccbluex.liquidbounce.utils.block.block
+import net.ccbluex.liquidbounce.utils.client.BlinkUtils
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.client.chat
 import net.ccbluex.liquidbounce.utils.client.rotation
@@ -23,6 +25,7 @@ import net.ccbluex.liquidbounce.utils.simulation.ProjectileSolver
 import net.ccbluex.liquidbounce.utils.timing.WaitTickUtils
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
+import net.minecraft.network.Packet
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.*
@@ -44,10 +47,13 @@ object RotationUtils : MinecraftInstance, Listenable {
     var currentRotation: Rotation? = null
 
     /**
-     * The last rotation that the server has received.
+     * The last rotation the server knows about. While Blink/FakeLag hold outgoing packets the
+     * queued (theoretical) rotation is used, since the server will receive it on flush; otherwise
+     * the last rotation that actually left the client, so packets a module drops outright never
+     * poison gates that compare against the server's view.
      */
     var serverRotation: Rotation
-        get() = lastRotations[0]
+        get() = if (isFakeLagging) lastRotations[0] else actualServerRotation
         set(value) {
             val previousRotations = lastRotations
 
@@ -55,6 +61,24 @@ object RotationUtils : MinecraftInstance, Listenable {
                 if (tick == 0) value.copy() else previousRotations[tick - 1].copy()
             }
         }
+
+    /**
+     * The last rotation attached to any outgoing rotating packet, even one that was cancelled or
+     * is still being held back by Blink/FakeLag.
+     */
+    val theoreticalServerRotation: Rotation
+        get() = lastRotations[0]
+
+    /**
+     * The last rotation the server has actually received: set when a rotating packet is truly
+     * dispatched to the wire, so cancelled or still-queued packets never advance it.
+     */
+    @Volatile
+    var actualServerRotation = Rotation(0f, 0f)
+        private set
+
+    private val isFakeLagging
+        get() = BlinkUtils.isBlinking || FakeLag.isLagging
 
     private const val MAX_CAPTURE_TICKS = 3
 
@@ -702,7 +726,19 @@ object RotationUtils : MinecraftInstance, Listenable {
         if (resetHistory) {
             val rotation = mc.thePlayer?.rotation ?: Rotation(0f, 0f)
             lastRotations = MutableList(MAX_CAPTURE_TICKS) { rotation.copy() }
+            actualServerRotation = rotation.copy()
             modifiedInput = MovementInput()
+        }
+    }
+
+    /**
+     * Called from the network manager the moment a packet is really written to the wire (both the
+     * event path and silent sends end up here). Rotating packets advance [actualServerRotation];
+     * cancelled or still-queued packets never reach this point.
+     */
+    fun onPacketDispatched(packet: Packet<*>) {
+        if (packet is C03PacketPlayer && packet.rotating) {
+            actualServerRotation = packet.rotation
         }
     }
 
@@ -747,7 +783,7 @@ object RotationUtils : MinecraftInstance, Listenable {
         player.renderArmYaw = player.rotationYaw
         player.renderArmPitch = player.rotationPitch
         player.prevRenderArmYaw = player.rotationYaw
-        player.prevRotationPitch = player.rotationPitch
+        player.prevRenderArmPitch = player.rotationPitch
     }
 
     private fun update() {
