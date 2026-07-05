@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.config.*
 /** Validates invariants that are only observable after Minecraft-dependent module objects initialize. */
 object ModuleRegistryValidator {
 
-    const val EXPECTED_BUILT_IN_MODULES = 295
+    const val EXPECTED_BUILT_IN_MODULES = 297
 
     fun validate(modules: Collection<Module>) {
         val errors = mutableListOf<String>()

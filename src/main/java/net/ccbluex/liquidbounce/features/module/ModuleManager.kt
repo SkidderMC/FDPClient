@@ -13,6 +13,8 @@ import net.ccbluex.liquidbounce.config.ValueOrganizer
 import net.ccbluex.liquidbounce.features.command.CommandManager.registerCommand
 import net.ccbluex.liquidbounce.features.command.CommandManager.commands
 import net.ccbluex.liquidbounce.features.command.CommandManager.unregisterCommand
+import net.ccbluex.liquidbounce.features.module.modules.other.ClickRecorder
+import net.ccbluex.liquidbounce.features.module.modules.other.RotationRecorder
 import net.ccbluex.liquidbounce.utils.client.ClassUtils
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import org.lwjgl.input.Keyboard
@@ -48,6 +50,13 @@ object ModuleManager : Listenable, Collection<Module> by MODULE_REGISTRY {
                     LOGGER.error("Failed to load module: $failure", throwable)
                 }
             }
+
+        // ResolverUtil is not consistent between exploded test classes and the shaded JAR when a
+        // concrete module inherits Module through an intermediate abstract class. Keep these
+        // recorder modules explicit so the audited and runtime inventories cannot diverge.
+        sequenceOf(ClickRecorder, RotationRecorder)
+            .filterNot { recorder -> MODULE_REGISTRY.any { it.javaClass === recorder.javaClass } }
+            .forEach(::registerModule)
 
         check(failures.isEmpty()) {
             failures.joinToString(separator = "\n - ", prefix = "Failed to initialize built-in modules:\n - ")
