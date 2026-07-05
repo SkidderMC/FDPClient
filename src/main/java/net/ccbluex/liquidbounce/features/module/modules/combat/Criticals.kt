@@ -23,6 +23,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
+import net.minecraft.network.play.client.C0BPacketEntityAction
 
 private val CRITICAL_MODES = arrayOf(
     "Packet", "NCPPacket", "BlocksMC", "BlocksMC2", "NoGround", "Hop", "MiniJump", "TPHop",
@@ -48,6 +49,8 @@ object Criticals : Module("Criticals", Category.COMBAT, Category.SubCategory.COM
         .describe("Only crit when target hurt-time is at or below this.")
     private val onlyWhileSprinting by boolean("OnlyWhileSprinting", false)
         .describe("Restrict critical hits to sprint attacks for a more legit profile.")
+    private val whenSprinting by choices("WhenSprinting", arrayOf("None", "OnAttack"), "None")
+        .describe("Stop sprinting on attack so server-side criticals register even while sprinting.")
     private val autoSwitchSafest by boolean("AutoSwitchSafest", true)
         .describe("When a mode is likely detected, fall back to the safest mode for the profile.")
     private val customMotionY by float("Custom-Y", 0.2f, 0.01f..0.42f) { mode == "CustomMotion" }
@@ -77,6 +80,11 @@ object Criticals : Module("Criticals", Category.COMBAT, Category.SubCategory.COM
                 (onlyWhileSprinting && !thePlayer.isSprinting)
             )
                 return@handler
+
+            if (whenSprinting == "OnAttack" && thePlayer.isSprinting) {
+                sendPackets(C0BPacketEntityAction(thePlayer, C0BPacketEntityAction.Action.STOP_SPRINTING))
+                thePlayer.isSprinting = false
+            }
 
             val (x, y, z) = thePlayer
 
