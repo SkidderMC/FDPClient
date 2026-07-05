@@ -12,7 +12,8 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.extensions.eyes
 import net.ccbluex.liquidbounce.utils.inventory.isSplashPotion
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockBox
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
+import net.ccbluex.liquidbounce.utils.render.RenderText.renderNameTag
+import net.ccbluex.liquidbounce.utils.render.RenderColor.glColor
 import net.ccbluex.liquidbounce.utils.rotation.Rotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils
 import net.minecraft.client.entity.EntityPlayerSP
@@ -69,11 +70,18 @@ object Trajectories : Module("Trajectories", Category.VISUAL, Category.SubCatego
         .describe("Color of the trajectory line.")
     private val boxColor by color("BoxColor", Color(0, 160, 255, 150))
         .describe("Color of the landing box.")
+    private val detailedInfo by boolean("DetailedInfo", false)
+        .describe("Show a label with distance and flight time at the landing spot.")
+    private val infoDistance by boolean("ShowDistance", true) { detailedInfo }
+        .describe("Include distance in the landing label.")
+    private val infoTicks by boolean("ShowFlightTime", true) { detailedInfo }
+        .describe("Include flight time in ticks in the landing label.")
 
     init {
         group("Simulation", "MaxSimulatedTicks", "MaxRenderDistance")
         group("Targets", "OtherPlayers", "AlwaysShowBow")
-        group("Appearance", "LineWidth", "LandingBox", "LineColor", "BoxColor")
+        group("Appearance", "LineWidth", "LandingBox", "LineColor", "BoxColor",
+            "DetailedInfo", "ShowDistance", "ShowFlightTime")
     }
 
     private data class ProjectileType(val gravity: Float, val drag: Float, val velocity: Float)
@@ -123,6 +131,15 @@ object Trajectories : Module("Trajectories", Category.VISUAL, Category.SubCatego
             if (landingBox && hit != null) {
                 val landingPos = hit.blockPos
                 if (landingPos != null) drawBlockBox(landingPos, boxColor, false)
+            }
+
+            if (detailedInfo && positions.isNotEmpty()) {
+                val end = positions.last()
+                val distancePart = if (infoDistance)
+                    "%.1fm".format(mc.thePlayer.getDistance(end.xCoord, end.yCoord, end.zCoord)) else ""
+                val ticksPart = if (infoTicks) "${positions.size}t" else ""
+                val label = "$distancePart $ticksPart".trim()
+                if (label.isNotEmpty()) renderNameTag(label, end.xCoord, end.yCoord + 0.3, end.zCoord)
             }
         }
 
