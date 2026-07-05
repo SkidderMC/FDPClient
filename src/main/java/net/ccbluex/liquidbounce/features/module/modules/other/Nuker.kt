@@ -19,7 +19,7 @@ import net.ccbluex.liquidbounce.utils.block.center
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.extensions.eyes
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockBox
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockDamageText
+import net.ccbluex.liquidbounce.utils.render.RenderText.drawBlockDamageText
 import net.ccbluex.liquidbounce.utils.rotation.RotationPriority
 import net.ccbluex.liquidbounce.utils.rotation.RotationSettings
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.faceBlock
@@ -70,6 +70,10 @@ object Nuker : Module("Nuker", Category.OTHER, Category.SubCategory.MISCELLANEOU
 
     private val layer by boolean("Layer", false)
         .describe("Only break blocks at or above your feet level.")
+    private val floorMode by boolean("FloorMode", false)
+        .describe("Only break blocks on a single flat layer.")
+    private val floorOffset by int("FloorOffset", -1, -4..0) { floorMode }
+        .describe("Vertical offset of the floor layer relative to your feet.")
     private val hitDelay by int("HitDelay", 4, 0..20)
         .describe("Tick delay after breaking each block.")
     private val nuke by int("Nuke", 1, 1..20)
@@ -115,7 +119,7 @@ object Nuker : Module("Nuker", Category.OTHER, Category.SubCategory.MISCELLANEOU
 
     init {
         moveValues(targetingGroup,
-            "AllBlocks", "Block", "Radius", "ThroughWalls", "Priority", "Layer")
+            "AllBlocks", "Block", "Radius", "ThroughWalls", "Priority", "Layer", "FloorMode", "FloorOffset")
 
         moveValues(breakingGroup,
             "HitDelay", "Nuke", "NukeDelay", "SwingMode", "IgnoreOpenInventory")
@@ -164,6 +168,10 @@ object Nuker : Module("Nuker", Category.OTHER, Category.SubCategory.MISCELLANEOU
 
                     // Layer: Break all blocks above you
                     if (layer && pos.y < player.posY) {
+                        return@searchBlocks false
+                    }
+
+                    if (floorMode && pos.y != Math.floor(player.posY).toInt() + floorOffset) {
                         return@searchBlocks false
                     }
 
@@ -261,6 +269,10 @@ object Nuker : Module("Nuker", Category.OTHER, Category.SubCategory.MISCELLANEOU
                 if (getCenterDistance(pos) <= radius && validBlock(block)) {
                     // Layer: Break all blocks above you
                     if (layer && pos.y < player.posY) {
+                        return@searchBlocks false
+                    }
+
+                    if (floorMode && pos.y != Math.floor(player.posY).toInt() + floorOffset) {
                         return@searchBlocks false
                     }
 
