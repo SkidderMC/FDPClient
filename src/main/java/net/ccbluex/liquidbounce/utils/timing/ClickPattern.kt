@@ -125,5 +125,20 @@ object ClickPatterns {
         }
     }
 
+    val registry: LinkedHashMap<String, ClickPattern> = linkedMapOf(
+        "Stabilized" to STABILIZED,
+        "Efficient" to EFFICIENT,
+        "Spamming" to SPAMMING,
+        "DoubleClick" to DOUBLE_CLICK,
+        "Drag" to DRAG,
+        "Butterfly" to BUTTERFLY,
+        "NormalDistribution" to NORMAL_DISTRIBUTION
+    )
+
+    val names: Array<String> = registry.keys.toTypedArray()
+
+    fun byName(name: String): ClickPattern =
+        registry.entries.firstOrNull { it.key.equals(name, ignoreCase = true) }?.value ?: STABILIZED
+
     fun newClickArray(cycleLength: Int = 20): IntArray = IntArray(cycleLength)
 }

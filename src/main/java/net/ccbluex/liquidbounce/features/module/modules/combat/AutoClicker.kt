@@ -25,11 +25,12 @@ import net.minecraft.item.EnumAction
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
-import net.ccbluex.liquidbounce.utils.timing.TimeUtils.randomClickDelay
+import net.ccbluex.liquidbounce.utils.timing.ClickPattern
+import net.ccbluex.liquidbounce.utils.timing.ClickPatterns
+import net.ccbluex.liquidbounce.utils.timing.Clicker
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextBoolean
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextFloat
-import kotlin.reflect.KMutableProperty0
 
 /**
  * AutoClicker module - Automatically clicks for you
@@ -55,8 +56,9 @@ object AutoClicker : Module("AutoClicker", Category.COMBAT, Category.SubCategory
         .describe("Auto click the left mouse button (attack).")
     private val jitter by boolean("Jitter", false)
         .describe("Add small random timing jitter between clicks.")
-    private val humanize by boolean("Humanize", true)
-        .describe("Shape click timing into human-like bursts instead of a flat CPS.")
+    private val clickPatternName by choices("ClickPattern", ClickPatterns.names, "Stabilized")
+        .describe("Shape of the click-timing distribution.")
+    private val clickPattern get() = ClickPatterns.byName(clickPatternName)
 
     private val requiresNoInput by boolean("RequiresNoInput", false) { left }
         .describe("Only click when you are not manually clicking.")
@@ -86,7 +88,7 @@ object AutoClicker : Module("AutoClicker", Category.COMBAT, Category.SubCategory
     init {
         moveValues(clickGroup,
             "SimulateDoubleClicking", "CPS", "HurtTime", "Right", "Left")
-        moveValues(jitterGroup, "Jitter", "Humanize")
+        moveValues(jitterGroup, "Jitter", "ClickPattern")
         moveValues(leftInputGroup,
             "RequiresNoInput", "MaxAngleDifference", "Range", "OnlyBlock")
         moveValues(rightClickGroup, "OnlyBlocks")
@@ -97,9 +99,12 @@ object AutoClicker : Module("AutoClicker", Category.COMBAT, Category.SubCategory
             clickGroup, jitterGroup, leftInputGroup, rightClickGroup, timingGroup,
         ))
     }
-    private var rightDelay = generateNewClickTime()
+    private val leftClicker = Clicker()
+    private val rightClicker = Clicker()
+
+    private var rightDelay = generateNewClickTime(rightClicker)
     private var rightLastSwing = 0L
-    private var leftDelay = generateNewClickTime()
+    private var leftDelay = generateNewClickTime(leftClicker)
     private var leftLastSwing = 0L
 
     private var rightHeldSince = 0L
@@ -113,9 +118,6 @@ object AutoClicker : Module("AutoClicker", Category.COMBAT, Category.SubCategory
 
     private var shouldJitter = false
 
-    private var leftBurstRemaining = 0
-    private var rightBurstRemaining = 0
-
     private var target: EntityLivingBase? = null
 
     override fun onDisable() {
@@ -125,8 +127,8 @@ object AutoClicker : Module("AutoClicker", Category.COMBAT, Category.SubCategory
         leftHeldSince = 0L
         lastUsingItem = 0L
         lastBlocking = 0L
-        leftBurstRemaining = 0
-        rightBurstRemaining = 0
+        leftClicker.reset()
+        rightClicker.reset()
         target = null
     }
 
@@ -217,7 +219,7 @@ object AutoClicker : Module("AutoClicker", Category.COMBAT, Category.SubCategory
         }
 
         leftLastSwing = time
-        leftDelay = generateNewClickTime(::leftBurstRemaining)
+        leftDelay = generateNewClickTime(leftClicker)
     }
 
     private fun handleRightClick(time: Long, doubleClick: Int) {
@@ -226,26 +228,15 @@ object AutoClicker : Module("AutoClicker", Category.COMBAT, Category.SubCategory
         }
 
         rightLastSwing = time
-        rightDelay = generateNewClickTime(::rightBurstRemaining)
+        rightDelay = generateNewClickTime(rightClicker)
     }
 
-    fun generateNewClickTime(burst: KMutableProperty0<Int> = ::leftBurstRemaining): Int {
-        val base = randomClickDelay(cps.first, cps.last)
-
-        if (!humanize) return base
-
-        val blocking = mc.thePlayer?.let { it.isUsingItem && canItemBlock() } == true
-
-        val shaped = if (burst.get() > 0) {
-            burst.set(burst.get() - 1)
-            (base * RandomUtils.nextDouble(0.62, 0.82)).toInt()
-        } else {
-            burst.set(RandomUtils.nextInt(2, 6))
-            (base * RandomUtils.nextDouble(1.05, 1.35)).toInt()
-        }
+    fun generateNewClickTime(clicker: Clicker = leftClicker): Int {
+        val shaped = clicker.nextDelay(clickPattern, cps.first, cps.last)
 
         val jittered = if (jitter) (shaped + RandomUtils.nextInt(-8, 9)) else shaped
 
+        val blocking = mc.thePlayer?.let { it.isUsingItem && canItemBlock() } == true
         val slowed = if (blocking) (jittered * RandomUtils.nextDouble(1.1, 1.4)).toInt() else jittered
 
         return slowed.coerceAtLeast(1)

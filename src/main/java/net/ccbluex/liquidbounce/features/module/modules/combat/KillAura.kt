@@ -58,7 +58,9 @@ import net.ccbluex.liquidbounce.utils.rotation.point.PointTracker
 import net.ccbluex.liquidbounce.utils.simulation.SimulatedPlayer
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.ccbluex.liquidbounce.utils.timing.TickedActions.nextTick
-import net.ccbluex.liquidbounce.utils.timing.TimeUtils.randomClickDelay
+import net.ccbluex.liquidbounce.utils.timing.ClickPattern
+import net.ccbluex.liquidbounce.utils.timing.ClickPatterns
+import net.ccbluex.liquidbounce.utils.timing.Clicker
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.entity.Entity
@@ -90,8 +92,13 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
 
     // CPS - Attack speed
     private val cps by intRange("CPS", 5..8, 1..50) { !simulateCooldown }.onChanged {
-        attackDelay = randomClickDelay(it.first, it.last)
+        attackDelay = clicker.nextDelay(clickPattern, it.first, it.last)
     }
+
+    private val clickPatternValue = choices("ClickPattern", ClickPatterns.names, "Stabilized") { !simulateCooldown }
+    private val clickPatternName: String by clickPatternValue
+    private val clickPattern: ClickPattern get() = ClickPatterns.byName(clickPatternName)
+    private val clicker = Clicker()
 
     private val hurtTime by int("HurtTime", 10, 0..10) { !simulateCooldown }
         .describe("Only attack when target hurt-time is at or below this.")
@@ -406,7 +413,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
 
     init {
         moveValues(clickerGroup,
-            "SimulateCooldown", "SimulateDoubleClicking", "CPS", "HurtTime", "ClickOnly",
+            "SimulateCooldown", "SimulateDoubleClicking", "CPS", "ClickPattern", "HurtTime", "ClickOnly",
             "GenerateClicksBasedOnDistance", "CPS-Multiplier", "DistanceFactor", "UseHitDelay",
             "HitDelayTicks", "ForceFirstHit", "RespectMissCooldown", "PostRotationAttack")
 
@@ -495,6 +502,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
         prevTargetEntities.clear()
         attackTickTimes.clear()
         attackTimer.reset()
+        clicker.reset()
         clicks = 0
 
         if (blinkAutoBlock) {
@@ -687,7 +695,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
         if (attackTimer.hasTimePassed(attackDelay)) {
             if (cps.last > 0) clicks++
             attackTimer.reset()
-            attackDelay = randomClickDelay(cps.first, cps.last)
+            attackDelay = clicker.nextDelay(clickPattern, cps.first, cps.last)
         }
     }
 

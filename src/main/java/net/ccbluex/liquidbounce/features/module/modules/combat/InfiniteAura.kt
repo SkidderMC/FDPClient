@@ -28,8 +28,10 @@ import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.getVectorForRotatio
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.rotationDifference
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.setTargetRotation
 import net.ccbluex.liquidbounce.utils.simulation.SimulatedPlayer
+import net.ccbluex.liquidbounce.utils.timing.ClickPattern
+import net.ccbluex.liquidbounce.utils.timing.ClickPatterns
+import net.ccbluex.liquidbounce.utils.timing.Clicker
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
-import net.ccbluex.liquidbounce.utils.timing.TimeUtils.randomClickDelay
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
@@ -93,8 +95,13 @@ object InfiniteAura : Module(
         .describe("Max number of targets to attack per loop.")
 
     private val cps by intRange("CPS", 5..8, 1..50).onChanged {
-        attackDelay = randomClickDelay(it.first, it.last)
+        attackDelay = clicker.nextDelay(clickPattern, it.first, it.last)
     }
+
+    private val clickPatternName by choices("ClickPattern", ClickPatterns.names, "Stabilized")
+        .describe("Shape of the click-timing distribution.")
+    private val clickPattern get() = ClickPatterns.byName(clickPatternName)
+    private val clicker = Clicker()
 
     private val hurtTime by int("HurtTime", 10, 0..10)
         .describe("Only attack when target hurt-time is at or below this.")
@@ -181,7 +188,7 @@ object InfiniteAura : Module(
     private val renderGroup = Configurable("Render")
 
     init {
-        moveValues(modeGroup, "Mode", "CPS", "HurtTime")
+        moveValues(modeGroup, "Mode", "CPS", "ClickPattern", "HurtTime")
 
         moveValues(targetGroup,
             "TargetMode", "LimitedMultiTargets", "MaxSwitchFOV", "SwitchDelay", "Targets",
@@ -232,7 +239,7 @@ object InfiniteAura : Module(
 
     private var aimPoint: Vec3? = null
 
-    private val delayMillis: Long get() = 1000L / cps.random()
+    private val delayMillis: Long get() = clicker.nextDelay(clickPattern, cps.first, cps.last).toLong()
 
     override fun onDisable() {
         auraJob?.cancel()
@@ -241,18 +248,21 @@ object InfiniteAura : Module(
         hittable = false
         prevTargetEntities.clear()
         clicks = 0
+        clicker.reset()
 
         synchronized(swingFails) {
             swingFails.clear()
         }
     }
 
+    @Suppress("unused") // The event bus retains this handler through its registration side effect.
     private val onWorld = handler<WorldEvent> {
         auraJob?.cancel()
         points.clear()
         target = null
         hittable = false
         prevTargetEntities.clear()
+        clicker.reset()
 
         synchronized(swingFails) {
             swingFails.clear()
