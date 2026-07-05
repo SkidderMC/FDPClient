@@ -29,22 +29,28 @@ object ModuleManager : Listenable, Collection<Module> by MODULE_REGISTRY {
         LOGGER.info("[ModuleManager] Loading modules...")
 
         // Register modules
+        val failures = mutableListOf<String>()
         ClassUtils.resolvePackage("${this.javaClass.`package`.name}.modules", Module::class.java)
             .forEach { moduleClass ->
-                try {
-                    registerModule(moduleClass.newInstance())
-                } catch (e: IllegalAccessException) {
-                    // Handle Kotlin object modules
-                    val instance = ClassUtils.getObjectInstance(moduleClass) as? Module
-                    if (instance != null) {
-                        registerModule(instance)
-                    } else {
-                        LOGGER.error("Failed to instantiate module: ${moduleClass.name}")
+                runCatching {
+                    val module = try {
+                        moduleClass.newInstance()
+                    } catch (_: IllegalAccessException) {
+                        // Handle Kotlin object modules.
+                        ClassUtils.getObjectInstance(moduleClass) as Module
                     }
-                } catch (e: Throwable) {
-                    LOGGER.error("Failed to load module: ${moduleClass.name} (${e.javaClass.name}: ${e.message})")
+                    registerModule(module)
+                }.onFailure { throwable ->
+                    val failure = "${moduleClass.name} (${throwable.javaClass.name}: ${throwable.message})"
+                    failures += failure
+                    LOGGER.error("Failed to load module: $failure", throwable)
                 }
             }
+
+        check(failures.isEmpty()) {
+            failures.joinToString(separator = "\n - ", prefix = "Failed to initialize built-in modules:\n - ")
+        }
+        ModuleRegistryValidator.validate(MODULE_REGISTRY)
 
         MODULE_REGISTRY.forEach {
             it.onInitialize()

@@ -159,14 +159,28 @@ open class Module(
                     field = false
                     enabledEffectJobs.forEach(Job::cancel)
                     enabledEffectJobs.clear()
-                    throw throwable
+                    // onEnable may have acquired keys, timers, packet queues or rotation ownership
+                    // before failing. Give the module a best-effort rollback and always release the
+                    // shared rotation state before exposing the failure to the caller.
+                    runCatching { onDisable() }.onFailure(throwable::addSuppressed)
+                    RotationUtils.cancelTargetRotation(this)
+                    LOGGER.error("Failed to enable module $name; the partial activation was rolled back.", throwable)
+                    saveConfig(modulesConfig)
+                    return
                 }
             } else {
                 enabledEffectJobs.forEach(Job::cancel)
                 enabledEffectJobs.clear()
-                onDisable()
-                RotationUtils.cancelTargetRotation(this)
-                field = false
+                try {
+                    onDisable()
+                } catch (throwable: Throwable) {
+                    LOGGER.error("Failed to disable module $name cleanly; shared state was still released.", throwable)
+                } finally {
+                    // A broken module-specific cleanup must never leave the module logically
+                    // enabled or retain global rotation ownership.
+                    RotationUtils.cancelTargetRotation(this)
+                    field = false
+                }
             }
 
             ModuleFeedback.toggled(name, field)
