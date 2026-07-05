@@ -76,9 +76,12 @@ import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.potion.Potion
 import net.minecraft.util.*
 import org.lwjgl.input.Keyboard
+import org.lwjgl.opengl.GL11
 import java.awt.Color
+import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.roundToInt
+import kotlin.math.sin
 
 object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBAT_RAGE, Keyboard.KEY_G) {
     /**
@@ -403,6 +406,16 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
     private val aimPointBoxSize by float("AimPointBoxSize", 0.1f, 0f..0.2F) { renderAimPointBox }.subjective()
         .describe("Size of the aim point box.")
 
+    // RangeIndicator
+    private val rangeIndicator by boolean("RangeIndicator", false).subjective()
+        .describe("Draw a reach ring on the ground around you.")
+    private val rangeIndicatorColor by color("RangeIndicatorColor", Color(80, 180, 255, 90)) { rangeIndicator }.subjective()
+        .describe("Ring color when no target is in reach.")
+    private val rangeIndicatorActiveColor by color("RangeIndicatorActiveColor", Color(90, 255, 120, 110)) { rangeIndicator }.subjective()
+        .describe("Ring color when a target is in reach.")
+    private val rangeIndicatorOutline by boolean("RangeIndicatorOutline", true) { rangeIndicator }.subjective()
+        .describe("Draw an outline around the reach ring.")
+
     private val clickerGroup = Configurable("Clicker")
     private val rangeGroup = Configurable("Range")
     private val targetGroup = Configurable("Target")
@@ -414,6 +427,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
     private val smartAutoBlockingGroup = Configurable("SmartAutoBlock")
     private val failSwingGroup = Configurable("FailSwing")
     private val targetRenderingGroup = Configurable("TargetRendering")
+    private val rangeIndicatorGroup = Configurable("RangeIndicator")
 
     init {
         moveValues(clickerGroup,
@@ -458,10 +472,12 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
             "SwingWhenTicksLate", "TicksLateToSwing", "RenderBoxOnSwingFail", "RenderBoxColor",
             "RenderBoxFadeSeconds")
         moveValues(targetRenderingGroup, "RenderAimPointBox", "AimPointBoxColor", "AimPointBoxSize")
+        moveValues(rangeIndicatorGroup,
+            "RangeIndicator", "RangeIndicatorColor", "RangeIndicatorActiveColor", "RangeIndicatorOutline")
 
         addValues(listOf(
             clickerGroup, rangeGroup, targetGroup, rotationsGroup, aimPointGroup, raycastGroup,
-            autoBlockingGroup, failSwingGroup, targetRenderingGroup,
+            autoBlockingGroup, failSwingGroup, targetRenderingGroup, rangeIndicatorGroup,
         ))
     }
     /**
@@ -587,10 +603,12 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
             return@handler
         }
 
-        if (noInventoryAttack && (mc.currentScreen is GuiContainer || System.currentTimeMillis() - containerOpen < noInventoryDelay)) {
+        val inventoryOpen = mc.currentScreen is GuiContainer
+        val inventoryDelayActive = System.currentTimeMillis() - containerOpen < noInventoryDelay
+        if (noInventoryAttack && (inventoryOpen || inventoryDelayActive)) {
             target = null
             hittable = false
-            if (mc.currentScreen is GuiContainer) containerOpen = System.currentTimeMillis()
+            if (inventoryOpen) containerOpen = System.currentTimeMillis()
             return@handler
         }
 
@@ -682,6 +700,8 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
 
         drawAimPointBox()
 
+        renderRangeIndicator()
+
         if (cancelRun) {
             target = null
             hittable = false
@@ -701,7 +721,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
             if (cps.last > 0) clicks++
             attackTimer.reset()
             attackDelay = clicker.nextDelay(clickPattern, cps.first, cps.last)
-        } else if (predictExitingRange && hittable && cps.last > 0 && willExitRange(exitPredictTicks.toDouble())) {
+        } else if (shouldQueuePredictedExitClick()) {
             clicks++
             attackTimer.reset()
             attackDelay = clicker.nextDelay(clickPattern, cps.first, cps.last)
@@ -1416,6 +1436,65 @@ private fun updateHittable() {
         activationSlot && SilentHotbar.currentSlot != preferredSlot - 1 -> true
 
         else -> false
+    }
+
+    private fun renderRangeIndicator() {
+        if (!rangeIndicator) return
+
+        val player = mc.thePlayer ?: return
+        if (noInventoryAttack && mc.currentScreen is GuiContainer) return
+
+        val pos = player.interpolatedPosition(player.prevPos)
+        val renderPos = mc.renderManager.renderPos
+        val x = pos.xCoord - renderPos.xCoord
+        val y = pos.yCoord - renderPos.yCoord + 0.02
+        val z = pos.zCoord - renderPos.zCoord
+        val radius = maxRange.toDouble()
+
+        val ringColor = if (hittable && target != null) rangeIndicatorActiveColor else rangeIndicatorColor
+        val steps = 60
+
+        GL11.glPushMatrix()
+        GL11.glEnable(GL11.GL_BLEND)
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+        GL11.glDisable(GL11.GL_TEXTURE_2D)
+        GL11.glEnable(GL11.GL_LINE_SMOOTH)
+        GL11.glDisable(GL11.GL_DEPTH_TEST)
+        GL11.glDisable(GL11.GL_LIGHTING)
+        GL11.glDepthMask(false)
+
+        GL11.glColor4f(ringColor.red / 255f, ringColor.green / 255f, ringColor.blue / 255f, ringColor.alpha / 255f * 0.35f)
+        GL11.glBegin(GL11.GL_TRIANGLE_FAN)
+        GL11.glVertex3d(x, y, z)
+        for (i in 0..steps) {
+            val angle = 2.0 * Math.PI * i / steps
+            GL11.glVertex3d(x + cos(angle) * radius, y, z + sin(angle) * radius)
+        }
+        GL11.glEnd()
+
+        if (rangeIndicatorOutline) {
+            GL11.glLineWidth(2f)
+            GL11.glColor4f(ringColor.red / 255f, ringColor.green / 255f, ringColor.blue / 255f, ringColor.alpha / 255f)
+            GL11.glBegin(GL11.GL_LINE_LOOP)
+            for (i in 0 until steps) {
+                val angle = 2.0 * Math.PI * i / steps
+                GL11.glVertex3d(x + cos(angle) * radius, y, z + sin(angle) * radius)
+            }
+            GL11.glEnd()
+        }
+
+        GL11.glDepthMask(true)
+        GL11.glEnable(GL11.GL_DEPTH_TEST)
+        GL11.glDisable(GL11.GL_LINE_SMOOTH)
+        GL11.glEnable(GL11.GL_TEXTURE_2D)
+        GL11.glDisable(GL11.GL_BLEND)
+        GL11.glPopMatrix()
+        GL11.glColor4f(1f, 1f, 1f, 1f)
+    }
+
+    private fun shouldQueuePredictedExitClick(): Boolean {
+        if (!predictExitingRange || !hittable || cps.last <= 0) return false
+        return willExitRange(exitPredictTicks.toDouble())
     }
 
     private fun handleFailedSwings() {
