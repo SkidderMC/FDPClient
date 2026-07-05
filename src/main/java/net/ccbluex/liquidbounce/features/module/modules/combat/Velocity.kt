@@ -260,7 +260,7 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
         .describe("Use adaptive motion scaling on the ground.")
     private val sendC0FValue by boolean("C0F", false) { mode == "GrimVertical" && grimVerticalMode == "Vertical" }
         .describe("Send transaction packets during GrimVertical.")
-    private val c0fPacketAmount by int("C0FPacketAmount", 0, 1..40) { mode == "GrimVertical" && grimVerticalMode == "Vertical" && sendC0FValue }
+    private val c0fPacketAmount by int("C0FPacketAmount", 1, 1..40) { mode == "GrimVertical" && grimVerticalMode == "Vertical" && sendC0FValue }
         .describe("How many transaction packets to send.")
     private val callEvent by boolean("CallEvent", true) { mode == "GrimVertical" && grimVerticalMode == "Vertical" }
         .describe("Also send a swing animation when attacking.")

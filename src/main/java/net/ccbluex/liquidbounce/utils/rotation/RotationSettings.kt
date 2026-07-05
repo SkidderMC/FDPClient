@@ -320,7 +320,9 @@ open class RotationSettings(val moduleOwner: Module, generalApply: () -> Boolean
 
     /** Restores this legacy-flat settings bundle as a real nested configurable. */
     fun nestInto(parent: Configurable) = apply {
-        addValues(flattenedValues)
+        // Excluded values are implementation switches and must stay out of the public tree.
+        // Re-adding them here can create duplicate keys (for example Scaffold's rotation mode).
+        addValues(flattenedValues.filterNot { it.excluded })
         parent.addValue(this)
     }
 

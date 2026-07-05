@@ -41,7 +41,7 @@ object ChineseHat : Module("ChineseHat", Category.VISUAL, Category.SubCategory.R
     private val useChineseHatTexture by boolean("UseChineseHatTexture", false) { shape == "Cone" }
         .describe("Apply the Chinese hat texture to the cone.")
 
-    private val colorMode by choices("Color", arrayOf("Custom", "DistanceColor"), "Custom")
+    private val colorMode by choices("ColorMode", arrayOf("Custom", "DistanceColor"), "Custom")
         .describe("Color source: custom or by distance.")
     private val colors = ColorSettingsInteger(this) { colorMode == "Custom" }.with(0, 160, 255, 150)
 
@@ -96,7 +96,7 @@ object ChineseHat : Module("ChineseHat", Category.VISUAL, Category.SubCategory.R
         moveValues(generalGroup,
             "Shape", "PlayerHeight", "RenderSelf", "Bots", "Teams", "ThruBlocks")
 
-        moveValues(colorGroup, "Color")
+        moveValues(colorGroup, "ColorMode", "Color")
 
         moveValues(coneGroup, "UseChineseHatTexture", "ConeWidth", "ConeHeight")
 

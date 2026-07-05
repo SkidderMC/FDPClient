@@ -20,6 +20,7 @@ object BrandSpoofer : Module("BrandSpoofer", Category.CLIENT, Category.SubCatego
      */
     val possibleBrands = choices(
         "Mode", arrayOf(
+            "FDP",
             "Vanilla",
             "OptiFine",
             "Fabric",
