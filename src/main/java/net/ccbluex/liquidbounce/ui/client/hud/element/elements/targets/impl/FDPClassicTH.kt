@@ -11,7 +11,7 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.TargetStyle
 import net.ccbluex.liquidbounce.utils.extensions.darker
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawEntityOnScreen
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
+import net.ccbluex.liquidbounce.utils.render.RenderPrimitives.drawRect
 import net.minecraft.client.renderer.GlStateManager.color
 import net.minecraft.client.renderer.GlStateManager.resetColor
 import net.minecraft.entity.EntityLivingBase

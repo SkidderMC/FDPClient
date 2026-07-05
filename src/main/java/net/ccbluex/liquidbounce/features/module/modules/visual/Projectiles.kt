@@ -17,7 +17,7 @@ import net.ccbluex.liquidbounce.utils.inventory.isSplashPotion
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.interpolateHSB
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.disableGlCap
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.enableGlCap
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
+import net.ccbluex.liquidbounce.utils.render.RenderColor.glColor
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.resetCaps
 import net.ccbluex.liquidbounce.utils.render.drawWithTessellatorWorldRenderer
 import net.minecraft.block.material.Material

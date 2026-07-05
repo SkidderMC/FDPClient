@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
 import net.ccbluex.liquidbounce.utils.attack.CooldownHelper.getAttackCooldownProgress
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
+import net.ccbluex.liquidbounce.utils.render.RenderPrimitives.drawRect
 import java.awt.Color
 
 /**

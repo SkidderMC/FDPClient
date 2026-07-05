@@ -11,12 +11,12 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.extensions.renderPos
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.disableGlCap
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawFilledBox
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawSelectionBoundingBox
+import net.ccbluex.liquidbounce.utils.render.Render3D.drawFilledBox
+import net.ccbluex.liquidbounce.utils.render.Render3D.drawSelectionBoundingBox
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.enableGlCap
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
+import net.ccbluex.liquidbounce.utils.render.RenderColor.glColor
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.resetCaps
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.resetColor
+import net.ccbluex.liquidbounce.utils.render.RenderColor.resetColor
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import org.lwjgl.opengl.GL11.GL_BLEND

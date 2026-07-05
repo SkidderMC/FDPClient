@@ -96,11 +96,11 @@ object RenderText : MinecraftInstance {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
         val width = Fonts.fontSemibold35.getStringWidth(string) / 2
-        RenderUtils.drawRect(-width - 1, -1, width + 1, Fonts.fontSemibold35.FONT_HEIGHT, Int.MIN_VALUE)
+        RenderPrimitives.drawRect(-width - 1, -1, width + 1, Fonts.fontSemibold35.FONT_HEIGHT, Int.MIN_VALUE)
         Fonts.fontSemibold35.drawString(string, -width.toFloat(), 1.5f, Color.WHITE.rgb, true)
 
         RenderUtils.resetCaps()
-        RenderUtils.resetColor()
+        RenderColor.resetColor()
         glPopMatrix()
     }
 

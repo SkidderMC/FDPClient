@@ -14,7 +14,7 @@ import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.withAlpha
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
+import net.ccbluex.liquidbounce.utils.render.RenderColor.glColor
 import net.minecraft.entity.Entity
 import org.lwjgl.opengl.GL11.*
 import java.awt.Color

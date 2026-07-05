@@ -27,9 +27,11 @@ open class Configurable(
     var groupExpanded: Boolean = true
 
     fun addValue(value: Value<*>) = apply {
-        value.owner?.takeIf { it !== this }?.removeValue(value)
         val list = get()
-        if (value !in list) list.add(value)
+        if (value in list) return@apply
+
+        value.owner?.takeIf { it !== this }?.removeValue(value)
+        list.add(value)
         value.owner = this
     }
 

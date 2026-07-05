@@ -69,28 +69,36 @@ object ModuleRegistryValidator {
     }
 
     private fun validateLeaf(value: Value<*>, path: String, errors: MutableList<String>) {
-        val valid = when (value) {
-            is IntValue -> value.get() in value.range
-            is LongValue -> value.get() in value.range
-            is FloatValue -> isValid(value)
-            is DoubleValue -> isValid(value)
-            is BlockValue -> value.get() in value.range
-            is ListValue -> value.get() in value
-            is IntRangeValue -> isValid(value)
-            is LongRangeValue -> isValid(value)
-            is FloatRangeValue -> isValid(value)
-            is DoubleRangeValue -> isValid(value)
-            else -> true
-        }
+        val valid = validateScalar(value) ?: validateComposite(value) ?: true
 
         if (!valid) {
             errors += "$path has invalid default/current value '${value.get()}'"
         }
     }
 
-    private fun isValid(value: FloatValue) = value.get().isFinite() && value.get() in value.range
+    private fun validateScalar(value: Value<*>): Boolean? =
+        when (value) {
+            is IntValue -> value.get() in value.range
+            is LongValue -> value.get() in value.range
+            is FloatValue -> value.get().isFinite() && value.get() in value.range
+            is DoubleValue -> value.get().isFinite() && value.get() in value.range
+            is BlockValue -> value.get() in value.range
+            is ListValue -> value.get() in value
+            else -> null
+        }
 
-    private fun isValid(value: DoubleValue) = value.get().isFinite() && value.get() in value.range
+    private fun validateComposite(value: Value<*>): Boolean? =
+        when (value) {
+            is IntRangeValue -> isValid(value)
+            is LongRangeValue -> isValid(value)
+            is FloatRangeValue -> isValid(value)
+            is DoubleRangeValue -> isValid(value)
+            is Vec2Value -> value.get().size == 2 && value.get().all(Double::isFinite)
+            is Vec3Value -> value.get().size == 3 && value.get().all(Double::isFinite)
+            is CurveValue -> value.get().size >= 2 &&
+                value.get().all { it.isFinite() && it in 0.0..1.0 }
+            else -> null
+        }
 
     private fun isValid(value: IntRangeValue) = value.get().first <= value.get().last &&
         value.get().first in value.range && value.get().last in value.range

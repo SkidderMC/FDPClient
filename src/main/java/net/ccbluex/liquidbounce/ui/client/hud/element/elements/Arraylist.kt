@@ -25,7 +25,7 @@ import net.ccbluex.liquidbounce.utils.render.ColorUtils.fade
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.withAlpha
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.deltaTime
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawImage
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
+import net.ccbluex.liquidbounce.utils.render.RenderPrimitives.drawRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedRect
 import net.ccbluex.liquidbounce.utils.animations.AnimationUtil
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextFloat

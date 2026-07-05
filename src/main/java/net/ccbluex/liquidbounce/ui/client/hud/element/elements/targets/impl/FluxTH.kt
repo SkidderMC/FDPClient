@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Targets
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.TargetStyle
 import net.ccbluex.liquidbounce.utils.extensions.skin
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.*
 import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.GL11
 import java.awt.Color
@@ -23,14 +23,14 @@ class FluxTH(inst: Targets) : TargetStyle("Flux", inst, true) {
             .toFloat()
 
         // draw background
-        RenderUtils.drawRect(0F, 0F, width, 34F, Color(40, 40, 40).rgb)
-        RenderUtils.drawRect(2F, 22F, width - 2F, 24F, Color.BLACK.rgb)
-        RenderUtils.drawRect(2F, 28F, width - 2F, 30F, Color.BLACK.rgb)
+        RenderPrimitives.drawRect(0F, 0F, width, 34F, Color(40, 40, 40).rgb)
+        RenderPrimitives.drawRect(2F, 22F, width - 2F, 24F, Color.BLACK.rgb)
+        RenderPrimitives.drawRect(2F, 28F, width - 2F, 30F, Color.BLACK.rgb)
 
         // draw bars
-        RenderUtils.drawRect(2F, 22F, 2 + (easingHP / entity.maxHealth) * (width - 4), 24F, Color(231, 182, 0).rgb)
-        RenderUtils.drawRect(2F, 22F, 2 + (getHealth(entity) / entity.maxHealth) * (width - 4), 24F, Color(0, 224, 84).rgb)
-        RenderUtils.drawRect(2F, 28F, 2 + (entity.totalArmorValue / 20F) * (width - 4), 30F, Color(77, 128, 255).rgb)
+        RenderPrimitives.drawRect(2F, 22F, 2 + (easingHP / entity.maxHealth) * (width - 4), 24F, Color(231, 182, 0).rgb)
+        RenderPrimitives.drawRect(2F, 22F, 2 + (getHealth(entity) / entity.maxHealth) * (width - 4), 24F, Color(0, 224, 84).rgb)
+        RenderPrimitives.drawRect(2F, 28F, 2 + (entity.totalArmorValue / 20F) * (width - 4), 30F, Color(77, 128, 255).rgb)
 
         // draw text
         Fonts.fontSemibold40.drawString(entity.name, 22, 3, Color.WHITE.rgb)

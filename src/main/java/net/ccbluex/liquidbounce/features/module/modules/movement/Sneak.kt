@@ -83,7 +83,7 @@ object Sneak : Module("Sneak", Category.MOVEMENT, Category.SubCategory.MOVEMENT_
     }
 
     override fun onDisable() {
-        val player = mc.thePlayer ?: return
+        val player = mc.thePlayer
 
         when (mode.lowercase()) {
             "legit" -> {
@@ -92,7 +92,9 @@ object Sneak : Module("Sneak", Category.MOVEMENT, Category.SubCategory.MOVEMENT_
                 }
             }
 
-            "vanilla", "switch", "minesecure" -> sendPacket(C0BPacketEntityAction(player, STOP_SNEAKING))
+            "vanilla", "switch", "minesecure" -> if (player != null) {
+                sendPacket(C0BPacketEntityAction(player, STOP_SNEAKING))
+            }
         }
         sneaking = false
     }

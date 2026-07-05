@@ -10,13 +10,13 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonSyntaxException
 import me.liuli.elixir.account.CrackedAccount
 import me.liuli.elixir.account.MinecraftAccount
-import me.liuli.elixir.account.MojangAccount
 import me.liuli.elixir.manage.AccountSerializer.fromJson
 import me.liuli.elixir.manage.AccountSerializer.toJson
 import net.ccbluex.liquidbounce.file.FileConfig
 import net.ccbluex.liquidbounce.file.FileManager.PRETTY_GSON
 import net.ccbluex.liquidbounce.utils.io.readJson
 import net.ccbluex.liquidbounce.utils.io.writeTextAtomic
+import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import java.io.*
 
 class AccountsConfig(file: File) : FileConfig(file) {
@@ -37,7 +37,12 @@ class AccountsConfig(file: File) : FileConfig(file) {
             val accountObject = accountElement.asJsonObject
             try {
                 // Import Elixir account format
-                accounts += fromJson(accountElement.asJsonObject)
+                val account = fromJson(accountElement.asJsonObject)
+                if (account.javaClass.simpleName == LEGACY_MOJANG_ACCOUNT) {
+                    LOGGER.warn("Skipping an unsupported legacy Mojang account from ${file.name}.")
+                } else {
+                    accounts += account
+                }
             } catch (e: JsonSyntaxException) {
                 importLegacyAccount(accountObject)?.let(accounts::add)
             } catch (e: IllegalStateException) {
@@ -72,11 +77,8 @@ class AccountsConfig(file: File) : FileConfig(file) {
                 this.name = inGameName ?: name
             }
         } else {
-            MojangAccount().apply {
-                email = name
-                this.name = inGameName ?: name
-                this.password = password
-            }
+            LOGGER.warn("Skipping unsupported password-based account '$name' from legacy account config.")
+            null
         }
     }
 
@@ -109,20 +111,6 @@ class AccountsConfig(file: File) : FileConfig(file) {
 
     /**
      * Add account to config
-     *
-     * @param name     of account
-     * @param password of password
-     */
-    fun addMojangAccount(name: String, password: String) {
-        val mojangAccount = MojangAccount()
-        mojangAccount.name = name
-        mojangAccount.password = password
-
-        if (!accountExists(mojangAccount)) accounts += mojangAccount
-    }
-
-    /**
-     * Add account to config
      */
     fun addAccount(account: MinecraftAccount) = accounts.add(account)
 
@@ -150,4 +138,8 @@ class AccountsConfig(file: File) : FileConfig(file) {
      * Clear all minecraft accounts from alt array
      */
     fun clearAccounts() = accounts.clear()
+
+    private companion object {
+        const val LEGACY_MOJANG_ACCOUNT = "MojangAccount"
+    }
 }

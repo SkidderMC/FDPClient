@@ -225,13 +225,13 @@ object RenderEffects : MinecraftInstance {
      */
     @JvmStatic
     fun fakeCircleGlow(posX: Float, posY: Float, radius: Float, color: Color, maxAlpha: Float) {
-        RenderUtils.setAlphaLimit(0f)
+        RenderHelper.setAlphaLimit(0f)
         glShadeModel(GL_SMOOTH)
         RenderUtils.setup2DRenderingGLUtil {
             RenderUtils.renderGLUtil(GL_TRIANGLE_FAN) {
-                RenderUtils.color(color.rgb, maxAlpha)
+                RenderColor.color(color.rgb, maxAlpha)
                 glVertex2d(posX.toDouble(), posY.toDouble())
-                RenderUtils.color(color.rgb, 0f)
+                RenderColor.color(color.rgb, 0f)
                 for (i in 0..100) {
                     val angle = (i * 0.06283) + 3.1415
                     val x2 = sin(angle) * radius
@@ -241,7 +241,7 @@ object RenderEffects : MinecraftInstance {
             }
         }
         glShadeModel(GL_FLAT)
-        RenderUtils.setAlphaLimit(1f)
+        RenderHelper.setAlphaLimit(1f)
     }
 
     /**

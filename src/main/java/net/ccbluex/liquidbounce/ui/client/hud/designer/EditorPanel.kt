@@ -23,15 +23,15 @@ import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.blendColors
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.minecraftRed
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.withAlpha
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.*
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBorderedRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawGradientRoundedRect
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
+import net.ccbluex.liquidbounce.utils.render.RenderPrimitives.drawRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedCornerRect
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawTexture
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.makeScissorBox
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.updateTextureCache
-import net.ccbluex.liquidbounce.utils.timing.WaitTickUtils
+import net.ccbluex.liquidbounce.utils.render.RenderTexture.drawTexture
+import net.ccbluex.liquidbounce.utils.render.RenderHelper.makeScissorBox
+import net.ccbluex.liquidbounce.utils.render.RenderTexture.updateTextureCache
+import net.ccbluex.liquidbounce.event.async.TickScheduler
 import net.ccbluex.liquidbounce.utils.ui.EditableText
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.util.MathHelper
@@ -847,8 +847,8 @@ class EditorPanel(private val hudDesigner: GuiHudDesigner, var x: Int, var y: In
 
                             value.changeValue(finalColor)
 
-                            if (!WaitTickUtils.hasScheduled(this)) {
-                                WaitTickUtils.conditionalSchedule(this, 10) {
+                            if (!TickScheduler.hasScheduled(this)) {
+                                TickScheduler.scheduleConditional(this, 10) {
                                     (value.lastChosenSlider == null).also { if (it) saveConfig(valuesConfig) }
                                 }
                             }

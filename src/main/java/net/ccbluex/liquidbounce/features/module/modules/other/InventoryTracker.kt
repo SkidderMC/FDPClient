@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
+import net.ccbluex.liquidbounce.utils.render.RenderPrimitives.drawRect
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack

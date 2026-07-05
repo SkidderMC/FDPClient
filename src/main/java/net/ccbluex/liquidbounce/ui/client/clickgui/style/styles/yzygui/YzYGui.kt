@@ -18,7 +18,7 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.Pan
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.ccbluex.liquidbounce.utils.render.Pair
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
+import net.ccbluex.liquidbounce.utils.render.RenderEffects.drawBloom
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawImage
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.util.ResourceLocation
@@ -138,9 +138,7 @@ class YzYGui(private val clickGui: ClickGUIModule) : GuiScreen() {
                 }
             }
 
-            if (hudIcon != null) {
-                drawImage(hudIcon, 9, height - 41, 32, 32)
-            }
+            drawImage(hudIcon, 9, height - 41, 32, 32)
 
             val delta = (System.currentTimeMillis() - lastMS).toInt()
             panels.forEach {

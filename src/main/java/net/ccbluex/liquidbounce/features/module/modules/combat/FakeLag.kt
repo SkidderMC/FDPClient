@@ -18,7 +18,8 @@ import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.client.pos
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
+import net.ccbluex.liquidbounce.utils.render.Render3D
+import net.ccbluex.liquidbounce.utils.render.RenderColor.glColor
 import net.ccbluex.liquidbounce.utils.rotation.Rotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
@@ -103,9 +104,14 @@ object FakeLag : Module("FakeLag", Category.COMBAT, Category.SubCategory.COMBAT_
     private var renderData = ModelRenderData(Vec3_ZERO, Rotation.ZERO)
 
     override fun onDisable() {
-        if (mc.thePlayer == null) return
-
-        blink()
+        if (mc.thePlayer == null) {
+            synchronized(packetQueue) { packetQueue.clear() }
+            synchronized(positions) { positions.clear() }
+        } else {
+            blink()
+        }
+        ignoreWholeTick = false
+        wasNearEnemy = false
     }
 
     val onPacket = handler<PacketEvent> { event ->
@@ -296,7 +302,7 @@ object FakeLag : Module("FakeLag", Category.COMBAT, Category.SubCategory.COMBAT_
         // see exactly where your server-side hitbox is while lagging.
         if (serverPosBox) {
             positions.firstOrNull()?.pos?.let { serverPos ->
-                RenderUtils.drawAxisAlignedBB(player.hitBox.offset(serverPos - player.positionVector), serverPosBoxColor)
+                Render3D.drawAxisAlignedBB(player.hitBox.offset(serverPos - player.positionVector), serverPosBoxColor)
             }
         }
 

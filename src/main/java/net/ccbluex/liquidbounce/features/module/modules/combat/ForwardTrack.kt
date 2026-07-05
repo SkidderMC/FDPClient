@@ -14,7 +14,7 @@ import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isSelected
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBacktrackBox
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
+import net.ccbluex.liquidbounce.utils.render.RenderColor.glColor
 import net.minecraft.client.renderer.GlStateManager.color
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase

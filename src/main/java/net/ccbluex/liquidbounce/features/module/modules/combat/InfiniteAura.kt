@@ -20,7 +20,7 @@ import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.pathfinding.PathUtils
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.Render3D
 import net.ccbluex.liquidbounce.utils.rotation.*
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.currentRotation
 import net.ccbluex.liquidbounce.utils.rotation.point.PointTracker
@@ -709,7 +709,7 @@ object InfiniteAura : Module(
 
                 val offsetBox = box.offset(it.position - renderManager.renderPos)
 
-                RenderUtils.drawAxisAlignedBB(offsetBox, renderBoxColor.color(a = transparency.roundToInt()))
+                Render3D.drawAxisAlignedBB(offsetBox, renderBoxColor.color(a = transparency.roundToInt()))
 
                 timestamp > fadeSeconds
             }
@@ -736,7 +736,7 @@ object InfiniteAura : Module(
         val renderPosY = mc.renderManager.viewerPosY
         val renderPosZ = mc.renderManager.viewerPosZ
 
-        RenderUtils.drawAxisAlignedBB(
+        Render3D.drawAxisAlignedBB(
             box.offset(-renderPosX, -renderPosY, -renderPosZ),
             aimPointBoxColor
         )

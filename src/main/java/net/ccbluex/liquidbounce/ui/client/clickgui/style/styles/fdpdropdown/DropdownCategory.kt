@@ -16,7 +16,7 @@ import net.ccbluex.liquidbounce.utils.animations.Direction
 import net.ccbluex.liquidbounce.utils.animations.impl.DecelerateAnimation
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.normal.Main
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.normal.Screen
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.*
 import net.ccbluex.liquidbounce.utils.render.StencilUtils
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance.Companion.mc
@@ -184,7 +184,7 @@ class DropdownCategory(
         }
 
         // We'll see if user is hovering over module list
-        val hoveringMods = RenderUtils.isHovering(
+        val hoveringMods = RenderHelper.isHovering(
             x, y + categoryRectHeight, rectWidth, allowedHeight, mouseX, mouseY
         )
 
@@ -236,7 +236,7 @@ class DropdownCategory(
         if (search.active && visibleModuleRects().isEmpty()) return
 
         // Let user drag top bar
-        val canDrag = RenderUtils.isHovering(
+        val canDrag = RenderHelper.isHovering(
             category.drag.x, category.drag.y, rectWidth, categoryRectHeight, mouseX, mouseY
         )
 

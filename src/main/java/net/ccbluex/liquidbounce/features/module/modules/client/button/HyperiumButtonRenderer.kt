@@ -9,13 +9,13 @@ import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.buttonShadowValue
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.uiEffectValue
 import net.ccbluex.liquidbounce.utils.render.shader.UIEffectRenderer.drawShadowWithCustomAlpha
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.renderer.GlStateManager
 import java.awt.Color
 import kotlin.math.max
 import kotlin.math.min
+import net.ccbluex.liquidbounce.utils.render.RenderPrimitives
 
 class HyperiumButtonRenderer(button: GuiButton) : AbstractButtonRenderer(button) {
     override fun render(mouseX: Int, mouseY: Int, mc: Minecraft) {
@@ -29,7 +29,7 @@ class HyperiumButtonRenderer(button: GuiButton) : AbstractButtonRenderer(button)
         val hoverInc = (System.currentTimeMillis().toInt() - prevDeltaTime) / 2
         var fading = 100
         fading = if (hovered) min(100, fading + hoverInc) else max(0, hoverInc - hoverInc)
-        RenderUtils.drawRect(button.xPosition.toFloat(), button.yPosition.toFloat(), button.xPosition.toFloat() + button.width.toFloat(), button.yPosition.toFloat() + button.height.toFloat(), Color(0, 0, 0, (100 - (fading / 2))).rgb)
+        RenderPrimitives.drawRect(button.xPosition.toFloat(), button.yPosition.toFloat(), button.xPosition.toFloat() + button.width.toFloat(), button.yPosition.toFloat() + button.height.toFloat(), Color(0, 0, 0, (100 - (fading / 2))).rgb)
         if (hud.handleEvents() && uiEffectValue && buttonShadowValue) { drawShadowWithCustomAlpha(button.xPosition.toFloat(), button.yPosition.toFloat(), button.width.toFloat(), button.height.toFloat(), 240f) }
     }
 }

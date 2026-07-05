@@ -9,12 +9,12 @@ import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.modules.other.NoSlotSet
 import net.ccbluex.liquidbounce.features.module.modules.visual.SilentHotbarModule
 import net.ccbluex.liquidbounce.features.module.modules.other.ChestAura
+import net.ccbluex.liquidbounce.event.async.TickScheduler
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.extensions.lerpWith
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
-import net.ccbluex.liquidbounce.utils.timing.WaitTickUtils
 import net.minecraft.block.BlockBush
 import net.minecraft.client.gui.inventory.GuiInventory
 import net.minecraft.init.Blocks
@@ -386,11 +386,14 @@ object InventoryUtils : MinecraftInstance, Listenable {
                 val previousSlot = SilentHotbar.currentSlot
 
                 if (NoSlotSet.handleEvents()) {
-                    WaitTickUtils.conditionalSchedule {
+                    TickScheduler.cancel(NoSlotSet)
+                    TickScheduler.scheduleConditional(NoSlotSet) {
+                        if (!NoSlotSet.handleEvents()) return@scheduleConditional true
+
                         if (SilentHotbar.currentSlot == packet.heldItemHotbarIndex) {
                             mc.thePlayer?.inventory?.currentItem = previousSlot
 
-                            return@conditionalSchedule true
+                            return@scheduleConditional true
                         }
 
                         false

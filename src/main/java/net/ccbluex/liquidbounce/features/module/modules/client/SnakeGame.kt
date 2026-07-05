@@ -16,7 +16,7 @@ import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextInt
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBorder
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawGradientRect
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
+import net.ccbluex.liquidbounce.utils.render.RenderPrimitives.drawRect
 import net.minecraft.client.gui.ScaledResolution
 import org.lwjgl.input.Keyboard.*
 import java.awt.Color

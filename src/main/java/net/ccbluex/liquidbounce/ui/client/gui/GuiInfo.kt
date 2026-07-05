@@ -11,7 +11,7 @@ import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils
 import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils.donate
 import net.ccbluex.liquidbounce.utils.io.URLRegistryUtils
 import net.ccbluex.liquidbounce.utils.io.MiscUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
+import net.ccbluex.liquidbounce.utils.render.RenderEffects.drawBloom
 import net.ccbluex.liquidbounce.utils.ui.AbstractScreen
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen

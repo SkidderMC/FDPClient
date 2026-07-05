@@ -9,10 +9,10 @@ import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.config.ColorValue
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.Panel
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.element.PanelElement
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.*
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawTexture
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.updateTextureCache
+import net.ccbluex.liquidbounce.utils.render.RenderTexture.drawTexture
+import net.ccbluex.liquidbounce.utils.render.RenderTexture.updateTextureCache
 import net.ccbluex.liquidbounce.utils.ui.EditableText
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.BlackStyle.chosenText
 import java.awt.Color
@@ -88,7 +88,7 @@ class ColorElement(
         val previewY2 = previewY1 + previewSize
 
         // Main color preview
-        RenderUtils.drawRect(previewX1.toFloat(), previewY1.toFloat(), previewX2.toFloat(), previewY2.toFloat(), currentColor.rgb)
+        RenderPrimitives.drawRect(previewX1.toFloat(), previewY1.toFloat(), previewX2.toFloat(), previewY2.toFloat(), currentColor.rgb)
         RenderUtils.drawBorder(
             previewX1.toFloat(), previewY1.toFloat(), previewX2.toFloat(), previewY2.toFloat(),
             1f, Color(0, 0, 0, 140).rgb
@@ -98,7 +98,7 @@ class ColorElement(
         val rainbowPreviewX2 = previewX1 - previewSize - 2
         val rainbowPreviewX1 = rainbowPreviewX2 - previewSize
         if (rainbowPreviewX1 > x + 4) {
-            RenderUtils.drawRect(
+            RenderPrimitives.drawRect(
                 rainbowPreviewX1.toFloat(), previewY1.toFloat(),
                 rainbowPreviewX2.toFloat(), previewY2.toFloat(),
                 ColorUtils.rainbow(setting.opacitySliderY).rgb
@@ -143,7 +143,7 @@ class ColorElement(
             // Draw semi-transparent background to prevent overlap
             val pickerBackgroundY = y + 30 + extraOptionsHeight.toInt()
             val pickerBackgroundHeight = colorPickerHeight + 20
-            RenderUtils.drawRect(
+            RenderPrimitives.drawRect(
                 (x + 2).toFloat(),
                 pickerBackgroundY.toFloat(),
                 (x + width - 2).toFloat(),
@@ -189,7 +189,7 @@ class ColorElement(
                 )
             } catch (e: Exception) {
                 // Fallback: draw solid color rectangle if texture fails
-                RenderUtils.drawRect(
+                RenderPrimitives.drawRect(
                     colorPickerStartX.toFloat(), colorPickerStartY.toFloat(),
                     colorPickerEndX.toFloat(), colorPickerEndY.toFloat(),
                     Color.HSBtoRGB(hue, 1.0f, 1.0f)
@@ -233,7 +233,7 @@ class ColorElement(
                 for (y in 0 until hueSliderHeight) {
                     val localHue = y / hueSliderHeight.toFloat()
                     val rgb = Color.HSBtoRGB(localHue, 1.0f, 1.0f)
-                    RenderUtils.drawRect(
+                    RenderPrimitives.drawRect(
                         hueSliderX.toFloat(), (colorPickerStartY + y).toFloat(),
                         (hueSliderX + hueSliderWidth).toFloat(), (colorPickerStartY + y + 1).toFloat(),
                         rgb
@@ -274,7 +274,7 @@ class ColorElement(
                 for (y in 0 until hueSliderHeight) {
                     val alpha = ((1 - y.toFloat() / hueSliderHeight.toFloat()) * 255).roundToInt()
                     val color = Color(currentColor.red, currentColor.green, currentColor.blue, alpha)
-                    RenderUtils.drawRect(
+                    RenderPrimitives.drawRect(
                         opacityStartX.toFloat(), (colorPickerStartY + y).toFloat(),
                         opacityEndX.toFloat(), (colorPickerStartY + y + 1).toFloat(),
                         color.rgb

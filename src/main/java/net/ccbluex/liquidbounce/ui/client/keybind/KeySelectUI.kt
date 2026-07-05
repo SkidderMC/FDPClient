@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.handler.macro.Macro
 import net.ccbluex.liquidbounce.handler.macro.MacroManager
 import net.ccbluex.liquidbounce.ui.font.Fonts.fontSemibold35
 import net.ccbluex.liquidbounce.ui.font.Fonts.fontSemibold40
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
+import net.ccbluex.liquidbounce.utils.render.RenderPrimitives.drawRect
 import net.minecraft.util.ChatAllowedCharacters
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11.*

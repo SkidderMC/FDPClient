@@ -48,13 +48,13 @@ object RenderEntity : MinecraftInstance {
         glTranslated(x, y + 2, z)
         glRotatef(-entity.width, 0.0f, 1.0f, 0.0f)
 
-        RenderUtils.glColor(color)
+        RenderColor.glColor(color)
         RenderUtils.enableSmoothLine(1.5f)
 
         val c = Cylinder()
         glRotatef(-90.0f, 1.0f, 0.0f, 0.0f)
         c.drawStyle = 100012
-        RenderUtils.glColor(if ((entity.hurtTime <= 0)) Color(80, 255, 80, 200) else Color(255, 0, 0, 200))
+        RenderColor.glColor(if ((entity.hurtTime <= 0)) Color(80, 255, 80, 200) else Color(255, 0, 0, 200))
         c.draw(0.0f, radius, 0.3f, side, 1)
         c.drawStyle = 100012
 
@@ -65,7 +65,7 @@ object RenderEntity : MinecraftInstance {
         c.drawStyle = 100011
 
         glTranslated(0.0, 0.0, -0.3)
-        RenderUtils.glColor(color)
+        RenderColor.glColor(color)
         c.draw(0.0f, radius, 0.3f, side, 1)
         c.drawStyle = 100011
 
@@ -117,11 +117,11 @@ object RenderEntity : MinecraftInstance {
                 .getGradientOffset(colorPrimary, colorSecondary, t)
                 .withAlpha(255)
 
-            RenderUtils.glColor(grad.red, grad.green, grad.blue, grad.alpha)
+            RenderColor.glColor(grad.red, grad.green, grad.blue, grad.alpha)
 
             glVertex3d(posX, y, posZ)
             y += entity.height / precision
-            RenderUtils.glColor(0, 0, 0, 0)
+            RenderColor.glColor(0, 0, 0, 0)
         }
 
         glEnd()
@@ -158,11 +158,11 @@ object RenderEntity : MinecraftInstance {
                     .getGradientOffset(colorPrimary, colorSecondary, t2)
                     .withAlpha(255)
 
-                RenderUtils.glColor(grad2.red, grad2.green, grad2.blue, grad2.alpha)
+                RenderColor.glColor(grad2.red, grad2.green, grad2.blue, grad2.alpha)
 
                 glVertex3d(posX, y, posZ)
                 y -= entity.height / precision
-                RenderUtils.glColor(0, 0, 0, 0)
+                RenderColor.glColor(0, 0, 0, 0)
             }
 
             glEnd()
@@ -292,7 +292,7 @@ object RenderEntity : MinecraftInstance {
         glLineWidth((radius * 8f).toFloat())
         glBegin(GL_LINE_STRIP)
         for (i in 0..360 step 10) {
-            RenderUtils.glColor(themeTextColor)
+            RenderColor.glColor(themeTextColor)
             glVertex3d(x - sin(i * Math.PI / 180F) * radius, y, z + cos(i * Math.PI / 180F) * radius)
         }
         glEnd()

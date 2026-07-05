@@ -15,7 +15,7 @@ import net.ccbluex.liquidbounce.features.module.modules.client.Teams
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isSelected
 import net.ccbluex.liquidbounce.utils.client.EntityLookup
 import net.ccbluex.liquidbounce.utils.extensions.*
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
+import net.ccbluex.liquidbounce.utils.render.RenderColor.glColor
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.isEntityHeightVisible
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase

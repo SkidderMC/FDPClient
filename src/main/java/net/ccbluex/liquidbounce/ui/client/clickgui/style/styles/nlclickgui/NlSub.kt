@@ -4,7 +4,7 @@ import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Category.SubCategory
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.NeverloseGui.Companion.getInstance
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.scissor
+import net.ccbluex.liquidbounce.utils.render.RenderHelper.scissor
 import net.ccbluex.liquidbounce.utils.animations.Animation
 import net.ccbluex.liquidbounce.utils.animations.Direction
 import net.ccbluex.liquidbounce.utils.animations.impl.EaseInOutQuad

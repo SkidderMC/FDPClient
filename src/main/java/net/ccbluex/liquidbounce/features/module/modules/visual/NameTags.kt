@@ -21,7 +21,7 @@ import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.disableGlCap
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawExhiEnchants
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawTexturedModalRect
+import net.ccbluex.liquidbounce.utils.render.RenderTexture.drawTexturedModalRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.enableGlCap
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.quickDrawBorderedRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.quickDrawRect

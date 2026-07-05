@@ -19,8 +19,8 @@ import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.withAlpha
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawCone
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawConesForEntities
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.glStateManagerColor
+import net.ccbluex.liquidbounce.utils.render.RenderColor.glColor
+import net.ccbluex.liquidbounce.utils.render.RenderColor.glStateManagerColor
 import net.ccbluex.liquidbounce.utils.render.drawWithTessellatorWorldRenderer
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.isEntityHeightVisible
 import net.minecraft.client.renderer.GlStateManager

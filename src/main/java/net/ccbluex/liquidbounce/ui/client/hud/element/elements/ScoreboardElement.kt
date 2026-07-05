@@ -20,10 +20,10 @@ import net.ccbluex.liquidbounce.utils.kotlin.removeEach
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.withAlpha
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
+import net.ccbluex.liquidbounce.utils.render.RenderPrimitives.drawRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedRectInt
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.withClipping
+import net.ccbluex.liquidbounce.utils.render.StencilUtils.withClipping
 import net.minecraft.scoreboard.ScoreObjective
 import net.minecraft.scoreboard.ScorePlayerTeam
 import net.minecraft.util.EnumChatFormatting

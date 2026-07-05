@@ -17,6 +17,7 @@ import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura.target
 import net.ccbluex.liquidbounce.utils.movement.MovementUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.RenderColor
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.util.BlockPos
@@ -212,7 +213,7 @@ object TargetStrafe : Module("TargetStrafe", Category.MOVEMENT, Category.SubCate
 
             val rad = radius
             for (i in 0..10) {
-                RenderUtils.glColor(getSegmentColor(i))
+                RenderColor.glColor(getSegmentColor(i))
 
                 val angle3 = i * twoPi / 3.0
                 val angle4 = i * twoPi / 4.0
@@ -274,7 +275,7 @@ object TargetStrafe : Module("TargetStrafe", Category.MOVEMENT, Category.SubCate
                 GL11.glPointSize(7.0f)
                 GL11.glBegin(GL11.GL_POINTS)
                 for (i in 0..90) {
-                    RenderUtils.color(getSegmentColor(i))
+                    RenderColor.color(getSegmentColor(i))
                     val angle = i * circleStep
                     GL11.glVertex3d(
                         x + radius * cos(angle),
@@ -286,7 +287,7 @@ object TargetStrafe : Module("TargetStrafe", Category.MOVEMENT, Category.SubCate
             } else {
                 GL11.glBegin(GL11.GL_LINE_STRIP)
                 for (i in 0..90) {
-                    RenderUtils.color(getSegmentColor(i))
+                    RenderColor.color(getSegmentColor(i))
                     val angle = i * circleStep
                     GL11.glVertex3d(
                         x + radius * cos(angle),

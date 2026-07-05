@@ -14,10 +14,10 @@ import net.ccbluex.liquidbounce.utils.animations.Direction
 import net.ccbluex.liquidbounce.utils.animations.impl.DecelerateAnimation
 import net.ccbluex.liquidbounce.utils.animations.impl.EaseInOutQuad
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.normal.Main
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.resetColor
+import net.ccbluex.liquidbounce.utils.render.*
+import net.ccbluex.liquidbounce.utils.render.RenderColor.resetColor
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawClickGuiArrow
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.scissor
+import net.ccbluex.liquidbounce.utils.render.RenderHelper.scissor
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
@@ -64,14 +64,14 @@ class ModuleRect(val module: Module) : Component() {
 
         val accentIndex = 0
         val accent = Color(generateColor(accentIndex).rgb)
-        val accentWithAlpha = RenderUtils.applyOpacity(accent, alphaAnimation / 255f)
+        val accentWithAlpha = RenderColor.applyOpacity(accent, alphaAnimation / 255f)
 
-        val hoveringModule = RenderUtils.isHovering(x, y, width, height, mouseX, mouseY)
+        val hoveringModule = RenderHelper.isHovering(x, y, width, height, mouseX, mouseY)
         hoverAnimation.direction = if (hoveringModule) Direction.FORWARDS else Direction.BACKWARDS
 
-        val hoveredRectColorInt = RenderUtils.interpolateColor(
+        val hoveredRectColorInt = RenderColor.interpolateColor(
             baseRectColor.rgb,
-            RenderUtils.brighter(baseRectColor, 0.8f).rgb,
+            RenderColor.brighter(baseRectColor, 0.8f).rgb,
             hoverAnimation.output.toFloat()
         )
         RenderUtils.drawGradientRect(
@@ -81,7 +81,7 @@ class ModuleRect(val module: Module) : Component() {
             0F
         )
 
-        val accentOverlayColor = RenderUtils.applyOpacity(accentWithAlpha, toggleAnimation.output.toFloat()).rgb
+        val accentOverlayColor = RenderColor.applyOpacity(accentWithAlpha, toggleAnimation.output.toFloat()).rgb
         RenderUtils.drawGradientRect(
             x, y, x + width, y + height,
             accentOverlayColor,
@@ -107,7 +107,7 @@ class ModuleRect(val module: Module) : Component() {
         } else {
             val arrowSize = 6f
             arrowAnimation.direction = if (module.expanded) Direction.FORWARDS else Direction.BACKWARDS
-            RenderUtils.setAlphaLimit(0f)
+            RenderHelper.setAlphaLimit(0f)
             resetColor()
             RenderUtils.drawClickGuiArrow(
                 x + width - (arrowSize + 5),
@@ -133,8 +133,8 @@ class ModuleRect(val module: Module) : Component() {
                 val accentAlpha = (0.85 * toggleAnimation.output).toFloat() * (alphaAnimation / 255f)
                 RenderUtils.drawGradientRect(
                     x, y + height, x + width, y + height + expandedHeight * height,
-                    RenderUtils.applyOpacity(accentWithAlpha, accentAlpha).rgb,
-                    RenderUtils.applyOpacity(accentWithAlpha, accentAlpha / 2).rgb,
+                    RenderColor.applyOpacity(accentWithAlpha, accentAlpha).rgb,
+                    RenderColor.applyOpacity(accentWithAlpha, accentAlpha / 2).rgb,
                     0F
                 )
             }
@@ -150,7 +150,7 @@ class ModuleRect(val module: Module) : Component() {
             // animations colors
             if (settingAnimation?.isDone == false) {
                 GL11.glEnable(GL11.GL_SCISSOR_TEST)
-                RenderUtils.scissor(x.toDouble(), (y + height).toDouble(), width.toDouble(), expandedHeight * height)
+                RenderHelper.scissor(x.toDouble(), (y + height).toDouble(), width.toDouble(), expandedHeight * height)
                 settingComponents.drawScreen(mouseX, mouseY)
                 RenderUtils.drawGradientRect(
                     x, y + height, x + width, y + height + 6.0,
@@ -190,7 +190,7 @@ class ModuleRect(val module: Module) : Component() {
 
     fun mouseClicked(mouseX: Int, mouseY: Int, button: Int) {
         val hoveringModule = isClickable(y, panelLimitY) &&
-                RenderUtils.isHovering(x, y, width, height, mouseX, mouseY)
+                RenderHelper.isHovering(x, y, width, height, mouseX, mouseY)
         if (hoveringModule) {
             when (button) {
                 0 -> {

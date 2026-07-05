@@ -17,8 +17,8 @@ import net.ccbluex.liquidbounce.ui.font.GameFontRenderer
 import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils.getColor
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawTexturedModalRect
+import net.ccbluex.liquidbounce.utils.render.*
+import net.ccbluex.liquidbounce.utils.render.RenderTexture.drawTexturedModalRect
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.client.resources.I18n
@@ -221,21 +221,21 @@ class Effects(
                 max(10.0F, abs(data.potionAnimationX - 1.2F * state) * 15.0F) * 0.3
             ).toFloat()
 
-            RenderUtils.drawRect(
+            RenderPrimitives.drawRect(
                 0F,
                 data.translate.y,
                 120F,
                 data.translate.y + 30F,
                 bgColorOption.rgb
             )
-            RenderUtils.drawRect(
+            RenderPrimitives.drawRect(
                 0F,
                 data.translate.y,
                 data.potionAnimationX,
                 data.translate.y + 30F,
                 potionlpha(bgColorOption.rgb, 0.3F)
             )
-            RenderUtils.drawShadow(
+            RenderEffects.drawShadow(
                 0F,
                 data.translate.y.roundToInt().toFloat(),
                 120F,

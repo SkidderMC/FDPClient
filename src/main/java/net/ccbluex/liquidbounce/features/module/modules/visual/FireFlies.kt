@@ -16,7 +16,7 @@ import net.ccbluex.liquidbounce.utils.render.ColorUtils.applyOpacity
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.darker
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.getAlphaFromColor
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.interpolateColor
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.color
+import net.ccbluex.liquidbounce.utils.render.RenderColor.color
 import net.ccbluex.liquidbounce.event.handler
 import net.minecraft.client.renderer.GlStateManager.resetColor
 import net.minecraft.client.renderer.GlStateManager.tryBlendFuncSeparate

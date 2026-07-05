@@ -13,7 +13,7 @@ import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.color
+import net.ccbluex.liquidbounce.utils.render.RenderColor.color
 import net.minecraft.client.renderer.GlStateManager.resetColor
 import net.minecraft.client.renderer.GlStateManager.tryBlendFuncSeparate
 import net.minecraft.entity.EntityLivingBase

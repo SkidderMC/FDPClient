@@ -9,10 +9,7 @@ import net.ccbluex.liquidbounce.file.gson.decodeJson
 import net.ccbluex.liquidbounce.utils.io.AddHeaderInterceptor
 import net.ccbluex.liquidbounce.utils.io.HttpClient
 import net.ccbluex.liquidbounce.utils.io.get
-import net.ccbluex.liquidbounce.utils.io.post
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
 
 private const val HARD_CODED_BRANCH = "legacy"
 
@@ -66,33 +63,4 @@ object ClientApi {
         }
     }
 
-    @Deprecated("Removed API")
-    fun reportSettings(branch: String = HARD_CODED_BRANCH, settingId: String): ReportResponse {
-        val url = "$API_V1_ENDPOINT/client/$branch/settings/report/$settingId"
-        client.get(url).use { response ->
-            if (!response.isSuccessful) error("Request failed: ${response.code}")
-            return response.body.charStream().decodeJson()
-        }
-    }
-
-    @Deprecated("Removed API")
-    fun uploadSettings(
-        branch: String = HARD_CODED_BRANCH,
-        name: RequestBody,
-        contributors: RequestBody,
-        settingsFile: MultipartBody.Part
-    ): UploadResponse {
-        val url = "$API_V1_ENDPOINT/client/$branch/settings/upload"
-        val requestBody = MultipartBody.Builder()
-            .setType(MultipartBody.FORM)
-            .addFormDataPart("name", null, name)
-            .addFormDataPart("contributors", null, contributors)
-            .addPart(settingsFile)
-            .build()
-
-        client.post(url, requestBody).use { response ->
-            if (!response.isSuccessful) error("Request failed: ${response.code}")
-            return response.body.charStream().decodeJson()
-        }
-    }
 }

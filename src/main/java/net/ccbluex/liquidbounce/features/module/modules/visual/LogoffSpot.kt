@@ -12,8 +12,8 @@ import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.client.ClientUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawAxisAlignedBB
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.renderNameTag
+import net.ccbluex.liquidbounce.utils.render.Render3D.drawAxisAlignedBB
+import net.ccbluex.liquidbounce.utils.render.RenderText.renderNameTag
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.Vec3
 import java.awt.Color

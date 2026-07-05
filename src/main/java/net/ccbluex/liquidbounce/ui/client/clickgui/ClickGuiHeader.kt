@@ -17,7 +17,7 @@ import net.ccbluex.liquidbounce.ui.font.fontmanager.GuiFontManager
 import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.io.MiscUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.*
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.ScaledResolution
 import org.lwjgl.input.Mouse
@@ -123,7 +123,7 @@ object ClickGuiHeader : MinecraftInstance {
         labels.forEachIndexed { i, (label, isSettings) ->
             val w = widths[i]
             val active = if (isSettings) settingsOpen else !settingsOpen
-            val hovered = RenderUtils.isHovering(x, y, w, height, mouseX, mouseY)
+            val hovered = RenderHelper.isHovering(x, y, w, height, mouseX, mouseY)
             val bg = when {
                 active -> accent
                 hovered -> Color(36, 38, 44)
@@ -173,7 +173,7 @@ object ClickGuiHeader : MinecraftInstance {
     }
 
     private fun drawModal(sr: ScaledResolution, sideGui: SideGui, parent: GuiScreen, mouseX: Int, mouseY: Int) {
-        RenderUtils.drawRect(0f, 0f, sr.scaledWidth.toFloat(), sr.scaledHeight.toFloat(), Color(0, 0, 0, 140).rgb)
+        RenderPrimitives.drawRect(0f, 0f, sr.scaledWidth.toFloat(), sr.scaledHeight.toFloat(), Color(0, 0, 0, 140).rgb)
 
         val pw = 340f
         val rowH = 40f
@@ -193,7 +193,7 @@ object ClickGuiHeader : MinecraftInstance {
         for (item in ITEMS) {
             val rowW = pw - 16f
             val rx = px + 8f
-            val hovered = RenderUtils.isHovering(rx, ry, rowW, rowH - 4f, mouseX, mouseY)
+            val hovered = RenderHelper.isHovering(rx, ry, rowW, rowH - 4f, mouseX, mouseY)
             if (hovered) RoundedUtil.drawRound(rx, ry, rowW, rowH - 4f, 4f, Color(255, 255, 255, 20))
 
             RoundedUtil.drawRound(rx + 6f, ry + 6f, 24f, 24f, 5f, accent)
@@ -220,7 +220,7 @@ object ClickGuiHeader : MinecraftInstance {
                 settingsOpen = false
                 return true
             }
-            if (!RenderUtils.isHovering(modal[0], modal[1], modal[2], modal[3], mouseX, mouseY)) {
+            if (!RenderHelper.isHovering(modal[0], modal[1], modal[2], modal[3], mouseX, mouseY)) {
                 settingsOpen = false
             }
             return true
@@ -228,5 +228,5 @@ object ClickGuiHeader : MinecraftInstance {
         return false
     }
 
-    private fun inside(b: Box, mouseX: Int, mouseY: Int) = RenderUtils.isHovering(b.x, b.y, b.w, b.h, mouseX, mouseY)
+    private fun inside(b: Box, mouseX: Int, mouseY: Int) = RenderHelper.isHovering(b.x, b.y, b.w, b.h, mouseX, mouseY)
 }

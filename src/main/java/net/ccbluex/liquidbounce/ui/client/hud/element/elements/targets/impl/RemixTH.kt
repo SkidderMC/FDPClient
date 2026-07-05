@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Targets
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.TargetStyle
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.*
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
@@ -23,12 +23,12 @@ class RemixTH(inst: Targets) : TargetStyle("Remix", inst, true) {
         updateAnim(entity.health)
 
         // background
-        RenderUtils.drawRectFloat(0F, 0F, 146F, 49F, getColor(Color(25, 25, 25)).rgb)
-        RenderUtils.drawRectFloat(1F, 1F, 145F, 48F, getColor(Color(35, 35, 35)).rgb)
+        RenderPrimitives.drawRectFloat(0F, 0F, 146F, 49F, getColor(Color(25, 25, 25)).rgb)
+        RenderPrimitives.drawRectFloat(1F, 1F, 145F, 48F, getColor(Color(35, 35, 35)).rgb)
 
         // health bar
-        RenderUtils.drawRectFloat(4F, 40F, 142F, 45F, getColor(Color.red.darker().darker()).rgb)
-        RenderUtils.drawRectFloat(
+        RenderPrimitives.drawRectFloat(4F, 40F, 142F, 45F, getColor(Color.red.darker().darker()).rgb)
+        RenderPrimitives.drawRectFloat(
             4F,
             40F,
             4F + (easingHealth / entity.maxHealth).coerceIn(0F, 1F) * 138F,
@@ -37,12 +37,12 @@ class RemixTH(inst: Targets) : TargetStyle("Remix", inst, true) {
         )
 
         // head
-        RenderUtils.drawRectFloat(4F, 4F, 38F, 38F, getColor(Color(150, 150, 150)).rgb)
-        RenderUtils.drawRectFloat(5F, 5F, 37F, 37F, getColor(Color(0, 0, 0)).rgb)
+        RenderPrimitives.drawRectFloat(4F, 4F, 38F, 38F, getColor(Color(150, 150, 150)).rgb)
+        RenderPrimitives.drawRectFloat(5F, 5F, 37F, 37F, getColor(Color(0, 0, 0)).rgb)
 
         // armor bar
-        RenderUtils.drawRectFloat(40F, 36F, 141.5F, 38F, getColor(Color.blue.darker()).rgb)
-        RenderUtils.drawRectFloat(
+        RenderPrimitives.drawRectFloat(40F, 36F, 141.5F, 38F, getColor(Color.blue.darker()).rgb)
+        RenderPrimitives.drawRectFloat(
             40F,
             36F,
             40F + (entity.totalArmorValue.toFloat() / 20F).coerceIn(0F, 1F) * 101.5F,
@@ -51,17 +51,17 @@ class RemixTH(inst: Targets) : TargetStyle("Remix", inst, true) {
         )
 
         // armor item background
-        RenderUtils.drawRectFloat(40F, 16F, 58F, 34F, getColor(Color(25, 25, 25)).rgb)
-        RenderUtils.drawRectFloat(41F, 17F, 57F, 33F, getColor(Color(95, 95, 95)).rgb)
+        RenderPrimitives.drawRectFloat(40F, 16F, 58F, 34F, getColor(Color(25, 25, 25)).rgb)
+        RenderPrimitives.drawRectFloat(41F, 17F, 57F, 33F, getColor(Color(95, 95, 95)).rgb)
 
-        RenderUtils.drawRectFloat(60F, 16F, 78F, 34F, getColor(Color(25, 25, 25)).rgb)
-        RenderUtils.drawRectFloat(61F, 17F, 77F, 33F, getColor(Color(95, 95, 95)).rgb)
+        RenderPrimitives.drawRectFloat(60F, 16F, 78F, 34F, getColor(Color(25, 25, 25)).rgb)
+        RenderPrimitives.drawRectFloat(61F, 17F, 77F, 33F, getColor(Color(95, 95, 95)).rgb)
 
-        RenderUtils.drawRectFloat(80F, 16F, 98F, 34F, getColor(Color(25, 25, 25)).rgb)
-        RenderUtils.drawRectFloat(81F, 17F, 97F, 33F, getColor(Color(95, 95, 95)).rgb)
+        RenderPrimitives.drawRectFloat(80F, 16F, 98F, 34F, getColor(Color(25, 25, 25)).rgb)
+        RenderPrimitives.drawRectFloat(81F, 17F, 97F, 33F, getColor(Color(95, 95, 95)).rgb)
 
-        RenderUtils.drawRectFloat(100F, 16F, 118F, 34F, getColor(Color(25, 25, 25)).rgb)
-        RenderUtils.drawRectFloat(101F, 17F, 117F, 33F, getColor(Color(95, 95, 95)).rgb)
+        RenderPrimitives.drawRectFloat(100F, 16F, 118F, 34F, getColor(Color(25, 25, 25)).rgb)
+        RenderPrimitives.drawRectFloat(101F, 17F, 117F, 33F, getColor(Color(95, 95, 95)).rgb)
 
         // name
         Fonts.minecraftFont.drawStringWithShadow(entity.name, 41F, 5F, getColor(-1).rgb)
@@ -95,7 +95,7 @@ class RemixTH(inst: Targets) : TargetStyle("Remix", inst, true) {
                 4
 
             mc.textureManager.bindTexture(Gui.icons)
-            RenderUtils.drawTexturedModalRect(132, 18, 0, 176 + j * 8, 10, 8, 100.0F)
+            RenderTexture.drawTexturedModalRect(132, 18, 0, 176 + j * 8, 10, 8, 100.0F)
 
             GL11.glPushMatrix()
             GL11.glTranslatef(142F - Fonts.minecraftFont.getStringWidth(stringTime) / 2F, 28F, 0F)

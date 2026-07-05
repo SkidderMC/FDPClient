@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Targets
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.TargetStyle
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.*
 import net.minecraft.entity.EntityLivingBase
 
 class SlowlyTH(inst: Targets) : TargetStyle("Slowly", inst, true) {
@@ -25,7 +25,7 @@ class SlowlyTH(inst: Targets) : TargetStyle("Slowly", inst, true) {
 
         updateAnim(entity.health)
 
-        RenderUtils.drawRect(0F, 0F, 32F + length, 36F, targetInstance.bgColor.rgb)
+        RenderPrimitives.drawRect(0F, 0F, 32F + length, 36F, targetInstance.bgColor.rgb)
 
         val playerInfo = mc.netHandler.getPlayerInfo(entity.uniqueID)
         playerInfo?.locationSkin?.let { skinLocation ->
@@ -42,7 +42,7 @@ class SlowlyTH(inst: Targets) : TargetStyle("Slowly", inst, true) {
 
         val healthBarWidth = (easingHealth / entity.maxHealth)
             .coerceIn(0F, 1F) * (length + 32F)
-        RenderUtils.drawRect(0F, 32F, healthBarWidth, 36F, targetInstance.barColor.rgb)
+        RenderPrimitives.drawRect(0F, 32F, healthBarWidth, 36F, targetInstance.barColor.rgb)
     }
 
     override fun getBorder(entity: EntityLivingBase?): Border {

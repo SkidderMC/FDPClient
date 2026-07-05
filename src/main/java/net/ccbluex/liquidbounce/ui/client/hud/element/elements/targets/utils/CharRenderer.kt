@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.utils
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.render.AnimationUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.*
 import net.minecraft.client.gui.ScaledResolution
 import org.lwjgl.opengl.GL11
 import java.text.DecimalFormat
@@ -42,7 +42,7 @@ class CharRenderer(private val small: Boolean) : MinecraftInstance {
         val cutY = initY + fontRend.FONT_HEIGHT.toFloat() * (3F / 4F)
 
         GL11.glEnable(3089)
-        RenderUtils.makeScissorBox(
+        RenderHelper.makeScissorBox(
             0F,
             orgY + initY - 4F * scaleY,
             scaledRes.scaledWidth.toFloat(),

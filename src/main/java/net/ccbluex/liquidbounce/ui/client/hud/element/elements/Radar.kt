@@ -14,9 +14,9 @@ import net.ccbluex.liquidbounce.utils.extensions.toRadians
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.withAlpha
 import net.ccbluex.liquidbounce.utils.render.MiniMapRegister
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBorder
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.makeScissorBox
+import net.ccbluex.liquidbounce.utils.render.RenderPrimitives.drawRect
+import net.ccbluex.liquidbounce.utils.render.RenderColor.glColor
+import net.ccbluex.liquidbounce.utils.render.RenderHelper.makeScissorBox
 import net.ccbluex.liquidbounce.utils.render.SafeVertexBuffer
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.RainbowShader
 import net.minecraft.client.renderer.GlStateManager.bindTexture

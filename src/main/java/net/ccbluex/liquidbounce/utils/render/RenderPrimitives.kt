@@ -54,6 +54,16 @@ object RenderPrimitives {
         Gui.drawRect(x, y, x2, y2, color)
     }
 
+    /** Float-coordinate compatibility overload for callers migrated from the legacy renderer. */
+    fun drawRectFloat(left: Float, top: Float, right: Float, bottom: Float, color: Int) {
+        drawRect(left, top, right, bottom, color)
+    }
+
+    /** Draws a rectangle expressed as origin plus width and height. */
+    fun drawRect2(x: Double, y: Double, width: Double, height: Double, color: Int) {
+        drawRect(x.toFloat(), y.toFloat(), (x + width).toFloat(), (y + height).toFloat(), color)
+    }
+
     fun drawBorderedRect(x: Float, y: Float, x2: Float, y2: Float, width: Float, borderColor: Int, rectColor: Int) {
         batch {
             drawRect(x, y, x2, y2, rectColor)

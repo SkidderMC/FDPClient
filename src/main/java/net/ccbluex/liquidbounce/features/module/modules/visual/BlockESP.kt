@@ -25,9 +25,9 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.disableGlCap
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.draw2D
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockBox
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.enableGlCap
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
+import net.ccbluex.liquidbounce.utils.render.RenderColor.glColor
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.resetCaps
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.resetColor
+import net.ccbluex.liquidbounce.utils.render.RenderColor.resetColor
 import net.minecraft.block.Block
 import net.minecraft.init.Blocks.air
 import net.minecraft.util.AxisAlignedBB

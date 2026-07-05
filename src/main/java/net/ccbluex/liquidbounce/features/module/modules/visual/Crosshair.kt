@@ -17,6 +17,7 @@ import org.lwjgl.opengl.GL11
 import java.awt.Color
 import kotlin.math.cos
 import kotlin.math.sin
+import net.ccbluex.liquidbounce.utils.render.RenderPrimitives
 
 object Crosshair : Module("Crosshair", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY, gameDetecting = false) {
 
@@ -101,22 +102,22 @@ object Crosshair : Module("Crosshair", Category.VISUAL, Category.SubCategory.REN
             val outlineColor = Color(0, 0, 0, crosshairColor.alpha).rgb
             drawArms(centerX, centerY, gapValue, half + 0.5f, outlineColor)
             if (withDot) {
-                RenderUtils.drawRect(centerX - half - 0.5f, centerY - half - 0.5f, centerX + half + 0.5f, centerY + half + 0.5f, outlineColor)
+                RenderPrimitives.drawRect(centerX - half - 0.5f, centerY - half - 0.5f, centerX + half + 0.5f, centerY + half + 0.5f, outlineColor)
             }
         }
 
         drawArms(centerX, centerY, gapValue, half, color)
         if (withDot) {
-            RenderUtils.drawRect(centerX - half, centerY - half, centerX + half, centerY + half, color)
+            RenderPrimitives.drawRect(centerX - half, centerY - half, centerX + half, centerY + half, color)
         }
     }
 
     private fun drawArms(centerX: Float, centerY: Float, gapValue: Float, half: Float, color: Int) {
         // right, left, bottom, top
-        RenderUtils.drawRect(centerX + gapValue, centerY - half, centerX + gapValue + size, centerY + half, color)
-        RenderUtils.drawRect(centerX - gapValue - size, centerY - half, centerX - gapValue, centerY + half, color)
-        RenderUtils.drawRect(centerX - half, centerY + gapValue, centerX + half, centerY + gapValue + size, color)
-        RenderUtils.drawRect(centerX - half, centerY - gapValue - size, centerX + half, centerY - gapValue, color)
+        RenderPrimitives.drawRect(centerX + gapValue, centerY - half, centerX + gapValue + size, centerY + half, color)
+        RenderPrimitives.drawRect(centerX - gapValue - size, centerY - half, centerX - gapValue, centerY + half, color)
+        RenderPrimitives.drawRect(centerX - half, centerY + gapValue, centerX + half, centerY + gapValue + size, color)
+        RenderPrimitives.drawRect(centerX - half, centerY - gapValue - size, centerX + half, centerY - gapValue, color)
     }
 
     private fun drawDot(centerX: Float, centerY: Float) {

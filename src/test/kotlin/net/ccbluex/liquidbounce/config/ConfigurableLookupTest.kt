@@ -41,4 +41,5 @@ class ConfigurableLookupTest {
         assertEquals(3.5F, range.get())
         assertTrue(range.owner === group)
     }
+
 }

@@ -84,21 +84,3 @@ enum class AutoSettingsStatusType(val displayName: String) {
     @SerializedName("Unknown")
     UNKNOWN("Unknown")
 }
-
-/**
- * Upload response
- */
-data class UploadResponse(val status: Status, val message: String, val token: String)
-
-/**
- * Report response
- */
-data class ReportResponse(val status: Status, val message: String)
-
-enum class Status {
-    @SerializedName("success")
-    SUCCESS,
-
-    @SerializedName("error")
-    ERROR
-}

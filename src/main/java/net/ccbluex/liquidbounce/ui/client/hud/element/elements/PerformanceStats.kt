@@ -14,7 +14,7 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.font.GameFontRenderer
 import net.ccbluex.liquidbounce.utils.performance.PerformanceMonitor
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.*
 import java.awt.Color
 import java.text.DecimalFormat
 
@@ -148,7 +148,7 @@ class PerformanceStats(
         // Draw background
         if (background) {
             val bgColor = Color(0, 0, 0, backgroundAlpha).rgb
-            RenderUtils.drawRect(
+            RenderPrimitives.drawRect(
                 -padding,
                 -padding,
                 maxWidth - padding,

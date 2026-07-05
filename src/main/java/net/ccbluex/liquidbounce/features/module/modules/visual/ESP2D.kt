@@ -20,7 +20,7 @@ import net.ccbluex.liquidbounce.utils.inventory.ItemUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.fade
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.interpolate
+import net.ccbluex.liquidbounce.utils.render.RenderHelper.interpolate
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.isInViewFrustum
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.newDrawRect
 import net.minecraft.client.gui.FontRenderer

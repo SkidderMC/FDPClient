@@ -22,7 +22,7 @@ import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextDouble
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextFloat
 import net.ccbluex.liquidbounce.utils.rotation.RaycastUtils.raycastEntity
 import net.ccbluex.liquidbounce.utils.simulation.ProjectileSolver
-import net.ccbluex.liquidbounce.utils.timing.WaitTickUtils
+import net.ccbluex.liquidbounce.event.async.TickScheduler
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.Packet
@@ -449,15 +449,16 @@ object RotationUtils : MinecraftInstance, Listenable {
 
         val rotationDifference = hypot(yawDiff, pitchDiff)
 
-        val isShortStopActive = WaitTickUtils.hasScheduled(this)
-        val isNoRotateSetActive = WaitTickUtils.hasScheduled(NoRotateSet)
+        val isShortStopActive = TickScheduler.hasScheduled(this)
+        val isNoRotateSetActive = TickScheduler.hasScheduled(NoRotateSet)
 
         if (isNoRotateSetActive) {
             yawDiff = 0F
             pitchDiff = 0F
         } else if (isShortStopActive || activeSettings?.shouldPerformShortStop() == true) {
             if (!isShortStopActive) {
-                WaitTickUtils.schedule(activeSettings?.shortStopDuration?.random()?.plus(1) ?: 0, this)
+                TickScheduler.cancel(this)
+                TickScheduler.scheduleAfter(activeSettings?.shortStopDuration?.random()?.plus(1) ?: 0, this)
             }
 
             activeSettings?.resetSimulateShortStopData()

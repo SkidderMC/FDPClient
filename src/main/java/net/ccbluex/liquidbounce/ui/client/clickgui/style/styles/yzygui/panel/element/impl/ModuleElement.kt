@@ -31,7 +31,7 @@ import net.ccbluex.liquidbounce.config.Vec3Value
 import net.ccbluex.liquidbounce.config.CurveValue
 import net.ccbluex.liquidbounce.config.Value
 import net.ccbluex.liquidbounce.config.Configurable
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
+import net.ccbluex.liquidbounce.utils.render.RenderPrimitives.drawRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBorder
 import org.lwjgl.input.Keyboard
 import java.awt.Color

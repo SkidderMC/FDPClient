@@ -11,7 +11,7 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.font.Fonts.minecraftFont
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.interpolate
+import net.ccbluex.liquidbounce.utils.render.RenderHelper.interpolate
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.isInViewFrustum
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.newDrawRect
 import net.minecraft.client.gui.ScaledResolution

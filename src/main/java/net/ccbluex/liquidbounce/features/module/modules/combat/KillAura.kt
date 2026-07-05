@@ -36,7 +36,6 @@ import net.ccbluex.liquidbounce.utils.inventory.ItemUtils.isConsumingItem
 import net.ccbluex.liquidbounce.utils.inventory.SilentHotbar
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextInt
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.Render3D
 import net.ccbluex.liquidbounce.utils.rotation.RandomizationSettings
 import net.ccbluex.liquidbounce.utils.rotation.RaycastUtils.raycastEntity

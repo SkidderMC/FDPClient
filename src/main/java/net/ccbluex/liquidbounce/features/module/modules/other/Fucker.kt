@@ -23,7 +23,7 @@ import net.ccbluex.liquidbounce.utils.extensions.onPlayerRightClick
 import net.ccbluex.liquidbounce.utils.extensions.rotation
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockBox
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockDamageText
+import net.ccbluex.liquidbounce.utils.render.RenderText.drawBlockDamageText
 import net.ccbluex.liquidbounce.utils.rotation.RotationPriority
 import net.ccbluex.liquidbounce.utils.rotation.RotationSettings
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.currentRotation

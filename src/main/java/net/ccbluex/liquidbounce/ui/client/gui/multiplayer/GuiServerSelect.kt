@@ -15,7 +15,7 @@ import net.ccbluex.liquidbounce.ui.font.GameFontRenderer
 import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils
 import net.ccbluex.liquidbounce.utils.kotlin.SharedScopes
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.*
 import net.ccbluex.liquidbounce.utils.ui.AbstractScreen
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiButton
@@ -578,7 +578,7 @@ class GuiServerSelect(private val prevGui: GuiScreen) : AbstractScreen() {
         scroll = scroll.coerceIn(0f, maxScroll)
 
         GL11.glEnable(GL11.GL_SCISSOR_TEST)
-        RenderUtils.scissor(margin.toDouble(), listTop.toDouble(), (width - margin * 2f).toDouble(), listH.toDouble())
+        RenderHelper.scissor(margin.toDouble(), listTop.toDouble(), (width - margin * 2f).toDouble(), listH.toDouble())
         var cardY = listTop + cardGap - scroll
         if (indices.isEmpty()) {
             val msg = if (serverList.countServers() == 0) "No servers added yet - click Add or Direct" else "No servers match your filter"
@@ -586,7 +586,7 @@ class GuiServerSelect(private val prevGui: GuiScreen) : AbstractScreen() {
         }
         for (idx in indices) {
             if (cardY + cardHeight >= listTop && cardY <= listBottom) {
-                val hovered = !open && RenderUtils.isHovering(cardX, cardY, cardW, cardHeight, mx, my) && my >= listTop && my <= listBottom
+                val hovered = !open && RenderHelper.isHovering(cardX, cardY, cardW, cardHeight, mx, my) && my >= listTop && my <= listBottom
                 drawServerCard(serverList.getServerData(idx), idx, cardX, cardY, cardW, hovered, mx, my)
             }
             cardY += cardHeight + cardGap
@@ -678,7 +678,7 @@ class GuiServerSelect(private val prevGui: GuiScreen) : AbstractScreen() {
     }
 
     private fun cardIcon(icon: UiIcon, x: Float, y: Float, size: Float, mouseX: Int, mouseY: Int, hoverColor: Color, f: Float) {
-        val hov = RenderUtils.isHovering(x, y, size, size, mouseX, mouseY)
+        val hov = RenderHelper.isHovering(x, y, size, size, mouseX, mouseY)
         rr(x, y, size, size, 5f, mixAlpha(if (hov) hoverColor else Color(255, 255, 255, 28), f))
         val iconSize = size * 0.52f
         drawUiIcon(icon, x + (size - iconSize) / 2f, y + (size - iconSize) / 2f, iconSize, Color.WHITE.rgb, f)
@@ -735,15 +735,15 @@ class GuiServerSelect(private val prevGui: GuiScreen) : AbstractScreen() {
         val penX = x + cw - isz - 8f
         val shufX = penX - isz - 6f
         val iy = y + (ch - isz) / 2f
-        rr(shufX, iy, isz, isz, 5f, if (RenderUtils.isHovering(shufX, iy, isz, isz, mouseX, mouseY)) accent else Color(255, 255, 255, 24))
+        rr(shufX, iy, isz, isz, 5f, if (RenderHelper.isHovering(shufX, iy, isz, isz, mouseX, mouseY)) accent else Color(255, 255, 255, 24))
         drawUiIcon(UiIcon.SHUFFLE, shufX + 5f, iy + 5f, 12f, textColor)
-        rr(penX, iy, isz, isz, 5f, if (RenderUtils.isHovering(penX, iy, isz, isz, mouseX, mouseY)) accent else Color(255, 255, 255, 24))
+        rr(penX, iy, isz, isz, 5f, if (RenderHelper.isHovering(penX, iy, isz, isz, mouseX, mouseY)) accent else Color(255, 255, 255, 24))
         drawUiIcon(UiIcon.EDIT, penX + 5f, iy + 5f, 12f, textColor)
     }
 
     private fun drawDialog(mouseX: Int, mouseY: Int) {
         val a = dialogAnim
-        RenderUtils.drawRect(0f, 0f, width.toFloat(), height.toFloat(), Color(0, 0, 0, (150 * a).toInt()).rgb)
+        RenderPrimitives.drawRect(0f, 0f, width.toFloat(), height.toFloat(), Color(0, 0, 0, (150 * a).toInt()).rgb)
         resetGuiState()
 
         val w = 270f
@@ -779,8 +779,8 @@ class GuiServerSelect(private val prevGui: GuiScreen) : AbstractScreen() {
         val gap = 10f
         val saveX = x + (w - bw * 2f - gap) / 2f
         val saveLabel = if (single) "Connect" else "Save"
-        modalButton(saveLabel, saveX, btnY, bw, 20f, true, RenderUtils.isHovering(saveX, btnY, bw, 20f, mouseX, mouseY))
-        modalButton("Cancel", saveX + bw + gap, btnY, bw, 20f, false, RenderUtils.isHovering(saveX + bw + gap, btnY, bw, 20f, mouseX, mouseY))
+        modalButton(saveLabel, saveX, btnY, bw, 20f, true, RenderHelper.isHovering(saveX, btnY, bw, 20f, mouseX, mouseY))
+        modalButton("Cancel", saveX + bw + gap, btnY, bw, 20f, false, RenderHelper.isHovering(saveX + bw + gap, btnY, bw, 20f, mouseX, mouseY))
         GlStateManager.popMatrix()
         resetGuiState()
     }
@@ -833,11 +833,11 @@ class GuiServerSelect(private val prevGui: GuiScreen) : AbstractScreen() {
 
         val searchX = margin + 12f
         val searchW = (configButtonX() - searchX - 8f).coerceAtLeast(40f)
-        searchFocused = RenderUtils.isHovering(searchX, barY, searchW.coerceAtLeast(40f), barH, mouseX, mouseY)
+        searchFocused = RenderHelper.isHovering(searchX, barY, searchW.coerceAtLeast(40f), barH, mouseX, mouseY)
 
         val toggleLabelW = optionToggleLabelW()
         val toggleX = optionToggleX()
-        if (RenderUtils.isHovering(toggleX - toggleLabelW - 8f, barY, toggleW + toggleLabelW + 8f, barH, mouseX, mouseY)) {
+        if (RenderHelper.isHovering(toggleX - toggleLabelW - 8f, barY, toggleW + toggleLabelW + 8f, barH, mouseX, mouseY)) {
             onlineOnly = !onlineOnly
             return
         }
@@ -851,24 +851,24 @@ class GuiServerSelect(private val prevGui: GuiScreen) : AbstractScreen() {
         val penX = accX + cw - isz - 8f
         val shufX = penX - isz - 6f
         val iy = accY + (accH - isz) / 2f
-        if (RenderUtils.isHovering(shufX, iy, isz, isz, mouseX, mouseY)) { loginRandom(); return }
-        if (RenderUtils.isHovering(penX, iy, isz, isz, mouseX, mouseY)) { mc.displayGuiScreen(GuiAltManager(this)); return }
-        if (RenderUtils.isHovering(accX, accY, cw - 56f, accH, mouseX, mouseY)) { mc.displayGuiScreen(GuiAltManager(this)); return }
+        if (RenderHelper.isHovering(shufX, iy, isz, isz, mouseX, mouseY)) { loginRandom(); return }
+        if (RenderHelper.isHovering(penX, iy, isz, isz, mouseX, mouseY)) { mc.displayGuiScreen(GuiAltManager(this)); return }
+        if (RenderHelper.isHovering(accX, accY, cw - 56f, accH, mouseX, mouseY)) { mc.displayGuiScreen(GuiAltManager(this)); return }
 
         // cards
         if (mouseY.toFloat() in listTop..listBottom) {
             var cardY = listTop + cardGap - scroll
             for (idx in filteredIndices()) {
-                if (RenderUtils.isHovering(cardX, cardY, cardW, cardHeight, mouseX, mouseY)) {
+                if (RenderHelper.isHovering(cardX, cardY, cardW, cardHeight, mouseX, mouseY)) {
                     val bs = 22f
                     val playX = cardX + cardW - bs - 8f
                     val editX = playX - bs - 6f
                     val delX = editX - bs - 6f
                     val byy = cardY + (cardHeight - bs) / 2f
                     when {
-                        mouseButton == 0 && RenderUtils.isHovering(playX, byy, bs, bs, mouseX, mouseY) -> connect(serverList.getServerData(idx))
-                        mouseButton == 0 && RenderUtils.isHovering(editX, byy, bs, bs, mouseX, mouseY) -> openDialog(Dialog.EDIT, idx)
-                        mouseButton == 0 && RenderUtils.isHovering(delX, byy, bs, bs, mouseX, mouseY) -> deleteServer(idx)
+                        mouseButton == 0 && RenderHelper.isHovering(playX, byy, bs, bs, mouseX, mouseY) -> connect(serverList.getServerData(idx))
+                        mouseButton == 0 && RenderHelper.isHovering(editX, byy, bs, bs, mouseX, mouseY) -> openDialog(Dialog.EDIT, idx)
+                        mouseButton == 0 && RenderHelper.isHovering(delX, byy, bs, bs, mouseX, mouseY) -> deleteServer(idx)
                         mouseButton == 1 -> openDialog(Dialog.EDIT, idx)
                         mouseButton == 0 -> if (selectedIndex == idx) connect(serverList.getServerData(idx)) else selectedIndex = idx
                     }
@@ -890,18 +890,18 @@ class GuiServerSelect(private val prevGui: GuiScreen) : AbstractScreen() {
         val y = (height - h) / 2f
         var fy = y + 38f
         if (!single) {
-            if (RenderUtils.isHovering(x + 14f, fy + 12f, w - 28f, 22f, mouseX, mouseY)) { dialogField = 0; return }
+            if (RenderHelper.isHovering(x + 14f, fy + 12f, w - 28f, 22f, mouseX, mouseY)) { dialogField = 0; return }
             fy += 40f
-            if (RenderUtils.isHovering(x + 14f, fy + 12f, w - 28f, 22f, mouseX, mouseY)) { dialogField = 1; return }
-        } else if (RenderUtils.isHovering(x + 14f, fy + 12f, w - 28f, 22f, mouseX, mouseY)) { dialogField = 1; return }
+            if (RenderHelper.isHovering(x + 14f, fy + 12f, w - 28f, 22f, mouseX, mouseY)) { dialogField = 1; return }
+        } else if (RenderHelper.isHovering(x + 14f, fy + 12f, w - 28f, 22f, mouseX, mouseY)) { dialogField = 1; return }
 
         val btnY = y + h - 28f
         val bw = 84f
         val gap = 10f
         val saveX = x + (w - bw * 2f - gap) / 2f
-        if (RenderUtils.isHovering(saveX, btnY, bw, 20f, mouseX, mouseY)) { confirmDialog(); return }
-        if (RenderUtils.isHovering(saveX + bw + gap, btnY, bw, 20f, mouseX, mouseY)) { dialog = Dialog.NONE; return }
-        if (!RenderUtils.isHovering(x, y, w, h, mouseX, mouseY)) dialog = Dialog.NONE
+        if (RenderHelper.isHovering(saveX, btnY, bw, 20f, mouseX, mouseY)) { confirmDialog(); return }
+        if (RenderHelper.isHovering(saveX + bw + gap, btnY, bw, 20f, mouseX, mouseY)) { dialog = Dialog.NONE; return }
+        if (!RenderHelper.isHovering(x, y, w, h, mouseX, mouseY)) dialog = Dialog.NONE
     }
 
     private fun openDialog(mode: Dialog, index: Int = -1) {

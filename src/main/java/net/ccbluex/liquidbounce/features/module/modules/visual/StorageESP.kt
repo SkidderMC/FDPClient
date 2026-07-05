@@ -18,13 +18,13 @@ import net.ccbluex.liquidbounce.utils.client.ClientUtils.disableFastRender
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.isEntityHeightVisible
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.block.toVec
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.checkSetupFBO
+import net.ccbluex.liquidbounce.utils.render.StencilUtils.checkSetupFBO
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.draw2D
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockBox
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawEntityBox
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawFilledBox
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawSelectionBoundingBox
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
+import net.ccbluex.liquidbounce.utils.render.Render3D.drawFilledBox
+import net.ccbluex.liquidbounce.utils.render.Render3D.drawSelectionBoundingBox
+import net.ccbluex.liquidbounce.utils.render.RenderColor.glColor
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.renderFive
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.renderFour
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.renderOne

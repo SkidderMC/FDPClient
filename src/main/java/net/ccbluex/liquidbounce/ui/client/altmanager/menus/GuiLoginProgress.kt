@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.handler.lang.translationText
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColor
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager.Companion.login
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
+import net.ccbluex.liquidbounce.utils.render.RenderEffects.drawBloom
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawLoadingCircle
 import net.ccbluex.liquidbounce.utils.ui.AbstractScreen
 import net.minecraft.client.gui.GuiScreen

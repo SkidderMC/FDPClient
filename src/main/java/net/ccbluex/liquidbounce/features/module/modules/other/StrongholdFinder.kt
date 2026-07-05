@@ -12,9 +12,9 @@ import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.client.chat
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawAxisAlignedBB
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.renderNameTag
+import net.ccbluex.liquidbounce.utils.render.Render3D.drawAxisAlignedBB
+import net.ccbluex.liquidbounce.utils.render.RenderColor.glColor
+import net.ccbluex.liquidbounce.utils.render.RenderText.renderNameTag
 import net.minecraft.entity.item.EntityEnderEye
 import net.minecraft.util.AxisAlignedBB
 import org.lwjgl.opengl.GL11.*

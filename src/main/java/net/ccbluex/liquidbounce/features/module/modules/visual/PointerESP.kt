@@ -19,7 +19,7 @@ import net.ccbluex.liquidbounce.utils.attack.EntityUtils.getHealth
 import net.ccbluex.liquidbounce.utils.client.EntityLookup
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
+import net.ccbluex.liquidbounce.utils.render.RenderColor.glColor
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.GL11.*

@@ -18,10 +18,10 @@ import net.ccbluex.liquidbounce.utils.render.ColorUtils.withAlpha
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.deltaTime
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawImage
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
+import net.ccbluex.liquidbounce.utils.render.RenderPrimitives.drawRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedBorder
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedRect
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.withClipping
+import net.ccbluex.liquidbounce.utils.render.StencilUtils.withClipping
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.RainbowShader
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.util.ResourceLocation

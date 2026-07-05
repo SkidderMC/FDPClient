@@ -32,7 +32,7 @@ import net.ccbluex.liquidbounce.utils.io.HttpClient
 import net.ccbluex.liquidbounce.utils.io.MiscUtils
 import net.ccbluex.liquidbounce.utils.io.get
 import net.ccbluex.liquidbounce.utils.io.jsonBody
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.*
 import net.ccbluex.liquidbounce.utils.ui.AbstractScreen
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiLanguage
@@ -203,7 +203,7 @@ class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
 
     /** Dark rounded button that fills left-to-right with the cyan->blue gradient on hover (native style). */
     private fun nativeButton(x: Float, y: Float, w: Float, h: Float, radius: Float, f: Float) {
-        RenderUtils.withClipping({
+        StencilUtils.withClipping({
             RenderUtils.drawRoundedRect(x, y, x + w, y + h, radius, panelBg.rgb)
         }, {
             if (f > 0.001f) RenderUtils.drawGradientRect(x, y, x + w * f, y + h, gradTop.rgb, gradBottom.rgb, 0f)
@@ -522,7 +522,7 @@ class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
         for (card in cards) {
             val b = cardBounds(card.id)
             val x = b[0]; val y = b[1]; val w = b[2]; val h = b[3]
-            val hovered = noPopup && RenderUtils.isHovering(x, y, w, h, mouseX, mouseY)
+            val hovered = noPopup && RenderHelper.isHovering(x, y, w, h, mouseX, mouseY)
             val f = maxOf(anim("card${card.id}", hovered), wave(card.id * 1.15f) * 0.42f)
 
             nativeButton(x, y, w, h, 4f, f)
@@ -588,8 +588,8 @@ class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
         val setX = x + cw - isz - 8f
         val penX = setX - isz - 6f
         val iy = y + (ch - isz) / 2f
-        val penHov = RenderUtils.isHovering(penX, iy, isz, isz, mouseX, mouseY)
-        val setHov = RenderUtils.isHovering(setX, iy, isz, isz, mouseX, mouseY)
+        val penHov = RenderHelper.isHovering(penX, iy, isz, isz, mouseX, mouseY)
+        val setHov = RenderHelper.isHovering(setX, iy, isz, isz, mouseX, mouseY)
         iconButton(penX, iy, isz, 5f, anim("acpen", penHov))
         drawMenuIcon(MenuIcon.EDIT, penX + 5f, iy + 5f, 12f, textColor)
         if (penHov) tooltip = "Alt Manager"
@@ -643,7 +643,7 @@ class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
         changelogScroll = changelogScroll.coerceIn(0f, changelogMaxScroll)
 
         GL11.glEnable(GL11.GL_SCISSOR_TEST)
-        RenderUtils.scissor(x.toDouble(), listTop.toDouble(), w.toDouble(), viewH.toDouble())
+        RenderHelper.scissor(x.toDouble(), listTop.toDouble(), w.toDouble(), viewH.toDouble())
         val dot = Color(120, 160, 210)
         var ey = listTop - changelogScroll
         for (entry in entries) {
@@ -663,7 +663,7 @@ class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
             rr(x + w - 4.5f, sbY, 2.5f, sbH, 1.25f, Color(255, 255, 255, 80))
         }
 
-        val btnHov = RenderUtils.isHovering(x + 14f, btnY, w - 28f, btnH, mouseX, mouseY)
+        val btnHov = RenderHelper.isHovering(x + 14f, btnY, w - 28f, btnH, mouseX, mouseY)
         nativeButton(x + 14f, btnY, w - 28f, btnH, 4f, anim("changelogBtn", btnHov))
         val label = "View Full Changelog"
         val lw = smallWidth(label)
@@ -688,13 +688,13 @@ class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
         val by = bottomY
         val bh = bottomRowH
 
-        val exitHov = RenderUtils.isHovering(margin, by, exitW, bh, mouseX, mouseY)
+        val exitHov = RenderHelper.isHovering(margin, by, exitW, bh, mouseX, mouseY)
         rr(margin, by, exitW, bh, 5f, mixColor(Color(40, 18, 18, 175), Color(206, 62, 62, 245), maxOf(anim("exit", exitHov), wave(margin * 0.025f) * 0.4f)))
         drawMenuIcon(MenuIcon.EXIT, margin + 9f, by + bh / 2f - 6.5f, 13f, textColor)
         smallText("Exit", margin + 27f, by + bh / 2f - 4f, textColor)
 
         val cx = margin + exitW + 8f
-        val cfgHov = RenderUtils.isHovering(cx, by, configW, bh, mouseX, mouseY)
+        val cfgHov = RenderHelper.isHovering(cx, by, configW, bh, mouseX, mouseY)
         nativeButton(cx, by, configW, bh, 5f, maxOf(anim("cfg", cfgHov), wave(cx * 0.025f) * 0.42f))
         drawGlyph("Z", cx + 13f, by + bh / 2f, glyphColorHover)
         smallText("Configuration", cx + 24f, by + bh / 2f - 4f, textColor)
@@ -712,7 +712,7 @@ class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
         val d = utilDockBounds()
         var x = d[0]; val y = d[1]; val isz = d[2]; val gap = d[3]
         for (u in utils) {
-            val hov = RenderUtils.isHovering(x, y, isz, isz, mouseX, mouseY)
+            val hov = RenderHelper.isHovering(x, y, isz, isz, mouseX, mouseY)
             iconButton(x, y, isz, 5f, anim("util${u.id}", hov))
             drawGlyph(u.glyph, x + isz / 2f, y + isz / 2f, if (hov) glyphColorHover else glyphColor)
             if (hov) tooltip = u.label
@@ -735,7 +735,7 @@ class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
         rr(cx, cy, cw, ch, 6f, panelBg)
         var ix = cx + 6f
         for (social in socials) {
-            val hov = RenderUtils.isHovering(ix, cy, socialSlot, ch, mouseX, mouseY)
+            val hov = RenderHelper.isHovering(ix, cy, socialSlot, ch, mouseX, mouseY)
             if (hov) rr(ix + 1f, cy + 3f, socialSlot - 2f, ch - 6f, 4f, iconBtnHover)
             drawGlyph(social.glyph, ix + socialSlot / 2f, cy + ch / 2f, if (hov) glyphColorHover else glyphColor)
             if (hov) tooltip = social.label
@@ -744,7 +744,7 @@ class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
         // website pill inside the same container (external-link + domain)
         val wx = ix + 6f
         val webW = socialWebW()
-        val hov = RenderUtils.isHovering(wx, cy + 3f, webW, ch - 6f, mouseX, mouseY)
+        val hov = RenderHelper.isHovering(wx, cy + 3f, webW, ch - 6f, mouseX, mouseY)
         rr(wx, cy + 3f, webW, ch - 6f, 4f, mixColor(Color(0, 116, 200, 235), Color(0, 150, 235, 255), maxOf(anim("socweb", hov), wave(wx * 0.025f) * 0.55f)))
         drawGlyph("O", wx + 12f, cy + ch / 2f, Color.WHITE.rgb)
         smallText(CLIENT_WEBSITE, wx + 22f, cy + ch / 2f - 4f, Color.WHITE.rgb)
@@ -768,13 +768,13 @@ class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
         }
         if (button != 0) return
 
-        if (RenderUtils.isHovering(margin + 65f, margin + 12f, smallWidth("made by Zywl").toFloat(), 10f, mouseX, mouseY)) {
+        if (RenderHelper.isHovering(margin + 65f, margin + 12f, smallWidth("made by Zywl").toFloat(), 10f, mouseX, mouseY)) {
             MiscUtils.showURL(portfolioUrl); return
         }
 
         for (card in cards) {
             val b = cardBounds(card.id)
-            if (RenderUtils.isHovering(b[0], b[1], b[2], b[3], mouseX, mouseY)) {
+            if (RenderHelper.isHovering(b[0], b[1], b[2], b[3], mouseX, mouseY)) {
                 onAction(card.id)
                 return
             }
@@ -784,37 +784,37 @@ class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
         val setX = accountX + accountW - isz - 8f
         val penX = setX - isz - 6f
         val iy = accountY + (accountH - isz) / 2f
-        if (RenderUtils.isHovering(penX, iy, isz, isz, mouseX, mouseY)) { mc.displayGuiScreen(GuiAltManager(this)); return }
-        if (RenderUtils.isHovering(setX, iy, isz, isz, mouseX, mouseY)) { mc.displayGuiScreen(GuiOptions(this, mc.gameSettings)); return }
-        if (RenderUtils.isHovering(accountX, accountY, accountW - 56f, accountH, mouseX, mouseY)) { mc.displayGuiScreen(GuiAltManager(this)); return }
+        if (RenderHelper.isHovering(penX, iy, isz, isz, mouseX, mouseY)) { mc.displayGuiScreen(GuiAltManager(this)); return }
+        if (RenderHelper.isHovering(setX, iy, isz, isz, mouseX, mouseY)) { mc.displayGuiScreen(GuiOptions(this, mc.gameSettings)); return }
+        if (RenderHelper.isHovering(accountX, accountY, accountW - 56f, accountH, mouseX, mouseY)) { mc.displayGuiScreen(GuiAltManager(this)); return }
 
         val cx = changelogX(); val cw = changelogW(); val cy = changelogY(); val chH = changelogH()
         val cBtnH = 24f
         val cBtnY = cy + chH - cBtnH - 12f
-        if (RenderUtils.isHovering(cx + 14f, cBtnY, cw - 28f, cBtnH, mouseX, mouseY)) {
+        if (RenderHelper.isHovering(cx + 14f, cBtnY, cw - 28f, cBtnH, mouseX, mouseY)) {
             MiscUtils.showURL("https://github.com/SkidderMC/FDPClient/commits/main")
             return
         }
 
         val by = bottomY
         val bh = bottomRowH
-        if (RenderUtils.isHovering(margin, by, exitW, bh, mouseX, mouseY)) { mc.shutdown(); return }
-        if (RenderUtils.isHovering(margin + exitW + 8f, by, configW, bh, mouseX, mouseY)) { mc.displayGuiScreen(GuiClientConfiguration(this)); return }
+        if (RenderHelper.isHovering(margin, by, exitW, bh, mouseX, mouseY)) { mc.shutdown(); return }
+        if (RenderHelper.isHovering(margin + exitW + 8f, by, configW, bh, mouseX, mouseY)) { mc.displayGuiScreen(GuiClientConfiguration(this)); return }
 
         val d = utilDockBounds()
         var ux = d[0]; val uy = d[1]; val usz = d[2]; val ugap = d[3]
         for (u in utils) {
-            if (RenderUtils.isHovering(ux, uy, usz, usz, mouseX, mouseY)) { onAction(u.id); return }
+            if (RenderHelper.isHovering(ux, uy, usz, usz, mouseX, mouseY)) { onAction(u.id); return }
             ux += usz + ugap
         }
 
         val sb = socialBounds()
         var ix = sb[0] + 6f; val sy = sb[1]; val sh = sb[3]
         for (social in socials) {
-            if (RenderUtils.isHovering(ix, sy, socialSlot, sh, mouseX, mouseY)) { MiscUtils.showURL(social.url); return }
+            if (RenderHelper.isHovering(ix, sy, socialSlot, sh, mouseX, mouseY)) { MiscUtils.showURL(social.url); return }
             ix += socialSlot
         }
-        if (RenderUtils.isHovering(ix + 6f, sy + 3f, socialWebW(), sh - 6f, mouseX, mouseY)) { MiscUtils.showURL("https://fdpinfo.github.io/next/"); return }
+        if (RenderHelper.isHovering(ix + 6f, sy + 3f, socialWebW(), sh - 6f, mouseX, mouseY)) { MiscUtils.showURL("https://fdpinfo.github.io/next/"); return }
     }
 
     private fun onAction(id: Int) {

@@ -4,7 +4,7 @@ import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.config.SettingsUtils
 import net.ccbluex.liquidbounce.file.SettingsFiles
 import net.ccbluex.liquidbounce.handler.api.ClientApi
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.isHovering
+import net.ccbluex.liquidbounce.utils.render.RenderHelper.isHovering
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.NeverloseGui
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.round.RoundedUtil
 import net.ccbluex.liquidbounce.ui.font.Fonts

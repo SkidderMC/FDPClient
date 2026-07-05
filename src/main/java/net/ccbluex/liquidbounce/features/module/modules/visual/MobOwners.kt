@@ -13,7 +13,7 @@ import net.ccbluex.liquidbounce.utils.extensions.getFullName
 import net.ccbluex.liquidbounce.utils.extensions.interpolatedPosition
 import net.ccbluex.liquidbounce.utils.extensions.lastTickPos
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.RenderText
 import net.minecraft.entity.Entity
 import net.minecraft.entity.passive.EntityHorse
 import net.minecraft.entity.passive.EntityTameable
@@ -43,7 +43,7 @@ object MobOwners : Module("MobOwners", Category.VISUAL, Category.SubCategory.REN
             val text = if (stripColors) ColorUtils.stripColor(owner) else owner
 
             val pos = entity.interpolatedPosition(entity.lastTickPos)
-            RenderUtils.renderNameTag(
+            RenderText.renderNameTag(
                 text,
                 pos.xCoord,
                 pos.yCoord + entity.height + height,

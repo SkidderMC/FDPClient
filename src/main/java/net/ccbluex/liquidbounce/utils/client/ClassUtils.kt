@@ -76,7 +76,7 @@ object ClassUtils {
             // check if class is assignable from target class
             if(klass.isAssignableFrom(resolved) && !resolved.isInterface && !Modifier.isAbstract(resolved.modifiers)) {
                 // add to list
-                list.add(resolved as Class<out T>)
+                list.add(resolved.asSubclass(klass))
             }
         }
 

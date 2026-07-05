@@ -21,6 +21,7 @@ import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.setTargetRotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.toRotation
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.RenderHelper
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.Entity
@@ -152,14 +153,14 @@ object AntiFireball : Module(
             val arrowY = y - arrowSize * sin(angle)
             val arrowAngle1 = angle + Math.toRadians(degrees)
             val arrowAngle2 = angle - Math.toRadians(degrees)
-            RenderUtils.drawLine(
+            RenderHelper.drawLine(
                 x,
                 y,
                 arrowX + arrowSize * cos(arrowAngle1),
                 arrowY + arrowSize * sin(arrowAngle1),
                 size.toFloat()
             )
-            RenderUtils.drawLine(
+            RenderHelper.drawLine(
                 x,
                 y,
                 arrowX + arrowSize * cos(arrowAngle2),

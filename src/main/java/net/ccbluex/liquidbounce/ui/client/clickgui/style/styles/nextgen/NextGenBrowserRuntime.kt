@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.event.GameLoopEvent
 import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.event.Render2DEvent
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.RenderPrimitives
 import net.minecraft.client.gui.ScaledResolution
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.ui.client.hud.HUD
@@ -136,6 +136,7 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
      * being prepared/downloaded (does NOT fade like a notification) and disappears only once the
      * download finishes (state leaves INITIALIZING).
      */
+    @Suppress("unused")
     private val onRenderOverlay = handler<Render2DEvent>(always = true) {
         if (state != State.INITIALIZING) {
             return@handler
@@ -152,18 +153,18 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
         val x = (sr.scaledWidth - boxW) / 2
         val y = 6
 
-        RenderUtils.drawRect(x.toFloat(), y.toFloat(), (x + boxW).toFloat(), (y + boxH).toFloat(), 0xC8101014.toInt())
-        RenderUtils.drawRect(x.toFloat(), y.toFloat(), (x + boxW).toFloat(), (y + 1).toFloat(), 0x40FFFFFF)
+        RenderPrimitives.drawRect(x.toFloat(), y.toFloat(), (x + boxW).toFloat(), (y + boxH).toFloat(), 0xC8101014.toInt())
+        RenderPrimitives.drawRect(x.toFloat(), y.toFloat(), (x + boxW).toFloat(), (y + 1).toFloat(), 0x40FFFFFF)
         font.drawStringWithShadow(text, (x + 8).toFloat(), (y + 6).toFloat(), 0xFFFFFF)
 
         if (hasBar) {
             val barX = x + 8
             val barY = y + 20
             val barW = boxW - 16
-            RenderUtils.drawRect(barX.toFloat(), barY.toFloat(), (barX + barW).toFloat(), (barY + 4).toFloat(), 0xC0202024.toInt())
+            RenderPrimitives.drawRect(barX.toFloat(), barY.toFloat(), (barX + barW).toFloat(), (barY + 4).toFloat(), 0xC0202024.toInt())
             val filled = (barW * (pct / 100.0)).toInt()
             if (filled > 0) {
-                RenderUtils.drawRect(barX.toFloat(), barY.toFloat(), (barX + filled).toFloat(), (barY + 4).toFloat(), 0xFF3A8BFF.toInt())
+                RenderPrimitives.drawRect(barX.toFloat(), barY.toFloat(), (barX + filled).toFloat(), (barY + 4).toFloat(), 0xFF3A8BFF.toInt())
             }
         }
     }

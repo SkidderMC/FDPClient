@@ -17,7 +17,7 @@ import net.ccbluex.liquidbounce.utils.io.HttpClient
 import net.ccbluex.liquidbounce.utils.io.MiscUtils
 import net.ccbluex.liquidbounce.utils.io.get
 import net.ccbluex.liquidbounce.utils.io.jsonBody
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
+import net.ccbluex.liquidbounce.utils.render.RenderEffects.drawBloom
 import net.ccbluex.liquidbounce.utils.ui.AbstractScreen
 import net.minecraft.client.gui.GuiButton
 import org.lwjgl.input.Keyboard

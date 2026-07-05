@@ -10,8 +10,19 @@ import jdk.nashorn.api.scripting.ScriptUtils
 import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 
-class ScriptCommand(private val commandObject: JSObject) : Command(commandObject.getMember("name") as String,
-        *ScriptUtils.convert(commandObject.getMember("aliases"), Array<String>::class.java) as Array<out String>) {
+private fun scriptAliases(commandObject: JSObject): Array<String> {
+    val converted = ScriptUtils.convert(commandObject.getMember("aliases"), Array<String>::class.java)
+    val aliases = converted as? Array<*> ?: error("Script command aliases must be an array.")
+    return aliases.mapIndexed { index, alias ->
+        alias as? String ?: error("Script command alias at index $index must be a string.")
+    }.toTypedArray()
+}
+
+@Suppress("SpreadOperator")
+class ScriptCommand(private val commandObject: JSObject) : Command(
+    commandObject.getMember("name") as String,
+    *scriptAliases(commandObject)
+) {
 
     private val events = hashMapOf<String, JSObject>()
 

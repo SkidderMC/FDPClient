@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.features.module.modules.player.scaffolds
 
 import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.*
+import net.ccbluex.liquidbounce.event.async.TickScheduler
 import net.ccbluex.liquidbounce.event.async.loopSequence
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
@@ -434,6 +435,8 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
     var eagleSneaking = false
 
     private var requestedStopSneak = false
+    private val eagleSneakTask = Any()
+    private val eagleGroundBlockTask = Any()
 
     private val isEagleEnabled
         get() = eagle != "Off" && !shouldGoDown && scaffoldMode != "GodBridge"
@@ -599,8 +602,8 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
                 }
             }
 
-            val blockSneaking = WaitTickUtils.hasScheduled("block")
-            val alreadySneaking = WaitTickUtils.hasScheduled("sneak")
+            val blockSneaking = TickScheduler.hasScheduled(eagleGroundBlockTask)
+            val alreadySneaking = TickScheduler.hasScheduled(eagleSneakTask)
 
             val options = mc.gameSettings
 
@@ -660,13 +663,13 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
 
                 if (eagleSneaking && shouldSchedule) {
                     if (useMaxSneakTime) {
-                        WaitTickUtils.conditionalSchedule("sneak") { elapsed ->
+                        TickScheduler.scheduleConditional(eagleSneakTask) { elapsed ->
                             (elapsed >= maxSneakTicks.random() + 1).also { requestedStopSneak = it }
                         }
                     }
 
                     if (blockSneakingAgainUntilOnGround && !player.onGround) {
-                        WaitTickUtils.conditionalSchedule("block") {
+                        TickScheduler.scheduleConditional(eagleGroundBlockTask) {
                             mc.thePlayer?.onGround.also { if (it != false) requestedStopSneak = true } ?: true
                         }
                     }
@@ -1187,12 +1190,14 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
     // Disabling module
     override fun onDisable() {
         RotationUtils.cancelTargetRotation(options, immediate = true)
+        TickScheduler.cancel(eagleSneakTask)
+        TickScheduler.cancel(eagleGroundBlockTask)
 
-        val player = mc.thePlayer ?: return
+        val player = mc.thePlayer
 
         if (!GameSettings.isKeyDown(mc.gameSettings.keyBindSneak)) {
             mc.gameSettings.keyBindSneak.pressed = false
-            if (eagleSneaking && player.isSneaking) {
+            if (eagleSneaking && player?.isSneaking == true) {
                 //sendPacket(C0BPacketEntityAction(player, C0BPacketEntityAction.Action.STOP_SNEAKING))
 
                 /**

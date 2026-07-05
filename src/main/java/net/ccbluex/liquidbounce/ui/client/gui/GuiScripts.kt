@@ -20,7 +20,7 @@ import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.io.FileFilters
 import net.ccbluex.liquidbounce.utils.io.MiscUtils
 import net.ccbluex.liquidbounce.utils.io.extractZipTo
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
+import net.ccbluex.liquidbounce.utils.render.RenderEffects.drawBloom
 import net.ccbluex.liquidbounce.utils.ui.AbstractScreen
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen

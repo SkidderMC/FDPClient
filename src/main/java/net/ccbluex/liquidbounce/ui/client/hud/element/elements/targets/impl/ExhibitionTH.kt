@@ -15,7 +15,7 @@ import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawEntityOnScreen
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawExhiEnchants
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawExhiRect
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
+import net.ccbluex.liquidbounce.utils.render.RenderPrimitives.drawRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRectBasedBorder
 import net.minecraft.client.renderer.GlStateManager.*
 import net.minecraft.client.renderer.RenderHelper

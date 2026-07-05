@@ -11,7 +11,7 @@ import net.ccbluex.liquidbounce.file.FileManager.saveConfig
 import net.ccbluex.liquidbounce.ui.client.hud.HUD
 import net.ccbluex.liquidbounce.ui.client.hud.designer.EditorPanel.ElementEditableText
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
+import net.ccbluex.liquidbounce.utils.render.RenderEffects.drawBloom
 import net.minecraft.client.gui.GuiScreen
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse

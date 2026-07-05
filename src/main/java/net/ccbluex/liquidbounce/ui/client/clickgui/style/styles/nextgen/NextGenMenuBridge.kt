@@ -13,7 +13,6 @@ import kotlinx.coroutines.launch
 import me.liuli.elixir.account.CrackedAccount
 import me.liuli.elixir.account.MicrosoftAccount
 import me.liuli.elixir.account.MinecraftAccount
-import me.liuli.elixir.account.MojangAccount
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.EventManager
 import net.ccbluex.liquidbounce.event.SessionUpdateEvent
@@ -317,7 +316,6 @@ object NextGenMenuBridge : MinecraftInstance {
     private fun accountType(account: MinecraftAccount) = when (account) {
         is CrackedAccount -> "Cracked"
         is MicrosoftAccount -> "Microsoft"
-        is MojangAccount -> "Mojang"
         else -> account.javaClass.simpleName.removeSuffix("Account")
     }
 

@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.ui.client.keybind
 
 import net.ccbluex.liquidbounce.ui.font.Fonts.fontSemibold40
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
+import net.ccbluex.liquidbounce.utils.render.RenderPrimitives.drawRect
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 

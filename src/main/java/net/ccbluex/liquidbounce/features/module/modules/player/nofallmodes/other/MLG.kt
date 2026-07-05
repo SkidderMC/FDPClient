@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.features.module.modules.player.NoFall.retrieveDe
 import net.ccbluex.liquidbounce.features.module.modules.player.NoFall.retrievingPos
 import net.ccbluex.liquidbounce.features.module.modules.player.NoFall.swing
 import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.NoFallMode
+import net.ccbluex.liquidbounce.event.async.TickScheduler
 import net.ccbluex.liquidbounce.utils.block.block
 import net.ccbluex.liquidbounce.utils.block.center
 import net.ccbluex.liquidbounce.utils.block.state
@@ -29,7 +30,6 @@ import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.faceBlock
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.getVectorForRotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.toRotation
 import net.ccbluex.liquidbounce.utils.simulation.SimulatedPlayer
-import net.ccbluex.liquidbounce.utils.timing.WaitTickUtils
 import net.minecraft.init.Blocks
 import net.minecraft.init.Items
 import net.minecraft.item.ItemBlock
@@ -179,9 +179,10 @@ object MLG : NoFallMode("MLG") {
 
                     retrievingPos = placePos
 
-                    WaitTickUtils.conditionalSchedule(this, maxRetrievalWaitingTime) { elapsedTicks ->
+                    TickScheduler.cancel(this)
+                    TickScheduler.scheduleConditional(this, maxRetrievalWaitingTime) { elapsedTicks ->
                         val newStack =
-                            player.hotBarSlot(SilentHotbar.currentSlot).stack ?: return@conditionalSchedule null
+                            player.hotBarSlot(SilentHotbar.currentSlot).stack ?: return@scheduleConditional null
 
                         if (newStack.item == Items.bucket) {
                             findMlgSlot(true)?.let { slot ->
@@ -191,7 +192,7 @@ object MLG : NoFallMode("MLG") {
                             } ?: run {
                                 reset()
 
-                                return@conditionalSchedule null
+                                return@scheduleConditional null
                             }
                         }
 
@@ -204,7 +205,7 @@ object MLG : NoFallMode("MLG") {
                         ) {
                             reset()
 
-                            return@conditionalSchedule null
+                            return@scheduleConditional null
                         }
 
                         if (player.fallDistance == 0F) {
@@ -213,21 +214,21 @@ object MLG : NoFallMode("MLG") {
                             if (raytrace == null || raytrace.blockPos != target || raytrace.sideHit != EnumFacing.UP) {
                                 // Reset the rotation if it took more than the max retrieval waiting time to retrieve
                                 reset(elapsedTicks >= maxRetrievalWaitingTime)
-                                return@conditionalSchedule null
+                                return@scheduleConditional null
                             }
 
                             // We are looking at the target block, now make sure the time has passed to retrieve
-                            if (elapsedTicks < retrieveDelay) return@conditionalSchedule false
+                            if (elapsedTicks < retrieveDelay) return@scheduleConditional false
 
                             // Time to retrieve
                             placeBlock(it.blockPos, it.sideHit, it.hitVec, newStack)
 
                             reset()
 
-                            return@conditionalSchedule true
+                            return@scheduleConditional true
                         }
 
-                        return@conditionalSchedule false
+                        return@scheduleConditional false
                     }
                 }
             }
@@ -243,6 +244,11 @@ object MLG : NoFallMode("MLG") {
 
             SilentHotbar.resetSlot(this)
         }
+    }
+
+    override fun onDisable() {
+        TickScheduler.cancel(this)
+        reset()
     }
 
     private inline fun placeBlock(

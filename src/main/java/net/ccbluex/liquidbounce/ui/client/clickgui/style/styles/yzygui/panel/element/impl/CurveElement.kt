@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.config.CurveValue
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.core.CurveEditor
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.Panel
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.element.PanelElement
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.*
 import net.minecraft.client.renderer.GlStateManager
 import java.awt.Color
 
@@ -49,7 +49,7 @@ class CurveElement(
         val gh = graphH
         val count = setting.pointCount
 
-        RenderUtils.drawRect(gx, gy, gx + gw, gy + gh, Color(20, 20, 20).rgb)
+        RenderPrimitives.drawRect(gx, gy, gx + gw, gy + gh, Color(20, 20, 20).rgb)
         RenderUtils.drawBorder(gx, gy, gx + gw, gy + gh, 1f, Color(60, 60, 60).rgb)
 
         if (draggingIndex in 0 until count) {
@@ -60,7 +60,7 @@ class CurveElement(
             categoryColor.red / 255f, categoryColor.green / 255f, categoryColor.blue / 255f, 1f
         )
         for (i in 0 until count - 1) {
-            RenderUtils.drawLine(
+            RenderHelper.drawLine(
                 CurveEditor.pointX(i, count, gx, gw).toDouble(),
                 CurveEditor.pointY(setting.getPoint(i), gy, gh).toDouble(),
                 CurveEditor.pointX(i + 1, count, gx, gw).toDouble(),
@@ -68,7 +68,7 @@ class CurveElement(
                 1.5f
             )
         }
-        RenderUtils.resetColor()
+        RenderColor.resetColor()
 
         for (i in 0 until count) {
             val px = CurveEditor.pointX(i, count, gx, gw)

@@ -16,9 +16,9 @@ import net.ccbluex.liquidbounce.utils.animations.AnimationUtil
 import net.ccbluex.liquidbounce.utils.block.block
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBorderedRect
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawFilledBox
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawSelectionBoundingBox
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
+import net.ccbluex.liquidbounce.utils.render.Render3D.drawFilledBox
+import net.ccbluex.liquidbounce.utils.render.Render3D.drawSelectionBoundingBox
+import net.ccbluex.liquidbounce.utils.render.RenderColor.glColor
 import net.minecraft.block.Block
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager.resetColor

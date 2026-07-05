@@ -15,7 +15,6 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.Never
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.NlModule
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.core.SliderMath
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.core.TextUtil
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.RenderUtil
 import net.ccbluex.liquidbounce.utils.animations.Animation
 import net.ccbluex.liquidbounce.utils.animations.Direction

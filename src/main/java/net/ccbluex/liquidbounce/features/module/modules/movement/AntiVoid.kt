@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
 import net.ccbluex.liquidbounce.event.*
+import net.ccbluex.liquidbounce.event.async.TickScheduler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.player.Blink
@@ -19,11 +20,10 @@ import net.ccbluex.liquidbounce.utils.extensions.component2
 import net.ccbluex.liquidbounce.utils.extensions.component3
 import net.ccbluex.liquidbounce.utils.movement.FallingPlayer
 import net.ccbluex.liquidbounce.utils.movement.MovementUtils.strafe
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawFilledBox
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.renderNameTag
+import net.ccbluex.liquidbounce.utils.render.Render3D.drawFilledBox
+import net.ccbluex.liquidbounce.utils.render.RenderColor.glColor
+import net.ccbluex.liquidbounce.utils.render.RenderText.renderNameTag
 import net.ccbluex.liquidbounce.utils.simulation.SimulatedPlayer
-import net.ccbluex.liquidbounce.utils.timing.WaitTickUtils
 import net.minecraft.block.BlockAir
 import net.minecraft.client.renderer.GlStateManager.resetColor
 import net.minecraft.item.ItemBlock
@@ -78,8 +78,10 @@ object AntiVoid : Module("AntiVoid", Category.MOVEMENT, Category.SubCategory.MOV
     private var shouldSimulateBlock = false
     private var shouldBlink = false
     private var pauseTicks = 0
+    private val blinkReleaseTask = Any()
 
     override fun onDisable() {
+        TickScheduler.cancel(blinkReleaseTask)
         prevX = 0.0
         prevY = 0.0
         prevZ = 0.0
@@ -156,9 +158,10 @@ object AntiVoid : Module("AntiVoid", Category.MOVEMENT, Category.SubCategory.MOV
             }
 
             if (thePlayer.fallDistance < 1.5f && !simPlayer.onGround && simPlayer.fallDistance >= maxFallDistance) {
+                TickScheduler.cancel(blinkReleaseTask)
                 shouldBlink = true
-            } else if (BlinkUtils.isBlinking) {
-                WaitTickUtils.schedule(blinkDelay) {
+            } else if (BlinkUtils.isBlinking && !TickScheduler.hasScheduled(blinkReleaseTask)) {
+                TickScheduler.scheduleAfter(blinkDelay, blinkReleaseTask) {
                     shouldBlink = false
                     BlinkUtils.cancel()
                 }

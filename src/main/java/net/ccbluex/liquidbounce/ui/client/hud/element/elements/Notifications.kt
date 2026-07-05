@@ -18,8 +18,8 @@ import net.ccbluex.liquidbounce.ui.font.Fonts.fontSFUI35
 import net.ccbluex.liquidbounce.ui.font.Fonts.fontSFUI40
 import net.ccbluex.liquidbounce.ui.font.Fonts.fontSemibold35
 import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
+import net.ccbluex.liquidbounce.utils.render.*
+import net.ccbluex.liquidbounce.utils.render.RenderPrimitives.drawRect
 import net.ccbluex.liquidbounce.utils.render.StencilUtils
 import net.ccbluex.liquidbounce.utils.animations.AnimationUtil.easeInBackNotify
 import net.ccbluex.liquidbounce.utils.animations.AnimationUtil.easeOutBackNotify
@@ -371,7 +371,7 @@ class Notification(
             }
             GL11.glScaled(pct, pct, pct)
             GL11.glTranslatef(-width.toFloat(), -height.toFloat() + 30, 0F)
-            RenderUtils.drawShadow(1F, 0F, width.toFloat() - 1, height.toFloat())
+            RenderEffects.drawShadow(1F, 0F, width.toFloat() - 1, height.toFloat())
             drawRect(1F, 0F, width.toFloat(), height.toFloat(), if (backgroundMode) backgroundColor.rgb else Color(0, 0, 0, 150).rgb)
             fun drawCircle(x: Float, y: Float, radius: Float, start: Int, end: Int) {
                 GlStateManager.enableBlend()

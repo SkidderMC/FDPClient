@@ -10,7 +10,6 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.Downw
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.NeverloseGui
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.NlModule
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.core.TextUtil
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.RenderUtil
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import java.awt.Color

@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.visual.Breadcrumbs
 import net.ccbluex.liquidbounce.utils.client.BlinkUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
+import net.ccbluex.liquidbounce.utils.render.RenderColor.glColor
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.minecraft.network.play.client.C02PacketUseEntity
 import org.lwjgl.opengl.GL11.*

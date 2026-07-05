@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.movement.Step
 import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.RenderColor
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.modules.client.Teams
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
@@ -356,7 +357,7 @@ object FightBot : Module("FightBot", Category.COMBAT, Category.SubCategory.COMBA
             for (vec in path) {
                 i += 100
                 val themeColor = getColor(1).rgb
-                RenderUtils.glColor(themeColor)
+                RenderColor.glColor(themeColor)
                 val x = vec.xCoord - renderPosX
                 val y = vec.yCoord - renderPosY
                 val z = vec.zCoord - renderPosZ
@@ -415,7 +416,7 @@ object FightBot : Module("FightBot", Category.COMBAT, Category.SubCategory.COMBA
         val pix2 = 3.1415926
         for (i in 0..20) {
             val themeColor = getColor(1).rgb
-            RenderUtils.glColor(themeColor)
+            RenderColor.glColor(themeColor)
             GL11.glVertex3d(
                 x + rad * cos(i * pix2 / 9.0), y,
                 z + rad * sin(i * pix2 / 9.0)

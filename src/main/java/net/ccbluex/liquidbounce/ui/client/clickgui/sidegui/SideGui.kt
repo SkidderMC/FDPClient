@@ -30,7 +30,7 @@ import net.ccbluex.liquidbounce.utils.animations.Direction
 import net.ccbluex.liquidbounce.utils.animations.impl.DecelerateAnimation
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.objects.Drag
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.*
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils
@@ -38,7 +38,7 @@ import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils.ClientColorMode
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.extensions.interpolateFloat
 import net.ccbluex.liquidbounce.utils.render.AnimationUtils.animate
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
+import net.ccbluex.liquidbounce.utils.render.RenderEffects.drawBloom
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawCustomShapeWithRadius
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedOutline
 import net.minecraft.client.gui.GuiScreen.getClipboardString
@@ -173,7 +173,7 @@ class SideGui : GuiPanel() {
         drawCategoryTabs(mouseX, mouseY, alpha)
 
         // Separator line
-        RenderUtils.drawRect2(
+        RenderPrimitives.drawRect2(
             drag!!.x + 20.0,
             drag!!.y + 50.0,
             (rectWidth - 40).toDouble(),
@@ -194,7 +194,7 @@ class SideGui : GuiPanel() {
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, button: Int) {
-        val isHoveringMainRect = RenderUtils.isHovering(drag!!.x, drag!!.y, rectWidth, rectHeight, mouseX, mouseY)
+        val isHoveringMainRect = RenderHelper.isHovering(drag!!.x, drag!!.y, rectWidth, rectHeight, mouseX, mouseY)
         if (isHoveringMainRect && button == 0 && !focused) {
             focused = true
             return
@@ -204,8 +204,8 @@ class SideGui : GuiPanel() {
         clickingHeader = isHoveringHeader(mouseX, mouseY)
 
         if (!draggingSlider && !clickingHeader) {
-            val canDrag = RenderUtils.isHovering(drag!!.x, drag!!.y, rectWidth, 50f, mouseX, mouseY) ||
-                    RenderUtils.isHovering(drag!!.x, drag!!.y, 20f, rectHeight, mouseX, mouseY)
+            val canDrag = RenderHelper.isHovering(drag!!.x, drag!!.y, rectWidth, 50f, mouseX, mouseY) ||
+                    RenderHelper.isHovering(drag!!.x, drag!!.y, 20f, rectHeight, mouseX, mouseY)
             drag!!.onClick(mouseX, mouseY, button, canDrag)
         }
 
@@ -214,7 +214,7 @@ class SideGui : GuiPanel() {
         if (currentCategory == "UI" && button == 0) {
             uiActions.forEachIndexed { i, action ->
                 val r = uiCardRect(i)
-                if (RenderUtils.isHovering(r.x, r.y, r.w, r.h, mouseX, mouseY)) action.third()
+                if (RenderHelper.isHovering(r.x, r.y, r.w, r.h, mouseX, mouseY)) action.third()
             }
         }
 
@@ -224,14 +224,14 @@ class SideGui : GuiPanel() {
         if (currentCategory == "Color") {
             checkColorCategoryInteractions(mouseX, mouseY, drag!!)
             val (hexX, hexY, hexW, hexH) = getColorHexFieldArea(drag!!)
-            if (RenderUtils.isHovering(hexX, hexY, hexW, hexH, mouseX, mouseY)) {
+            if (RenderHelper.isHovering(hexX, hexY, hexW, hexH, mouseX, mouseY)) {
                 colorHexFocused = true
             }
         }
         if (currentCategory == "Background") {
             checkBackgroundInteractions(mouseX, mouseY)
             val (hexX, hexY, hexW, hexH) = getBgHexFieldArea(drag!!)
-            if (RenderUtils.isHovering(hexX, hexY, hexW, hexH, mouseX, mouseY)) {
+            if (RenderHelper.isHovering(hexX, hexY, hexW, hexH, mouseX, mouseY)) {
                 bgHexFocused = true
             }
         }
@@ -240,7 +240,7 @@ class SideGui : GuiPanel() {
         val fadeSpeedSliderY = drag!!.y + 20
         val fadeSpeedSliderWidth = 80f
         val fadeSpeedSliderHeight = 10f
-        if (RenderUtils.isHovering(fadeSpeedSliderX, fadeSpeedSliderY, fadeSpeedSliderWidth, fadeSpeedSliderHeight, mouseX, mouseY)
+        if (RenderHelper.isHovering(fadeSpeedSliderX, fadeSpeedSliderY, fadeSpeedSliderWidth, fadeSpeedSliderHeight, mouseX, mouseY)
             && button == 0) {
             draggingSlider = true
         }
@@ -286,7 +286,7 @@ class SideGui : GuiPanel() {
         val accent = ClientThemesUtils.getColor()
         uiActions.forEachIndexed { i, action ->
             val r = uiCardRect(i)
-            val hovered = RenderUtils.isHovering(r.x, r.y, r.w, r.h, mouseX, mouseY)
+            val hovered = RenderHelper.isHovering(r.x, r.y, r.w, r.h, mouseX, mouseY)
             val on = action.second()
 
             val hv = animate(uiCardHover[i] ?: 0f, if (hovered) 1f else 0f, 0.2f * RenderUtils.deltaTime)
@@ -295,16 +295,16 @@ class SideGui : GuiPanel() {
             drawCustomShapeWithRadius(r.x, r.y, r.w, r.h, 8f, Color(32, 33, 38, alpha))
             val glow = if (on) 0.30f else 0.20f * hv
             if (glow > 0.001f) {
-                drawCustomShapeWithRadius(r.x, r.y, r.w, r.h, 8f, Color(RenderUtils.applyOpacity(accent.rgb, glow * alpha / 255f), true))
+                drawCustomShapeWithRadius(r.x, r.y, r.w, r.h, 8f, Color(RenderColor.applyOpacity(accent.rgb, glow * alpha / 255f), true))
             }
             if (on || hv > 0.01f) {
-                drawRoundedOutline(r.x, r.y, r.x + r.w, r.y + r.h, 8f, 1.5f, RenderUtils.applyOpacity(accent.rgb, (if (on) 1f else hv) * alpha / 255f))
+                drawRoundedOutline(r.x, r.y, r.x + r.w, r.y + r.h, 8f, 1.5f, RenderColor.applyOpacity(accent.rgb, (if (on) 1f else hv) * alpha / 255f))
             }
             Fonts.InterBold_26.drawCenteredStringShadow(
                 action.first,
                 r.x + r.w / 2f,
                 r.y + r.h / 2f - Fonts.InterBold_26.height / 2f,
-                RenderUtils.applyOpacity(-1, alpha / 255f)
+                RenderColor.applyOpacity(-1, alpha / 255f)
             )
         }
     }
@@ -319,7 +319,7 @@ class SideGui : GuiPanel() {
 
     private fun updateAnimations(mouseX: Int, mouseY: Int) {
         clickAnimation?.direction =  if (focused) Direction.FORWARDS else Direction.BACKWARDS
-        val hovering = RenderUtils.isHovering(drag!!.x, drag!!.y, rectWidth, rectHeight, mouseX, mouseY)
+        val hovering = RenderHelper.isHovering(drag!!.x, drag!!.y, rectWidth, rectHeight, mouseX, mouseY)
         hoverAnimation?.direction = if (hovering) Direction.FORWARDS else Direction.BACKWARDS
         val sr = ScaledResolution(MinecraftInstance.mc)
         val stillAnimating = !timerUtil!!.hasTimeElapsed(6000) || (!hoverAnimation!!.isDone || (hoverAnimation!!.isDone && hoverAnimation!!.direction == Direction.FORWARDS))
@@ -362,25 +362,25 @@ class SideGui : GuiPanel() {
     private fun tabHeight() = (Fonts.InterBold_26.height + 10).toFloat()
 
     private fun drawCategoryTabs(mouseX: Int, mouseY: Int, alpha: Int) {
-        val textColor = RenderUtils.applyOpacity(-1, alpha / 255f)
+        val textColor = RenderColor.applyOpacity(-1, alpha / 255f)
         val yVal = drag!!.y + 15
         val h = tabHeight()
 
         var x = tabStartX()
         categories.forEachIndexed { index, cat ->
             val w = tabBoxWidth(cat)
-            val hovered = RenderUtils.isHovering(x, yVal - 5, w, h, mouseX, mouseY)
+            val hovered = RenderHelper.isHovering(x, yVal - 5, w, h, mouseX, mouseY)
             val catHoverAnim = categoryAnimation[cat]?.get(0)
             val catEnableAnim = categoryAnimation[cat]?.get(1)
             catHoverAnim?.direction = if (hovered) Direction.FORWARDS else Direction.BACKWARDS
             catEnableAnim?.direction = if (currentCategory == cat) Direction.FORWARDS else Direction.BACKWARDS
             val baseColor = Color(45, 45, 45, alpha)
-            val colorToInterpolate = RenderUtils.applyOpacity(generateColor(index).rgb, alpha / 255f)
+            val colorToInterpolate = RenderColor.applyOpacity(generateColor(index).rgb, alpha / 255f)
             val colorToInterpolateAsColor = Color(colorToInterpolate, true)
             val hoverOut = catHoverAnim?.output?.toFloat() ?: 0f
             val enableOut = catEnableAnim?.output?.toFloat() ?: 0f
-            val hoverColor: Color = RenderUtils.interpolateColorC(baseColor, RenderUtils.brighter(baseColor, 0.8f), hoverOut)
-            val finalColor: Color = RenderUtils.interpolateColorC(hoverColor, colorToInterpolateAsColor, enableOut)
+            val hoverColor: Color = RenderColor.interpolateColorC(baseColor, RenderColor.brighter(baseColor, 0.8f), hoverOut)
+            val finalColor: Color = RenderColor.interpolateColorC(hoverColor, colorToInterpolateAsColor, enableOut)
             drawCustomShapeWithRadius(x, yVal - 5, w, h, 6f, finalColor)
             Fonts.InterBold_26.drawCenteredString(cat, x + w / 2f, yVal, textColor)
             x += w + tabGap
@@ -400,7 +400,7 @@ class SideGui : GuiPanel() {
         var x = tabStartX()
         categories.forEach { cat ->
             val w = tabBoxWidth(cat)
-            if (RenderUtils.isHovering(x, yVal - 5, w, h, mouseX, mouseY)) {
+            if (RenderHelper.isHovering(x, yVal - 5, w, h, mouseX, mouseY)) {
                 currentCategory = cat
                 return
             }
@@ -417,7 +417,7 @@ class SideGui : GuiPanel() {
         var x = tabStartX()
         categories.forEach { cat ->
             val w = tabBoxWidth(cat)
-            if (RenderUtils.isHovering(x, yVal - 5, w, h, mouseX, mouseY)) return true
+            if (RenderHelper.isHovering(x, yVal - 5, w, h, mouseX, mouseY)) return true
             x += w + tabGap
         }
         return false
@@ -427,7 +427,7 @@ class SideGui : GuiPanel() {
      * Overlays, gradients, bloom effect.
      */
     private fun drawOverlays(sr: ScaledResolution, alpha: Int, mouseX: Int, mouseY: Int) {
-        RenderUtils.setAlphaLimit(0f)
+        RenderHelper.setAlphaLimit(0f)
         RenderUtils.drawGradientRect2(
             drag!!.x + 20.0,
             drag!!.y + 51.0,
@@ -443,10 +443,10 @@ class SideGui : GuiPanel() {
             0.0,
             40.0,
             sr.scaledHeight.toDouble(),
-            RenderUtils.applyOpacity(generateColor(colorIndex).rgb, 0f),
-            RenderUtils.applyOpacity(generateColor(colorIndex).rgb, 0.4f * moveAnimOut)
+            RenderColor.applyOpacity(generateColor(colorIndex).rgb, 0f),
+            RenderColor.applyOpacity(generateColor(colorIndex).rgb, 0.4f * moveAnimOut)
         )
-        RenderUtils.setAlphaLimit(1f)
+        RenderHelper.setAlphaLimit(1f)
         drawBloom(mouseX - 5, mouseY - 5, 10, 10, 16, Color(guiColor))
     }
 }

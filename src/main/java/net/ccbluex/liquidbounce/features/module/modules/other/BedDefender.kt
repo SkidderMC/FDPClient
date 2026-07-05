@@ -103,17 +103,17 @@ object BedDefender : Module("BedDefender", Category.OTHER, Category.SubCategory.
     override fun onDisable() {
         RotationUtils.cancelTargetRotation(this)
 
+        blockPosition = null
+        defenceBlocks.clear()
+        bedTopPositions.clear()
+        bedBottomPositions.clear()
+
         val player = mc.thePlayer ?: return
 
         if (!GameSettings.isKeyDown(mc.gameSettings.keyBindSneak)) {
             mc.gameSettings.keyBindSneak.pressed = false
             if (player.isSneaking) player.isSneaking = false
         }
-
-        blockPosition = null
-        defenceBlocks.clear()
-        bedTopPositions.clear()
-        bedBottomPositions.clear()
     }
 
     val onUpdate = handler<UpdateEvent> {

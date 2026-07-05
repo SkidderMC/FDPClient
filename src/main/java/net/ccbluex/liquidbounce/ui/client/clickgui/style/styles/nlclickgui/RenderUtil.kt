@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui
 
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.RenderColor
 import net.ccbluex.liquidbounce.utils.animations.Animation
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.tessellate.Tessellation
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.tessellate.Tessellation.Companion.createExpanding
@@ -958,10 +958,10 @@ object RenderUtil {
         var amount = amount
         amount = min(1f, max(0f, amount))
         return Color(
-            RenderUtils.interpolateInt(color1.getRed(), color2.getRed(), amount),
-            RenderUtils.interpolateInt(color1.getGreen(), color2.getGreen(), amount),
-            RenderUtils.interpolateInt(color1.getBlue(), color2.getBlue(), amount),
-            RenderUtils.interpolateInt(color1.getAlpha(), color2.getAlpha(), amount)
+            RenderColor.interpolateInt(color1.getRed(), color2.getRed(), amount),
+            RenderColor.interpolateInt(color1.getGreen(), color2.getGreen(), amount),
+            RenderColor.interpolateInt(color1.getBlue(), color2.getBlue(), amount),
+            RenderColor.interpolateInt(color1.getAlpha(), color2.getAlpha(), amount)
         )
     }
 

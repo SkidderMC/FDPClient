@@ -23,12 +23,12 @@ import net.ccbluex.liquidbounce.utils.extensions.lerpWith
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.blendColors
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.withAlpha
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.*
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBorderedRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawFilledCircle
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawTexture
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.updateTextureCache
+import net.ccbluex.liquidbounce.utils.render.RenderPrimitives.drawRect
+import net.ccbluex.liquidbounce.utils.render.RenderTexture.drawTexture
+import net.ccbluex.liquidbounce.utils.render.RenderTexture.updateTextureCache
 import net.ccbluex.liquidbounce.utils.ui.EditableText
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.util.StringUtils
@@ -1044,7 +1044,7 @@ object BlackStyle : Style() {
                                     val curX = graphX + t * graphWidth
                                     val curY = graphBottom - value.sample(t) * graphHeight
 
-                                    RenderUtils.drawLine(
+                                    RenderHelper.drawLine(
                                         prevX, prevY.toDouble(),
                                         curX.toDouble(), curY.toDouble(),
                                         1f

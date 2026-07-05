@@ -384,12 +384,9 @@ object Flight : Module("Flight", Category.MOVEMENT, Category.SubCategory.MOVEMEN
     }
 
     override fun onDisable() {
-        val thePlayer = mc.thePlayer ?: return
+        val thePlayer = mc.thePlayer
 
-        if (!mode.startsWith("AAC") && mode != "Hypixel" && mode != "VerusGlide"
-            && mode != "SmoothVanilla" && mode != "Vanilla" && mode != "Rewinside"
-            && mode != "Fireball" && mode != "Collide" && mode != "Jump"
-        ) {
+        if (thePlayer != null && !mode.startsWith("AAC") && mode !in MOTION_PRESERVING_MODES) {
 
             if (mode == "CubeCraft") thePlayer.stopXZ()
             else thePlayer.stop()
@@ -397,9 +394,9 @@ object Flight : Module("Flight", Category.MOVEMENT, Category.SubCategory.MOVEMEN
 
         wasFired = false
         firePosition = null
-        thePlayer.capabilities.isFlying = wasFlying
+        thePlayer?.capabilities?.isFlying = wasFlying
         mc.timer.timerSpeed = 1f
-        thePlayer.speedInAir = 0.02f
+        thePlayer?.speedInAir = 0.02f
 
         modeModule.onDisable()
     }
@@ -513,3 +510,7 @@ object Flight : Module("Flight", Category.MOVEMENT, Category.SubCategory.MOVEMEN
     private val modeModule
         get() = flyModes.selectedMode(mode)
 }
+
+private val MOTION_PRESERVING_MODES = setOf(
+    "Hypixel", "VerusGlide", "SmoothVanilla", "Vanilla", "Rewinside", "Fireball", "Collide", "Jump",
+)

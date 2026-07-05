@@ -15,7 +15,7 @@ import net.ccbluex.liquidbounce.utils.extensions.safeDiv
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.withOutline
+import net.ccbluex.liquidbounce.utils.render.StencilUtils.withOutline
 import java.awt.Color
 import kotlin.math.nextDown
 

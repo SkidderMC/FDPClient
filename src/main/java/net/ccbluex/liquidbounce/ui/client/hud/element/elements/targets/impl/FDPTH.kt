@@ -12,9 +12,9 @@ import net.ccbluex.liquidbounce.utils.extensions.hurtPercent
 import net.ccbluex.liquidbounce.utils.extensions.skin
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Targets
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
+import net.ccbluex.liquidbounce.utils.render.RenderPrimitives.drawRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedCornerRect
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawShadow
+import net.ccbluex.liquidbounce.utils.render.RenderEffects.drawShadow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.quickDrawHead
 import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.GL11.*

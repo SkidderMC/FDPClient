@@ -5,19 +5,19 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.client.button
 
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.renderer.GlStateManager
 import java.awt.Color
 import kotlin.math.abs
+import net.ccbluex.liquidbounce.utils.render.RenderPrimitives
 
 class LiquidButtonRenderer(button: GuiButton) : AbstractButtonRenderer(button) {
     private var buttonWidthOffset = button.width / 2F
 
     override fun render(mouseX: Int, mouseY: Int, mc: Minecraft) {
         buttonWidthOffset = interpolateValue(if(button.hovered) { button.width / 15F } else { 0F }, buttonWidthOffset, 0.6F)
-        RenderUtils.drawRect(button.xPosition.toFloat() + buttonWidthOffset, button.yPosition.toFloat(), button.xPosition.toFloat() + button.width.toFloat() - buttonWidthOffset, button.yPosition.toFloat() + button.height.toFloat(), Color(0, 0, 0, (120F + (buttonWidthOffset * 4F)).toInt().coerceIn(0, 200)).rgb)
+        RenderPrimitives.drawRect(button.xPosition.toFloat() + buttonWidthOffset, button.yPosition.toFloat(), button.xPosition.toFloat() + button.width.toFloat() - buttonWidthOffset, button.yPosition.toFloat() + button.height.toFloat(), Color(0, 0, 0, (120F + (buttonWidthOffset * 4F)).toInt().coerceIn(0, 200)).rgb)
         GlStateManager.resetColor()
     }
 

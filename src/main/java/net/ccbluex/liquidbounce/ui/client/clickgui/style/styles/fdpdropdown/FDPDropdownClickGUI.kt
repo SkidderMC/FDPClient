@@ -17,8 +17,8 @@ import net.ccbluex.liquidbounce.utils.animations.Direction
 import net.ccbluex.liquidbounce.utils.animations.impl.DecelerateAnimation
 import net.ccbluex.liquidbounce.utils.animations.impl.EaseBackIn
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.normal.Main
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
+import net.ccbluex.liquidbounce.utils.render.*
+import net.ccbluex.liquidbounce.utils.render.RenderEffects.drawBloom
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.minecraft.client.gui.GuiScreen
@@ -110,7 +110,7 @@ class FDPDropdownClickGUI : GuiScreen() {
                 val effectiveMouseX = if (focusedConfigGui) 0 else transformedMouseX.toInt()
                 val effectiveMouseY = if (focusedConfigGui) 0 else transformedMouseY.toInt()
 
-                RenderUtils.scale(sr.scaledWidth / 2f, sr.scaledHeight / 2f, finalScale.toFloat()) {
+                RenderHelper.scale(sr.scaledWidth / 2f, sr.scaledHeight / 2f, finalScale.toFloat()) {
                     categoryPanels?.forEach { it.drawScreen(effectiveMouseX, effectiveMouseY) }
                 }
                 sideGui.drawScreen(mouseX, mouseY, partialTicks, (255 * fadeAnimation.output).toInt().coerceIn(0, 255))

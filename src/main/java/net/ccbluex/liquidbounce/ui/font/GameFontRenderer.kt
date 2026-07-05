@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.utils.client.MinecraftInstance.Companion.mc
 import net.ccbluex.liquidbounce.utils.kotlin.LruCache
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.hexColors
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.randomMagicText
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawLine
+import net.ccbluex.liquidbounce.utils.render.RenderHelper.drawLine
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.GradientFontShader
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.RainbowFontShader
 import net.minecraft.client.gui.FontRenderer

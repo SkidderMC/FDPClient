@@ -96,14 +96,14 @@ object Step : Module("Step", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MA
     }
 
     override fun onDisable() {
-        val thePlayer = mc.thePlayer ?: return
+        val thePlayer = mc.thePlayer
 
         // Change step height back to default (0.6 is default)
-        thePlayer.stepHeight = 0.6F
+        thePlayer?.stepHeight = 0.6F
         mc.timer.timerSpeed = 1f
         wasTimer = false
         canStep = false
-        lastOnGround = thePlayer.onGround
+        lastOnGround = thePlayer?.onGround == true
     }
 
     val onUpdate = loopSequence {

@@ -10,7 +10,6 @@ import kotlinx.coroutines.launch
 import me.liuli.elixir.account.CrackedAccount
 import me.liuli.elixir.account.MicrosoftAccount
 import me.liuli.elixir.account.MinecraftAccount
-import me.liuli.elixir.account.MojangAccount
 import net.ccbluex.liquidbounce.FDPClient.CLIENT_CLOUD
 import net.ccbluex.liquidbounce.event.EventManager
 import net.ccbluex.liquidbounce.event.SessionUpdateEvent
@@ -28,7 +27,7 @@ import net.ccbluex.liquidbounce.utils.client.MinecraftInstance.Companion.mc
 import net.ccbluex.liquidbounce.utils.io.*
 import net.ccbluex.liquidbounce.utils.kotlin.swap
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.randomAccount
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
+import net.ccbluex.liquidbounce.utils.render.RenderEffects.drawBloom
 import net.ccbluex.liquidbounce.utils.ui.AbstractScreen
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
@@ -180,20 +179,24 @@ class GuiAltManager(private val prevGui: GuiScreen) : AbstractScreen() {
 
             7 -> { // Import button
                 val file = MiscUtils.openFileChooser(FileFilters.TEXT) ?: return
+                var skippedCredentials = 0
 
                 file.forEachLine {
                     val accountData = it.split(':', limit = 2)
-                    if (accountData.size > 1) {
-                        // Most likely a mojang account
-                        accountsConfig.addMojangAccount(accountData[0], accountData[1])
-                    } else if (accountData[0].length < 16) {
+                    if (accountData.size == 1 && accountData[0].length < 16) {
                         // Might be cracked account
                         accountsConfig.addCrackedAccount(accountData[0])
-                    } // skip account
+                    } else {
+                        skippedCredentials++
+                    }
                 }
 
                 saveConfig(accountsConfig)
-                status = "§aThe accounts were imported successfully."
+                status = if (skippedCredentials == 0) {
+                    "§aThe offline accounts were imported successfully."
+                } else {
+                    "§eImported offline accounts; skipped $skippedCredentials unsupported credential entries."
+                }
             }
 
             12 -> { // Export button
@@ -214,7 +217,6 @@ class GuiAltManager(private val prevGui: GuiScreen) : AbstractScreen() {
 
                     val accounts = accountsConfig.accounts.joinToString(separator = "\n") { account ->
                         when (account) {
-                            is MojangAccount -> "${account.email}:${account.password}" // EMAIL:PASSWORD
                             is MicrosoftAccount -> "${account.name}:${account.session.token}" // NAME:SESSION
                             else -> account.name
                         }
@@ -238,7 +240,6 @@ class GuiAltManager(private val prevGui: GuiScreen) : AbstractScreen() {
                 try {
                     // Format data for other tools
                     val formattedData = when (currentAccount) {
-                        is MojangAccount -> "${currentAccount.email}:${currentAccount.password}" // EMAIL:PASSWORD
                         is MicrosoftAccount -> "${currentAccount.name}:${currentAccount.session.token}" // NAME:SESSION
                         else -> currentAccount.name
                     }
@@ -363,7 +364,7 @@ class GuiAltManager(private val prevGui: GuiScreen) : AbstractScreen() {
                 return accountsConfig.accounts.filter {
                     it.name.contains(
                         search, ignoreCase = true
-                    ) || (it is MojangAccount && it.email.contains(search, ignoreCase = true))
+                    )
                 }
             }
 
@@ -410,15 +411,11 @@ class GuiAltManager(private val prevGui: GuiScreen) : AbstractScreen() {
 
         override fun drawSlot(id: Int, x: Int, y: Int, var4: Int, var5: Int, var6: Int) {
             val minecraftAccount = accounts[id]
-            val accountName = if (minecraftAccount is MojangAccount && minecraftAccount.name.isEmpty()) {
-                minecraftAccount.email
-            } else {
-                minecraftAccount.name
-            }
+            val accountName = minecraftAccount.name
 
             Fonts.minecraftFont.drawStringWithShadow(accountName, width / 2f - 40, y + 2f, Color.WHITE.rgb)
             Fonts.minecraftFont.drawStringWithShadow(
-                if (minecraftAccount is CrackedAccount) "Cracked" else if (minecraftAccount is MicrosoftAccount) "Microsoft" else if (minecraftAccount is MojangAccount) "Mojang" else "Something else",
+                if (minecraftAccount is CrackedAccount) "Cracked" else if (minecraftAccount is MicrosoftAccount) "Microsoft" else "Something else",
                 width / 2f,
                 y + 15f,
                 if (minecraftAccount is CrackedAccount) Color.GRAY.rgb else Color(118, 255, 95).rgb

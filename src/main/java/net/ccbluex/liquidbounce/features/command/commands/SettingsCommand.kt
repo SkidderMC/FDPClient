@@ -17,12 +17,8 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.config.SettingsUtils
-import net.ccbluex.liquidbounce.utils.io.MiscUtils
 import net.ccbluex.liquidbounce.utils.kotlin.SharedScopes
 import net.ccbluex.liquidbounce.utils.kotlin.StringUtils
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.toRequestBody
 import java.awt.Desktop
 import java.io.File
 import java.io.IOException
@@ -36,7 +32,7 @@ object SettingsCommand : Command("autosettings", "autosetting", "settings", "set
         val usedAlias = args[0].lowercase()
 
         if (args.size <= 1) {
-            chatSyntax("$usedAlias <load/loadlocal/list/upload/report/create/delete/openfolder/save/rename/current/copy>")
+            chatSyntax("$usedAlias <load/loadlocal/list/create/delete/openfolder/save/rename/current/copy>")
             return
         }
 
@@ -44,8 +40,6 @@ object SettingsCommand : Command("autosettings", "autosetting", "settings", "set
             when (args[1].lowercase()) {
                 "load" -> loadSettings(args)
                 "loadlocal" -> localSettings(args)
-                "report" -> reportSettings(args)
-                "upload" -> uploadSettings(args)
                 "list" -> listSettings()
                 "create" -> createSettings(args)
                 "delete" -> deleteConfig(args)
@@ -54,7 +48,7 @@ object SettingsCommand : Command("autosettings", "autosetting", "settings", "set
                 "rename" -> renameConfig(args)
                 "current" -> currentConfig()
                 "copy" -> copyConfig(args)
-                else -> chatSyntax("$usedAlias <load/loadlocal/list/upload/report/create/delete/openfolder/save/rename/current/copy>")
+                else -> chatSyntax("$usedAlias <load/loadlocal/list/create/delete/openfolder/save/rename/current/copy>")
             }
         }
     }
@@ -105,76 +99,6 @@ object SettingsCommand : Command("autosettings", "autosetting", "settings", "set
             } catch (e: IOException) {
                 LOGGER.error("Failed to load local settings", e)
                 chat("Failed to load local settings: ${e.message}")
-            }
-        }
-    }
-
-    // Report subcommand
-    private suspend fun reportSettings(args: Array<String>) {
-        withContext(Dispatchers.IO) {
-            if (args.size < 3) {
-                chatSyntax("${args[0].lowercase()} report <name>")
-                return@withContext
-            }
-
-            try {
-                val response = ClientApi.reportSettings(settingId = args[2])
-                when (response.status) {
-                    Status.SUCCESS -> chat("§6${response.message}")
-                    Status.ERROR -> chat("§c${response.message}")
-                }
-            } catch (e: Exception) {
-                LOGGER.error("Failed to report settings", e)
-                chat("Failed to report settings: ${e.message}")
-            }
-        }
-    }
-
-    // Upload subcommand
-    private suspend fun uploadSettings(args: Array<String>) {
-        withContext(Dispatchers.IO) {
-            val option = if (args.size > 3) StringUtils.toCompleteString(args, 3).lowercase() else "all"
-            val all = "all" in option
-            val values = all || "values" in option
-            val binds = all || "binds" in option
-            val states = all || "states" in option
-
-            if (!values && !binds && !states) {
-                chatSyntax("${args[0].lowercase()} upload [all/values/binds/states]...")
-                return@withContext
-            }
-
-            try {
-                chat("§9Creating settings...")
-                val settingsScript = SettingsUtils.generateScript(values, binds, states)
-                chat("§9Uploading settings...")
-
-                val serverData = mc.currentServerData ?: error("You need to be on a server to upload settings.")
-
-                val name = "${FDPClient.clientCommit}-${serverData.serverIP.replace(".", "_")}"
-                val response = ClientApi.uploadSettings(
-                    name = name.toRequestBody(),
-                    contributors = mc.session.username.toRequestBody(),
-                    settingsFile = MultipartBody.Part.createFormData(
-                        "settings_file",
-                        "settings_file",
-                        settingsScript.toByteArray().toRequestBody("application/octet-stream".toMediaTypeOrNull())
-                    )
-                )
-
-                when (response.status) {
-                    Status.SUCCESS -> {
-                        chat("§6${response.message}")
-                        chat("§9Token: §6${response.token}")
-
-                        // Store token in clipboard
-                        MiscUtils.copy(response.token)
-                    }
-                    Status.ERROR -> chat("§c${response.message}")
-                }
-            } catch (e: Exception) {
-                LOGGER.error("Failed to upload settings", e)
-                chat("Failed to upload settings: ${e.message}")
             }
         }
     }
@@ -406,10 +330,10 @@ object SettingsCommand : Command("autosettings", "autosetting", "settings", "set
         }
 
         return when (args.size) {
-            1 -> listOf("list", "load", "loadlocal", "upload", "report", "create", "delete", "openfolder", "save", "rename", "current", "copy").filter { it.startsWith(args[0], true) }
+            1 -> listOf("list", "load", "loadlocal", "create", "delete", "openfolder", "save", "rename", "current", "copy").filter { it.startsWith(args[0], true) }
             2 -> {
                 when (args[0].lowercase()) {
-                    "load", "loadlocal", "report", "create", "delete", "rename", "copy" -> {
+                    "load", "loadlocal", "create", "delete", "rename", "copy" -> {
                         if (autoSettingsList == null) {
                             loadSettings(true, 500)
                         }
@@ -421,9 +345,6 @@ object SettingsCommand : Command("autosettings", "autosetting", "settings", "set
                         val allConfigs = autoSettingsList?.map { it.settingId }?.plus(configFiles)?.distinct() ?: configFiles
 
                         return allConfigs.filter { it.startsWith(args[1], true) }
-                    }
-                    "upload" -> {
-                        return listOf("all", "values", "binds", "states").filter { it.startsWith(args[1], true) }
                     }
                     else -> emptyList()
                 }

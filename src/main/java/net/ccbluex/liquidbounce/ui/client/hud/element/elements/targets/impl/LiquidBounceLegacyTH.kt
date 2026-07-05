@@ -15,9 +15,9 @@ import net.ccbluex.liquidbounce.utils.attack.EntityUtils
 import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.deltaTime
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
+import net.ccbluex.liquidbounce.utils.render.RenderPrimitives.drawRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedBorderRect
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawScaledCustomSizeModalRect
+import net.ccbluex.liquidbounce.utils.render.RenderTexture.drawScaledCustomSizeModalRect
 import net.ccbluex.liquidbounce.utils.animations.AnimationUtil
 import net.ccbluex.liquidbounce.utils.animations.AnimationUtil.debugFPS
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.RainbowShader

@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.TargetSty
 import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils.getColorWithAlpha
 import net.ccbluex.liquidbounce.utils.extensions.hurtPercent
 import net.ccbluex.liquidbounce.utils.extensions.skin
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.*
 import net.ccbluex.liquidbounce.utils.render.StencilUtils
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.EntityLivingBase
@@ -31,7 +31,7 @@ class ModernTH(inst: Targets) : TargetStyle("Modern", inst, true) {
         val additionalWidth = ((font.getStringWidth(entity.name) * 1.1).toInt().coerceAtLeast(70) + font.getStringWidth("Name: ") * 1.1 + 7.0).roundToInt()
         val healthBarWidth = additionalWidth - (font.getStringWidth("20") * 1.15).roundToInt() - 16
         RenderUtils.drawRoundedCornerRect(0f, 0f, 50f + additionalWidth, 50f, 7f, Color(0, 0, 0, 130).rgb)
-        //RenderUtils.drawShadow(2f, 2f, 48f + additionalWidth, 48f)
+        //RenderEffects.drawShadow(2f, 2f, 48f + additionalWidth, 48f)
 
         // circle player avatar
         val hurtPercent = entity.hurtPercent

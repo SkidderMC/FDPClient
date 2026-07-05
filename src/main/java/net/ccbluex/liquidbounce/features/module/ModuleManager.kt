@@ -11,6 +11,8 @@ import net.ccbluex.liquidbounce.event.KeyStateEvent
 import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.config.ValueOrganizer
 import net.ccbluex.liquidbounce.features.command.CommandManager.registerCommand
+import net.ccbluex.liquidbounce.features.command.CommandManager.commands
+import net.ccbluex.liquidbounce.features.command.CommandManager.unregisterCommand
 import net.ccbluex.liquidbounce.utils.client.ClassUtils
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import org.lwjgl.input.Keyboard
@@ -64,9 +66,14 @@ object ModuleManager : Listenable, Collection<Module> by MODULE_REGISTRY {
      * Register [module]
      */
     fun registerModule(module: Module) {
-        MODULE_REGISTRY += module
-        ValueOrganizer.organize(module)
-        generateCommand(module)
+        check(MODULE_REGISTRY.add(module)) { "A module named '${module.name}' is already registered" }
+        runCatching {
+            ValueOrganizer.organize(module)
+            generateCommand(module)
+        }.onFailure {
+            MODULE_REGISTRY.remove(module)
+            removeModuleCommands(module)
+        }.getOrThrow()
     }
 
     /**
@@ -79,8 +86,21 @@ object ModuleManager : Listenable, Collection<Module> by MODULE_REGISTRY {
      * Unregister module
      */
     fun unregisterModule(module: Module) {
-        MODULE_REGISTRY.remove(module)
-        module.onUnregister()
+        if (!MODULE_REGISTRY.remove(module)) return
+
+        if (module.state) module.state = false
+        removeModuleCommands(module)
+
+        runCatching(module::onUnregister).onFailure {
+            LOGGER.error("Failed to unregister module ${module.name} cleanly.", it)
+        }
+    }
+
+    private fun removeModuleCommands(module: Module) {
+        commands.filterIsInstance<ModuleCommand>()
+            .filter { it.module === module }
+            .toList()
+            .forEach(::unregisterCommand)
     }
 
     /**

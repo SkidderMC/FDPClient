@@ -16,7 +16,7 @@ import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.client.asResourceLocation
 import net.ccbluex.liquidbounce.utils.client.playSound
 import net.ccbluex.liquidbounce.utils.extensions.decimalPlaces
-import net.ccbluex.liquidbounce.utils.timing.WaitTickUtils
+import net.ccbluex.liquidbounce.event.async.TickScheduler
 import net.ccbluex.liquidbounce.utils.ui.EditableText
 import org.lwjgl.input.Mouse
 import java.awt.Color
@@ -82,11 +82,9 @@ abstract class Style : MinecraftInstance {
             set(new, false)
         }
 
-        with(WaitTickUtils) {
-            if (!hasScheduled(this)) {
-                conditionalSchedule(this, 10) {
-                    (sliderValueHeld == null).also { if (it) saveConfig(valuesConfig) }
-                }
+        if (!TickScheduler.hasScheduled(this)) {
+            TickScheduler.scheduleConditional(this, 10) {
+                (sliderValueHeld == null).also { if (it) saveConfig(valuesConfig) }
             }
         }
     }
@@ -94,11 +92,9 @@ abstract class Style : MinecraftInstance {
     fun withDelayedSave(f: () -> Unit) {
         f()
 
-        with(WaitTickUtils) {
-            if (!hasScheduled(this)) {
-                conditionalSchedule(this, 10) {
-                    (sliderValueHeld == null).also { if (it) saveConfig(valuesConfig) }
-                }
+        if (!TickScheduler.hasScheduled(this)) {
+            TickScheduler.scheduleConditional(this, 10) {
+                (sliderValueHeld == null).also { if (it) saveConfig(valuesConfig) }
             }
         }
     }

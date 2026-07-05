@@ -7,7 +7,7 @@ package net.ccbluex.liquidbounce.ui.client.clickgui.sidegui.managers
 
 import net.ccbluex.liquidbounce.FDPClient.fileManager
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.objects.Drag
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.*
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils.ClientColorMode
 import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils.ThemeFadeSpeed
@@ -67,7 +67,7 @@ object SideGuiColorManager {
 
         themeColors.forEachIndexed { i, colorName ->
             if (colorY + colorHeight > drag.y + 60 && colorY < maxVisibleHeight) {
-                val isHovered = RenderUtils.isHovering(colorX, colorY, colorWidth, colorHeight, mouseX, mouseY)
+                val isHovered = RenderHelper.isHovering(colorX, colorY, colorWidth, colorHeight, mouseX, mouseY)
                 if (isHovered && Mouse.isButtonDown(0)) {
                     ClientColorMode = colorName
                     fileManager.saveConfig(fileManager.colorThemeConfig, true)
@@ -119,14 +119,14 @@ object SideGuiColorManager {
             val buttonWidth = 50f
             val scrollbarX = drag.x + 25 + (colorWidth + 10) * colorsPerRow + buttonWidth + 5
             val scrollbarY = drag.y + 60
-            RenderUtils.drawRect2(
+            RenderPrimitives.drawRect2(
                 scrollbarX.toDouble(),
                 scrollbarY.toDouble(),
                 5.0,
                 visibleHeight.toDouble(),
                 Color(50, 50, 50, alpha).rgb
             )
-            RenderUtils.drawRect2(
+            RenderPrimitives.drawRect2(
                 scrollbarX.toDouble(),
                 (scrollbarY + thumbY).toDouble(),
                 5.0,
@@ -169,7 +169,7 @@ object SideGuiColorManager {
         val fadeSpeedSliderHeight = 10f
 
         // Fade speed slider
-        RenderUtils.drawRect2(
+        RenderPrimitives.drawRect2(
             fadeSpeedSliderX.toDouble(),
             fadeSpeedSliderY.toDouble(),
             fadeSpeedSliderWidth.toDouble(),
@@ -177,7 +177,7 @@ object SideGuiColorManager {
             Color(60, 60, 60).rgb
         )
         val sliderValue = (ThemeFadeSpeed / 10f) * fadeSpeedSliderWidth
-        RenderUtils.drawRect2(
+        RenderPrimitives.drawRect2(
             fadeSpeedSliderX.toDouble(),
             fadeSpeedSliderY.toDouble(),
             sliderValue.toDouble(),
@@ -187,11 +187,11 @@ object SideGuiColorManager {
         Fonts.InterBold_26.drawString("Speed: $ThemeFadeSpeed", fadeSpeedSliderX + 5, fadeSpeedSliderY - 15, Color.WHITE.rgb)
 
         val toggleColor = if (updown) Color(0, 150, 0).rgb else Color(150, 0, 0).rgb
-        RenderUtils.drawRect2(buttonX.toDouble(), buttonY.toDouble(), buttonWidth.toDouble(), buttonHeight.toDouble(), toggleColor)
+        RenderPrimitives.drawRect2(buttonX.toDouble(), buttonY.toDouble(), buttonWidth.toDouble(), buttonHeight.toDouble(), toggleColor)
         Fonts.InterBold_26.drawString("Side", buttonX + 2, buttonY + 2, Color.WHITE.rgb)
 
         val hexField = getColorHexFieldArea(drag)
-        RenderUtils.drawRect2(
+        RenderPrimitives.drawRect2(
             hexField.x.toDouble(),
             hexField.y.toDouble(),
             hexField.w.toDouble(),
@@ -199,7 +199,7 @@ object SideGuiColorManager {
             Color(40, 40, 40, alpha).rgb
         )
 
-        Fonts.InterBold_26.drawString("Hex:", hexField.x, hexField.y - 12, RenderUtils.applyOpacity(-1, alpha / 255f))
+        Fonts.InterBold_26.drawString("Hex:", hexField.x, hexField.y - 12, RenderColor.applyOpacity(-1, alpha / 255f))
     }
 
     fun checkColorCategoryInteractions(mouseX: Int, mouseY: Int, drag: Drag) {
@@ -207,7 +207,7 @@ object SideGuiColorManager {
         val buttonY = drag.y + 60
         val buttonW = 50f
         val buttonH = 15f
-        val hoveredToggle = RenderUtils.isHovering(buttonX, buttonY, buttonW, buttonH, mouseX, mouseY)
+        val hoveredToggle = RenderHelper.isHovering(buttonX, buttonY, buttonW, buttonH, mouseX, mouseY)
         if (hoveredToggle) {
             updown = !updown
         }
@@ -216,7 +216,7 @@ object SideGuiColorManager {
         val sliderY = drag.y + 20
         val sliderW = 80f
         val sliderH = 10f
-        val hoveredSlider = RenderUtils.isHovering(sliderX, sliderY, sliderW, sliderH, mouseX, mouseY)
+        val hoveredSlider = RenderHelper.isHovering(sliderX, sliderY, sliderW, sliderH, mouseX, mouseY)
         if (hoveredSlider) {
             var newSpeed = ((mouseX - sliderX) / sliderW) * 10
             newSpeed = max(0f, min(10f, newSpeed))

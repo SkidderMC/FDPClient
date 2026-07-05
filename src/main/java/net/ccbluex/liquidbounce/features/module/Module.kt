@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.event.EventManager
 import net.ccbluex.liquidbounce.event.ClientChange
 import net.ccbluex.liquidbounce.event.ClientChangeBus
+import net.ccbluex.liquidbounce.event.async.TickScheduler
 import net.ccbluex.liquidbounce.features.module.modules.client.GameDetector
 import net.ccbluex.liquidbounce.file.FileManager.modulesConfig
 import net.ccbluex.liquidbounce.file.FileManager.saveConfig
@@ -136,14 +137,28 @@ open class Module(
             // run the one-shot action only. No toggle/sound/notification and the field stays false, so
             // it never looks or sounds enabled when it actually isn't.
             if (value && !canBeEnabled) {
-                onEnable()
+                runCatching(::onEnable).onFailure { throwable ->
+                    TickScheduler.cancel(this)
+                    RotationUtils.cancelTargetRotation(this)
+                    LOGGER.error("Failed to execute one-shot module $name.", throwable)
+                }
                 return
             }
 
             val previousState = field
 
-            // Call toggle
-            onToggle(value)
+            // A failed disable hook must not keep the module enabled. A failed enable hook, on the
+            // other hand, aborts activation before the backing state is exposed as enabled.
+            runCatching { onToggle(value) }.onFailure { throwable ->
+                LOGGER.error("Failed to toggle module $name to $value.", throwable)
+                if (value) {
+                    runCatching(::onDisable).onFailure(throwable::addSuppressed)
+                    TickScheduler.cancel(this)
+                    RotationUtils.cancelTargetRotation(this)
+                    saveConfig(modulesConfig)
+                    return
+                }
+            }
 
             // Clear ticked actions
             clearTicked()
@@ -153,6 +168,7 @@ open class Module(
             if (value) {
                 field = true
                 try {
+                    TickScheduler.cancel(this)
                     onEnable()
                     if (field) startEnabledEffects()
                 } catch (throwable: Throwable) {
@@ -163,6 +179,7 @@ open class Module(
                     // before failing. Give the module a best-effort rollback and always release the
                     // shared rotation state before exposing the failure to the caller.
                     runCatching { onDisable() }.onFailure(throwable::addSuppressed)
+                    TickScheduler.cancel(this)
                     RotationUtils.cancelTargetRotation(this)
                     LOGGER.error("Failed to enable module $name; the partial activation was rolled back.", throwable)
                     saveConfig(modulesConfig)
@@ -177,7 +194,8 @@ open class Module(
                     LOGGER.error("Failed to disable module $name cleanly; shared state was still released.", throwable)
                 } finally {
                     // A broken module-specific cleanup must never leave the module logically
-                    // enabled or retain global rotation ownership.
+                    // enabled or retain global scheduler/rotation ownership.
+                    TickScheduler.cancel(this)
                     RotationUtils.cancelTargetRotation(this)
                     field = false
                 }

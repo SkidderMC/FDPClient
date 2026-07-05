@@ -19,7 +19,7 @@ import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils
 import net.ccbluex.liquidbounce.utils.extensions.isLookingOn
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.withAlpha
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.RenderColor
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
@@ -372,7 +372,7 @@ object DashTrail : Module("DashTrail", Category.VISUAL, Category.SubCategory.REN
                                 -1,
                                 dashCubic.animation.output.toFloat()
                             )
-                            RenderUtils.color(color)
+                            RenderColor.color(color)
                             GL11.glVertex3d(
                                 renderSparkPos[0] + renderDashPos[0],
                                 renderSparkPos[1] + renderDashPos[1],
@@ -408,7 +408,7 @@ object DashTrail : Module("DashTrail", Category.VISUAL, Category.SubCategory.REN
                                 -1,
                                 (1 - dashCubic.animation.output).toFloat()
                             )
-                            RenderUtils.color(color)
+                            RenderColor.color(color)
                             GL11.glVertex3d(
                                 renderSparkPos[0] + renderDashPos[0],
                                 renderSparkPos[1] + renderDashPos[1],

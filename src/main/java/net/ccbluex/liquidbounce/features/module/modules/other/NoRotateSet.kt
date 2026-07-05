@@ -7,13 +7,13 @@ package net.ccbluex.liquidbounce.features.module.modules.other
 
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.event.async.TickScheduler
 import net.ccbluex.liquidbounce.utils.extensions.rotation
 import net.ccbluex.liquidbounce.utils.rotation.AlwaysRotationSettings
 import net.ccbluex.liquidbounce.utils.rotation.Rotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationPriority
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.currentRotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.setTargetRotation
-import net.ccbluex.liquidbounce.utils.timing.WaitTickUtils
 import net.minecraft.entity.player.EntityPlayer
 
 object NoRotateSet : Module("NoRotateSet", Category.OTHER, Category.SubCategory.MISCELLANEOUS, gameDetecting = false) {
@@ -41,8 +41,13 @@ object NoRotateSet : Module("NoRotateSet", Category.OTHER, Category.SubCategory.
 
         currentRotation = player.rotation
 
-        WaitTickUtils.schedule(ticksUntilStart.random, this)
+        TickScheduler.cancel(this)
+        TickScheduler.scheduleAfter(ticksUntilStart.random, this)
 
         setTargetRotation(savedRotation, options = options)
+    }
+
+    override fun onDisable() {
+        TickScheduler.cancel(this)
     }
 }

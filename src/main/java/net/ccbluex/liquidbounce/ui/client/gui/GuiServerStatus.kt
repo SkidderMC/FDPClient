@@ -13,8 +13,8 @@ import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolat
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.io.HttpClient
 import net.ccbluex.liquidbounce.utils.io.newCall
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
+import net.ccbluex.liquidbounce.utils.render.RenderEffects.drawBloom
+import net.ccbluex.liquidbounce.utils.render.RenderPrimitives.drawRect
 import net.ccbluex.liquidbounce.utils.ui.AbstractScreen
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen

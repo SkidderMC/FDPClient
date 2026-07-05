@@ -152,6 +152,7 @@ object PacketUtils : MinecraftInstance, Listenable {
         packets.forEach { handlePacket(it) }
 
     @JvmStatic
+    @Suppress("UNCHECKED_CAST")
     private fun handlePacket(packet: Packet<*>?) {
         runCatching { (packet as Packet<INetHandlerPlayClient>).processPacket(mc.netHandler) }.onSuccess {
             PPSCounter.registerType(PPSCounter.PacketType.RECEIVED)

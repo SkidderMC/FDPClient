@@ -11,7 +11,7 @@ import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColo
 import net.ccbluex.liquidbounce.handler.api.ClientUpdate
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
+import net.ccbluex.liquidbounce.utils.render.RenderEffects.drawBloom
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawImage
 import net.ccbluex.liquidbounce.utils.ui.AbstractScreen
 import net.minecraft.client.gui.GuiButton

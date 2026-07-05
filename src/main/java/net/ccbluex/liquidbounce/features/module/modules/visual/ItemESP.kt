@@ -17,7 +17,7 @@ import net.ccbluex.liquidbounce.utils.client.EntityLookup
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawEntityBox
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
+import net.ccbluex.liquidbounce.utils.render.RenderColor.glColor
 import net.ccbluex.liquidbounce.utils.render.renderWorldText
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.isEntityHeightVisible
 import net.minecraft.entity.item.EntityItem
@@ -26,6 +26,7 @@ import net.minecraft.util.Vec3
 import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 import kotlin.math.pow
+import net.ccbluex.liquidbounce.utils.render.RenderPrimitives
 
 object ItemESP : Module("ItemESP", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY) {
     private val mode by choices("Mode", arrayOf("Box", "OtherBox", "Glow"), "Box")
@@ -186,7 +187,7 @@ object ItemESP : Module("ItemESP", Category.VISUAL, Category.SubCategory.RENDER_
         glScalef(-scaledDistance, -scaledDistance, scaledDistance)
 
         val padding = 1f
-        RenderUtils.drawRect(
+        RenderPrimitives.drawRect(
             -halfWidth - padding,
             -padding,
             halfWidth + padding,

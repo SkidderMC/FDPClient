@@ -13,7 +13,7 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.TargetStyle
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.utils.CharRenderer
 import net.ccbluex.liquidbounce.utils.extensions.darker
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.*
 import net.ccbluex.liquidbounce.utils.render.StencilUtils
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.EntityLivingBase
@@ -105,7 +105,7 @@ class ChillTH(inst: Targets) : TargetStyle("Chill", inst, true) {
                 targetInstance.barColor.rgb
             )
         else
-            RenderUtils.drawRect(
+            RenderPrimitives.drawRect(
                 4F,
                 38F,
                 4F + (easingHealth / entity.maxHealth) * (tWidth - 8F),
