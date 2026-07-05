@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.event.handler
+import net.ccbluex.liquidbounce.handler.combat.CombatManager
 
 object Timer : Module("Timer", Category.MOVEMENT, Category.SubCategory.MOVEMENT_EXTRAS, gameDetecting = false) {
 
@@ -21,6 +22,9 @@ object Timer : Module("Timer", Category.MOVEMENT, Category.SubCategory.MOVEMENT_
 
     private val allowNegative by boolean("AllowNegative", true)
         .describe("Allow timer speeds below normal.")
+
+    private val normalizeDuringCombat by boolean("NormalizeDuringCombat", false)
+        .describe("Reset the timer to normal speed while in combat.")
 
     private val boostTicks by int("BoostTicks", 0, 0..200, "ticks")
         .describe("Ticks to apply the boost speed each cycle.")
@@ -45,15 +49,17 @@ object Timer : Module("Timer", Category.MOVEMENT, Category.SubCategory.MOVEMENT_
 
     override fun onDisable() {
         resetCycle()
-
-        if (mc.thePlayer == null)
-            return
-
         mc.timer.timerSpeed = 1F
     }
 
     val onUpdate = handler<UpdateEvent> {
         val player = mc.thePlayer ?: return@handler
+
+        if (normalizeDuringCombat && CombatManager.inCombatState) {
+            resetCycle()
+            mc.timer.timerSpeed = 1F
+            return@handler
+        }
 
         val active = mode == "Always" || mode == "OnMove" && player.isMoving ||
             mode == "NoMove" && !player.isMoving
