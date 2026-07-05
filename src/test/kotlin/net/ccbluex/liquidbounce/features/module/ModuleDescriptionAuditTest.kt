@@ -42,7 +42,7 @@ class ModuleDescriptionAuditTest {
     }
 
     private companion object {
-        const val EXPECTED_MODULE_COUNT = 295
+        const val EXPECTED_MODULE_COUNT = 297
         val DIRECT_MODULE = Regex(
             """(?s)(?::|extends)\s+Module\s*\(\s*\"([^\"]+)\"\s*,\s*Category\.[A-Z]+"""
         )

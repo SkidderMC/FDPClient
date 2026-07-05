@@ -26,6 +26,6 @@ class ModuleRegistryAuditTest {
     }
 
     private companion object {
-        const val EXPECTED_MODULE_COUNT = 295
+        const val EXPECTED_MODULE_COUNT = 297
     }
 }

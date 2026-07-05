@@ -147,6 +147,8 @@
     "module.bedDefender.description": "Automatically defends bed with blocks",
     "module.projectileAimbot.description": "Automatically aims at players when using a bow.",
     "module.criticals.description": "Automatically deals critical hits.",
+    "module.comboCounter.description": "Displays your current hit streak against enemies.",
+    "module.jumpReset.description": "Reduces knockback by jumping at the right moment when hit.",
     "module.fastBow.description": "Turns your bow into a machine gun.",
     "module.hitBox.description": "Makes hitboxes of targets bigger.",
     "module.ignite.description": "Automatically sets targets around you on fire.",
