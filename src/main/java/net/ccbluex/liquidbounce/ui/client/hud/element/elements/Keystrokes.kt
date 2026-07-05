@@ -18,6 +18,7 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.StencilUtils.withOutline
 import java.awt.Color
 import kotlin.math.nextDown
+import org.lwjgl.input.Mouse
 
 @ElementInfo(name = "Keystrokes")
 class Keystrokes : Element("Keystrokes", 2.0, 34.0) {
@@ -33,6 +34,9 @@ class Keystrokes : Element("Keystrokes", 2.0, 34.0) {
     )
     private val shrinkPercentage by int("ShrinkPercentage", 90, 50..100, suffix = "%") { onPressAnimation == "Shrink" }
     private val shrinkSpeed by int("ShrinkSpeed", 2, 0..5, suffix = "Ticks") { onPressAnimation == "Shrink" }
+
+    private val showMouse by boolean("ShowMouseButtons", true)
+    private val showCps by boolean("ShowCPS", true) { showMouse }
 
     private var shadow by boolean("Text-Shadow", true)
     private val font by font("Font", Fonts.fontSemibold35)
@@ -91,6 +95,84 @@ class Keystrokes : Element("Keystrokes", 2.0, 34.0) {
         GridKey(3, 1, "Space", keystrokes = this)
     )
 
+    private val leftButton = GridKey(4, 0, "L", keystrokes = this)
+    private val rightButton = GridKey(4, 0, "R", keystrokes = this)
+
+    private val leftClicks = mutableListOf<Long>()
+    private val rightClicks = mutableListOf<Long>()
+    private var wasLeftDown = false
+    private var wasRightDown = false
+
+    private fun countCps(clicks: MutableList<Long>, isDown: Boolean, wasDown: Boolean): Int {
+        val now = System.currentTimeMillis()
+        if (isDown && !wasDown) clicks.add(now)
+        clicks.removeAll { now - it > 1000L }
+        return clicks.size
+    }
+
+    private fun drawKeyBox(gridKey: GridKey, startX: Float, endX: Float, topY: Float, boxSize: Float, label: String) {
+        val fontHeight = (font as? GameFontRenderer)?.height ?: font.FONT_HEIGHT
+
+        val scaledBoxSize = boxSize * if (onPressAnimation == "None") 1f else gridKey.scale
+        val scaledPadding = (boxSize - scaledBoxSize) / 2
+
+        val adjustedStartX = startX + scaledPadding
+        val adjustedEndX = endX - scaledPadding
+        val adjustedY = topY + scaledPadding
+
+        RenderUtils.drawRoundedRect(
+            adjustedStartX, adjustedY, adjustedEndX, adjustedY + scaledBoxSize, gridKey.color.rgb, radius
+        )
+
+        if (onPressAnimation !in nonFillModes) {
+            val reverse = onPressAnimation != "Fill"
+
+            withOutline(main = {
+                val size = boxSize * gridKey.normalT.let { if (!reverse) 1 - it else it }
+                val padding1 = (boxSize - size) / 2
+
+                val adjustedStartX1 = startX + padding1
+                val adjustedEndX1 = endX - padding1
+                val adjustedY1 = topY + padding1
+
+                RenderUtils.drawRoundedRect(
+                    adjustedStartX1,
+                    adjustedY1,
+                    adjustedEndX1,
+                    adjustedY1 + size,
+                    if (reverse) 0 else pressColor.rgb,
+                    radius
+                )
+            }, toOutline = {
+                RenderUtils.drawRoundedRect(
+                    adjustedStartX,
+                    adjustedY,
+                    adjustedEndX,
+                    adjustedY + scaledBoxSize,
+                    if (reverse) pressColor.rgb else 0,
+                    radius
+                )
+            })
+        }
+
+        if (renderBorder) {
+            RenderUtils.drawRoundedBorder(
+                adjustedStartX,
+                adjustedY,
+                adjustedEndX,
+                adjustedY + scaledBoxSize,
+                borderWidth,
+                borderColor.rgb,
+                radius
+            )
+        }
+
+        val textX = (adjustedStartX + adjustedEndX) / 2 - (font.getStringWidth(label) / 2)
+        val textY = adjustedY + (scaledBoxSize / 2) - (fontHeight / 2)
+
+        font.drawString(label, textX, textY + if (font == mc.fontRendererObj) 0 else 2, textColor.rgb, shadow)
+    }
+
     override fun drawElement(): Border {
         val options = mc.gameSettings
 
@@ -107,10 +189,12 @@ class Keystrokes : Element("Keystrokes", 2.0, 34.0) {
         val fontHeight = (font as? GameFontRenderer)?.height ?: font.FONT_HEIGHT
         val maxCharWidth = gridLayout.maxOf { it.textWidth }
 
-        val boxSize = maxOf(fontHeight, maxCharWidth)
+        val boxSize = maxOf(fontHeight, maxCharWidth).toFloat()
 
         gridLayout.forEach { gridKey ->
-            val (row, col, key, scale, _, color) = gridKey
+            val row = gridKey.row
+            val col = gridKey.column
+            val key = gridKey.text
 
             val currentX = col * (boxSize + padding)
             val currentY = row * (boxSize + padding)
@@ -123,66 +207,33 @@ class Keystrokes : Element("Keystrokes", 2.0, 34.0) {
             val isPressed = movementKeys[key]?.isKeyDown == true
             gridKey.updateState(isPressed)
 
-            val scaledBoxSize = boxSize * if (onPressAnimation == "None") 1f else scale
-            val scaledPadding = (boxSize - scaledBoxSize) / 2
-
-            val adjustedStartX = startX + scaledPadding
-            val adjustedEndX = endX - scaledPadding
-            val adjustedY = currentY + scaledPadding
-
-            RenderUtils.drawRoundedRect(
-                adjustedStartX, adjustedY, adjustedEndX, adjustedY + scaledBoxSize, color.rgb, radius
-            )
-
-            if (onPressAnimation !in nonFillModes) {
-                val reverse = onPressAnimation != "Fill"
-
-                withOutline(main = {
-                    val size = boxSize * gridKey.normalT.let { if (!reverse) 1 - it else it }
-                    val padding1 = (boxSize - size) / 2
-
-                    val adjustedStartX1 = startX + padding1
-                    val adjustedEndX1 = endX - padding1
-                    val adjustedY1 = currentY + padding1
-
-                    RenderUtils.drawRoundedRect(
-                        adjustedStartX1,
-                        adjustedY1,
-                        adjustedEndX1,
-                        adjustedY1 + size,
-                        if (reverse) 0 else pressColor.rgb,
-                        radius
-                    )
-                }, toOutline = {
-                    RenderUtils.drawRoundedRect(
-                        adjustedStartX,
-                        adjustedY,
-                        adjustedEndX,
-                        adjustedY + scaledBoxSize,
-                        if (reverse) pressColor.rgb else 0,
-                        radius
-                    )
-                })
-            }
-
-            if (renderBorder) {
-                RenderUtils.drawRoundedBorder(
-                    adjustedStartX,
-                    adjustedY,
-                    adjustedEndX,
-                    adjustedY + scaledBoxSize,
-                    borderWidth,
-                    borderColor.rgb,
-                    radius
-                )
-            }
-
-            val textX = (adjustedStartX + adjustedEndX) / 2 - (font.getStringWidth(key) / 2)
-            val textY = adjustedY + (scaledBoxSize / 2) - (fontHeight / 2)
-
-            font.drawString(key, textX, textY + if (font == mc.fontRendererObj) 0 else 2, textColor.rgb, shadow)
+            drawKeyBox(gridKey, startX, endX, currentY, boxSize, key)
         }
 
-        return Border(0F, boxSize + padding, boxSize * 3 + padding * 2, boxSize * 4 + padding * 3)
+        val totalWidth = boxSize * 3 + padding * 2
+        var bottom = boxSize * 4 + padding * 3
+
+        if (showMouse) {
+            val leftDown = Mouse.isButtonDown(0)
+            val rightDown = Mouse.isButtonDown(1)
+
+            val leftCps = countCps(leftClicks, leftDown, wasLeftDown)
+            val rightCps = countCps(rightClicks, rightDown, wasRightDown)
+            wasLeftDown = leftDown
+            wasRightDown = rightDown
+
+            leftButton.updateState(leftDown)
+            rightButton.updateState(rightDown)
+
+            val mouseY = 4 * (boxSize + padding)
+            val half = (totalWidth - padding) / 2
+
+            drawKeyBox(leftButton, 0F, half, mouseY, boxSize, if (showCps) "$leftCps" else "L")
+            drawKeyBox(rightButton, half + padding, totalWidth, mouseY, boxSize, if (showCps) "$rightCps" else "R")
+
+            bottom = mouseY + boxSize
+        }
+
+        return Border(0F, boxSize + padding, totalWidth, bottom)
     }
 }
