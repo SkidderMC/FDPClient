@@ -144,8 +144,11 @@ class LongRangeValue(
     suffix: String? = null,
 ) : Value<LongRange>(name, value, suffix) {
     override fun describe(text: String): LongRangeValue = apply { descriptionField = text }
-    override fun validate(newValue: LongRange): LongRange = coerceUnlessUnlimited(newValue) {
-        it.first.coerceIn(range)..it.last.coerceIn(range)
+    override fun validate(newValue: LongRange): LongRange {
+        require(newValue.first <= newValue.last) { "Range start must not exceed its end" }
+        return coerceUnlessUnlimited(newValue) {
+            it.first.coerceIn(range)..it.last.coerceIn(range)
+        }
     }
     override fun toJson(): JsonElement = jsonArray { +JsonPrimitive(value.first); +JsonPrimitive(value.last) }
     override fun fromJsonF(element: JsonElement): LongRange? {
@@ -169,7 +172,10 @@ class IntRangeValue(
 
     override fun describe(text: String): IntRangeValue = apply { descriptionField = text }
 
-    override fun validate(newValue: IntRange): IntRange = coerceUnlessUnlimited(newValue) { it.coerceIn(range) }
+    override fun validate(newValue: IntRange): IntRange {
+        require(newValue.first <= newValue.last) { "Range start must not exceed its end" }
+        return coerceUnlessUnlimited(newValue) { it.coerceIn(range) }
+    }
 
     var lastChosenSlider: RangeSlider? by MouseHeldSlider()
 
@@ -213,7 +219,10 @@ class FloatValue(
 
     override fun describe(text: String): FloatValue = apply { descriptionField = text }
 
-    override fun validate(newValue: Float): Float = coerceUnlessUnlimited(newValue) { it.coerceIn(range) }
+    override fun validate(newValue: Float): Float {
+        require(newValue.isFinite()) { "Value must be finite" }
+        return coerceUnlessUnlimited(newValue) { it.coerceIn(range) }
+    }
 
     fun set(newValue: Number) = set(newValue.toFloat())
 
@@ -237,7 +246,10 @@ class DoubleValue(
     suffix: String? = null,
 ) : Value<Double>(name, value, suffix) {
     override fun describe(text: String): DoubleValue = apply { descriptionField = text }
-    override fun validate(newValue: Double) = coerceUnlessUnlimited(newValue) { it.coerceIn(range) }
+    override fun validate(newValue: Double): Double {
+        require(newValue.isFinite()) { "Value must be finite" }
+        return coerceUnlessUnlimited(newValue) { it.coerceIn(range) }
+    }
     override fun toJson() = JsonPrimitive(value)
     override fun fromJsonF(element: JsonElement) = runCatching { element.asDouble }.getOrNull()
     override fun fromTextF(text: String) = text.toDoubleOrNull()
@@ -252,10 +264,13 @@ class DoubleRangeValue(
     suffix: String? = null,
 ) : Value<ClosedFloatingPointRange<Double>>(name, value, suffix) {
     override fun describe(text: String): DoubleRangeValue = apply { descriptionField = text }
-    override fun validate(newValue: ClosedFloatingPointRange<Double>): ClosedFloatingPointRange<Double> =
-        coerceUnlessUnlimited(newValue) {
+    override fun validate(newValue: ClosedFloatingPointRange<Double>): ClosedFloatingPointRange<Double> {
+        require(newValue.start.isFinite() && newValue.endInclusive.isFinite()) { "Range bounds must be finite" }
+        require(newValue.start <= newValue.endInclusive) { "Range start must not exceed its end" }
+        return coerceUnlessUnlimited(newValue) {
             it.start.coerceIn(range)..it.endInclusive.coerceIn(range)
         }
+    }
     override fun toJson(): JsonElement = jsonArray { +JsonPrimitive(value.start); +JsonPrimitive(value.endInclusive) }
     override fun fromJsonF(element: JsonElement): ClosedFloatingPointRange<Double>? {
         val array = (element as? JsonArray)?.takeIf { it.size() == 2 } ?: return null
@@ -278,8 +293,11 @@ open class FloatRangeValue(
 
     override fun describe(text: String): FloatRangeValue = apply { descriptionField = text }
 
-    override fun validate(newValue: ClosedFloatingPointRange<Float>): ClosedFloatingPointRange<Float> =
-        coerceUnlessUnlimited(newValue) { it.coerceIn(range) }
+    override fun validate(newValue: ClosedFloatingPointRange<Float>): ClosedFloatingPointRange<Float> {
+        require(newValue.start.isFinite() && newValue.endInclusive.isFinite()) { "Range bounds must be finite" }
+        require(newValue.start <= newValue.endInclusive) { "Range start must not exceed its end" }
+        return coerceUnlessUnlimited(newValue) { it.coerceIn(range) }
+    }
 
     var lastChosenSlider: RangeSlider? by MouseHeldSlider()
 
@@ -785,7 +803,11 @@ class Vec2Value(
         require(value.size == 2) { "Vec2Value requires exactly 2 components" }
     }
 
-    override fun validate(newValue: DoubleArray): DoubleArray = if (newValue.size == 2) newValue else value
+    override fun validate(newValue: DoubleArray): DoubleArray {
+        require(newValue.size == 2) { "Vec2Value requires exactly 2 components" }
+        require(newValue.all(Double::isFinite)) { "Vector components must be finite" }
+        return newValue
+    }
 
     var x: Double
         get() = value[0]
@@ -825,8 +847,11 @@ class Vec3Value(
         require(value.size == 3) { "Vec3Value requires exactly 3 components" }
     }
 
-    override fun validate(newValue: DoubleArray): DoubleArray =
-        if (newValue.size == 3) newValue else value
+    override fun validate(newValue: DoubleArray): DoubleArray {
+        require(newValue.size == 3) { "Vec3Value requires exactly 3 components" }
+        require(newValue.all(Double::isFinite)) { "Vector components must be finite" }
+        return newValue
+    }
 
     var x: Double
         get() = value[0]
@@ -877,8 +902,11 @@ class CurveValue(
         require(value.size >= 2) { "CurveValue requires at least 2 points" }
     }
 
-    override fun validate(newValue: DoubleArray): DoubleArray =
-        if (newValue.size >= 2) DoubleArray(newValue.size) { newValue[it].coerceIn(0.0, 1.0) } else value
+    override fun validate(newValue: DoubleArray): DoubleArray {
+        require(newValue.size >= 2) { "CurveValue requires at least 2 points" }
+        require(newValue.all(Double::isFinite)) { "Curve points must be finite" }
+        return DoubleArray(newValue.size) { newValue[it].coerceIn(0.0, 1.0) }
+    }
 
     val pointCount: Int
         get() = value.size

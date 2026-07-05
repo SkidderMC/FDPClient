@@ -10,13 +10,15 @@ import net.ccbluex.liquidbounce.file.FileManager.saveConfig
 import net.ccbluex.liquidbounce.file.FileManager.valuesConfig
 import net.ccbluex.liquidbounce.event.ClientChange
 import net.ccbluex.liquidbounce.event.ClientChangeBus
-import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.handler.lang.translation
+import org.apache.logging.log4j.LogManager
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
 private typealias OnChangeInterceptor<T> = (old: T, new: T) -> T
 private typealias OnChangedHandler<T> = (new: T) -> Unit
+
+private val VALUE_LOGGER = LogManager.getLogger("ValueSystem")
 
 sealed class Value<T>(
     val name: String,
@@ -115,7 +117,7 @@ sealed class Value<T>(
             }
             return true
         } catch (e: Exception) {
-            LOGGER.error("[ValueSystem ($name)]: ${e.javaClass.name} (${e.message}) [$oldValue >> $newValue]")
+            VALUE_LOGGER.error("[$name]: ${e.javaClass.name} (${e.message}) [$oldValue >> $newValue]")
             return false
         }
     }
@@ -157,19 +159,25 @@ sealed class Value<T>(
     protected abstract fun fromJsonF(element: JsonElement): T?
     protected abstract fun fromTextF(text: String): T?
 
-    fun fromJson(element: JsonElement) {
-        val raw = runCatching { fromJsonF(element) }.getOrNull() ?: return
-        val safe = runCatching { validate(raw) }.getOrElse { raw }
-        changeValue(safe)
-
-        onChangedListeners.forEach { it.invoke(safe) }
+    fun fromJson(element: JsonElement): Boolean {
+        val raw = runCatching { fromJsonF(element) }.getOrNull() ?: return false
+        return applyDeserialized(raw)
     }
 
-    fun fromText(text: String) {
-        val result = fromTextF(text) ?: return
-        changeValue(result)
+    fun fromText(text: String): Boolean {
+        val raw = runCatching { fromTextF(text) }.getOrNull() ?: return false
+        return applyDeserialized(raw)
+    }
 
-        onChangedListeners.forEach { it.invoke(result) }
+    private fun applyDeserialized(raw: T): Boolean {
+        val safe = runCatching { validate(raw) }.getOrElse {
+            VALUE_LOGGER.error("[$name]: rejected serialized value '$raw' (${it.message})")
+            return false
+        }
+
+        changeValue(safe)
+        onChangedListeners.forEach { it.invoke(safe) }
+        return true
     }
 
     // Serializations END
