@@ -129,13 +129,26 @@ object SettingsUtils {
 
     // Utility functions for setting toggles
     private fun setToggle(module: Module, value: String) {
-        module.state = value.toBoolean()
+        val state = when (value.lowercase()) {
+            "true", "on", "yes", "1" -> true
+            "false", "off", "no", "0" -> false
+            else -> {
+                chat("§7[§3§lAutoSettings§7] §cInvalid toggle state §a§l$value§c for §a§l${module.getName()}§c.")
+                return
+            }
+        }
+        module.state = state
         chat("§7[§3§lAutoSettings§7] §a§l${module.getName()} §7was toggled §c§l${if (module.state) "on" else "off"}§7.")
     }
 
     // Utility functions for setting binds
     private fun setBind(module: Module, value: String) {
-        module.keyBind = Keyboard.getKeyIndex(value)
+        val key = if (value.equals("none", true)) Keyboard.KEY_NONE else Keyboard.getKeyIndex(value.uppercase())
+        if (key == Keyboard.KEY_NONE && !value.equals("none", true)) {
+            chat("§7[§3§lAutoSettings§7] §cUnknown key §a§l$value§c for §a§l${module.getName()}§c.")
+            return
+        }
+        module.keyBind = key
         chat(
             "§7[§3§lAutoSettings§7] §a§l${module.getName()} §7was bound to §c§l${
                 safeKeyName(module.keyBind) ?: "None"
@@ -153,8 +166,11 @@ object SettingsUtils {
         }
 
         try {
-            moduleValue.fromText(value)
-            chat("§7[§3§lAutoSettings§7] §a§l${module.getName()}§7 value §8§l${moduleValue.name}§7 set to §c§l$value§7.")
+            if (moduleValue.fromText(value)) {
+                chat("§7[§3§lAutoSettings§7] §a§l${module.getName()}§7 value §8§l${moduleValue.name}§7 set to §c§l${moduleValue.toText()}§7.")
+            } else {
+                chat("§7[§3§lAutoSettings§7] §cInvalid value §a§l$value§c for §a§l${module.getName()}.${moduleValue.name}§c.")
+            }
         } catch (e: Exception) {
             chat("§7[§3§lAutoSettings§7] §a§l${e.javaClass.name}§7(${e.message}) §cAn Exception occurred while setting §a§l$value§c to §a§l${moduleValue.name}§c in §a§l${module.getName()}§c.")
         }
