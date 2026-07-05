@@ -40,12 +40,17 @@ public class MixinGuiPlayerTabOverlay {
 
     @Unique private IChatComponent fdp$savedHeader;
     @Unique private IChatComponent fdp$savedFooter;
+    @Unique private boolean fdp$modifiedCurrentRender;
 
     @Unique
     private static int FDP_TAB_RESERVED_PING = 13;
 
     @Inject(method = "renderPlayerlist", at = @At("HEAD"))
     public void renderPlayerListPre(int width, Scoreboard scoreboard, ScoreObjective scoreObjective, CallbackInfo ci) {
+        fdp$modifiedCurrentRender = false;
+        if (!TabGUIModule.INSTANCE.handleEvents()) return;
+
+        fdp$modifiedCurrentRender = true;
         TabGUIModule.INSTANCE.setFlagRenderTabOverlay(true);
         fdp$savedHeader = this.header;
         fdp$savedFooter = this.footer;
@@ -98,6 +103,9 @@ public class MixinGuiPlayerTabOverlay {
 
     @Inject(method = "renderPlayerlist", at = @At("RETURN"))
     public void renderPlayerListPost(int width, Scoreboard scoreboard, ScoreObjective scoreObjective, CallbackInfo ci) {
+        if (!fdp$modifiedCurrentRender) return;
+        fdp$modifiedCurrentRender = false;
+
         TabGUIModule.INSTANCE.setFlagRenderTabOverlay(false);
         this.header = fdp$savedHeader;
         this.footer = fdp$savedFooter;
@@ -131,6 +139,7 @@ public class MixinGuiPlayerTabOverlay {
             target = "Lcom/google/common/collect/Ordering;sortedCopy(Ljava/lang/Iterable;)Ljava/util/List;", remap = false))
     private List<NetworkPlayerInfo> redirectSortedCopy(Ordering<NetworkPlayerInfo> ordering, Iterable<NetworkPlayerInfo> iterable) {
         List<NetworkPlayerInfo> list = ordering.sortedCopy(iterable);
+        if (!TabGUIModule.INSTANCE.handleEvents()) return list;
 
         java.util.Comparator<NetworkPlayerInfo> comparator = fdp$sortingComparator();
         if (comparator != null) {
@@ -172,6 +181,8 @@ public class MixinGuiPlayerTabOverlay {
 
     @Inject(method = "getPlayerName", at = @At("HEAD"), cancellable = true)
     private void injectPlayerName(NetworkPlayerInfo info, CallbackInfoReturnable<String> cir) {
+        if (!TabGUIModule.INSTANCE.handleEvents()) return;
+
         if (mc.thePlayer != null) {
             String playerName = info.getGameProfile().getName();
             ScorePlayerTeam team = info.getPlayerTeam();
@@ -207,7 +218,7 @@ public class MixinGuiPlayerTabOverlay {
 
     @Inject(method = "drawPing", at = @At("HEAD"), cancellable = true)
     private void drawPing(int offset, int x, int y, NetworkPlayerInfo info, CallbackInfo ci) {
-        if (!TabGUIModule.INSTANCE.getTabShowPlayerPing()) return;
+        if (!TabGUIModule.INSTANCE.handleEvents() || !TabGUIModule.INSTANCE.getTabShowPlayerPing()) return;
 
         int ping = info.getResponseTime();
         int color;
@@ -238,16 +249,20 @@ public class MixinGuiPlayerTabOverlay {
 
     @ModifyConstant(method = "renderPlayerlist", constant = @Constant(intValue = 13))
     private int fdp$expandPingReserve(int original) {
+        if (!TabGUIModule.INSTANCE.handleEvents()) return original;
         return Math.max(original, FDP_TAB_RESERVED_PING);
     }
 
     @ModifyConstant(method = "renderPlayerlist", constant = @Constant(intValue = 80))
     private int fdp$expandPlayerCap(int original) {
+        if (!TabGUIModule.INSTANCE.handleEvents()) return original;
         return Math.max(original, TabGUIModule.INSTANCE.getTabMaxPlayers());
     }
 
     @Unique
     private java.util.Comparator<NetworkPlayerInfo> fdp$sortingComparator() {
+        if (!TabGUIModule.INSTANCE.handleEvents()) return null;
+
         String mode = TabGUIModule.INSTANCE.getTabSorting();
         switch (mode) {
             case "Ping":

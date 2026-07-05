@@ -50,4 +50,8 @@ object TabGUIModule : Module("TabGUI", Category.CLIENT, Category.SubCategory.CLI
         group("Ping", "Show Ping Numbers", "Show Ping MS Tag", "Ping Text Shadow")
         group("Layout", "Show Header", "Show Footer", "Scale", "Sorting", "Max Players")
     }
+
+    override fun onDisable() {
+        flagRenderTabOverlay = false
+    }
 }

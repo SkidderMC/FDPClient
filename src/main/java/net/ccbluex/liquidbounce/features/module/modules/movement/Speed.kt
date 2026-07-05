@@ -489,11 +489,8 @@ object Speed : Module("Speed", Category.MOVEMENT, Category.SubCategory.MOVEMENT_
     }
 
     override fun onDisable() {
-        if (mc.thePlayer == null)
-            return
-
         mc.timer.timerSpeed = 1f
-        mc.thePlayer.speedInAir = 0.02f
+        mc.thePlayer?.speedInAir = 0.02f
 
         modeModule.onDisable()
     }

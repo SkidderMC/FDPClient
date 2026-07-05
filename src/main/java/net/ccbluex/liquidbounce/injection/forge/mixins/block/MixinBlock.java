@@ -104,16 +104,19 @@ public abstract class MixinBlock {
         // NoSlowBreak
         final DelayRemover delayRemover = DelayRemover.INSTANCE;
         if (delayRemover.handleEvents() || NoSlowBreak.INSTANCE.handleEvents()) {
-            if ((delayRemover.handleEvents() && delayRemover.getWater() || NoSlowBreak.INSTANCE.getUnderwater()) &&
+            if ((delayRemover.handleEvents() && delayRemover.getWater() ||
+                    NoSlowBreak.INSTANCE.handleEvents() && NoSlowBreak.INSTANCE.getUnderwater()) &&
                     playerIn.isInsideOfMaterial(Material.water) && !EnchantmentHelper.getAquaAffinityModifier(playerIn)) {
                 f *= 5f;
             }
 
-            if ((delayRemover.handleEvents() && delayRemover.getAir() || NoSlowBreak.INSTANCE.getOnAir()) && !playerIn.onGround) {
+            if ((delayRemover.handleEvents() && delayRemover.getAir() ||
+                    NoSlowBreak.INSTANCE.handleEvents() && NoSlowBreak.INSTANCE.getOnAir()) && !playerIn.onGround) {
                 f *= 5f;
             }
 
-            if ((delayRemover.handleEvents() && delayRemover.getMiningFatigue() || NoSlowBreak.INSTANCE.getMiningFatigue()) &&
+            if ((delayRemover.handleEvents() && delayRemover.getMiningFatigue() ||
+                    NoSlowBreak.INSTANCE.handleEvents() && NoSlowBreak.INSTANCE.getMiningFatigue()) &&
                     playerIn.isPotionActive(Potion.digSlowdown)) {
                 final int amplifier = playerIn.getActivePotionEffect(Potion.digSlowdown).getAmplifier();
                 final float slowdown;

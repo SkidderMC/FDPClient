@@ -121,7 +121,7 @@ public abstract class MixinEntityRenderer {
     @ModifyConstant(method = "orientCamera", constant = @Constant(intValue = 8))
     private int injectCameraClip(int eight) {
         final CameraView cameraView = CameraView.INSTANCE;
-        return cameraView.getClip() ? 0 : eight;
+        return cameraView.handleEvents() && cameraView.getClip() ? 0 : eight;
     }
 
     @Inject(at = @At("HEAD"), method = "updateCameraAndRender")
@@ -387,6 +387,7 @@ public abstract class MixinEntityRenderer {
     private void injectThirdPersonLowerFov(float fov, float aspect, float zNear, float zFar) {
         try {
             if (mc != null && mc.gameSettings.thirdPersonView != 0
+                    && CameraView.INSTANCE.handleEvents()
                     && CameraView.INSTANCE.shouldLowerThirdPersonFov()) {
                 fov = CameraView.INSTANCE.thirdPersonFovValue();
             }
