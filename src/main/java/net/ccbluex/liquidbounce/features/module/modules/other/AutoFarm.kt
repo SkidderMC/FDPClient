@@ -19,6 +19,8 @@ import net.ccbluex.liquidbounce.utils.extensions.eyes
 import net.ccbluex.liquidbounce.utils.extensions.onPlayerRightClick
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.hasSpaceInInventory
 import net.ccbluex.liquidbounce.utils.inventory.SilentHotbar
+import net.ccbluex.liquidbounce.utils.inventory.getEnchantmentLevel
+import net.minecraft.enchantment.Enchantment
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockBox
 import net.ccbluex.liquidbounce.utils.rotation.RotationPriority
 import net.ccbluex.liquidbounce.utils.rotation.RotationSettings
@@ -67,6 +69,8 @@ object AutoFarm : Module(
         .describe("Delay between farming actions in milliseconds.")
     private val swapBackDelay by int("SwapBackDelay", 1, 1..20, "ticks")
         .describe("Ticks before switching back to the held item.")
+    private val useFortune by boolean("UseFortune", false)
+        .describe("Swap to a Fortune-enchanted tool before harvesting for more drops.")
 
     private val disableOnFullInventory by boolean("DisableOnFullInventory", false)
         .describe("Turn off the module when the inventory is full.")
@@ -205,6 +209,12 @@ object AutoFarm : Module(
      */
     private fun harvest(pos: BlockPos) {
         val player = mc.thePlayer ?: return
+
+        if (useFortune) {
+            findHotbarSlot { it.getEnchantmentLevel(Enchantment.fortune) > 0 }?.let { slot ->
+                SilentHotbar.selectSlotSilently(this, slot, ticksUntilReset = swapBackDelay, immediate = true, render = false)
+            }
+        }
 
         sendPacket(C07PacketPlayerDigging(START_DESTROY_BLOCK, pos, EnumFacing.DOWN))
         player.swingItem()
