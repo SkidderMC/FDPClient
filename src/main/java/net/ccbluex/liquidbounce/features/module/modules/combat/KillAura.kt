@@ -37,6 +37,7 @@ import net.ccbluex.liquidbounce.utils.inventory.SilentHotbar
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextInt
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.Render3D
 import net.ccbluex.liquidbounce.utils.rotation.RandomizationSettings
 import net.ccbluex.liquidbounce.utils.rotation.RaycastUtils.raycastEntity
 import net.ccbluex.liquidbounce.utils.rotation.RaycastUtils.runWithModifiedRaycastResult
@@ -382,6 +383,12 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
     private val renderBoxColor = ColorSettingsInteger(this, "RenderBoxColor") { renderBoxOnSwingFail }.with(Color.CYAN)
     private val renderBoxFadeSeconds by float("RenderBoxFadeSeconds", 1f, 0f..5f) { renderBoxOnSwingFail }
         .describe("How long the fail-swing box stays visible.")
+    private val soundOnSwingFail by boolean("SoundOnSwingFail", false) { failSwing }
+        .describe("Play a sound when a swing misses.")
+    private val swingFailSoundVolume by float("SwingFailSoundVolume", 0.5f, 0f..1f) { soundOnSwingFail && failSwing }
+        .describe("Volume of the miss sound.")
+    private val swingFailSoundPitch by float("SwingFailSoundPitch", 1.2f, 0.5f..2f) { soundOnSwingFail && failSwing }
+        .describe("Pitch of the miss sound.")
 
     // Inventory
     private val simulateClosingInventory by boolean("SimulateClosingInventory", false) { !noInventoryAttack }
@@ -470,7 +477,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
         moveValues(failSwingGroup,
             "Swing", "FailSwing", "SwingOnlyInAir", "MaxRotationDifferenceToSwing",
             "SwingWhenTicksLate", "TicksLateToSwing", "RenderBoxOnSwingFail", "RenderBoxColor",
-            "RenderBoxFadeSeconds")
+            "RenderBoxFadeSeconds", "SoundOnSwingFail", "SwingFailSoundVolume", "SwingFailSoundPitch")
         moveValues(targetRenderingGroup, "RenderAimPointBox", "AimPointBoxColor", "AimPointBoxSize")
         moveValues(rangeIndicatorGroup,
             "RangeIndicator", "RangeIndicatorColor", "RangeIndicatorActiveColor", "RangeIndicatorOutline")
@@ -846,6 +853,10 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
                         } else {
                             // Imitate game click
                             mc.clickMouse()
+
+                            if (soundOnSwingFail) {
+                                mc.thePlayer.playSound("gui.button.press", swingFailSoundVolume, swingFailSoundPitch)
+                            }
 
                             if (renderBoxOnSwingFail) {
                                 synchronized(swingFails) {
@@ -1514,7 +1525,7 @@ private fun updateHittable() {
 
                 val offsetBox = box.offset(it.vec3 - renderManager.renderPos)
 
-                RenderUtils.drawAxisAlignedBB(offsetBox, colorSettings.color(a = transparency.roundToInt()))
+                Render3D.drawAxisAlignedBB(offsetBox, colorSettings.color(a = transparency.roundToInt()))
 
                 timestamp > fadeSeconds
             }
@@ -1543,7 +1554,7 @@ private fun updateHittable() {
 
                 val offSetBox = box.offset(rotationVec - renderManager.renderPos)
 
-                RenderUtils.drawAxisAlignedBB(offSetBox, aimPointBoxColor)
+                Render3D.drawAxisAlignedBB(offSetBox, aimPointBoxColor)
             }
         }
     }
