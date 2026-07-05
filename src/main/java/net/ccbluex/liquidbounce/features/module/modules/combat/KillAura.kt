@@ -349,6 +349,10 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
     ) { predictClientMovement != 0 }
     private val predictEnemyPosition by float("PredictEnemyPosition", 1.5f, -1f..2f)
         .describe("How far ahead to predict the enemy position.")
+    private val predictExitingRange by boolean("PredictExitingRange", false) { !simulateCooldown }
+        .describe("Fire an early last-hit click when you are about to move out of reach of the target.")
+    private val exitPredictTicks by int("ExitPredictTicks", 2, 1..5) { predictExitingRange && !simulateCooldown }
+        .describe("Ticks ahead to check for leaving the target's range.")
 
     private val forceFirstHit by boolean("ForceFirstHit", false) { !respectMissCooldown && !useHitDelay }
         .describe("Force a click on the first hittable tick.")
@@ -433,7 +437,8 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
         rotationsGroup.addValue(pointTracker)
         moveValues(rotationsGroup,
             "GenerateSpotBasedOnDistance", "StickyAim", "OutBorder", "PredictClientMovement",
-            "PredictOnlyWhenOutOfRange", "PredictEnemyPosition", "UsePointTracker")
+            "PredictOnlyWhenOutOfRange", "PredictEnemyPosition", "PredictExitingRange", "ExitPredictTicks",
+            "UsePointTracker")
 
         moveValues(aimPointGroup,
             "HighestBodyPointToTarget", "LowestBodyPointToTarget", "HorizontalBodySearchRange")
@@ -694,6 +699,10 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
 
         if (attackTimer.hasTimePassed(attackDelay)) {
             if (cps.last > 0) clicks++
+            attackTimer.reset()
+            attackDelay = clicker.nextDelay(clickPattern, cps.first, cps.last)
+        } else if (predictExitingRange && hittable && cps.last > 0 && willExitRange(exitPredictTicks.toDouble())) {
+            clicks++
             attackTimer.reset()
             attackDelay = clicker.nextDelay(clickPattern, cps.first, cps.last)
         }
@@ -1096,6 +1105,21 @@ private fun rolledRangeFor(): Float {
         rangeRollCounter = 10
     }
     return minOf(rolledRange, range)
+}
+
+private fun willExitRange(ticks: Double): Boolean {
+    val player = mc.thePlayer ?: return false
+    val currentTarget = target ?: return false
+
+    val futureSelf = PositionExtrapolation.getBestForEntity(player).getPositionInTicks(ticks)
+    val futureTarget = PositionExtrapolation.getBestForEntity(currentTarget).getPositionInTicks(ticks)
+
+    val futureEyes = futureSelf.addVector(0.0, player.eyeHeight.toDouble(), 0.0)
+    val delta = futureTarget.subtract(currentTarget.currPos)
+    val futureBox = currentTarget.hitBox.offset(delta.xCoord, delta.yCoord, delta.zCoord)
+    val futureDist = futureEyes.distanceTo(getNearestPointBB(futureEyes, futureBox))
+
+    return futureDist > getRange(currentTarget).toDouble()
 }
 
 private fun updateHittable() {
