@@ -59,9 +59,6 @@ object Blink : Module("Blink", Category.PLAYER, Category.SubCategory.PLAYER_ASSI
     }
 
     override fun onDisable() {
-        if (mc.thePlayer == null)
-            return
-
         when (action.lowercase()) {
             "reset" -> BlinkUtils.cancel()
             else -> BlinkUtils.unblink()

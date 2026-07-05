@@ -11,7 +11,6 @@ import net.ccbluex.liquidbounce.features.module.modules.combat.FakeLag
 import net.ccbluex.liquidbounce.features.module.modules.combat.Velocity
 import net.ccbluex.liquidbounce.injection.implementations.IMixinEntity
 import net.ccbluex.liquidbounce.utils.extensions.currPos
-import net.ccbluex.liquidbounce.utils.kotlin.removeEach
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.rotation.Rotation
 import net.minecraft.entity.EntityLivingBase
@@ -95,15 +94,16 @@ object PacketUtils : MinecraftInstance, Listenable {
             return@handler
         }
 
-        queueLock.withLock {
-            queuedPackets.removeEach { packet ->
-                handlePacket(packet)
-                val packetEvent = PacketEvent(packet, EventState.RECEIVE)
-                EventManager.call(packetEvent, FakeLag)
-                EventManager.call(packetEvent, Velocity)
+        val scheduled = queueLock.withLock {
+            if (queuedPackets.isEmpty()) return@handler
+            queuedPackets.toList().also { queuedPackets.clear() }
+        }
 
-                true
-            }
+        for (packet in scheduled) {
+            handlePacket(packet)
+            val packetEvent = PacketEvent(packet, EventState.RECEIVE)
+            EventManager.call(packetEvent, FakeLag)
+            EventManager.call(packetEvent, Velocity)
         }
     }
 
@@ -151,11 +151,16 @@ object PacketUtils : MinecraftInstance, Listenable {
     fun handlePackets(vararg packets: Packet<*>) =
         packets.forEach { handlePacket(it) }
 
+    fun handlePackets(packets: Iterable<Packet<*>>) =
+        packets.forEach(::handlePacket)
+
     @JvmStatic
     @Suppress("UNCHECKED_CAST")
-    private fun handlePacket(packet: Packet<*>?) {
+    private fun handlePacket(packet: Packet<*>) {
         runCatching { (packet as Packet<INetHandlerPlayClient>).processPacket(mc.netHandler) }.onSuccess {
             PPSCounter.registerType(PPSCounter.PacketType.RECEIVED)
+        }.onFailure {
+            ClientUtils.LOGGER.error("Failed to process delayed packet ${packet.javaClass.name}", it)
         }
     }
 }
