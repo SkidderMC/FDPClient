@@ -117,7 +117,10 @@ dependencies {
     implementation("com.github.UnlegitMC:Astar3d:bec2291cf2")
     implementation 'com.jhlabs:filters:2.0.235'
 
-    implementation("org.knowm.xchart:xchart:4.0.1")
+    // XChart 4.x targets Java 11 (class-file version 55) and crashes the Java 8
+    // module scanner while resolving ChartRecorderModule. 3.8.8 is the latest
+    // Java 8-compatible line and exposes the same chart API used by the recorders.
+    implementation("org.knowm.xchart:xchart:3.8.8")
 
     // HTTP Client
     implementation("com.squareup.okhttp3:okhttp:5.4.0") {
