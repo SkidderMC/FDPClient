@@ -45,6 +45,7 @@ class Effects(
     private val icon by boolean("Icon", true)
     private val effectName by boolean("Name", true)
     private val color  by boolean("Color", false)
+    private val durationBar by boolean("DurationBar", true) { mode == "Modern" }
 
     private val textColorMode by choices(
         "Text-ColorMode",
@@ -60,6 +61,7 @@ class Effects(
     private val bgColorOption by color("Background-Color", Color(0, 0, 0, 120))
 
     private val potionMap: MutableMap<Potion, PotionData> = HashMap()
+    private val modernMaxDuration: MutableMap<Int, Int> = HashMap()
 
     override fun drawElement(): Border {
         return when (mode) {
@@ -131,6 +133,19 @@ class Effects(
             val durationWidth = Fonts.InterMedium_13.stringWidth(durationText)
             Fonts.InterMedium_13.drawString(nameText, posX + padding, posY + 2, Color.WHITE.rgb)
             Fonts.InterMedium_13.drawString(durationText, posX + maxWidth - padding - durationWidth, posY + 2, Color.WHITE.rgb)
+
+            if (durationBar) {
+                val prevMax = modernMaxDuration[effect.potionID] ?: 0
+                val maxDur = maxOf(prevMax, effect.duration).coerceAtLeast(1)
+                modernMaxDuration[effect.potionID] = maxDur
+                val frac = (effect.duration.toFloat() / maxDur.toFloat()).coerceIn(0f, 1f)
+                val barY = posY + Fonts.InterMedium_13.height.toFloat() + 1f
+                val barLeft = posX + padding
+                val barRight = posX + maxWidth - padding
+                RenderPrimitives.drawRect(barLeft, barY, barRight, barY + 1.5f, Color(255, 255, 255, 60).rgb)
+                RenderPrimitives.drawRect(barLeft, barY, barLeft + (barRight - barLeft) * frac, barY + 1.5f, getTextColor(0))
+            }
+
             posY += Fonts.InterMedium_13.height.toFloat() + padding
         }
 
