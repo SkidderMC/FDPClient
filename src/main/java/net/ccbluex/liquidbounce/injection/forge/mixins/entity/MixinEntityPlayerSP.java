@@ -183,12 +183,8 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
             final Rotation currentRotation = RotationUtils.INSTANCE.getCurrentRotation();
 
             if (currentRotation != null) {
+                yaw = currentRotation.getYaw();
                 pitch = currentRotation.getPitch();
-                // Vanilla sends a continuous, accumulating yaw; a silent rotation can carry a wrapped
-                // [-180, 180] yaw whose packet delta jumps ~360 at the seam, which GrimAC's AimModulo360
-                // flags. Re-express it as the shortest continuous offset from the last reported yaw so the
-                // wire delta is always <= 180 and no seam jump is ever sent (both rotation engines).
-                yaw = this.lastReportedYaw + MathHelper.wrapAngleTo180_float(currentRotation.getYaw() - this.lastReportedYaw);
             }
 
             double xDiff = motionEvent.getX() - lastReportedPosX;
