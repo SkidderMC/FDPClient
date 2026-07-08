@@ -63,7 +63,6 @@
     <ID>ComplexCondition:FlagCheck.kt$FlagCheck$!rubberbandCheck || (player.capabilities.isFlying &amp;&amp; player.capabilities.disableDamage &amp;&amp; !player.onGround)</ID>
     <ID>ComplexCondition:FlagCheck.kt$FlagCheck$ghostBlockCheck &amp;&amp; (!Disabler.handleEvents() || (Disabler.handleEvents() &amp;&amp; !Disabler.verusFly))</ID>
     <ID>ComplexCondition:FlagCheck.kt$FlagCheck$player.isDead || (player.capabilities.isFlying &amp;&amp; player.capabilities.disableDamage &amp;&amp; !player.onGround)</ID>
-    <ID>ComplexCondition:Flight.kt$Flight$!mode.startsWith("AAC") &amp;&amp; mode != "Hypixel" &amp;&amp; mode != "VerusGlide" &amp;&amp; mode != "SmoothVanilla" &amp;&amp; mode != "Vanilla" &amp;&amp; mode != "Rewinside" &amp;&amp; mode != "Fireball" &amp;&amp; mode != "Collide" &amp;&amp; mode != "Jump"</ID>
     <ID>ComplexCondition:Fucker.kt$Fucker$it.block?.id != targetID || distSq &gt; rangeSq || distSq &gt; nearestBlockDistanceSq || !isHittable(it) &amp;&amp; !surroundings &amp;&amp; !hypixel</ID>
     <ID>ComplexCondition:GameDetector.kt$GameDetector$this@GameDetector.capabilities &amp;&amp; (!capabilities.allowEdit || capabilities.allowFlying || capabilities.isFlying || capabilities.disableDamage)</ID>
     <ID>ComplexCondition:Gapple.kt$Gapple$(groundCheck &amp;&amp; !mc.thePlayer.onGround) || (invCheck &amp;&amp; mc.currentScreen is GuiContainer) || (absorp &gt; 0 &amp;&amp; absorpCheck)</ID>
@@ -362,9 +361,7 @@
     <ID>CyclomaticComplexMethod:ServerObserver.kt$ServerObserver$private fun guessFromTransactions(samples: List&lt;Int&gt;): String?</ID>
     <ID>CyclomaticComplexMethod:SettingComponents.kt$SettingComponents$fun handle(mouseX: Int, mouseY: Int, button: Int, type: GuiEvents)</ID>
     <ID>CyclomaticComplexMethod:SettingComponents.kt$SettingComponents$override fun keyTyped(typedChar: Char, keyCode: Int)</ID>
-    <ID>CyclomaticComplexMethod:SettingsCommand.kt$SettingsCommand$override fun execute(args: Array&lt;String&gt;)</ID>
     <ID>CyclomaticComplexMethod:SettingsUtils.kt$SettingsUtils$fun applyScript(script: String)</ID>
-    <ID>CyclomaticComplexMethod:SettingsUtils.kt$SettingsUtils$fun generateScript(values: Boolean, binds: Boolean, states: Boolean): String</ID>
     <ID>CyclomaticComplexMethod:SideGui.kt$SideGui$override fun keyTyped(typedChar: Char, keyCode: Int)</ID>
     <ID>CyclomaticComplexMethod:SideGui.kt$SideGui$override fun mouseClicked(mouseX: Int, mouseY: Int, button: Int)</ID>
     <ID>CyclomaticComplexMethod:SimpleFontRenderer.kt$SimpleFontRenderer$override fun trimStringToWidth(text: CharSequence, width: Int, reverse: Boolean): String</ID>
@@ -410,7 +407,6 @@
     <ID>DestructuringDeclarationWithTooManyEntries:Backtrack.kt$Backtrack$(x, y, z, _)</ID>
     <ID>DestructuringDeclarationWithTooManyEntries:Backtrack.kt$Backtrack$val (x, y, z, _) = backtrackDataArray.first()</ID>
     <ID>DestructuringDeclarationWithTooManyEntries:JavaVersion.kt$val (major, minor, patch, update) = matchResult.destructured</ID>
-    <ID>DestructuringDeclarationWithTooManyEntries:Keystrokes.kt$Keystrokes$val (row, col, key, scale, _, color) = gridKey</ID>
     <ID>DestructuringDeclarationWithTooManyEntries:RangeSetting.kt$RangeSetting$val (minimum, maximum, currentStart, currentEnd) = when { intRange != null -&gt; Quadruple( intRange.minimum.toDouble(), intRange.maximum.toDouble(), intRange.get().first.toDouble(), intRange.get().last.toDouble() ) floatRange != null -&gt; Quadruple( floatRange.minimum.toDouble(), floatRange.maximum.toDouble(), floatRange.get().start.toDouble(), floatRange.get().endInclusive.toDouble() ) else -&gt; return }</ID>
     <ID>DestructuringDeclarationWithTooManyEntries:RenderUtils.kt$RenderUtils$val (alpha, red, green, blue) = ColorUtils.unpackARGBFloatValue(color)</ID>
     <ID>DestructuringDeclarationWithTooManyEntries:RenderUtils.kt$RenderUtils$val (cx, cy, startAngle, ox, oy) = directionData</ID>
@@ -455,7 +451,6 @@
     <ID>ExplicitItLambdaParameter:JumpCircle.kt$JumpCircle${ it -&gt; val progress = ((runTimeTicks + partialTick) - it.endTime) / lifeTime * animationSpeed val radius = circleRadius.lerpWith(progress) if(useTexture){ renderTexturedCircle( it.pos, radius.toDouble(), 1f - progress, circles.indexOf(it) * 30, lightFactor, effectStrength ) } else { renderSimpleCircle(it.pos, radius, progress) } progress &gt;= 1F }</ID>
     <ID>ExplicitItLambdaParameter:RenderUtils.kt$RenderUtils${ index, it -&gt; val p = pos + Vec3(it.x * width, it.y + animatedCircleY, it.z * width) positions += doubleArrayOf(p.xCoord, p.yCoord, p.zCoord) if (filled) { buffer.pos(p.xCoord - renderX, p.yCoord - renderY, p.zCoord - renderZ).color(r1, g1, b1, a1) .endVertex() } }</ID>
     <ID>ForbiddenComment:AAC1910.kt$AAC1910$// TODO: Doesn't this always overwrite the strafe(aacSpeed)?</ID>
-    <ID>ForbiddenComment:BlinkUtils.kt$BlinkUtils$// TODO: Make better &amp; more reliable BlinkUtils.</ID>
     <ID>ForbiddenComment:BlockCounter.kt$BlockCounter$// TODO: Should it be removed? Text element does the same thing.</ID>
     <ID>ForbiddenComment:ChestStealer.kt$ChestStealer$// TODO: if it can get merged but would also need another slot, it could simulate 2 clicks, one which maxes out the stack in inventory and second that puts excess items back</ID>
     <ID>ForbiddenComment:ChestStealer.kt$ChestStealer$// TODO: player could theoretically already have too many stacks in inventory before opening the chest so no more should even get merged</ID>
@@ -513,18 +508,18 @@
     <ID>LargeClass:GuiServerSelect.kt$GuiServerSelect : AbstractScreen</ID>
     <ID>LargeClass:GuiSpotifyPlayer.kt$GuiSpotifyPlayer : AbstractScreenListenable</ID>
     <ID>LargeClass:InventoryCleaner.kt$InventoryCleaner : Module</ID>
-    <ID>LargeClass:SpotifyModule.kt$SpotifyModule : Module</ID>
     <ID>LargeClass:KillAura.kt$KillAura : Module</ID>
-    <ID>LargeClass:RotationUtils.kt$RotationUtils : MinecraftInstanceListenable</ID>
     <ID>LargeClass:NextGenBrowserRuntime.kt$NextGenBrowserRuntime : MinecraftInstanceListenable</ID>
     <ID>LargeClass:NextGenClickGuiBridge.kt$NextGenClickGuiBridge : MinecraftInstance</ID>
     <ID>LargeClass:NoSlow.kt$NoSlow : Module</ID>
     <ID>LargeClass:RandomUtils.kt$RandomUtils</ID>
     <ID>LargeClass:RenderUtil.kt$RenderUtil</ID>
     <ID>LargeClass:RenderUtils.kt$RenderUtils : MinecraftInstance</ID>
+    <ID>LargeClass:RotationUtils.kt$RotationUtils : MinecraftInstanceListenable</ID>
     <ID>LargeClass:Scaffold.kt$Scaffold : Module</ID>
     <ID>LargeClass:SettingComponents.kt$SettingComponents : Component</ID>
     <ID>LargeClass:SimulatedPlayer.kt$SimulatedPlayer : MinecraftInstance</ID>
+    <ID>LargeClass:SpotifyModule.kt$SpotifyModule : Module</ID>
     <ID>LargeClass:Velocity.kt$Velocity : Module</ID>
     <ID>LongMethod:AWTFontRenderer.kt$AWTFontRenderer$fun drawString(text: String, x: Double, y: Double, color: Int)</ID>
     <ID>LongMethod:Aimbot.kt$Aimbot$private fun findRotation(entity: Entity, random: Random): Boolean</ID>
@@ -533,7 +528,6 @@
     <ID>LongMethod:Arraylist.kt$Arraylist$override fun drawElement(): Border?</ID>
     <ID>LongMethod:BedPlates.kt$BedPlates$private fun drawPlate(bedState: BedState)</ID>
     <ID>LongMethod:BlackStyle.kt$BlackStyle$fun renderLeaf(value: Value&lt;*&gt;): Boolean</ID>
-    <ID>LongMethod:SettingComponents.kt$SettingComponents$fun renderSetting(setting: Value&lt;*&gt;): Boolean</ID>
     <ID>LongMethod:Blink.kt$Blink$override fun onPacket(event: PacketEvent)</ID>
     <ID>LongMethod:BlinkUtils.kt$BlinkUtils$fun blink(packet: Packet&lt;*&gt;, event: PacketEvent, sent: Boolean? = true, receive: Boolean? = true)</ID>
     <ID>LongMethod:BoolSetting.kt$BoolSetting$override fun draw(mouseX: Int, mouseY: Int)</ID>
@@ -570,7 +564,6 @@
     <ID>LongMethod:InfiniteAura.kt$InfiniteAura$private suspend fun hit(entity: EntityLivingBase, force: Boolean = false): Boolean</ID>
     <ID>LongMethod:InventoryCleaner.kt$InventoryCleaner$suspend fun repairEquipment()</ID>
     <ID>LongMethod:JumpCircle.kt$JumpCircle$private fun renderTexturedCircle(pos: Vec3, maxRadius: Double, timeFraction: Float, circleIndex: Int, shift: Float, intensity: Float)</ID>
-    <ID>LongMethod:Keystrokes.kt$Keystrokes$override fun drawElement(): Border</ID>
     <ID>LongMethod:KillAura.kt$KillAura$private fun runAttack(isFirstClick: Boolean, isLastClick: Boolean)</ID>
     <ID>LongMethod:KillAura.kt$KillAura$private fun updateHittable()</ID>
     <ID>LongMethod:LiquidBounceLegacyTH.kt$LiquidBounceLegacyTH$override fun drawTarget(entity: EntityLivingBase)</ID>
@@ -624,7 +617,7 @@
     <ID>LongMethod:ScoreboardElement.kt$ScoreboardElement$override fun drawElement(): Border?</ID>
     <ID>LongMethod:ScriptManagerCommand.kt$ScriptManagerCommand$override fun execute(args: Array&lt;String&gt;)</ID>
     <ID>LongMethod:ServerCrasher.kt$ServerCrasher$override fun onEnable()</ID>
-    <ID>LongMethod:SettingComponents.kt$SettingComponents$fun renderSetting(setting: Value&lt;*&gt;)</ID>
+    <ID>LongMethod:SettingComponents.kt$SettingComponents$fun renderSetting(setting: Value&lt;*&gt;): Boolean</ID>
     <ID>LongMethod:SettingComponents.kt$SettingComponents$override fun keyTyped(typedChar: Char, keyCode: Int)</ID>
     <ID>LongMethod:SettingsUtils.kt$SettingsUtils$fun applyScript(script: String)</ID>
     <ID>LongMethod:SideGuiColorManager.kt$SideGuiColorManager$fun drawColorCategory( mouseX: Int, mouseY: Int, alpha: Int, drag: Drag, animScroll: Float, rectHeight: Float, smooth: FloatArray )</ID>
@@ -1060,7 +1053,6 @@
     <ID>SpreadOperator:NextGenClickGuiBridge.kt$NextGenClickGuiBridge$(extensions.joinToString(", "), *extensions.toTypedArray())</ID>
     <ID>SpreadOperator:Plugins.kt$Plugins$(*splitters, limit = 2)</ID>
     <ID>SpreadOperator:Script.kt$Script$(*engineFlags)</ID>
-    <ID>SpreadOperator:ScriptCommand.kt$ScriptCommand$(commandObject.getMember("name") as String, *ScriptUtils.convert(commandObject.getMember("aliases"), Array&lt;String&gt;::class.java) as Array&lt;out String&gt;)</ID>
     <ID>SpreadOperator:TargetTracker.kt$TargetTracker$(*priorities.map { it.comparator(distance) }.toTypedArray())</ID>
     <ID>SpreadOperator:Teleport.kt$Teleport$(*packets.toTypedArray())</ID>
     <ID>SpreadOperator:Values.kt$FileValue$(extensions.joinToString(", "), *extensions.toTypedArray())</ID>
@@ -1084,7 +1076,6 @@
     <ID>SwallowedException:ItemTags.kt$ItemTags$e: Exception</ID>
     <ID>SwallowedException:JavaVersion.kt$e: Exception</ID>
     <ID>SwallowedException:LoginUtils.kt$LoginUtils$e: Exception</ID>
-    <ID>SwallowedException:ModuleManager.kt$ModuleManager$e: IllegalAccessException</ID>
     <ID>SwallowedException:PacketDebugger.kt$PacketDebugger$e: Exception</ID>
     <ID>SwallowedException:PerformanceMonitor.kt$PerformanceMonitor$e: Exception</ID>
     <ID>SwallowedException:Watermark.kt$Watermark$e: Exception</ID>
@@ -1135,7 +1126,6 @@
     <ID>TooGenericExceptionCaught:Fonts.kt$Fonts$e: Exception</ID>
     <ID>TooGenericExceptionCaught:Fonts.kt$Fonts$e:Exception</ID>
     <ID>TooGenericExceptionCaught:GCMonitor.kt$GCMonitor$e: Exception</ID>
-    <ID>TooGenericExceptionCaught:General.kt$e: Throwable</ID>
     <ID>TooGenericExceptionCaught:GradientFontShader.kt$GradientFontShader$e: Exception</ID>
     <ID>TooGenericExceptionCaught:GradientShader.kt$GradientShader$e: Exception</ID>
     <ID>TooGenericExceptionCaught:GuiAltManager.kt$GuiAltManager$any: Exception</ID>
@@ -1163,7 +1153,6 @@
     <ID>TooGenericExceptionCaught:MessageOfTheDay.kt$e: Throwable</ID>
     <ID>TooGenericExceptionCaught:Module.kt$Module$any: Exception</ID>
     <ID>TooGenericExceptionCaught:Module.kt$Module$throwable: Throwable</ID>
-    <ID>TooGenericExceptionCaught:ModuleManager.kt$ModuleManager$e: Throwable</ID>
     <ID>TooGenericExceptionCaught:NextGenBrowserRuntime.kt$NextGenBrowserRuntime$throwable: Throwable</ID>
     <ID>TooGenericExceptionCaught:NextGenClickGuiServer.kt$NextGenClickGuiServer$throwable: Throwable</ID>
     <ID>TooGenericExceptionCaught:Notebot.kt$Notebot$throwable: Throwable</ID>
@@ -1329,7 +1318,6 @@
     <ID>UnusedParameter:PopupScreen.kt$PopupScreen$screenHeight: Int</ID>
     <ID>UnusedParameter:RenderUtils.kt$RenderUtils$color: Int</ID>
     <ID>UnusedParameter:ServerLag.kt$ServerLag$isOutbound: Boolean</ID>
-    <ID>UnusedParameter:SettingsUtils.kt$SettingsUtils$args: Array&lt;String&gt;</ID>
     <ID>UnusedParameter:SideGui.kt$SideGui$sr: ScaledResolution</ID>
     <ID>UnusedParameter:SideGuiBackgroundManager.kt$SideGuiBackgroundManager$mouseX: Int</ID>
     <ID>UnusedParameter:SideGuiBackgroundManager.kt$SideGuiBackgroundManager$mouseY: Int</ID>
@@ -1384,7 +1372,6 @@
     <ID>UnusedPrivateProperty:HideClans.kt$HideClans$private val onUpdate = handler&lt;UpdateEvent&gt; { updateHiddenAllies() }</ID>
     <ID>UnusedPrivateProperty:InfiniteAura.kt$InfiniteAura$private val attackTimer = MSTimer()</ID>
     <ID>UnusedPrivateProperty:InfiniteAura.kt$InfiniteAura$private val limitedMultiTargets by int("LimitedMultiTargets", 0, 0..50) { targetMode == "Multi" } .describe("Max targets to hit in multi mode, 0 is no limit.")</ID>
-    <ID>UnusedPrivateProperty:InfiniteAura.kt$InfiniteAura$private val onWorld = handler&lt;WorldEvent&gt; { auraJob?.cancel() points.clear() target = null hittable = false prevTargetEntities.clear() synchronized(swingFails) { swingFails.clear() } }</ID>
     <ID>UnusedPrivateProperty:InfiniteAura.kt$InfiniteAura$val diff = sqrt(x * x + y * y + z * z)</ID>
     <ID>UnusedPrivateProperty:InventoryCleaner.kt$InventoryCleaner$private val autoClose by shared(InventoryManager.autoCloseValue)</ID>
     <ID>UnusedPrivateProperty:InventoryCleaner.kt$InventoryCleaner$private val closeDelay by shared(InventoryManager.closeDelayValue)</ID>
@@ -1403,7 +1390,6 @@
     <ID>UnusedPrivateProperty:ModuleManager.kt$ModuleManager$/** * Safety net for HOLD/SMART binds. Key-release events are only delivered while no screen is open * (the release fires from the mixin only when currentScreen == null), so holding a bind key and * then opening a GUI - or losing window focus - would otherwise strand the module enabled because * its release is never seen. Every tick we reconcile against the real keyboard state and let go of * the module once the keys are physically up. */ private val onBindTick = handler&lt;GameTickEvent&gt; { MODULE_REGISTRY.forEach { module -&gt; if (module.keyBind == Keyboard.KEY_NONE) { return@forEach } when (module.bindAction) { ModuleBindAction.HOLD -&gt; { if (module.state &amp;&amp; !module.bindHeldPhysically()) { module.state = false } } ModuleBindAction.SMART -&gt; { val (wasEnabled, pressedAt) = smartPressedStates[module] ?: return@forEach when { !Keyboard.isKeyDown(module.keyBind) -&gt; { smartPressedStates.remove(module) val held = System.currentTimeMillis() - pressedAt &gt;= SMART_HOLD_THRESHOLD_MS module.state = if (held) false else !wasEnabled } !module.bindModifiersPressed() -&gt; { smartPressedStates.remove(module) module.state = false } } } else -&gt; {} } } }</ID>
     <ID>UnusedPrivateProperty:MultiSelectElement.kt$MultiSelectElement$private val element: ModuleElement</ID>
     <ID>UnusedPrivateProperty:NeverloseGui.kt$NeverloseGui$subCategory</ID>
-    <ID>UnusedPrivateProperty:NextGenBrowserRuntime.kt$NextGenBrowserRuntime$/** * Persistent on-screen download status. Stays visible the whole time the browser runtime is * being prepared/downloaded (does NOT fade like a notification) and disappears only once the * download finishes (state leaves INITIALIZING). */ private val onRenderOverlay = handler&lt;Render2DEvent&gt;(always = true) { if (state != State.INITIALIZING) { return@handler } val font = mc.fontRendererObj ?: return@handler val sr = ScaledResolution(mc) val text = detail.ifEmpty { "Preparing in-game browser (one-time ~160MB download)..." } val pct = progress val hasBar = pct in 0.0..100.0 val boxW = (font.getStringWidth(text) + 16).coerceAtLeast(200) val boxH = if (hasBar) 30 else 20 val x = (sr.scaledWidth - boxW) / 2 val y = 6 RenderUtils.drawRect(x.toFloat(), y.toFloat(), (x + boxW).toFloat(), (y + boxH).toFloat(), 0xC8101014.toInt()) RenderUtils.drawRect(x.toFloat(), y.toFloat(), (x + boxW).toFloat(), (y + 1).toFloat(), 0x40FFFFFF) font.drawStringWithShadow(text, (x + 8).toFloat(), (y + 6).toFloat(), 0xFFFFFF) if (hasBar) { val barX = x + 8 val barY = y + 20 val barW = boxW - 16 RenderUtils.drawRect(barX.toFloat(), barY.toFloat(), (barX + barW).toFloat(), (barY + 4).toFloat(), 0xC0202024.toInt()) val filled = (barW * (pct / 100.0)).toInt() if (filled &gt; 0) { RenderUtils.drawRect(barX.toFloat(), barY.toFloat(), (barX + filled).toFloat(), (barY + 4).toFloat(), 0xFF3A8BFF.toInt()) } } }</ID>
     <ID>UnusedPrivateProperty:NextGenBrowserRuntime.kt$NextGenBrowserRuntime$private val onGameLoop = handler&lt;GameLoopEvent&gt;(always = true, priority = Byte.MIN_VALUE) { tickPersistentBrowser() tickHudBrowser() }</ID>
     <ID>UnusedPrivateProperty:NextGenBrowserRuntime.kt$NextGenBrowserRuntime$private val onShutdown = handler&lt;ClientShutdownEvent&gt;(always = true) { closePersistentBrowser() closeHudBrowser() NextGenClickGuiServer.stop() }</ID>
     <ID>UnusedPrivateProperty:NoBlockInteract.kt$NoBlockInteract$private val handlePacket = handler&lt;PacketEvent&gt; { event -&gt; val player = mc.thePlayer ?: return@handler val packet = event.packet // Only react to actual block interactions. A direction of 0..5 means a real block // face was clicked; 255 means the client is using an item against air. if (packet !is C08PacketPlayerBlockPlacement || packet.placedBlockDirection !in 0..5) { return@handler } if (onlyWhenSneaking &amp;&amp; !player.isSneaking) { return@handler } val block = packet.position?.block ?: return@handler if (shouldCancel(block)) { event.cancelEvent() } }</ID>
