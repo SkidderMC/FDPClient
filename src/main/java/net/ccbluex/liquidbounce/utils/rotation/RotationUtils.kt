@@ -695,7 +695,10 @@ object RotationUtils : MinecraftInstance, Listenable {
         resetTicks = 0
 
         if (immediate || currentRotation == null) {
-            resetRotation()
+            // On an immediate teardown (module disable) also clear the input/rotation history so the
+            // next tick's movement prediction carries no stale scaffold/silent modifiedInput or
+            // server-rotation, which otherwise desyncs GrimAC's Simulation on the toggle tick.
+            resetRotation(resetHistory = immediate)
         }
 
         return true
