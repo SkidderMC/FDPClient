@@ -170,6 +170,8 @@ object InvMove : Module("InvMove", Category.MOVEMENT, Category.SubCategory.MOVEM
     override fun onDisable() {
         for (affectedBinding in affectedBindings) affectedBinding.pressed = isButtonPressed(affectedBinding)
 
+        if (isIntave && !GameSettings.isKeyDown(mc.gameSettings.keyBindSneak)) mc.gameSettings.keyBindSneak.pressed = false
+
         clickWindowList.forEach { PacketUtils.sendPacket(it, false) }
         clickWindowList.clear()
     }
