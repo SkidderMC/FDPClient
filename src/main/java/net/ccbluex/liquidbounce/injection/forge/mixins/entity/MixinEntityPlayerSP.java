@@ -424,13 +424,10 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
 
         EventManager.INSTANCE.call(PostSprintUpdateEvent.INSTANCE);
 
-        final boolean modernSilentCorrection = settings != null && settings.getUseModernRotations()
-                && ("Strict".equals(settings.getModernMovementCorrection())
-                || "Silent".equals(settings.getModernMovementCorrection()));
-
-        // Silent rotation correction must not make the sprint controller interpret the remapped
-        // server-side input as the player's physical direction.
-        sprint.correctSprintState(modernSilentCorrection ? movementInput : modifiedInput, isUsingItem);
+        // Feed the sprint controller the movement expressed in the server-rotation frame
+        // (modifiedInput). GrimAC only accepts sprint within ~45 degrees of the yaw we send, so the
+        // direction guard in Sprint must evaluate the server-frame forward, not the raw camera input.
+        sprint.correctSprintState(modifiedInput, isUsingItem);
 
         if (capabilities.allowFlying) {
             if (mc.playerController.isSpectatorMode()) {

@@ -60,6 +60,9 @@ object Sprint : Module("Sprint", Category.MOVEMENT, Category.SubCategory.MOVEMEN
     private val noPackets by boolean("NoPackets", false) { mode == "Vanilla" }
         .describe("Do not send sprint start/stop packets.")
 
+    private val anticheatSprint by boolean("AntiCheatSprint", true)
+        .describe("Stop sprinting when a silent rotation points more than ~45 degrees off your movement; modern anticheats reject sprinting off the yaw sent to the server.")
+
     private var isSprinting = false
 
     private val generalGroup = Configurable("General")
@@ -68,7 +71,7 @@ object Sprint : Module("Sprint", Category.MOVEMENT, Category.SubCategory.MOVEMEN
     private val serverSideGroup = Configurable("ServerSide")
 
     init {
-        moveValues(generalGroup, "Mode", "OnlyOnSprintPress", "AlwaysCorrectSprint", "NoPackets")
+        moveValues(generalGroup, "Mode", "OnlyOnSprintPress", "AlwaysCorrectSprint", "NoPackets", "AntiCheatSprint")
         moveValues(directionsGroup,
             "AllDirections", "JumpDirections", "AllDirectionsLimitSpeed", "AllDirectionsLimitSpeedOnlyGround")
         moveValues(conditionsGroup, "Blindness", "UsingItem", "Inventory", "Food")
@@ -176,6 +179,16 @@ object Sprint : Module("Sprint", Category.MOVEMENT, Category.SubCategory.MOVEMEN
         }
 
         if ((inventory || isLegitModeActive) && serverOpenInventory) {
+            return true
+        }
+
+        // GrimAC's prediction only accepts sprint whose movement resolves to forward = 1 in the
+        // frame of the yaw we send. When a silent server-side rotation points more than ~45 degrees
+        // off our real movement, the server-frame forward drops below 1, so keeping sprint desyncs
+        // every tick. Drop sprint here regardless of AllDirections or scaffold-controlled sprint.
+        val silentRotationRejectsSprint = currentRotation != null &&
+            activeSettings?.applyServerSide == true && modifiedForward < 0.8f
+        if (anticheatSprint && silentRotationRejectsSprint) {
             return true
         }
 
