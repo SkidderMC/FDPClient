@@ -196,7 +196,12 @@ open class Module(
                     // A broken module-specific cleanup must never leave the module logically
                     // enabled or retain global scheduler/rotation ownership.
                     TickScheduler.cancel(this)
-                    RotationUtils.cancelTargetRotation(this)
+                    // Tear down rotation ownership atomically. With MovementCorrection coupling world
+                    // velocity to the silent server yaw, a smoothed reset snaps the yaw and rewrites
+                    // motion (and can flip sprint) across separate ticks while a target is still live,
+                    // which GrimAC's movement simulation flags -> setback loop. immediate = true resets
+                    // in the same tick, before movement, so velocity and the sent yaw never disagree.
+                    RotationUtils.cancelTargetRotation(this, immediate = true)
                     field = false
                 }
             }
