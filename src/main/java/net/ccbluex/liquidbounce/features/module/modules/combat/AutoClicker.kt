@@ -114,7 +114,7 @@ object AutoClicker : Module("AutoClicker", Category.COMBAT, Category.SubCategory
     private var lastBlocking = 0L
 
     val canClick
-        get() = mc.thePlayer.capabilities.isCreativeMode || !mc.objectMouseOver.typeOfHit.isBlock
+        get() = mc.thePlayer?.capabilities?.isCreativeMode == true || mc.objectMouseOver?.typeOfHit?.isBlock != true
 
     private var shouldJitter = false
 
