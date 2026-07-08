@@ -21,6 +21,7 @@ import net.ccbluex.liquidbounce.utils.inventory.SilentHotbar
 import net.ccbluex.liquidbounce.utils.inventory.hotBarSlot
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils
 import net.ccbluex.liquidbounce.utils.movement.MovementUtils
+import net.ccbluex.liquidbounce.utils.movement.projectedVanillaJumpHeight
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.rotation.PlaceRotation
 import net.ccbluex.liquidbounce.utils.rotation.Rotation
@@ -43,6 +44,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.C0APacketAnimation
 import net.minecraft.network.play.client.C0BPacketEntityAction
 import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
+import net.minecraft.potion.Potion
 import net.minecraft.util.*
 import net.minecraft.world.WorldSettings
 import net.minecraftforge.event.ForgeEventFactory
@@ -522,6 +524,12 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
 
     private fun isHalfBlockLevel(y: Double) = abs(y - floor(y) - 0.5) <= 1E-3
 
+    private fun canJumpTwoBlocksHigh(player: net.minecraft.client.entity.EntityPlayerSP): Boolean {
+        val amplifier = player.getActivePotionEffect(Potion.jump)?.amplifier ?: -1
+        val initialMotionY = 0.42 + (amplifier + 1).coerceAtLeast(0) * 0.1
+        return projectedVanillaJumpHeight(initialMotionY) >= 2.0
+    }
+
     private fun isUsableBlockStack(stack: ItemStack?, fullCubeOnly: Boolean = false): Boolean {
         val itemBlock = stack?.item as? ItemBlock ?: return false
         val block = itemBlock.block
@@ -880,7 +888,8 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
         }
 
         if (shouldTriggerMovement) {
-            val shouldAvoidJump = isLookingDiagonally
+            // Strong Jump Boost can clear two blocks and break the bridge rhythm.
+            val shouldAvoidJump = isLookingDiagonally || canJumpTwoBlocksHigh(player)
 
             when (godbridgeMovementMode) {
                 "Jump" -> if (shouldAvoidJump) {

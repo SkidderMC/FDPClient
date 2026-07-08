@@ -59,10 +59,8 @@ class FallingPlayer(
             motionZ += (forward * f2 + strafe * f1).toDouble()
         }
 
-        motionY -= 0.08
         motionX *= 0.91
-        motionY *= 0.9800000190734863
-        motionY *= 0.91
+        motionY = nextVanillaAirMotionY(motionY)
         motionZ *= 0.91
 
         x += motionX
