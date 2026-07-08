@@ -546,6 +546,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
     private var jumpTicks = jumpTicksRange.random()
     private var horizontalPlacements = horizontalPlacementsRange.random()
     private var verticalPlacements = verticalPlacementsRange.random()
+    private var placeYawJitterSteps = 0
     private val shouldPlaceHorizontally
         get() = scaffoldMode == "Telly" && mc.thePlayer.isMoving && (startHorizontally && blocksUntilAxisChange <= horizontalPlacements || !startHorizontally && blocksUntilAxisChange > verticalPlacements)
 
@@ -956,15 +957,20 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
         }
 
         if (rotationDifference(rotation, RotationUtils.serverRotation) > getFixedAngleDelta()) {
+            // This raw send bypasses the PacketEvent bus (RotationUtils.onPacket), so unwrap the yaw
+            // here the same way onPacket does: emit the shortest continuous offset from the last yaw
+            // the server holds, so the wire delta stays <= 180 and never seam-jumps (GrimAC AimModulo360).
+            val sr = RotationUtils.serverRotation
+            val continuousYaw = sr.yaw + RotationUtils.angleDifference(rotation.yaw, sr.yaw)
             sendPacket(
                 C06PacketPlayerPosLook(
                     player.posX, player.posY, player.posZ,
-                    rotation.yaw, rotation.pitch,
+                    continuousYaw, rotation.pitch,
                     player.onGround
                 ),
                 false
             )
-            RotationUtils.serverRotation = rotation
+            RotationUtils.serverRotation = Rotation(continuousYaw, rotation.pitch)
         }
 
         if (rotationTiming == "OnTickSnap") {
@@ -986,15 +992,18 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
             return
         }
 
+        // Raw send bypasses onPacket; unwrap the yaw to a continuous offset (GrimAC AimModulo360).
+        val sr = RotationUtils.serverRotation
+        val continuousYaw = sr.yaw + RotationUtils.angleDifference(rotation.yaw, sr.yaw)
         sendPacket(
             C06PacketPlayerPosLook(
                 player.posX, player.posY, player.posZ,
-                rotation.yaw, rotation.pitch,
+                continuousYaw, rotation.pitch,
                 player.onGround
             ),
             false
         )
-        RotationUtils.serverRotation = rotation
+        RotationUtils.serverRotation = Rotation(continuousYaw, rotation.pitch)
     }
 
     // Search for new target block
@@ -1509,6 +1518,12 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
         blocksUntilAxisChange++
     }
 
+    private fun advancePlaceYawJitter() {
+        if (scaffoldMode != "Telly") return
+        // pick a new nonzero step different from the last so consecutive place yaws never repeat
+        placeYawJitterSteps = (-3..3).filter { it != 0 && it != placeYawJitterSteps }.random()
+    }
+
     private fun tryToPlaceBlock(
         stack: ItemStack, clickPos: BlockPos, side: EnumFacing, hitVec: Vec3, attempt: Boolean = false,
         onSuccess: () -> Unit = { }
@@ -1545,6 +1560,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
             if (isManualJumpOptionActive) blocksPlacedUntilJump++
 
             updatePlacedBlocksForTelly()
+            advancePlaceYawJitter()
 
             if (stack.stackSize <= 0) {
                 thePlayer.inventory.mainInventory[SilentHotbar.currentSlot] = null
@@ -1700,6 +1716,18 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
                 Rotation(advancedYaw, advancedPitch)
             }
             else -> baseRotation
+        }
+
+        // Anti-DuplicateRotPlace: Telly's mode-quantized place yaw is bit-identical every place, so
+        // GrimAC sees a repeated yaw delta and flags. Nudge by a GCD-quantized step (a multiple of the
+        // sensitivity GCD, so AimA/GCD detection stays clean); the step advances only per successful
+        // place, keeping every candidate within one search consistent while consecutive places differ
+        // by >= 1 GCD (well above the 0.0001 duplicate threshold, still on the block face).
+        if (scaffoldMode == "Telly") {
+            return Rotation(
+                rotation.yaw + placeYawJitterSteps * getFixedAngleDelta(),
+                rotation.pitch
+            ).fixedSensitivity()
         }
 
         return rotation.fixedSensitivity()
