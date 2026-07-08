@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
 import net.ccbluex.liquidbounce.event.RotationUpdateEvent
+import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
@@ -17,6 +18,8 @@ import net.ccbluex.liquidbounce.utils.rotation.Rotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationPriority
 import net.ccbluex.liquidbounce.utils.rotation.RotationSettings
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.setTargetRotation
+import net.ccbluex.liquidbounce.utils.render.RenderText.renderNameTag
+import net.ccbluex.liquidbounce.utils.movement.distanceSqPointToSegment
 import net.minecraft.block.material.Material
 import net.minecraft.entity.Entity
 import net.minecraft.item.ItemEnderPearl
@@ -36,6 +39,8 @@ object EasyPearl : Module("EasyPearl", Category.COMBAT, Category.SubCategory.COM
         .describe("Skip aiming when the looked at spot is out of pearl range.")
     private val maxDistance by float("MaxDistance", 60F, 8F..256F)
         .describe("How far ahead to search for the spot you are looking at.")
+    private val showDistance by boolean("ShowDistance", true)
+        .describe("Show the distance to the selected pearl destination.")
 
     private val minPitch by float("MinPitch", -90F, -90F..0F)
         .describe("Lowest launch pitch to try when solving the throw.")
@@ -54,10 +59,13 @@ object EasyPearl : Module("EasyPearl", Category.COMBAT, Category.SubCategory.COM
     private const val AIR_SLOWDOWN = 0.99
     private const val WATER_SLOWDOWN = 0.8
 
+    private var targetPosition: Vec3? = null
+    private var targetReachable = false
+
     private val options = RotationSettings(this).withoutKeepRotation().withRequestPriority(RotationPriority.HIGH)
 
     init {
-        group("Target", "OnlyOnUseKey", "ReachableCheck", "MaxDistance")
+        group("Target", "OnlyOnUseKey", "ReachableCheck", "MaxDistance", "ShowDistance")
         group("Pitch", "MinPitch", "MaxPitch", "PitchStep")
         group("Throw", "MaxLandingError", "Silent")
     }
@@ -65,15 +73,25 @@ object EasyPearl : Module("EasyPearl", Category.COMBAT, Category.SubCategory.COM
     val onRotationUpdate = handler<RotationUpdateEvent> {
         val player = mc.thePlayer ?: return@handler
 
-        if (player.heldItem?.item !is ItemEnderPearl)
+        if (player.heldItem?.item !is ItemEnderPearl) {
+            targetPosition = null
             return@handler
+        }
 
-        if (onlyOnUseKey && !mc.gameSettings.keyBindUseItem.isKeyDown)
+        if (onlyOnUseKey && !mc.gameSettings.keyBindUseItem.isKeyDown) {
+            targetPosition = null
             return@handler
+        }
 
-        val targetPosition = getLookedAtPosition(player) ?: return@handler
+        val targetPosition = getLookedAtPosition(player) ?: run {
+            this.targetPosition = null
+            return@handler
+        }
+        this.targetPosition = targetPosition
 
-        val rotation = solveThrow(player, targetPosition) ?: return@handler
+        val rotation = solveThrow(player, targetPosition)
+        targetReachable = rotation != null
+        rotation ?: return@handler
 
         if (silent) {
             setTargetRotation(rotation.fixedSensitivity(), options)
@@ -81,6 +99,20 @@ object EasyPearl : Module("EasyPearl", Category.COMBAT, Category.SubCategory.COM
             player.rotationYaw = rotation.yaw
             player.rotationPitch = rotation.pitch
         }
+    }
+
+    val onRender3D = handler<Render3DEvent> {
+        if (!showDistance) return@handler
+        val player = mc.thePlayer ?: return@handler
+        val target = targetPosition ?: return@handler
+        val distance = player.getDistance(target.xCoord, target.yCoord, target.zCoord)
+        val color = if (targetReachable) "§a" else "§c"
+        renderNameTag("$color${"%.1f".format(distance)}m", target.xCoord, target.yCoord + 0.3, target.zCoord)
+    }
+
+    override fun onDisable() {
+        targetPosition = null
+        targetReachable = false
     }
 
     private fun getLookedAtPosition(player: Entity): Vec3? {
@@ -194,21 +226,4 @@ object EasyPearl : Module("EasyPearl", Category.COMBAT, Category.SubCategory.COM
         return closest
     }
 
-    private fun distanceSqPointToSegment(point: Vec3, a: Vec3, b: Vec3): Double {
-        val abX = b.xCoord - a.xCoord
-        val abY = b.yCoord - a.yCoord
-        val abZ = b.zCoord - a.zCoord
-
-        val lengthSq = abX * abX + abY * abY + abZ * abZ
-
-        if (lengthSq == 0.0)
-            return point.squareDistanceTo(a)
-
-        var t = ((point.xCoord - a.xCoord) * abX + (point.yCoord - a.yCoord) * abY + (point.zCoord - a.zCoord) * abZ) / lengthSq
-        t = t.coerceIn(0.0, 1.0)
-
-        val projection = Vec3(a.xCoord + abX * t, a.yCoord + abY * t, a.zCoord + abZ * t)
-
-        return point.squareDistanceTo(projection)
-    }
 }
