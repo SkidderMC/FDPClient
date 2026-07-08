@@ -37,7 +37,11 @@ open class RotationSettings(val moduleOwner: Module, generalApply: () -> Boolean
     open val maxThresholdAttemptsToStopValue = int("MaxThresholdAttemptsToStop", 1, 0..5) { simulateShortStop }
     // Shared by the legacy SimulateShortStop build-up and the modern ShortStop processor.
     open val shortStopDurationValue = intRange("ShortStopDuration", 1..2, 1..5) { simulateShortStop || modernShortStop }
-    open val strafeValue = boolean("Strafe", false) {
+    // Default ON so the legacy engine is anticheat-safe out of the box like the modern engine
+    // (whose MovementCorrection defaults to Silent): a silent legacy rotation without this correction
+    // moves the player along the camera yaw while the server sees the sent yaw, which GrimAC's
+    // Simulation flags. Non-strict keeps camera-natural movement; disable for raw silent on lax servers.
+    open val strafeValue = boolean("Strafe", true) {
         rotationsActive && applyServerSide && !useModernRotations && generalApply()
     }
     open val strictValue = boolean("Strict", false) { strafeValue.isActive() && generalApply() }
