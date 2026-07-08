@@ -107,7 +107,8 @@
         }
     }
 
-    async function toggleExpanded() {
+    async function toggleExpanded(event: MouseEvent) {
+        event.stopPropagation();
         expanded = !expanded;
         await setItem(path, expanded.toString());
     }
@@ -117,7 +118,6 @@
 <div
         class="module"
         class:expanded
-        class:has-settings={hasSettings}
         in:slide={{ duration: 500, easing: quintOut }}
         out:slide={{ duration: 500, easing: quintOut }}
 >
@@ -133,6 +133,17 @@
             class:highlight={name === $highlightModuleName}
     >
         {$spaceSeperatedNames ? convertToSpacedString(name) : name}
+
+        {#if hasSettings}
+            <button
+                    class="expand-arrow"
+                    aria-label="Expand settings"
+                    aria-expanded={expanded}
+                    on:click={toggleExpanded}
+            >
+                <span class="expand-arrow-icon"></span>
+            </button>
+        {/if}
     </div>
 
     {#if expanded && configurable}
@@ -145,10 +156,9 @@
 </div>
 
 <style lang="scss">
-  @use "./icon-settings-expand" as *;
-
   .module {
     position: relative;
+    contain: layout;
 
     .name {
       cursor: pointer;
@@ -188,16 +198,34 @@
       padding: 0 11px 0 7px;
     }
 
-    &.has-settings {
-      .name::after {
-        @include icon-settings-expand($right: 15px);
-        opacity: 0.5;
-      }
+    .expand-arrow {
+      all: unset;
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 40px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
 
-      &.expanded .name::after {
-        transform: translateY(-50%) rotate(0);
-        opacity: 1;
-      }
+    .expand-arrow-icon {
+      width: 11px;
+      height: 11px;
+      display: block;
+      background-image: url("/img/clickgui/icon-settings-expand.svg");
+      background-position: center;
+      background-repeat: no-repeat;
+      opacity: 0.5;
+      transform: rotate(-90deg);
+      transition: ease opacity 0.2s, ease transform 0.4s;
+    }
+
+    &.expanded .expand-arrow-icon {
+      transform: rotate(0);
+      opacity: 1;
     }
   }
 </style>

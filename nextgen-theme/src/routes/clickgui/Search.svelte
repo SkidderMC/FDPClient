@@ -19,6 +19,20 @@
     let selectedIndex = 0;
     let hasFocus = false;
 
+    type SearchableModule = {
+        raw: Module;
+        lowerName: string;
+        lowerAliases: string[];
+    };
+
+    // Normalize once when the module list changes instead of on every keystroke.
+    let searchableModules: SearchableModule[] = [];
+    $: searchableModules = modules.map(module => ({
+        raw: module,
+        lowerName: module.name.toLowerCase(),
+        lowerAliases: module.aliases.map(alias => alias.toLowerCase())
+    }));
+
     function reset() {
         filteredModules = [];
         query = "";
@@ -35,11 +49,12 @@
             selectedIndex = 0;
         }
 
-        const pureQuery = query.toLowerCase().split(" ").join("");
+        const pureQuery = query.toLowerCase().replaceAll(" ", "");
 
-        filteredModules = modules.filter((m) => m.name.toLowerCase().includes(pureQuery)
-            || m.aliases.some(a => a.toLowerCase().includes(pureQuery))
-        );
+        filteredModules = searchableModules
+            .filter(({lowerName, lowerAliases}) => lowerName.includes(pureQuery)
+                || lowerAliases.some(alias => alias.includes(pureQuery)))
+            .map(({raw}) => raw);
     }
 
     async function handleKeyDown(e: KeyboardKeyEvent) {

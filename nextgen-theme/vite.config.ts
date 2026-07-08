@@ -15,7 +15,22 @@ export default defineConfig({
     ],
     base: "",
     build: {
-        target: "chrome75"
+        target: "chrome75",
+        rollupOptions: {
+            output: {
+                manualChunks(id) {
+                    if (id.includes("chart.js") || id.includes("chartjs-plugin-dragdata")) {
+                        return "charts";
+                    }
+                    if (id.includes("@simonwep/pickr") || id.includes("nouislider")) {
+                        return "controls";
+                    }
+                    if (id.includes("node_modules/svelte")) {
+                        return "svelte";
+                    }
+                }
+            }
+        }
     },
     css: {
         preprocessorOptions: {

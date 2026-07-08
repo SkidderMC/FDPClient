@@ -8,9 +8,11 @@
     let ready = false;
 
     onMount(() => {
-        setTimeout(() => {
+        const timeout = window.setTimeout(() => {
             ready = true;
         }, transitionDuration);
+
+        return () => window.clearTimeout(timeout);
     });
 </script>
 
@@ -20,10 +22,11 @@
             <Header/>
         </div>
 
-        <div class="menu-wrapper">
-            <slot/>
-        </div>
     {/if}
+
+    <div class="menu-wrapper">
+        <slot/>
+    </div>
 </div>
 
 <style lang="scss">

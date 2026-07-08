@@ -271,7 +271,12 @@
   }
 
   .modules::-webkit-scrollbar {
-    width: 0;
+    width: 2px;
+    height: 2px;
+  }
+
+  .modules::-webkit-scrollbar-thumb {
+    border-radius: 2px;
   }
 
   .expand-toggle {
