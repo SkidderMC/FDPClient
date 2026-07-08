@@ -19,6 +19,8 @@ object XRay : Module("XRay", Category.VISUAL, Category.SubCategory.RENDER_OVERLA
         .describe("Only show ores exposed to air.")
     private val fullBright by boolean("FullBright", false)
         .describe("Brighten the world while XRay is active.")
+    private val backgroundOpacity by int("BackgroundOpacity", 0, 0..255)
+        .describe("Opacity of ordinary blocks. Zero hides them completely.")
 
     val xrayBlocks = mutableListOf(
         Blocks.coal_ore,
@@ -82,4 +84,37 @@ object XRay : Module("XRay", Category.VISUAL, Category.SubCategory.RENDER_OVERLA
 
         return EnumFacing.values().any { !world.getBlockState(pos.offset(it)).block.isOpaqueCube }
     }
+
+    fun modifyShouldSideBeRendered(
+        original: Boolean,
+        world: IBlockAccess,
+        adjacentPos: BlockPos,
+        side: EnumFacing,
+        block: Block,
+    ): Boolean = if (block in xrayBlocks) {
+        shouldRender(world, adjacentPos.offset(side.opposite), block)
+    } else {
+        backgroundOpacity > 0 && original
+    }
+
+    fun shouldRenderBackground(block: Block): Boolean =
+        handleEvents() && backgroundOpacity > 0 && block !in xrayBlocks
+
+    fun shouldUseTranslucentBackground(block: Block): Boolean =
+        shouldRenderBackground(block) && backgroundOpacity < 255
+
+    private val renderingBackground = ThreadLocal.withInitial { false }
+
+    fun beginBackgroundRender(block: Block): Boolean {
+        val background = shouldUseTranslucentBackground(block)
+        renderingBackground.set(background)
+        return background
+    }
+
+    fun endBackgroundRender() {
+        renderingBackground.set(false)
+    }
+
+    fun currentBackgroundAlpha(): Int =
+        if (renderingBackground.get()) backgroundOpacity else 255
 }

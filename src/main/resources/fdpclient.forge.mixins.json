@@ -73,6 +73,7 @@
     "render.MixinTileEntityMobSpawnerRenderer",
     "render.MixinTileEntityRendererDispatcher",
     "render.MixinVisGraph",
+    "render.MixinWorldRenderer",
     "resources.MixinSkinManager",
     "tweaks.MixinAnvilChunkLoader",
     "tweaks.MixinMinecraftServer",

@@ -25,6 +25,7 @@ import net.minecraft.potion.Potion;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumWorldBlockLayer;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -74,10 +75,21 @@ public abstract class MixinBlock {
         if (axisalignedbb != null && mask.intersectsWith(axisalignedbb)) list.add(axisalignedbb);
     }
 
-    @Inject(method = "shouldSideBeRendered", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "shouldSideBeRendered", at = @At("RETURN"), cancellable = true)
     private void shouldSideBeRendered(IBlockAccess p_shouldSideBeRendered_1_, BlockPos p_shouldSideBeRendered_2_, EnumFacing p_shouldSideBeRendered_3_, CallbackInfoReturnable<Boolean> cir) {
-        if (XRay.INSTANCE.handleEvents()) {
-            cir.setReturnValue(XRay.INSTANCE.shouldRender(p_shouldSideBeRendered_1_, p_shouldSideBeRendered_2_, (Block) (Object) this));
+        final XRay xray = XRay.INSTANCE;
+        if (xray.handleEvents()) {
+            cir.setReturnValue(xray.modifyShouldSideBeRendered(
+                    cir.getReturnValue(), p_shouldSideBeRendered_1_, p_shouldSideBeRendered_2_,
+                    p_shouldSideBeRendered_3_, (Block) (Object) this
+            ));
+        }
+    }
+
+    @Inject(method = "getBlockLayer", at = @At("RETURN"), cancellable = true)
+    private void useTranslucentXRayBackground(CallbackInfoReturnable<EnumWorldBlockLayer> cir) {
+        if (XRay.INSTANCE.shouldUseTranslucentBackground((Block) (Object) this)) {
+            cir.setReturnValue(EnumWorldBlockLayer.TRANSLUCENT);
         }
     }
 
