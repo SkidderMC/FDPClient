@@ -18,6 +18,7 @@ import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.NoFal
 import net.ccbluex.liquidbounce.event.async.TickScheduler
 import net.ccbluex.liquidbounce.utils.block.block
 import net.ccbluex.liquidbounce.utils.block.center
+import net.ccbluex.liquidbounce.utils.block.fallDamageMultiplier
 import net.ccbluex.liquidbounce.utils.block.state
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.extensions.*
@@ -108,8 +109,8 @@ object MLG : NoFallMode("MLG") {
                         bestOffset?.let {
                             suitablePos = pos.add(it)
 
-                            if (suitablePos?.state?.block == Blocks.web ||
-                                suitablePos?.up()?.block == Blocks.water
+                            if (suitablePos.fallDamageMultiplier(player.isSneaking) <= 0F ||
+                                suitablePos?.up().fallDamageMultiplier(player.isSneaking) <= 0F
                             ) {
                                 return
                             }

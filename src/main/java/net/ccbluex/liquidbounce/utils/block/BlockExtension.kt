@@ -13,6 +13,7 @@ import net.minecraft.block.*
 import net.minecraft.block.material.Material
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.item.EntityFallingBlock
+import net.minecraft.init.Blocks
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
 import net.minecraft.util.Vec3i
@@ -25,6 +26,17 @@ val BlockPos.block: Block?
 
 val BlockPos.material: Material?
     get() = this.block?.material
+
+/**
+ * Vanilla 1.8.9 fall-damage multiplier for blocks that alter landing damage.
+ * Beds did not reduce fall damage in this protocol, so they intentionally use 1F.
+ */
+fun BlockPos?.fallDamageMultiplier(isSneaking: Boolean = false): Float = when (this?.block) {
+    Blocks.water, Blocks.flowing_water, Blocks.web -> 0F
+    Blocks.hay_block -> 0.2F
+    Blocks.slime_block -> if (isSneaking) 1F else 0F
+    else -> 1F
+}
 
 val BlockPos.isReplaceable: Boolean
     get() = this.material?.isReplaceable ?: false
