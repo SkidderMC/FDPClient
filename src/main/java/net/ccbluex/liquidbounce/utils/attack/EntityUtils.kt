@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.utils.attack
 import net.ccbluex.liquidbounce.features.module.modules.client.AntiBot.isBot
 import net.ccbluex.liquidbounce.features.module.modules.client.TargetModule.animalValue
 import net.ccbluex.liquidbounce.features.module.modules.client.TargetModule.deadValue
+import net.ccbluex.liquidbounce.features.module.modules.client.TargetModule.friendValue
 import net.ccbluex.liquidbounce.features.module.modules.client.TargetModule.invisibleValue
 import net.ccbluex.liquidbounce.features.module.modules.client.TargetModule.mobValue
 import net.ccbluex.liquidbounce.features.module.modules.client.TargetModule.playerValue
@@ -34,12 +35,14 @@ object EntityUtils : MinecraftInstance {
     fun isSelected(entity: Entity?, canAttackCheck: Boolean): Boolean {
         if (entity is EntityLivingBase && (deadValue || entity.isEntityAlive) && entity != mc.thePlayer) {
             if (invisibleValue || !entity.isInvisible) {
-                if (playerValue && entity is EntityPlayer) {
+                val isFriend = entity is EntityPlayer && entity.isClientFriend()
+                val isTargetablePlayer = entity is EntityPlayer && (playerValue || isFriend && friendValue)
+                if (isTargetablePlayer) {
                     if (canAttackCheck) {
                         if (isBot(entity))
                             return false
 
-                        if (entity.isClientFriend())
+                        if (isFriend && !friendValue)
                             return false
 
                         if (entity.isSpectator) return false

@@ -11,6 +11,8 @@ import net.ccbluex.liquidbounce.features.module.Module
 object TargetModule : Module("Target", Category.CLIENT, Category.SubCategory.CLIENT_GENERAL, gameDetecting = false, canBeEnabled = false) {
     var playerValue by boolean("Player", true)
         .describe("Allow players to be targeted.")
+    var friendValue by boolean("Friend", false)
+        .describe("Allow friends to be targeted, even when Player is disabled.")
     var animalValue by boolean("Animal", true)
         .describe("Allow animals to be targeted.")
     var mobValue by boolean("Mob", true)
