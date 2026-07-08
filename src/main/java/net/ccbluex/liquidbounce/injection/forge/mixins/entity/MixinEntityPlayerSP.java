@@ -17,6 +17,7 @@ import net.ccbluex.liquidbounce.utils.attack.CooldownHelper;
 import net.ccbluex.liquidbounce.utils.movement.MovementUtils;
 import net.ccbluex.liquidbounce.utils.rotation.Rotation;
 import net.ccbluex.liquidbounce.utils.rotation.RotationSettings;
+import net.ccbluex.liquidbounce.injection.implementations.IMixinEntityPlayerSP;
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils;
 import net.ccbluex.liquidbounce.utils.extensions.MathExtensionsKt;
 import net.ccbluex.liquidbounce.utils.extensions.PlayerExtensionKt;
@@ -60,7 +61,7 @@ import static net.minecraft.network.play.client.C0BPacketEntityAction.Action.*;
 
 @Mixin(EntityPlayerSP.class)
 @SideOnly(Side.CLIENT)
-public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
+public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer implements IMixinEntityPlayerSP {
 
     @Shadow
     public boolean serverSprintState;
@@ -121,6 +122,12 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
 
     @Shadow
     protected abstract boolean isCurrentViewEntity();
+
+    @Override
+    public void syncLastReportedRotation(float yaw, float pitch) {
+        this.lastReportedYaw = yaw;
+        this.lastReportedPitch = pitch;
+    }
 
     /**
      * @author CCBlueX

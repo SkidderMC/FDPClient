@@ -27,6 +27,7 @@ import net.ccbluex.liquidbounce.utils.rotation.PlaceRotation
 import net.ccbluex.liquidbounce.utils.rotation.Rotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationPriority
 import net.ccbluex.liquidbounce.utils.rotation.RotationSettingsWithRotationModes
+import net.ccbluex.liquidbounce.injection.implementations.IMixinEntityPlayerSP
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.canUpdateRotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.getFixedAngleDelta
@@ -971,6 +972,10 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
                 false
             )
             RotationUtils.serverRotation = Rotation(continuousYaw, rotation.pitch)
+            // The raw send already delivered this rotation; sync the client's last-reported look so the
+            // same-tick movement packet emits a position-only update instead of re-sending an identical
+            // look (GrimAC AimDuplicateLook = from==to).
+            (player as? IMixinEntityPlayerSP)?.syncLastReportedRotation(rotation.yaw, rotation.pitch)
         }
 
         if (rotationTiming == "OnTickSnap") {
@@ -1004,6 +1009,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
             false
         )
         RotationUtils.serverRotation = Rotation(continuousYaw, rotation.pitch)
+        (player as? IMixinEntityPlayerSP)?.syncLastReportedRotation(rotation.yaw, rotation.pitch)
     }
 
     // Search for new target block
