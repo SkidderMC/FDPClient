@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.client;
 import net.minecraft.client.Minecraft;
 import net.montoyo.mcef.utilities.SizedInputStream;
 import net.montoyo.mcef.utilities.Log;
+import net.montoyo.mcef.utilities.Util;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -42,7 +43,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * locales) - leaving a broken half-install that could never start. The install flag plus the
  * full-runtime check below remove that race entirely.
  */
-@Mixin(targets = "net.montoyo.mcef.utilities.Util", remap = false)
+@Mixin(value = Util.class, remap = false)
 public class MixinMcefUtil {
 
     // Keep in sync with NextGenBrowserRuntime.MCEF_INSTALLING_PROPERTY.

@@ -124,6 +124,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
 
     /**
      * @author CCBlueX
+     * @reason Dispatch FDP movement events and module hooks while preserving the vanilla update flow
      */
     @Inject(method = "onUpdateWalkingPlayer", at = @At("HEAD"), cancellable = true)
     private void onUpdateWalkingPlayer(CallbackInfo ci) {
@@ -279,6 +280,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
 
     /**
      * @author CCBlueX
+     * @reason Integrates the client movement event pipeline while preserving the vanilla update flow.
      */
     @Overwrite
     public void onLivingUpdate() {

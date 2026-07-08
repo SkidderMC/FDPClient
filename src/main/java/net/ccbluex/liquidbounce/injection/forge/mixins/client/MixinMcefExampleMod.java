@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.client;
 
+import net.montoyo.mcef.example.ExampleMod;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -21,7 +22,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * {@code require = 0} keeps this defensive: if a future engine build drops or renames the demo, the
  * absent injection simply does nothing instead of breaking startup.
  */
-@Mixin(targets = "net.montoyo.mcef.example.ExampleMod", remap = false)
+@Mixin(value = ExampleMod.class, remap = false)
 public class MixinMcefExampleMod {
 
     @Inject(method = "onTick", at = @At("HEAD"), cancellable = true, remap = false, require = 0)
