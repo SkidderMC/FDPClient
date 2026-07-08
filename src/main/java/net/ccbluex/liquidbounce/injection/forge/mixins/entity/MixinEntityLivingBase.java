@@ -94,7 +94,15 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
             final RotationUtils rotationUtils = RotationUtils.INSTANCE;
             final Rotation currentRotation = rotationUtils.getCurrentRotation();
             final RotationSettings rotationData = rotationUtils.getActiveSettings();
-            if (currentRotation != null && rotationData != null && rotationData.getStrafe()) {
+            // The sprint-jump boost must ride the same yaw the movement correction uses, otherwise the
+            // boost goes out along the camera yaw while GrimAC reconstructs it from the sent (silent)
+            // yaw -> a ~0.2*2*sin(dYaw/2) horizontal offset -> Simulation on every jump. Correction is
+            // active for legacy Strafe AND for the modern Silent/Strict modes (the default), so cover both.
+            final boolean movementCorrected = rotationData != null && (rotationData.getStrafe()
+                    || (rotationData.getUseModernRotations()
+                    && ("Silent".equals(rotationData.getModernMovementCorrection())
+                    || "Strict".equals(rotationData.getModernMovementCorrection()))));
+            if (currentRotation != null && movementCorrected) {
                 fixedYaw = currentRotation.getYaw();
             }
 
