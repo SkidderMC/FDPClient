@@ -17,6 +17,8 @@ import net.minecraft.item.ItemTool
 
 object FastBreak : Module("FastBreak", Category.MOVEMENT, Category.SubCategory.MOVEMENT_EXTRAS) {
 
+    private const val VANILLA_BLOCK_HIT_DELAY = 5
+
     private val breakDamage by float("BreakDamage", 0.8F, 0.1F..1F)
         .describe("Damage progress at which to instantly finish breaking.")
     private val onlyTool by boolean("OnlyTool", false)
@@ -39,5 +41,9 @@ object FastBreak : Module("FastBreak", Category.MOVEMENT, Category.SubCategory.M
 
         if (Nuker.currentDamage > breakDamage)
             Nuker.currentDamage = 1F
+    }
+
+    override fun onDisable() {
+        mc.playerController.blockHitDelay = VANILLA_BLOCK_HIT_DELAY
     }
 }
