@@ -66,7 +66,9 @@ object Trajectories : Module("Trajectories", Category.VISUAL, Category.SubCatego
         .describe("Line thickness of the trajectory.")
     private val landingBox by boolean("LandingBox", true)
         .describe("Draw a box at the predicted landing spot.")
-    private val lineColor by color("LineColor", Color(255, 255, 255, 255))
+    private val lineColorMode by choices("LineColorMode", arrayOf("Type", "Custom"), "Type")
+        .describe("Use a distinct projectile color or one custom color.")
+    private val lineColor by color("LineColor", Color(255, 255, 255, 255)) { lineColorMode == "Custom" }
         .describe("Color of the trajectory line.")
     private val boxColor by color("BoxColor", Color(0, 160, 255, 150))
         .describe("Color of the landing box.")
@@ -80,11 +82,16 @@ object Trajectories : Module("Trajectories", Category.VISUAL, Category.SubCatego
     init {
         group("Simulation", "MaxSimulatedTicks", "MaxRenderDistance")
         group("Targets", "OtherPlayers", "AlwaysShowBow")
-        group("Appearance", "LineWidth", "LandingBox", "LineColor", "BoxColor",
+        group("Appearance", "LineWidth", "LandingBox", "LineColorMode", "LineColor", "BoxColor",
             "DetailedInfo", "ShowDistance", "ShowFlightTime")
     }
 
-    private data class ProjectileType(val gravity: Float, val drag: Float, val velocity: Float)
+    private data class ProjectileType(
+        val gravity: Float,
+        val drag: Float,
+        val velocity: Float,
+        val color: Color,
+    )
 
     val onRender3D = handler<Render3DEvent> {
         val player = mc.thePlayer ?: return@handler
@@ -121,7 +128,7 @@ object Trajectories : Module("Trajectories", Category.VISUAL, Category.SubCatego
             val (positions, hit) = simulate(source, rotation, type, world)
             if (positions.size < 2) continue
 
-            glColor(lineColor)
+            glColor(if (lineColorMode == "Type") type.color else lineColor)
             glBegin(GL_LINE_STRIP)
             for (pos in positions) {
                 glVertex3d(pos.xCoord - renderPosX, pos.yCoord - renderPosY, pos.zCoord - renderPosZ)
@@ -165,13 +172,22 @@ object Trajectories : Module("Trajectories", Category.VISUAL, Category.SubCatego
                 } else {
                     return null
                 }
-                ProjectileType(0.05F, 0.99F, velocity)
+                ProjectileType(0.05F, 0.99F, velocity, Color(255, 255, 255, 220))
             }
-            is ItemSnowball, is ItemEgg, is ItemEnderPearl -> ProjectileType(0.03F, 0.99F, 1.5F)
+            is ItemSnowball -> ProjectileType(0.03F, 0.99F, 1.5F, Color(210, 220, 230, 220))
+            is ItemEgg -> ProjectileType(0.03F, 0.99F, 1.5F, Color(240, 234, 214, 220))
+            is ItemEnderPearl -> ProjectileType(0.03F, 0.99F, 1.5F, Color(128, 0, 160, 220))
             is ItemPotion -> {
-                if (stack.isSplashPotion()) ProjectileType(0.05F, 0.99F, 0.75F) else null
+                if (!stack.isSplashPotion()) return null
+                val potionColor = Color(stack.item.getColorFromItemStack(stack, 0))
+                ProjectileType(
+                    0.05F,
+                    0.99F,
+                    0.75F,
+                    Color(potionColor.red, potionColor.green, potionColor.blue, 220),
+                )
             }
-            is ItemFishingRod -> ProjectileType(0.03F, 0.92F, 1.5F)
+            is ItemFishingRod -> ProjectileType(0.03F, 0.92F, 1.5F, Color(0, 210, 220, 220))
             else -> null
         }
     }
