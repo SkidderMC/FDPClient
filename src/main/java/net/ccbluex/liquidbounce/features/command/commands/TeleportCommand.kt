@@ -25,18 +25,20 @@ object TeleportCommand : Command("tp", "teleport") {
 			return
 		}
 
-		val (x, y, z) = args.drop(1).map { it.toDoubleOrNull() }
+		val coordinates = args.slice(1..3).mapNotNull { value ->
+			value.toDoubleOrNull()?.takeIf(Double::isFinite)
+		}
+		if (coordinates.size != 3) {
+			chatSyntax("$usedAlias <x> <y> <z> [maxDistancePerPacket = 5]")
+			return
+		}
+		val (x, y, z) = coordinates
 
 		val maxDistancePerPacket = args.getOrNull(4)?.toDoubleOrNull() ?: 5.0
 
 		// <= 0 will crash the client
-		if (maxDistancePerPacket <= 0) {
-			chat("MaxDistancePerPacket must >= 0.")
-			return
-		}
-
-		if (x == null || y == null || z == null) {
-			chatSyntax("$usedAlias <x> <y> <z> [maxDistancePerPacket = 5]")
+		if (!maxDistancePerPacket.isFinite() || maxDistancePerPacket <= 0) {
+			chat("MaxDistancePerPacket must be a finite number greater than 0.")
 			return
 		}
 
