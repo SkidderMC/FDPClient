@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import org.lwjgl.opengl.GL11
+import org.lwjgl.opengl.GL11.GL_ALL_ATTRIB_BITS
 import java.awt.Color
 
 object Chams : Module("Chams", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY) {
@@ -20,6 +21,8 @@ object Chams : Module("Chams", Category.VISUAL, Category.SubCategory.RENDER_OVER
         .describe("Apply chams to dropped items.")
     private val handValue by boolean("Hand", false)
         .describe("Apply chams to your own hand.")
+    private val handColor by color("HandColor", Color(255, 255, 255, 90)) { handValue }
+        .describe("Color and opacity of first-person hand chams.")
 
     val localPlayerValue by boolean("LocalPlayer", true)
         .describe("Apply chams to your own player.")
@@ -42,26 +45,32 @@ object Chams : Module("Chams", Category.VISUAL, Category.SubCategory.RENDER_OVER
     private val renderGroup = Configurable("Render")
 
     init {
-        moveValues(applyGroup, "Targets", "Chests", "Items", "Hand", "LocalPlayer")
+        moveValues(applyGroup, "Targets", "Chests", "Items", "Hand", "HandColor", "LocalPlayer")
         moveValues(renderGroup,
             "ColorMode", "Color", "Textured", "Legacy-Mode", "Behind-Color", "Behind")
 
         addValues(listOf(applyGroup, renderGroup))
     }
     fun preHandRender() {
+        GL11.glPushAttrib(GL_ALL_ATTRIB_BITS)
         GL11.glDisable(3553)
         GL11.glEnable(3042)
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
         GL11.glDisable(2896)
-        Color(255, 255, 255, 55)
+        GL11.glColor4f(
+            handColor.red / 255f,
+            handColor.green / 255f,
+            handColor.blue / 255f,
+            handColor.alpha / 255f,
+        )
     }
 
     fun postHandRender() {
-        GL11.glEnable(2896)
-        GL11.glEnable(3553)
-        GL11.glDisable(3042)
+        GL11.glPopAttrib()
+        GL11.glColor4f(1f, 1f, 1f, 1f)
     }
 
     fun shouldRenderHand(): Boolean {
-        return handValue
+        return handleEvents() && handValue
     }
 }
