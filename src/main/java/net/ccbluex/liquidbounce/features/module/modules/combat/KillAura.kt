@@ -1011,8 +1011,12 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
         if (!blinkAutoBlock || !BlinkUtils.isBlinking) {
             val affectSprint = false.takeIf { KeepSprint.handleEvents() || keepSprint }
 
-            // Optimized attack call
-            if (swing && (!failSwing || mc.thePlayer.onGround)) {
+            // The swing (C0A) must always immediately precede the attack (C02) — that is the vanilla
+            // 1.8 order GrimAC's PacketOrderB enforces ("did not swing for attack"). The old airborne
+            // skip (only swing when onGround under FailSwing) meant a jump-attack sent the attack with
+            // no preceding swing, spamming PacketOrderB. FailSwing only swings on the miss path (which
+            // never reaches a real attack), so swinging here every hit cannot double-swing.
+            if (swing) {
                 thePlayer.swingItem()
             }
             thePlayer.attackEntityWithModifiedSprint(entity, affectSprint) {}
