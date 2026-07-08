@@ -63,7 +63,15 @@ object ChunkScanner : MinecraftInstance, Listenable {
     fun chunkLoaded(chunk: Chunk) {
         if (subscribers.isEmpty()) return
         val key = chunkKey(chunk.xPosition, chunk.zPosition)
-        if (queuedChunks.add(key)) chunkWork.add(ChunkWork(chunk))
+
+        // A chunk packet can replace an already loaded chunk. Drop pending work and clear the
+        // previous snapshot before scanning so subscribers never retain blocks from the old data.
+        chunkWork.removeIf { it.chunk.xPosition == chunk.xPosition && it.chunk.zPosition == chunk.zPosition }
+        queuedChunks.remove(key)
+        subscribers.forEach { it.clearChunk(chunk.xPosition, chunk.zPosition) }
+
+        queuedChunks.add(key)
+        chunkWork.add(ChunkWork(chunk))
     }
 
     @JvmStatic
