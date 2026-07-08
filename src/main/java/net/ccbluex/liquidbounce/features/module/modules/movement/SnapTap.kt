@@ -100,8 +100,8 @@ object SnapTap : Module("SnapTap", Category.MOVEMENT, Category.SubCategory.MOVEM
         // Don't work when [InstantStop] ticks is ongoing to avoid conflicts
         if (InstantStop.isTicksOnGoing()) return@handler
 
-        // If in a GUI, disable all movement keys
-        if (mc.currentScreen != null) {
+        // Do not fight InventoryMove's deliberate key overrides. Other screens remain frozen.
+        if (mc.currentScreen != null && !InvMove.allowsMovementOverride(mc.currentScreen)) {
             val left = mc.gameSettings.keyBindLeft
             val right = mc.gameSettings.keyBindRight
             val fwd = mc.gameSettings.keyBindForward

@@ -115,6 +115,10 @@ object InvMove : Module("InvMove", Category.MOVEMENT, Category.SubCategory.MOVEM
         return false
     }
 
+    /** Whether other movement modules may override keys while this screen is open. */
+    fun allowsMovementOverride(screen: GuiScreen?): Boolean =
+        handleEvents() && screen != null && !shouldFreezeInputs(screen)
+
     val onStrafe = handler<StrafeEvent> {
         if (isIntave) {
             mc.gameSettings.keyBindSneak.pressed = true
