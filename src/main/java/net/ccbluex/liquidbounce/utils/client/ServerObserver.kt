@@ -35,10 +35,12 @@ object ServerObserver : MinecraftInstance, Listenable {
 
     private const val TPS_SAMPLE_COUNT = 15
     private const val TRANSACTION_SAMPLE_COUNT = 32
-    private const val PLUGIN_SCAN_DELAY_TICKS = 40
+    private const val INITIAL_TRANSACTION_COUNT = 8
+    private const val PLUGIN_SCAN_DELAY_TICKS = 20
 
     private val tpsIntervals = ArrayDeque<Long>(TPS_SAMPLE_COUNT + 1)
     private val transactionSamples = ArrayDeque<Int>(TRANSACTION_SAMPLE_COUNT + 1)
+    private val initialTransactionSamples = ArrayList<Int>(INITIAL_TRANSACTION_COUNT)
     private val mutablePlugins = TreeSet(String.CASE_INSENSITIVE_ORDER)
     private val mutablePayloadChannels = TreeSet(String.CASE_INSENSITIVE_ORDER)
 
@@ -75,6 +77,10 @@ object ServerObserver : MinecraftInstance, Listenable {
 
     val transactions: List<Int>
         get() = synchronized(transactionSamples) { transactionSamples.toList() }
+
+    /** The first transactions seen after joining, which is where the handshake fingerprint lives. */
+    val initialTransactions: List<Int>
+        get() = synchronized(initialTransactionSamples) { initialTransactionSamples.toList() }
 
     val ping: Int
         get() {
@@ -126,7 +132,7 @@ object ServerObserver : MinecraftInstance, Listenable {
     fun guessAnticheat(address: String? = mc.currentServerData?.serverIP): String? {
         guessFromHost(address)?.let { return it }
         guessFromTokens()?.let { return it }
-        return guessFromTransactions(transactions)
+        return guessFromTransactions(initialTransactions)
     }
 
     /**
@@ -143,6 +149,7 @@ object ServerObserver : MinecraftInstance, Listenable {
         addAll(plugins)
         addAll(payloadChannels)
         serverBrand?.let(::add)
+        mc.currentServerData?.serverMOTD?.let(::add)
     }.map { normalize(it) }.filter(String::isNotEmpty)
 
     private fun guessFromTokens(): String? {
@@ -163,6 +170,7 @@ object ServerObserver : MinecraftInstance, Listenable {
     fun resetSession() {
         synchronized(tpsIntervals) { tpsIntervals.clear() }
         synchronized(transactionSamples) { transactionSamples.clear() }
+        synchronized(initialTransactionSamples) { initialTransactionSamples.clear() }
         synchronized(mutablePlugins) { mutablePlugins.clear() }
         synchronized(mutablePayloadChannels) { mutablePayloadChannels.clear() }
         lastTimeUpdateAt = -1L
@@ -194,6 +202,9 @@ object ServerObserver : MinecraftInstance, Listenable {
         synchronized(transactionSamples) {
             transactionSamples.addLast(actionNumber)
             while (transactionSamples.size > TRANSACTION_SAMPLE_COUNT) transactionSamples.removeFirst()
+        }
+        synchronized(initialTransactionSamples) {
+            if (initialTransactionSamples.size < INITIAL_TRANSACTION_COUNT) initialTransactionSamples.add(actionNumber)
         }
     }
 
@@ -288,7 +299,10 @@ object ServerObserver : MinecraftInstance, Listenable {
 
     private val KNOWN_ANTICHEATS = listOf(
         KnownAnticheat("nocheatplus", "NoCheatPlus"),
+        KnownAnticheat("nocheat", "NoCheatPlus"),
+        KnownAnticheat("ncp", "NoCheatPlus"),
         KnownAnticheat("grimac", "Grim"),
+        KnownAnticheat("grim", "Grim"),
         KnownAnticheat("vulcan", "Vulcan"),
         KnownAnticheat("matrix", "Matrix"),
         KnownAnticheat("spartan", "Spartan"),
