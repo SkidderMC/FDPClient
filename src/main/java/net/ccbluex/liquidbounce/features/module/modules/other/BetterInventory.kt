@@ -9,12 +9,18 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.features.module.modules.movement.InvMove
 import net.ccbluex.liquidbounce.injection.forge.mixins.gui.MixinGuiContainerAccessor
 import net.minecraft.client.gui.inventory.GuiContainer
+import net.minecraft.client.settings.GameSettings
+import net.minecraft.client.settings.KeyBinding
 import org.lwjgl.input.Mouse
 import java.awt.Color
 
 object BetterInventory : Module("BetterInventory", Category.OTHER, Category.SubCategory.MISCELLANEOUS, gameDetecting = false) {
+
+    private val moveWhileOpen by boolean("MoveWhileOpen", true)
+        .describe("Keep walking, sprinting and jumping while an inventory or chest screen is open.")
 
     val highlightClicked by boolean("HighlightClicked", true)
         .describe("Highlight the last slot you clicked.")
@@ -30,14 +36,27 @@ object BetterInventory : Module("BetterInventory", Category.OTHER, Category.SubC
 
     private var leftHeld = false
     private var rightHeld = false
+    private var drivingMovement = false
+
+    private val movementBindings = arrayOf(
+        mc.gameSettings.keyBindForward,
+        mc.gameSettings.keyBindBack,
+        mc.gameSettings.keyBindLeft,
+        mc.gameSettings.keyBindRight,
+        mc.gameSettings.keyBindJump,
+        mc.gameSettings.keyBindSprint
+    )
 
     val onUpdate = handler<UpdateEvent> {
         val screen = mc.currentScreen as? GuiContainer ?: run {
             clickedSlot = -1
             leftHeld = false
             rightHeld = false
+            releaseMovement()
             return@handler
         }
+
+        driveMovement()
 
         val leftDown = Mouse.isButtonDown(0)
         val rightDown = Mouse.isButtonDown(1)
@@ -51,5 +70,28 @@ object BetterInventory : Module("BetterInventory", Category.OTHER, Category.SubC
 
         leftHeld = leftDown
         rightHeld = rightDown
+    }
+
+    /** Presses the movement bindings while a container is open, yielding to the dedicated InvMove module. */
+    private fun driveMovement() {
+        if (!moveWhileOpen || InvMove.handleEvents()) {
+            releaseMovement()
+            return
+        }
+        drivingMovement = true
+        for (binding in movementBindings) binding.pressed = isPhysicallyDown(binding)
+    }
+
+    private fun releaseMovement() {
+        if (!drivingMovement) return
+        drivingMovement = false
+        for (binding in movementBindings) binding.pressed = isPhysicallyDown(binding)
+    }
+
+    private fun isPhysicallyDown(binding: KeyBinding): Boolean =
+        if (binding.keyCode < 0) Mouse.isButtonDown(binding.keyCode + 100) else GameSettings.isKeyDown(binding)
+
+    override fun onDisable() {
+        releaseMovement()
     }
 }

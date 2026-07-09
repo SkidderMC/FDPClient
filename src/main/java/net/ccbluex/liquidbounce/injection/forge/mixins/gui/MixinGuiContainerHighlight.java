@@ -22,7 +22,7 @@ import static org.lwjgl.opengl.GL11.*;
 @SideOnly(Side.CLIENT)
 public abstract class MixinGuiContainerHighlight extends MixinGuiScreen {
 
-    @Inject(method = "drawSlot", at = @At("HEAD"))
+    @Inject(method = "drawSlot", at = @At("RETURN"))
     private void drawSlot(Slot slot, CallbackInfo ci) {
         final BetterInventory betterInventory = BetterInventory.INSTANCE;
 
@@ -41,9 +41,12 @@ public abstract class MixinGuiContainerHighlight extends MixinGuiScreen {
         glPushMatrix();
         glPushAttrib(GL_ENABLE_BIT);
         glDisable(GL_LIGHTING);
+        glDisable(GL_DEPTH_TEST);
 
         if ("Fill".equals(betterInventory.getHighlightMode())) {
-            RenderUtils.INSTANCE.drawRect(x, y, x + 16, y + 16, color);
+            // Render over the drawn item with a translucent tint so the item stays visible.
+            int fill = (color & 0x00FFFFFF) | 0x66000000;
+            RenderUtils.INSTANCE.drawRect(x, y, x + 16, y + 16, fill);
         } else {
             RenderUtils.INSTANCE.drawBorder(x, y, x + 16, y + 16, betterInventory.getBorderWidth(), color);
         }
