@@ -1035,7 +1035,11 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
      * rotation reaches the server (post-move) so the hit is processed with the synced rotation.
      */
     private fun dispatchAttack(entity: EntityLivingBase, isLastClick: Boolean) {
-        if (postRotationAttack) {
+        // Hitblock's attack (C02) and block-place (C08) must stay inline, before this tick's flying
+        // packet. Post-moving them pushes them past the flying boundary into the next tick's bucket,
+        // alongside the C07 release -> GrimAC PacketOrderI (invalid combat/use/release tick order) +
+        // setback. Keep post-move only for the pure no-autoblock attack, where it is Grim-safe.
+        if (postRotationAttack && autoBlock == "Off") {
             PostRotationExecutor.runPostMove { attackEntity(entity, isLastClick) }
         } else {
             attackEntity(entity, isLastClick)
