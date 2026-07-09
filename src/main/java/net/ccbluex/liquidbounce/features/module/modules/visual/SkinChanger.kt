@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
+import kotlinx.coroutines.launch
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
@@ -12,8 +13,16 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.file.FileManager.dir
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.client.chat
+import net.ccbluex.liquidbounce.utils.io.HttpClient
+import net.ccbluex.liquidbounce.utils.io.get
+import net.ccbluex.liquidbounce.utils.io.readJson
+import net.ccbluex.liquidbounce.utils.kotlin.SharedScopes
+import net.minecraft.client.renderer.IImageBuffer
+import net.minecraft.client.renderer.ImageBufferDownload
+import net.minecraft.client.renderer.ThreadDownloadImageData
 import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.util.ResourceLocation
+import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
@@ -40,11 +49,15 @@ object SkinChanger : Module("SkinChanger", Category.VISUAL, Category.SubCategory
     private var resolved: ResourceLocation? = null
     private var lastKey = ""
 
+    @Volatile
+    private var pendingKey = ""
+
     val skinLocation: ResourceLocation?
         get() = if (handleEvents()) resolved else null
 
     private fun invalidate() {
         lastKey = ""
+        pendingKey = ""
         resolved = null
     }
 
@@ -70,25 +83,67 @@ object SkinChanger : Module("SkinChanger", Category.VISUAL, Category.SubCategory
             return
         }
 
-        if (lastKey == "online:$name" && resolved != null) {
+        val key = "online:$name"
+        if (lastKey == key) {
             return
         }
 
-        lastKey = "online:$name"
+        lastKey = key
+        pendingKey = key
 
-        val playerInfoMap = mc.netHandler?.playerInfoMap ?: run {
-            resolved = null
-            return
+        SharedScopes.IO.launch {
+            runCatching {
+                val uuid = fetchUuid(name) ?: return@launch
+                val skinUrl = fetchSkinUrl(uuid) ?: return@launch
+
+                mc.addScheduledTask {
+                    if (pendingKey != key) return@addScheduledTask
+                    applyDownloadedSkin(key, uuid, skinUrl)
+                }
+            }.onFailure {
+                LOGGER.error("Failed to resolve skin for $name", it)
+            }
         }
-
-        val info = synchronized(playerInfoMap) {
-            ArrayList(playerInfoMap)
-        }.firstOrNull {
-            it?.gameProfile?.name.equals(name, ignoreCase = true)
-        }
-
-        resolved = info?.locationSkin
     }
+
+    private fun applyDownloadedSkin(key: String, uuid: String, skinUrl: String) {
+        val location = ResourceLocation("fdp/skin-changer/$uuid")
+        val texture = ThreadDownloadImageData(
+            File(skinDir, "$uuid.png"),
+            skinUrl,
+            null,
+            object : IImageBuffer {
+                override fun parseUserSkin(image: BufferedImage?): BufferedImage? =
+                    runCatching { ImageBufferDownload().parseUserSkin(image) }.getOrNull() ?: image
+
+                override fun skinAvailable() {
+                    mc.addScheduledTask { if (pendingKey == key) resolved = location }
+                }
+            }
+        )
+        mc.textureManager.loadTexture(location, texture)
+    }
+
+    private fun fetchUuid(name: String): String? =
+        HttpClient.get("https://api.mojang.com/users/profiles/minecraft/$name").use { response ->
+            if (!response.isSuccessful) return null
+            response.body.charStream().readJson().asJsonObject.get("id")?.asString?.takeIf(String::isNotBlank)
+        }
+
+    private fun fetchSkinUrl(uuid: String): String? =
+        HttpClient.get("https://sessionserver.mojang.com/session/minecraft/profile/$uuid").use { response ->
+            if (!response.isSuccessful) return null
+            val properties = response.body.charStream().readJson().asJsonObject
+                .getAsJsonArray("properties") ?: return null
+            val encoded = properties.firstOrNull {
+                it.asJsonObject.get("name")?.asString == "textures"
+            }?.asJsonObject?.get("value")?.asString ?: return null
+            val decoded = String(java.util.Base64.getDecoder().decode(encoded), Charsets.UTF_8)
+            decoded.reader().readJson().asJsonObject
+                .getAsJsonObject("textures")
+                ?.getAsJsonObject("SKIN")
+                ?.get("url")?.asString?.takeIf(String::isNotBlank)
+        }
 
     private fun resolveFile() {
         val target = fileName.trim()
@@ -119,7 +174,8 @@ object SkinChanger : Module("SkinChanger", Category.VISUAL, Category.SubCategory
                 return
             }
 
-            mc.textureManager.loadTexture(fileSkinLocation, DynamicTexture(image))
+            val processed = runCatching { ImageBufferDownload().parseUserSkin(image) }.getOrNull() ?: image
+            mc.textureManager.loadTexture(fileSkinLocation, DynamicTexture(processed))
             resolved = fileSkinLocation
         }.onFailure {
             LOGGER.error("Failed to load custom skin", it)
