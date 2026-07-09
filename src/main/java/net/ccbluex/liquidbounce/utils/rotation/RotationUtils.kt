@@ -969,13 +969,15 @@ object RotationUtils : MinecraftInstance, Listenable {
             packet.rotating = true
         }
 
-        currentRotation?.let {
-            // Send the yaw as the shortest continuous offset from the last yaw the server received, so
-            // the packet delta is always <= 180 and never a ~360 seam jump (GrimAC AimModulo360). The
-            // engine may carry a wrapped [-180, 180] yaw internally; the wire must stay continuous like
-            // vanilla's accumulating yaw. This is the single choke point for both rotation engines.
-            val continuousYaw = serverRotation.yaw + angleDifferences(it, serverRotation).x
-            packet.rotation = Rotation(continuousYaw, it.pitch)
+        // Rewrite EVERY rotating packet to the shortest continuous offset from the last yaw the server
+        // received - not only while a silent rotation is active. On the tick after a reset the mixin can
+        // emit the engine's wrapped yaw with currentRotation == null, which would seam-jump ~360 (GrimAC
+        // AimModulo360); falling back to the packet's own yaw keeps this the single wire choke point and
+        // bounds every sent delta to <= 180. Same physical facing, just the short-way winding.
+        val rotationSource = currentRotation ?: packet.rotation
+        val continuousYaw = serverRotation.yaw + angleDifferences(rotationSource, serverRotation).x
+        packet.rotation = Rotation(continuousYaw, rotationSource.pitch)
+        if (currentRotation != null) {
             // The network tail hook releases post-move actions only after this packet actually sends.
             PostRotationExecutor.markRotationPacket(packet)
         }

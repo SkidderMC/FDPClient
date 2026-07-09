@@ -197,7 +197,11 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer impl
             double xDiff = motionEvent.getX() - lastReportedPosX;
             double yDiff = motionEvent.getY() - lastReportedPosY;
             double zDiff = motionEvent.getZ() - lastReportedPosZ;
-            double yawDiff = yaw - this.lastReportedYaw;
+            // Seam-aware: a pure +180 <-> -180 rephrasing of the same facing must not count as a
+            // rotation, otherwise this emits a look packet that onPacket collapses to the previous wire
+            // yaw -> two identical looks -> GrimAC AimDuplicateLook. Wrapping makes a same-direction
+            // flip resolve to 0; a genuine turn still yields a non-zero delta.
+            double yawDiff = MathHelper.wrapAngleTo180_float((float) (yaw - this.lastReportedYaw));
             double pitchDiff = pitch - this.lastReportedPitch;
             boolean moved = xDiff * xDiff + yDiff * yDiff + zDiff * zDiff > 9.0E-4 || positionUpdateTicks >= 20;
             boolean rotated = !FreeCam.INSTANCE.shouldDisableRotations() && (yawDiff != 0 || pitchDiff != 0);
