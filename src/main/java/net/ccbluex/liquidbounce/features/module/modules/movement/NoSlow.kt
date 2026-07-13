@@ -121,18 +121,25 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
     private val bowStrafeMultiplier by float("BowStrafeMultiplier", 1f, 0.2F..1f)
         .describe("Strafe speed multiplier while drawing a bow.")
 
-    // Legit 模式专属配置
+    private val modifyTimer by boolean("ModifyTimer", false) {
+        swordMode == "Legit" || consumeMode == "Legit" || bowPacket == "Legit"
+    }.describe("For Polar AntiCheat.")
+
+    private val disableTimerWhenGetHurt by boolean("DisableTimerWhenGetHurt", false) {
+        (swordMode == "Legit" || consumeMode == "Legit" || bowPacket == "Legit") && modifyTimer
+    }.describe("Disable timer modification when the player is hurt.")
+
+    private val legitExtraForwardMultiplier by float("LegitExtraForwardMultiplier", 1.0f, 1.0f..2.0f) {
+        (swordMode == "Legit" || consumeMode == "Legit" || bowPacket == "Legit") && modifyTimer
+    }.describe("Extra forward speed multiplier applied on top of the vanilla slowdown in Legit mode. Only active when ModifyTimer is enabled.")
+
+    private val legitExtraStrafeMultiplier by float("LegitExtraStrafeMultiplier", 1.0f, 1.0f..2.0f) {
+        (swordMode == "Legit" || consumeMode == "Legit" || bowPacket == "Legit") && modifyTimer
+    }.describe("Extra strafe speed multiplier applied on top of the vanilla slowdown in Legit mode. Only active when ModifyTimer is enabled.")
+
     private val legitPullbackStartTick by int("LegitPullbackStartTick", 18, 1..19) {
         swordMode == "Legit" || consumeMode == "Legit" || bowPacket == "Legit"
     }.describe("Tick in the 20-tick cycle where the pullback (reset to straight, then back to +45°) begins.")
-
-    private val legitExtraForwardMultiplier by float("LegitExtraForwardMultiplier", 1.0f, 1.0f..2.0f) {
-        swordMode == "Legit" || consumeMode == "Legit" || bowPacket == "Legit"
-    }.describe("Extra forward speed multiplier applied on top of the default slowdown in Legit mode. 1.0 = vanilla slowdown only.")
-
-    private val legitExtraStrafeMultiplier by float("LegitExtraStrafeMultiplier", 1.0f, 1.0f..2.0f) {
-        swordMode == "Legit" || consumeMode == "Legit" || bowPacket == "Legit"
-    }.describe("Extra strafe speed multiplier applied on top of the default slowdown in Legit mode. 1.0 = vanilla slowdown only.")
 
     // Blocks
     val soulSand by boolean("SoulSand", true)
@@ -197,7 +204,10 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
 
         moveValues(generalGroup, "AntiSwitchItem", "OnlyGround", "OnlyMove")
 
-        moveValues(legitGroup, "LegitPullbackStartTick", "LegitExtraForwardMultiplier", "LegitExtraStrafeMultiplier")
+        moveValues(legitGroup,
+            "ModifyTimer", "DisableTimerWhenGetHurt",
+            "LegitExtraForwardMultiplier", "LegitExtraStrafeMultiplier",
+            "LegitPullbackStartTick")
 
         addValues(listOf(
             swordGroup, consumeGroup, bowGroup, aac4Group, blocksGroup, teleportGroup, generalGroup, legitGroup
@@ -225,6 +235,16 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
     private var lastBlockingState = false
     private var medusaCanStopSprint = true
 
+    // Legit Timer 
+    private var legitTimerTick = 0
+    private var wasModifyingTimer = false
+
+    override fun onEnable() {
+        val player = mc.thePlayer ?: return
+        legitTimerTick = 0
+        wasModifyingTimer = false
+    }
+
     override fun onDisable() {
         shouldSwap = false
         shouldBlink = true
@@ -238,6 +258,13 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
         lastBlockingState = false
         medusaCanStopSprint = true
         RotationUtils.cancelTargetRotation(legitRotationSettings)
+
+        // 恢复 Timer 速度
+        if (wasModifyingTimer) {
+            mc.timer.timerSpeed = 1f
+            wasModifyingTimer = false
+        }
+        legitTimerTick = 0
     }
 
     val onMotion = handler<MotionEvent> { event ->
@@ -245,7 +272,6 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
         val heldItem = player.heldItem ?: return@handler
         val isUsingItem = usingItemFunc()
 
-        // Legit 模式旋转处理（独立于速度修改）
         if (event.eventState == EventState.PRE) {
             handleLegitRotations(event, isUsingItem)
         }
@@ -532,8 +558,31 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
 
     val onUpdate = handler<UpdateEvent> {
         val player = mc.thePlayer ?: return@handler
-        val blockingSword = isBlockingSword()
 
+        // --- Legit Modify Timer 
+        val heldItem = player.heldItem?.item
+        val legitActive = isLegitModeActive(heldItem) && modifyTimer
+
+        if (legitActive) {
+            if (disableTimerWhenGetHurt && player.hurtTime > 0) {
+                mc.timer.timerSpeed = 1f
+                wasModifyingTimer = false
+            } else {
+                val cycle = legitTimerTick % 13
+                mc.timer.timerSpeed = if (cycle < 9) 0.8f else 2.6f
+                legitTimerTick++
+                wasModifyingTimer = true
+            }
+        } else {
+        
+            if (wasModifyingTimer) {
+                mc.timer.timerSpeed = 1f
+                wasModifyingTimer = false
+            }
+            legitTimerTick = 0
+        }
+
+        val blockingSword = isBlockingSword()
         if ((swordMode == "Matrix" || swordMode == "GrimAC") && (lastBlockingState || blockingSword)) {
             if (matrixBufferTimer.hasTimePassed(230L) && matrixBuffering) {
                 matrixBuffering = false
@@ -788,9 +837,10 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
         val player = mc.thePlayer ?: return@handler
         val heldItem = mc.thePlayer.heldItem?.item
 
-        if (!shouldHandleNoSlow(player)) return@handler
+        if (!shouldHandleNoSlow(player)) {
+            return@handler
+        }
 
-        // Grim2371 handling (unchanged)
         if ((swordMode == "Grim2371" && heldItem is ItemSword) ||
             (consumeMode == "Grim2371" && (heldItem is ItemFood || heldItem is ItemPotion || heldItem is ItemBucketMilk)) ||
             (bowPacket == "Grim2371" && heldItem is ItemBow)) {
@@ -802,12 +852,15 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
             }
         }
 
-        // Legit mode: bypass all normal multiplier logic
+        // Legit mode
         if (isLegitModeActive(heldItem)) {
-            // If both extra multipliers are 1.0, do nothing → vanilla slowdown (0.2) is preserved
-            if (legitExtraForwardMultiplier != 1.0f || legitExtraStrafeMultiplier != 1.0f) {
-                event.forward *= legitExtraForwardMultiplier
-                event.strafe *= legitExtraStrafeMultiplier
+            if (modifyTimer) {
+                if (legitExtraForwardMultiplier != 1.0f) {
+                    event.forward *= legitExtraForwardMultiplier
+                }
+                if (legitExtraStrafeMultiplier != 1.0f) {
+                    event.strafe *= legitExtraStrafeMultiplier
+                }
             }
             return@handler
         }
@@ -826,15 +879,6 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
 
         event.forward = getMultiplier(heldItem, true)
         event.strafe = getMultiplier(heldItem, false)
-    }
-
-    private fun isLegitModeActive(item: Item?): Boolean {
-        return when (item) {
-            is ItemSword -> swordMode == "Legit"
-            is ItemBow -> bowPacket == "Legit"
-            is ItemFood, is ItemPotion, is ItemBucketMilk -> consumeMode == "Legit"
-            else -> false
-        }
     }
 
     private fun getMultiplier(item: Item?, isForward: Boolean) = when (item) {
@@ -905,9 +949,14 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
         SilentHotbar.resetSlot(this, true)
     }
 
-    /**
-     * Legit 模式旋转：20 tick 周期内视角在移动方向与 +45° 间切换，并可在指定 tick 回正后再次偏转。
-     */
+    private fun isLegitModeActive(item: Item?): Boolean {
+        return when (item) {
+            is ItemSword -> swordMode == "Legit"
+            is ItemBow -> bowPacket == "Legit"
+            is ItemFood, is ItemPotion, is ItemBucketMilk -> consumeMode == "Legit"
+            else -> false
+        }
+    }
     private fun handleLegitRotations(event: MotionEvent, isUsingItem: Boolean) {
         val player = mc.thePlayer ?: return
         if (!isUsingItem || !player.isMoving) {
