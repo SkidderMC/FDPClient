@@ -17,6 +17,10 @@ import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils
 import net.ccbluex.liquidbounce.utils.inventory.SilentHotbar
 import net.ccbluex.liquidbounce.utils.movement.MovementUtils
 import net.ccbluex.liquidbounce.utils.movement.MovementUtils.hasMotion
+import net.ccbluex.liquidbounce.utils.rotation.Rotation
+import net.ccbluex.liquidbounce.utils.rotation.RotationPriority
+import net.ccbluex.liquidbounce.utils.rotation.RotationSettings
+import net.ccbluex.liquidbounce.utils.rotation.RotationUtils
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.ccbluex.liquidbounce.utils.timing.TickTimer
 import net.minecraft.item.*
@@ -35,6 +39,7 @@ import net.minecraft.network.status.client.C01PacketPing
 import net.minecraft.network.status.server.S01PacketPong
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
+import net.minecraft.util.MathHelper
 import kotlin.math.sqrt
 
 object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MAIN, gameDetecting = false) {
@@ -44,7 +49,7 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
         arrayOf(
             "None", "NCP", "UpdatedNCP", "AAC4", "AAC5", "SwitchItem", "InvalidC08",
             "Blink", "Grim2371", "OldIntave", "Medusa", "HypixelNew", "SpamItemChange",
-            "SpamPlace", "SpamEmptyPlace", "Matrix", "GrimAC"
+            "SpamPlace", "SpamEmptyPlace", "Matrix", "GrimAC", "Legit"
         ),
         "None"
     )
@@ -80,7 +85,7 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
         "ConsumeMode",
         arrayOf(
             "None", "UpdatedNCP", "AAC4", "AAC5", "SwitchItem", "InvalidC08", "Intave",
-            "Drop", "Grim2371", "HypixelNew", "SpamItemChange", "SpamPlace", "SpamEmptyPlace", "Medusa"
+            "Drop", "Grim2371", "HypixelNew", "SpamItemChange", "SpamPlace", "SpamEmptyPlace", "Medusa", "Legit"
         ),
         "None"
     )
@@ -105,7 +110,7 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
         "BowMode",
         arrayOf(
             "None", "UpdatedNCP", "AAC4", "AAC5", "SwitchItem", "InvalidC08",
-            "Grim2371", "HypixelNew", "SpamItemChange", "SpamPlace", "SpamEmptyPlace", "Medusa"
+            "Grim2371", "HypixelNew", "SpamItemChange", "SpamPlace", "SpamEmptyPlace", "Medusa", "Legit"
         ),
         "None"
     )
@@ -115,6 +120,27 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
         .describe("Forward speed multiplier while drawing a bow.")
     private val bowStrafeMultiplier by float("BowStrafeMultiplier", 1f, 0.2F..1f)
         .describe("Strafe speed multiplier while drawing a bow.")
+
+    // Legit 模式专属配置
+    private val modifyTimer by boolean("ModifyTimer", false) {
+        swordMode == "Legit" || consumeMode == "Legit" || bowPacket == "Legit"
+    }.describe("For Polar AntiCheat.")
+
+    private val disableTimerWhenGetHurt by boolean("DisableTimerWhenGetHurt", false) {
+        (swordMode == "Legit" || consumeMode == "Legit" || bowPacket == "Legit") && modifyTimer
+    }.describe("Disable timer modification when the player is hurt.")
+
+    private val legitExtraForwardMultiplier by float("LegitExtraForwardMultiplier", 1.0f, 1.0f..2.0f) {
+        (swordMode == "Legit" || consumeMode == "Legit" || bowPacket == "Legit") && modifyTimer
+    }.describe("Extra forward speed multiplier applied on top of the vanilla slowdown in Legit mode. Only active when ModifyTimer is enabled.")
+
+    private val legitExtraStrafeMultiplier by float("LegitExtraStrafeMultiplier", 1.0f, 1.0f..2.0f) {
+        (swordMode == "Legit" || consumeMode == "Legit" || bowPacket == "Legit") && modifyTimer
+    }.describe("Extra strafe speed multiplier applied on top of the vanilla slowdown in Legit mode. Only active when ModifyTimer is enabled.")
+
+    private val legitPullbackStartTick by int("LegitPullbackStartTick", 18, 0..19) {
+        swordMode == "Legit" || consumeMode == "Legit" || bowPacket == "Legit"
+    }.describe("Tick in the 20-tick cycle where the pullback begins. 0 = always +45° offset, no pullback.")
 
     // Blocks
     val soulSand by boolean("SoulSand", true)
@@ -149,6 +175,14 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
     private val blocksGroup = Configurable("Blocks")
     private val teleportGroup = Configurable("Teleport")
     private val generalGroup = Configurable("General")
+    private val legitGroup = Configurable("Legit")
+
+    // Legit rotation helper
+    private val legitRotationSettings = RotationSettings(this).apply {
+        priority = RotationPriority.HIGH
+        keepRotation = false
+        resetTicks = 1
+    }
 
     init {
         moveValues(swordGroup,
@@ -171,10 +205,16 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
 
         moveValues(generalGroup, "AntiSwitchItem", "OnlyGround", "OnlyMove")
 
+        moveValues(legitGroup,
+            "ModifyTimer", "DisableTimerWhenGetHurt",
+            "LegitExtraForwardMultiplier", "LegitExtraStrafeMultiplier",
+            "LegitPullbackStartTick")
+
         addValues(listOf(
-            swordGroup, consumeGroup, bowGroup, aac4Group, blocksGroup, teleportGroup, generalGroup
+            swordGroup, consumeGroup, bowGroup, aac4Group, blocksGroup, teleportGroup, generalGroup, legitGroup
         ))
     }
+
     private var shouldSwap = false
     private var shouldBlink = true
     private var shouldNoSlow = false
@@ -196,6 +236,15 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
     private var lastBlockingState = false
     private var medusaCanStopSprint = true
 
+    // Legit Timer 相关字段
+    private var legitTimerTick = 0
+    private var wasModifyingTimer = false
+
+    override fun onEnable() {
+        legitTimerTick = 0
+        wasModifyingTimer = false
+    }
+
     override fun onDisable() {
         shouldSwap = false
         shouldBlink = true
@@ -208,12 +257,24 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
         matrixBuffering = false
         lastBlockingState = false
         medusaCanStopSprint = true
+        RotationUtils.cancelTargetRotation(legitRotationSettings)
+
+        if (wasModifyingTimer) {
+            mc.timer.timerSpeed = 1f
+            wasModifyingTimer = false
+        }
+        legitTimerTick = 0
     }
 
     val onMotion = handler<MotionEvent> { event ->
         val player = mc.thePlayer ?: return@handler
         val heldItem = player.heldItem ?: return@handler
         val isUsingItem = usingItemFunc()
+
+        // Legit rotation
+        if (event.eventState == EventState.PRE) {
+            handleLegitRotations(event, isUsingItem)
+        }
 
         if ((!hasMotion && !shouldSwap) || !shouldHandleNoSlow(player))
             return@handler
@@ -497,8 +558,31 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
 
     val onUpdate = handler<UpdateEvent> {
         val player = mc.thePlayer ?: return@handler
-        val blockingSword = isBlockingSword()
 
+        // --- Legit Modify Timer ---
+        val heldItem = player.heldItem?.item
+        val legitActive = isLegitModeActive(heldItem) && modifyTimer
+
+        if (legitActive) {
+            if (disableTimerWhenGetHurt && player.hurtTime > 0) {
+                mc.timer.timerSpeed = 1f
+                wasModifyingTimer = false
+            } else {
+                val cycle = legitTimerTick % 13
+                mc.timer.timerSpeed = if (cycle < 9) 0.8f else 2.6f
+                legitTimerTick++
+                wasModifyingTimer = true
+            }
+        } else {
+            if (wasModifyingTimer) {
+                mc.timer.timerSpeed = 1f
+                wasModifyingTimer = false
+            }
+            legitTimerTick = 0
+        }
+
+        // --- Matrix / GrimAC ---
+        val blockingSword = isBlockingSword()
         if ((swordMode == "Matrix" || swordMode == "GrimAC") && (lastBlockingState || blockingSword)) {
             if (matrixBufferTimer.hasTimePassed(230L) && matrixBuffering) {
                 matrixBuffering = false
@@ -654,8 +738,6 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
         if (event.isCancelled || shouldSwap)
             return@handler
 
-        // Credit: @ManInMyVan
-        // TODO: Not sure how to fix random grim simulation flag. (Seem to only happen in Loyisa).
         if (consumeMode == "Drop") {
             if (player.heldItem?.item !is ItemFood || !player.isMoving) {
                 shouldNoSlow = false
@@ -701,7 +783,6 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
                     return@handler
                 }
 
-                // Flush on kb
                 is S12PacketEntityVelocity -> {
                     if (mc.thePlayer.entityId == packet.entityID) {
                         BlinkUtils.unblink()
@@ -709,7 +790,6 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
                     }
                 }
 
-                // Flush on explosion
                 is S27PacketExplosion -> {
                     if (packet.field_149153_g != 0f || packet.field_149152_f != 0f || packet.field_149159_h != 0f) {
                         BlinkUtils.unblink()
@@ -766,6 +846,14 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
                 grim2371DoNotSlow = false
                 return@handler
             }
+        }
+
+        if (isLegitModeActive(heldItem)) {
+            if (modifyTimer) {
+                if (legitExtraForwardMultiplier != 1.0f) event.forward *= legitExtraForwardMultiplier
+                if (legitExtraStrafeMultiplier != 1.0f) event.strafe *= legitExtraStrafeMultiplier
+            }
+            return@handler
         }
 
         if (heldItem !is ItemSword) {
@@ -849,5 +937,61 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
     private fun updateSlot() {
         SilentHotbar.selectSlotSilently(this, (SilentHotbar.currentSlot + 1) % 9, immediate = true)
         SilentHotbar.resetSlot(this, true)
+    }
+
+    private fun isLegitModeActive(item: Item?): Boolean {
+        return when (item) {
+            is ItemSword -> swordMode == "Legit"
+            is ItemBow -> bowPacket == "Legit"
+            is ItemFood, is ItemPotion, is ItemBucketMilk -> consumeMode == "Legit"
+            else -> false
+        }
+    }
+
+    /**
+     * Legit rotation: 20-tick cycle, yaw = movement direction + 45°, optional pullback ticks.
+     * When pullbackStartTick is 0, always offset +45°, no pullback.
+     */
+    private fun handleLegitRotations(event: MotionEvent, isUsingItem: Boolean) {
+        val player = mc.thePlayer ?: return
+        if (!isUsingItem || !player.isMoving) {
+            RotationUtils.cancelTargetRotation(legitRotationSettings)
+            return
+        }
+
+        val heldItem = player.heldItem?.item ?: return
+        val modeActive = when {
+            heldItem is ItemSword   && swordMode == "Legit"   -> true
+            heldItem is ItemBow     && bowPacket == "Legit"   -> true
+            heldItem is ItemFood    && consumeMode == "Legit" -> true
+            heldItem is ItemPotion  && consumeMode == "Legit" -> true
+            heldItem is ItemBucketMilk && consumeMode == "Legit" -> true
+            else -> false
+        }
+
+        if (!modeActive) {
+            RotationUtils.cancelTargetRotation(legitRotationSettings)
+            return
+        }
+
+        val moveYaw = MovementUtils.direction.toDegreesF()
+        val startTick = legitPullbackStartTick
+
+        // If startTick is 0, always offset +45°, no pullback
+        val targetYaw = if (startTick == 0) {
+            moveYaw + 45f
+        } else {
+            val tick = player.ticksExisted % 20
+            when {
+                tick < startTick          -> moveYaw + 45f
+                tick == startTick         -> moveYaw           // 回正
+                tick == startTick + 1     -> moveYaw + 45f     // 重新偏转
+                else                      -> moveYaw + 45f
+            }
+        }
+
+        val wrappedYaw = MathHelper.wrapAngleTo180_float(targetYaw)
+        val rotation = Rotation(wrappedYaw, player.rotationPitch)
+        RotationUtils.setTargetRotation(rotation, legitRotationSettings, resetTicks = 1)
     }
 }
