@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.font
 
 import net.ccbluex.liquidbounce.file.FileManager
+import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.util.ResourceLocation
@@ -19,6 +20,10 @@ import java.io.IOException
  * Author: opZywl - Custom Font
  */
 open class CustomFont(resourceLocation: ResourceLocation?, size: Float) {
+
+    companion object {
+        private val failedFontFiles = mutableSetOf<String>()
+    }
 
     private val imgSize = 1048f
     protected var charData: Array<CharData> = Array(256) { CharData() }
@@ -56,10 +61,13 @@ open class CustomFont(resourceLocation: ResourceLocation?, size: Float) {
     }
 
     private fun fallbackLoadFont(resourceLocation: ResourceLocation?, size: Float): Font {
-        // In 1.8 MC, it's .resourcePath, not .path:
         val resourcePath = resourceLocation?.resourcePath ?: "fallback.ttf"
-        // The last part after '/', e.g. "lato-bold.ttf"
         val fontFileName = resourcePath.substringAfterLast('/')
+
+        if (fontFileName in failedFontFiles) {
+            return Font("lato", Font.PLAIN, size.toInt())
+        }
+
         val localFile = File(FileManager.fontsDir, fontFileName)
 
         return try {
@@ -67,8 +75,8 @@ open class CustomFont(resourceLocation: ResourceLocation?, size: Float) {
                 Font.createFont(Font.TRUETYPE_FONT, fis).deriveFont(size)
             }
         } catch (ex: Exception) {
-            ex.printStackTrace()
-            // Final fallback => system "lato"
+            failedFontFiles += fontFileName
+            LOGGER.warn("Failed to load font $fontFileName, using system fallback: ${ex.message}")
             Font("lato", Font.PLAIN, size.toInt())
         }
     }

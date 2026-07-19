@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.font.man
 
 import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.font.renderer.FontRenderer
+import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.minecraft.util.ResourceLocation
 import java.io.File
 
@@ -16,20 +17,18 @@ import java.io.File
  */
 class FontManager {
 
+    companion object {
+        private val warnedMissing = mutableSetOf<String>()
+    }
+
     private val registry: MutableMap<String, FontRenderer> = HashMap()
 
     fun getFontResource(name: String): ResourceLocation {
-        // Ensure the TTF file physically exists in fontsDir/lato-bold.ttf, etc.
-        // You might create or verify the file here if needed.
         val localFile = File(FileManager.fontsDir, "$name.ttf")
-        if (!localFile.exists()) {
-            // You could log a warning or handle the missing file as needed:
-            println("Warning: TTF file not found: ${localFile.absolutePath}")
+        if (!localFile.exists() && warnedMissing.add(name)) {
+            LOGGER.warn("TTF file not found: ${localFile.absolutePath}")
         }
 
-        // Return a ResourceLocation with a chosen domain + path.
-        // The domain can be anything not conflicting with existing MC domains.
-        // The path is "fonts/<name>.ttf" to match what your FontRenderer might look for.
         return ResourceLocation("fdpclient", "fonts/$name.ttf")
     }
 
@@ -46,11 +45,6 @@ class FontManager {
      * Example registrations: "lato-bold" at multiple sizes.
      */
     fun register() {
-        register("lato-bold-15", getFontResource("lato-bold"), 15)
-        register("lato-bold-17", getFontResource("lato-bold"), 17)
-        register("lato-bold-13", getFontResource("lato-bold"), 13)
-
-        // The duplicates from your snippet; you can remove if you prefer:
         register("lato-bold-13", getFontResource("lato-bold"), 13)
         register("lato-bold-15", getFontResource("lato-bold"), 15)
         register("lato-bold-17", getFontResource("lato-bold"), 17)

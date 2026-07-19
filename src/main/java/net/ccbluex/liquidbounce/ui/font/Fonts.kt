@@ -234,11 +234,6 @@ object Fonts : MinecraftInstance {
                 getFontFromFile("Outfit-Regular.ttf", 45).asGameFontRenderer()
             )
 
-            fontSemibold40 = register(
-                FontInfo(name = "Outfit Semibold", size = 40),
-                getFontFromFile("Outfit-Semibold.ttf", 40).asGameFontRenderer()
-            )
-
             fontExtraBold30 = register(
                 FontInfo(name = "Outfit Extrabold", size = 30),
                 getFontFromFile("Outfit-Extrabold.ttf", 30).asGameFontRenderer()
@@ -249,10 +244,6 @@ object Fonts : MinecraftInstance {
                 getFontFromFile("Outfit-Extrabold.ttf", 40).asGameFontRenderer()
             )
 
-            fontBold180 = register(
-                FontInfo(name = "Outfit Bold", size = 180),
-                getFontFromFile("Outfit-Bold.ttf", 180).asGameFontRenderer()
-            )
             font72 = register(FontInfo(name = "Roboto Medium", size = 72),
                 getFontFromFile("Roboto-Medium.ttf", 72).asGameFontRenderer())
             fontBold180 = register(FontInfo(name = "Roboto Bold", size = 180),
@@ -404,7 +395,7 @@ object Fonts : MinecraftInstance {
         val fontZipFile = File(fontsDir, "font.zip")
         if (!fontZipFile.exists()) {
             LOGGER.info("Downloading additional fonts...")
-            Downloader.downloadWholeFile("${FONTS}/Font.zip", fontZipFile)
+            Downloader.downloadWholeFile("${FONTS}Font.zip", fontZipFile)
         }
 
         if(fontZipFile.exists()){

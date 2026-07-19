@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.utils.io
 
 object URLRegistryUtils {
-    const val WEBSITE = "https://fdpinfo.github.io/next"
+    const val WEBSITE = "https://fdpinfo.github.io"
     const val STATUS = "$WEBSITE/database/data.txt"
     const val CHANGELOGS = "$WEBSITE/database/changelogs.txt"
     const val BUGS = "$WEBSITE/database/bugs.txt"

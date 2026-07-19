@@ -118,9 +118,15 @@ inline fun <reified T> Response.jsonBody(): T? = use {
 
 fun Response.toFile(file: File) = use { response ->
     if (response.isSuccessful) {
-        file.sink().buffer().use(response.body.source()::readAll)
+        val partFile = File(file.parentFile, file.name + ".part")
+        partFile.sink().buffer().use(response.body.source()::readAll)
+        file.delete()
+        if (!partFile.renameTo(file)) {
+            partFile.delete()
+            throw IOException("[HTTP] Failed to move ${partFile.name} to $file")
+        }
     } else {
-        throw IOException("[HTTP] Failed to write Response to File $file, ${response.message}")
+        throw IOException("[HTTP] Failed to write Response to File $file, HTTP ${response.code} ${response.message}")
     }
 }
 
