@@ -241,6 +241,45 @@ shadowJar {
     exclude "org/apache/logging/log4j/**"
     exclude "org/apache/commons/**"
     exclude "org/junit/**"
+
+    // FML scans every .class entry with ASM 5, which rejects class files newer than Java 8
+    // (major > 52) and then ignores the WHOLE mod jar. Fail the build instead.
+    doLast {
+        def badClasses = []
+        def zip = new java.util.zip.ZipFile(archiveFile.get().asFile)
+        try {
+            zip.entries().each { entry ->
+                if (!entry.name.endsWith(".class")) return
+                def input = zip.getInputStream(entry)
+                try {
+                    byte[] header = new byte[8]
+                    int offset = 0
+                    while (offset < 8) {
+                        int read = input.read(header, offset, 8 - offset)
+                        if (read < 0) break
+                        offset += read
+                    }
+                    if (offset == 8) {
+                        int major = ((header[6] & 0xff) << 8) | (header[7] & 0xff)
+                        if (major > 52) {
+                            badClasses << "${entry.name} (class file major version ${major})"
+                        }
+                    }
+                } finally {
+                    input.close()
+                }
+            }
+        } finally {
+            zip.close()
+        }
+
+        if (!badClasses.isEmpty()) {
+            throw new GradleException(
+                "Fat jar contains classes newer than Java 8; FML/ASM5 would ignore the whole jar at runtime:\n" +
+                badClasses.take(20).join("\n")
+            )
+        }
+    }
 }
 
 processResources {
