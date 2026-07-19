@@ -29,14 +29,20 @@ class SimpleFontRenderer(
     private val italicChars: Array<CharData> = Array(CHARS.toInt()) { CharData() }
     private val boldItalicChars: Array<CharData> = Array(CHARS.toInt()) { CharData() }
 
-    private lateinit var texturePlain: DynamicTexture
-    private lateinit var textureBold: DynamicTexture
-    private lateinit var textureItalic: DynamicTexture
-    private lateinit var textureItalicBold: DynamicTexture
     private var fontHeight: Int = -1
 
-    init {
-        setupBoldItalicFonts()
+    private val texturePlain: DynamicTexture = setupTexture(awtFont, antiAlias, fractionalMetrics, charData)
+
+    private val textureBold: DynamicTexture by lazy {
+        setupTexture(awtFont.deriveFont(Font.BOLD), antiAlias, fractionalMetrics, boldChars)
+    }
+
+    private val textureItalic: DynamicTexture by lazy {
+        setupTexture(awtFont.deriveFont(Font.ITALIC), antiAlias, fractionalMetrics, italicChars)
+    }
+
+    private val textureItalicBold: DynamicTexture by lazy {
+        setupTexture(awtFont.deriveFont(Font.BOLD or Font.ITALIC), antiAlias, fractionalMetrics, boldItalicChars)
     }
 
     companion object {
@@ -115,14 +121,19 @@ class SimpleFontRenderer(
         }
     }
 
-    /**
-     * Sets up textures for different font styles (plain, bold, italic, bold-italic).
-     */
-    private fun setupBoldItalicFonts() {
-        texturePlain = setupTexture(awtFont, antiAlias, fractionalMetrics, charData)
-        textureBold = setupTexture(awtFont.deriveFont(Font.BOLD), antiAlias, fractionalMetrics, boldChars)
-        textureItalic = setupTexture(awtFont.deriveFont(Font.ITALIC), antiAlias, fractionalMetrics, italicChars)
-        textureItalicBold = setupTexture(awtFont.deriveFont(Font.BOLD or Font.ITALIC), antiAlias, fractionalMetrics, boldItalicChars)
+    private fun styledChars(bold: Boolean, italic: Boolean): Array<CharData> {
+        when {
+            bold && italic -> textureItalicBold
+            bold -> textureBold
+            italic -> textureItalic
+            else -> texturePlain
+        }
+        return when {
+            bold && italic -> boldItalicChars
+            bold -> boldChars
+            italic -> italicChars
+            else -> charData
+        }
     }
 
     /**
@@ -437,11 +448,11 @@ class SimpleFontRenderer(
                     }
                     colorIndex == 17 -> { // Bold
                         bold = true
-                        currentData = if (italic) boldItalicChars else boldChars
+                        currentData = styledChars(bold = true, italic = italic)
                     }
                     colorIndex == 20 -> { // Italic
                         italic = true
-                        currentData = if (bold) boldItalicChars else italicChars
+                        currentData = styledChars(bold = bold, italic = true)
                     }
                     colorIndex == 21 -> { // Reset
                         bold = false

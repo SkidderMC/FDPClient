@@ -47,6 +47,8 @@ object ScriptManager : List<Script> by scripts {
      */
     fun loadScript(scriptFile: File) {
         try {
+            Remapper.loadSrg()
+
             if (!Remapper.mappingsLoaded) {
                 error("The mappings were not loaded, re-start and check your internet connection.")
             }

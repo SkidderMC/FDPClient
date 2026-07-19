@@ -158,8 +158,10 @@ object FDPClient {
             // Load alt generators
             loadActiveGenerators()
 
-            // Load SRG file
-            loadSrg()
+            // Load SRG file (only needed by the script API)
+            if (ScriptManager.availableScriptFiles.isNotEmpty()) {
+                loadSrg()
+            }
 
             LOGGER.info("Preload tasks of $CLIENT_NAME are completed!")
         }
@@ -215,11 +217,13 @@ object FDPClient {
             }
 
             runCatching {
-                // Remapper
-                loadSrg()
+                // Remapper (only needed by the script API)
+                if (ScriptManager.availableScriptFiles.isNotEmpty()) {
+                    loadSrg()
 
-                if (!Remapper.mappingsLoaded) {
-                    error("Failed to load SRG mappings.")
+                    if (!Remapper.mappingsLoaded) {
+                        error("Failed to load SRG mappings.")
+                    }
                 }
 
                 // ScriptManager

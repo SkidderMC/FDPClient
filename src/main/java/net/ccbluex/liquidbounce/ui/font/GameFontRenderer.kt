@@ -51,9 +51,9 @@ class GameFontRenderer(
 ) {
 
     val defaultFont = AWTFontRenderer(font)
-    private val boldFont = AWTFontRenderer(font.deriveFont(Font.BOLD))
-    private val italicFont = AWTFontRenderer(font.deriveFont(Font.ITALIC))
-    private val boldItalicFont = AWTFontRenderer(font.deriveFont(Font.BOLD or Font.ITALIC))
+    private val boldFont by lazy { AWTFontRenderer(font.deriveFont(Font.BOLD)) }
+    private val italicFont by lazy { AWTFontRenderer(font.deriveFont(Font.ITALIC)) }
+    private val boldItalicFont by lazy { AWTFontRenderer(font.deriveFont(Font.BOLD or Font.ITALIC)) }
 
     val fontHeight: Int
     val size: Int
