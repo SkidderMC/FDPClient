@@ -54,6 +54,9 @@ object GradientFontShader : Shader("gradient_font_shader.frag"), Closeable {
     }
 
     override fun startShader() {
+        if (!isUsable)
+            return
+
         super.startShader()
         isInUse = true
     }

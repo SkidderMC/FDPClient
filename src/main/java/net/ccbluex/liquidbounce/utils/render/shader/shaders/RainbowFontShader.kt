@@ -29,6 +29,9 @@ object RainbowFontShader : Shader("rainbow_font_shader.frag"), Closeable {
     }
 
     override fun startShader() {
+        if (!isUsable)
+            return
+
         super.startShader()
 
         isInUse = true

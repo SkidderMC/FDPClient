@@ -37,7 +37,9 @@ class RearView : Element("RearView") {
     private lateinit var frameBuffer: Framebuffer
 
     init {
-        updateFramebuffer()
+        if (OpenGlHelper.isFramebufferEnabled()) {
+            updateFramebuffer()
+        }
     }
 
     override fun updateElement() {
@@ -80,7 +82,7 @@ class RearView : Element("RearView") {
     }
 
     fun render(x: Float, y: Float, w: Float, h: Float) {
-        if (OpenGlHelper.isFramebufferEnabled()) {
+        if (OpenGlHelper.isFramebufferEnabled() && ::frameBuffer.isInitialized) {
             GlStateManager.pushMatrix()
             GlStateManager.enableTexture2D()
             GlStateManager.disableLighting()
@@ -116,6 +118,9 @@ class RearView : Element("RearView") {
     }
 
     private fun updateFbo() {
+        if (!::frameBuffer.isInitialized)
+            return
+
         if (!firstUpdate) {
             mc.renderGlobal.loadRenderers()
             firstUpdate = true

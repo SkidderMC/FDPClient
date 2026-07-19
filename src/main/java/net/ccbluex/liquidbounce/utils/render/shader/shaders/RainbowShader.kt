@@ -29,6 +29,9 @@ object RainbowShader : Shader("rainbow_shader.frag"), Closeable {
     }
 
     override fun startShader() {
+        if (!isUsable)
+            return
+
         super.startShader()
 
         isInUse = true

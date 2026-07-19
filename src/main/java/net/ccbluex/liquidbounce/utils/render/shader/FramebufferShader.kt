@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.utils.render.shader
 
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager.*
+import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
@@ -35,9 +36,16 @@ abstract class FramebufferShader(fragmentShader: String) : Shader(fragmentShader
     protected var targetAlpha = 0f
     
     private var entityShadows = false
+    private var skipDraw = false
+
     fun startDraw(partialTicks: Float, renderScale: Float) {
+        if (!isUsable || !OpenGlHelper.isFramebufferEnabled()) {
+            skipDraw = true
+            return
+        }
+
         this.renderScale = renderScale
-        
+
         pushMatrix()
         enableAlpha()
         pushAttrib()
@@ -52,6 +60,11 @@ abstract class FramebufferShader(fragmentShader: String) : Shader(fragmentShader
     }
 
     fun stopDraw(color: Color, radius: Int, fade: Int, targetAlpha: Float) {
+        if (skipDraw) {
+            skipDraw = false
+            return
+        }
+
         mc.gameSettings.entityShadows = entityShadows
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)

@@ -54,6 +54,9 @@ object GradientShader : Shader("gradient_shader.frag"), Closeable {
     }
 
     override fun startShader() {
+        if (!isUsable)
+            return
+
         super.startShader()
         isInUse = true
     }

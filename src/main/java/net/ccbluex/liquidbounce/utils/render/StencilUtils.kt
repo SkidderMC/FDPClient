@@ -7,10 +7,12 @@ package net.ccbluex.liquidbounce.utils.render
 
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.client.shader.Framebuffer
 import org.lwjgl.opengl.EXTFramebufferObject
 import org.lwjgl.opengl.EXTPackedDepthStencil
 import org.lwjgl.opengl.GL11.*
+import org.lwjgl.opengl.GLContext
 
 /**
  * Unified Stencil utilities for managing OpenGL stencil buffer operations.
@@ -23,6 +25,15 @@ import org.lwjgl.opengl.GL11.*
  * @author Zywl
  */
 object StencilUtils : MinecraftInstance {
+
+    @JvmStatic
+    val stencilSupported by lazy {
+        runCatching {
+            val caps = GLContext.getCapabilities()
+            !GlEnvironment.isGlEsWrapper && OpenGlHelper.isFramebufferEnabled() &&
+                caps.GL_EXT_framebuffer_object && caps.GL_EXT_packed_depth_stencil
+        }.getOrDefault(false)
+    }
 
     /**
      * Sets up the framebuffer with depth and stencil extensions (24/8 bit).
@@ -77,6 +88,9 @@ object StencilUtils : MinecraftInstance {
      */
     @JvmStatic
     fun checkSetupFBO(fbo: Framebuffer? = mc.framebuffer) {
+        if (!stencilSupported)
+            return
+
         if (fbo != null && fbo.depthBuffer > -1) {
             setupFBO(fbo)
             // Reset the ID to prevent multiple FBO setups
