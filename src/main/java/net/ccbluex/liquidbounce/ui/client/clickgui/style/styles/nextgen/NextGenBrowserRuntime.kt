@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.event.Render2DEvent
 import net.ccbluex.liquidbounce.utils.render.RenderPrimitives
 import net.minecraft.client.gui.ScaledResolution
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
+import net.ccbluex.liquidbounce.utils.client.McefPlatform
 import net.ccbluex.liquidbounce.ui.client.hud.HUD
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
@@ -181,6 +182,15 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
             return
         }
         if (state == State.FAILED || initializationAttempted) {
+            return
+        }
+
+        if (McefPlatform.isUnsupported()) {
+            initializationAttempted = true
+            fail(
+                "In-game browser is not supported on this platform " +
+                    "(${System.getProperty("os.name")}/${System.getProperty("os.arch")}), no CEF natives exist for it."
+            )
             return
         }
 
@@ -361,6 +371,10 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
     }
 
     private fun resetMcefVirtualState() {
+        if (McefPlatform.isUnsupported()) {
+            return
+        }
+
         runCatching {
             Class.forName(PROXY_CLASS).getField("VIRTUAL").setBoolean(null, false)
         }.onFailure {

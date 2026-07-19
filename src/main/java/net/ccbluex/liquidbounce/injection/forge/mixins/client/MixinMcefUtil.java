@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.client;
 
+import net.ccbluex.liquidbounce.utils.client.McefPlatform;
 import net.minecraft.client.Minecraft;
 import net.montoyo.mcef.utilities.SizedInputStream;
 import net.montoyo.mcef.utilities.Log;
@@ -64,6 +65,13 @@ public class MixinMcefUtil {
 
     @Inject(method = "openStream", at = @At("HEAD"), cancellable = true, remap = false)
     private static void fdp$skipDeadMirror(String url, String name, CallbackInfoReturnable<SizedInputStream> cir) {
+        // No CEF natives exist for this platform (Android/ARM): report every fetch as failed so the
+        // engine drops into virtual mode instantly instead of probing mirrors it can never use.
+        if (McefPlatform.isUnsupported()) {
+            cir.setReturnValue(null);
+            return;
+        }
+
         try {
             File dir = Minecraft.getMinecraft().mcDataDir;
             boolean installing = "true".equals(System.getProperty(INSTALLING_PROPERTY));
