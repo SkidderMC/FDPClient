@@ -136,7 +136,7 @@ dependencies {
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
 
     // Swing LookAndFeel
-    implementation "com.formdev:flatlaf:3.7.1"
+    implementation "com.formdev:flatlaf:3.7.2"
 
     implementation fileTree(include: ["*.jar"], dir: "libs")
 
