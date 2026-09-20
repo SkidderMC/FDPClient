@@ -22,10 +22,10 @@ class ModuleRegistryAuditTest {
             "net.ccbluex.liquidbounce.features.module.modules",
             Module::class.java
         )
-        assertEquals("The audited built-in module inventory changed", EXPECTED_MODULE_COUNT, moduleClasses.size)
-    }
-
-    private companion object {
-        const val EXPECTED_MODULE_COUNT = 297
+        assertEquals(
+            "The audited built-in module inventory changed",
+            ModuleRegistryValidator.EXPECTED_BUILT_IN_MODULES,
+            moduleClasses.size
+        )
     }
 }

@@ -27,7 +27,7 @@ class ModuleDescriptionAuditTest {
             }
             .toList()
 
-        assertEquals(EXPECTED_MODULE_COUNT, names.size)
+        assertEquals(ModuleRegistryValidator.EXPECTED_BUILT_IN_MODULES, names.size)
         assertEquals(names.size, names.map(String::lowercase).distinct().size)
 
         val language = File("src/main/resources/assets/minecraft/fdpclient/lang/en_US.json")
@@ -42,7 +42,6 @@ class ModuleDescriptionAuditTest {
     }
 
     private companion object {
-        const val EXPECTED_MODULE_COUNT = 297
         val DIRECT_MODULE = Regex(
             """(?s)(?::|extends)\s+Module\s*\(\s*\"([^\"]+)\"\s*,\s*Category\.[A-Z]+"""
         )
