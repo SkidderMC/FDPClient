@@ -16,6 +16,7 @@ import net.ccbluex.liquidbounce.file.FileConfig
 import net.ccbluex.liquidbounce.file.FileManager.PRETTY_GSON
 import net.ccbluex.liquidbounce.utils.io.readJson
 import net.ccbluex.liquidbounce.utils.io.writeTextAtomic
+import net.ccbluex.liquidbounce.utils.login.MicrosoftTitleAuth
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import java.io.*
 
@@ -30,6 +31,7 @@ class AccountsConfig(file: File) : FileConfig(file) {
      */
     @Throws(IOException::class)
     override fun loadConfig() {
+        MicrosoftTitleAuth.ensureRegistered()
         clearAccounts()
         val json = file.readJson() as? JsonArray ?: return
 
