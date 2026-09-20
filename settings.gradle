@@ -1,5 +1,31 @@
 pluginManagement {
+    // JitPack publishes ForgeGradle with a POM that declares the snapshot version while living
+    // under the resolved version directory, which Gradle rejects as inconsistent metadata. Stage a
+    // corrected copy in a local repository so the plugin resolves on a clean checkout and on CI.
+    def forgeGradleRepo = { String version ->
+        def repoDir = new File(gradle.gradleUserHomeDir, "fdp-staged-artifacts")
+        def moduleDir = new File(repoDir, "com/github/CCBlueX/ForgeGradle/${version}")
+        def jar = new File(moduleDir, "ForgeGradle-${version}.jar")
+        def pom = new File(moduleDir, "ForgeGradle-${version}.pom")
+
+        if (!jar.exists() || !pom.exists()) {
+            moduleDir.mkdirs()
+            def remote = "https://jitpack.io/com/github/CCBlueX/ForgeGradle/${version}/ForgeGradle-${version}"
+
+            new URL("${remote}.jar").withInputStream { input ->
+                jar.withOutputStream { output -> output << input }
+            }
+
+            pom.text = new URL("${remote}.pom").text
+                .replaceFirst(/<version>[^<]+<\/version>/, "<version>${version}</version>")
+                .replace("<!-- do_not_remove: published-with-gradle-metadata -->", "")
+        }
+
+        return repoDir
+    }(forgegradle_version)
+
     repositories {
+        maven { url = forgeGradleRepo }
         mavenCentral()
         gradlePluginPortal()
         maven { url = "https://maven.minecraftforge.net/" }
@@ -10,7 +36,7 @@ pluginManagement {
         eachPlugin {
             switch (requested.id.id) {
                 case "net.minecraftforge.gradle.forge":
-                    useModule("com.github.ccbluex:ForgeGradle:${forgegradle_version}")
+                    useModule("com.github.CCBlueX:ForgeGradle:${forgegradle_version}")
                     break
                 case "org.spongepowered.mixin":
                     useModule("com.github.xcfrg:mixingradle:${mixingradle_version}")
