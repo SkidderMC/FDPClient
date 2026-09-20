@@ -37,16 +37,6 @@ object Aimbot : Module("Aimbot", Category.COMBAT, Category.SubCategory.COMBAT_LE
         .describe("Adjust yaw to track the target.")
     private val verticalAim by boolean("VerticalAim", true)
         .describe("Adjust pitch to track the target.")
-    // Legacy-path-only knobs; the Modern engine takes its speeds from the nested RotationSettings.
-    private val legitimize by boolean("Legitimize", true) {
-        (horizontalAim || verticalAim) && !rotationOptions.useModernRotations
-    }.describe("Smooth rotations to look more human.")
-    private val maxAngleChange by float("MaxAngleChange", 10f, 1F..180F) {
-        (horizontalAim || verticalAim) && !rotationOptions.useModernRotations
-    }.describe("Max degrees the view can turn per tick.")
-    private val inViewMaxAngleChange by float("InViewMaxAngleChange", 35f, 1f..180f) {
-        (horizontalAim || verticalAim) && !rotationOptions.useModernRotations
-    }.describe("Max turn speed when target is already on screen.")
     private val generateSpotBasedOnDistance by boolean(
         "GenerateSpotBasedOnDistance", false
     ) { horizontalAim || verticalAim }
@@ -85,14 +75,6 @@ object Aimbot : Module("Aimbot", Category.COMBAT, Category.SubCategory.COMBAT_LE
     private val horizontalBodySearchRange by floatRange("HorizontalBodySearchRange", 0f..1f, 0f..1f) { horizontalAim }
         .describe("Horizontal span of the target body to search.")
 
-    private val minRotationDifference by float("MinRotationDifference", 0f, 0f..2f) {
-        (verticalAim || horizontalAim) && !rotationOptions.useModernRotations
-    }.describe("Minimum rotation change before turning.")
-    private val minRotationDifferenceResetTiming by choices(
-        "MinRotationDifferenceResetTiming", arrayOf("OnStart", "Always"), "OnStart"
-    ) { (verticalAim || horizontalAim) && !rotationOptions.useModernRotations }
-        .describe("When to reset the minimum rotation difference.")
-
     private val fov by float("FOV", 180F, 1F..180F)
         .describe("Field of view in which targets are valid.")
     private val lock by boolean("Lock", true) { horizontalAim || verticalAim }
@@ -120,17 +102,8 @@ object Aimbot : Module("Aimbot", Category.COMBAT, Category.SubCategory.COMBAT_LE
     // exclude leaves the delegate reading false and dead-hides the whole settings tree.
     private val rotationOptions = AlwaysRotationSettings(this) { horizontalAim || verticalAim }.apply {
         applyServerSideValue.excludeWithState(false)
-        strafeValue.excludeWithState(false)
         keepRotationValue.excludeWithState(false)
         resetTicksValue.excludeWithState(1)
-        // The legacy path uses the module's own knobs (MaxAngleChange/Legitimize/...); these
-        // unread bundle twins would otherwise collide by name inside the Rotations group.
-        legitimizeValue.excludeWithState(false)
-        simulateShortStopValue.excludeWithState(false)
-        horizontalAngleChangeValue.exclude()
-        verticalAngleChangeValue.exclude()
-        minRotationDifferenceValue.exclude()
-        minRotationDifferenceResetTimingValue.exclude()
     }
 
     private val clickTimer = MSTimer()
@@ -146,9 +119,6 @@ object Aimbot : Module("Aimbot", Category.COMBAT, Category.SubCategory.COMBAT_LE
             "Range", "FOV", "HorizontalAim", "VerticalAim", "Lock", "OnClick", "BreakBlocks")
 
         rotationOptions.nestInto(rotationsGroup)
-        moveValues(rotationsGroup,
-            "Legitimize", "MaxAngleChange", "InViewMaxAngleChange", "MinRotationDifference",
-            "MinRotationDifferenceResetTiming")
 
         moveValues(aimPointGroup,
             "HighestBodyPointToTarget", "LowestBodyPointToTarget", "HorizontalBodySearchRange",
@@ -191,7 +161,7 @@ object Aimbot : Module("Aimbot", Category.COMBAT, Category.SubCategory.COMBAT_LE
 
         val random = Random()
 
-        if (Backtrack.runWithNearestTrackedDistance(entity) { !findRotation(entity, random) }) return@handler
+        if (Backtrack.runWithNearestTrackedDistance(entity) { !findRotation(entity) }) return@handler
 
         // Jitter
         // Some players do jitter on their mouses causing them to shake around. This is trying to simulate this behavior.
@@ -206,7 +176,7 @@ object Aimbot : Module("Aimbot", Category.COMBAT, Category.SubCategory.COMBAT_LE
         }
     }
 
-    private fun findRotation(entity: Entity, random: Random): Boolean {
+    private fun findRotation(entity: Entity): Boolean {
         val player = mc.thePlayer ?: return false
 
         if (mc.playerController.isHittingBlock && breakBlocks) {
@@ -228,9 +198,7 @@ object Aimbot : Module("Aimbot", Category.COMBAT, Category.SubCategory.COMBAT_LE
 
         player.setPosAndPrevPos(simPlayer.pos)
 
-        val playerRotation = player.rotation
-
-        val destinationRotation = if (center) {
+        var destinationRotation = if (center) {
             toRotation(boundingBox.center, true)
         } else if (usePointTracker) {
             pointTracker.findBestPoint(entity, player.eyes, currentRotation)?.let { toRotation(it, true) }
@@ -261,36 +229,10 @@ object Aimbot : Module("Aimbot", Category.COMBAT, Category.SubCategory.COMBAT_LE
             // Calculate the pitch offset needed to shift the view one block up
             val pitchOffset = Math.toDegrees(atan((blockHeight + playerEyeHeight) / distance)).toFloat()
 
-            destinationRotation.pitch -= pitchOffset
+            destinationRotation = destinationRotation.copy(pitch = destinationRotation.pitch - pitchOffset)
         }
 
-        // Figure out the best turn speed suitable for the distance and configured turn speed
-        val rotationDiff = rotationDifference(playerRotation, destinationRotation)
-
-        // is enemy visible to player on screen. Fov is about to be right with that you can actually see on the screen. Still not 100% accurate, but it is fast check.
-        val supposedTurnSpeed = if (rotationDiff < mc.gameSettings.fovSetting) {
-            inViewMaxAngleChange
-        } else {
-            maxAngleChange
-        }
-
-        val gaussian = random.nextGaussian()
-
-        val realisticTurnSpeed = rotationDiff * ((supposedTurnSpeed + (gaussian - 0.5)) / 180)
-
-        val rotation = if (rotationOptions.useModernRotations) {
-            performAngleChange(player.rotation, destinationRotation, rotationOptions)
-        } else {
-            // Directly access performAngleChange since this module changes the real client look rotation.
-            performAngleChange(
-                player.rotation,
-                destinationRotation,
-                realisticTurnSpeed.toFloat(),
-                legitimize = legitimize,
-                minRotationDiff = minRotationDifference,
-                minRotationDiffResetTiming = minRotationDifferenceResetTiming,
-            )
-        }
+        val rotation = performAngleChange(player.rotation, destinationRotation, rotationOptions)
 
         rotation.toPlayer(player, horizontalAim, verticalAim)
 

@@ -42,4 +42,25 @@ class RotationMathTest {
         assertFalse(RotationMath.isValid(0f, Float.POSITIVE_INFINITY))
         assertFalse(RotationMath.isValid(0f, 90.01f))
     }
+
+    @Test
+    fun `rotation operations never mutate shared zero or their receiver`() {
+        val source = Rotation(45f, 120f)
+        val limited = source.withLimitedPitch()
+        val sum = Rotation.ZERO + Rotation(12f, 5f)
+
+        assertEquals(Rotation(45f, 120f), source)
+        assertEquals(Rotation(45f, 90f), limited)
+        assertEquals(Rotation(0f, 0f), Rotation.ZERO)
+        assertEquals(Rotation(12f, 5f), sum)
+    }
+
+    @Test
+    fun `theoretical rotation history advances independently`() {
+        RotationUtils.serverRotation = Rotation(10f, 2f)
+        RotationUtils.serverRotation = Rotation(25f, 4f)
+
+        assertEquals(Rotation(25f, 4f), RotationUtils.theoreticalServerRotation)
+        assertEquals(Rotation(10f, 2f), RotationUtils.lastRotations[1])
+    }
 }

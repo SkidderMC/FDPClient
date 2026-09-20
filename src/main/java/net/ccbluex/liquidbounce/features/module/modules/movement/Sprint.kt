@@ -149,7 +149,7 @@ object Sprint : Module("Sprint", Category.MOVEMENT, Category.SubCategory.MOVEMEN
         val isLegitModeActive = mode == "Legit"
 
         val strictRotation = activeSettings?.let {
-            it.strict || it.useModernRotations && it.modernMovementCorrection == "Strict"
+            it.modernMovementCorrection == "Strict"
         } == true
 
         val modifiedForward = if (currentRotation != null && strictRotation) {

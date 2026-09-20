@@ -42,9 +42,11 @@ object NoRotateSet : Module("NoRotateSet", Category.OTHER, Category.SubCategory.
         currentRotation = player.rotation
 
         TickScheduler.cancel(this)
-        TickScheduler.scheduleAfter(ticksUntilStart.random, this)
-
-        setTargetRotation(savedRotation, options = options)
+        TickScheduler.scheduleAfter(ticksUntilStart.random, this) {
+            if (handleEvents() && mc.thePlayer != null) {
+                setTargetRotation(savedRotation, options = options)
+            }
+        }
     }
 
     override fun onDisable() {

@@ -251,7 +251,7 @@ object ModernRotationEngine : MinecraftInstance {
             targetDistance,
             targetMotion,
             settings.modernInterpolationHorizontalSpeed.random().toFloat() / 100f,
-            settings.modernAiOutputMultiplier,
+            settings.modernAiYawMultiplier,
         )
         val pitchFactor = neuralFactor(
             abs(delta.deltaPitch) / 90f,
@@ -260,14 +260,51 @@ object ModernRotationEngine : MinecraftInstance {
             targetDistance,
             targetMotion,
             settings.modernInterpolationVerticalSpeed.random().toFloat() / 100f,
-            settings.modernAiOutputMultiplier,
+            settings.modernAiPitchMultiplier,
         )
 
-        return currentRotation.towardsLinear(
+        val modelRotation = currentRotation.towardsLinear(
             targetRotation,
             (abs(delta.deltaYaw) * yawFactor).coerceAtLeast(RotationUtils.getFixedAngleDelta()),
             (abs(delta.deltaPitch) * pitchFactor).coerceAtLeast(RotationUtils.getFixedAngleDelta()),
         )
+
+        return applyAiCorrection(modelRotation, targetRotation, settings, resetting)
+    }
+
+    private fun applyAiCorrection(
+        modelRotation: Rotation,
+        targetRotation: Rotation,
+        settings: RotationSettings,
+        resetting: Boolean,
+    ): Rotation = when (settings.modernAiCorrection) {
+        "None" -> modelRotation
+        "Linear" -> modelRotation.towardsLinear(
+            targetRotation,
+            settings.modernAiCorrectionLinearHorizontal.random(),
+            settings.modernAiCorrectionLinearVertical.random(),
+        )
+        else -> {
+            val delta = modelRotation.rotationDeltaTo(targetRotation)
+            val directionChange = previousTargetRotation.takeIf { !resetting }?.let {
+                normalizeDirectionChange(it.angleTo(targetRotation)) *
+                    (settings.modernAiCorrectionDirectionChange.random().toFloat() / 100f)
+            } ?: 0f
+            val horizontalSpeed = settings.modernAiCorrectionHorizontalSpeed.random().toFloat() / 100f
+            val verticalSpeed = settings.modernAiCorrectionVerticalSpeed.random().toFloat() / 100f
+            val horizontalFactor = interpolationFactor(
+                abs(delta.deltaYaw), horizontalSpeed, directionChange, settings.modernInterpolationMidpoint
+            )
+            val verticalFactor = interpolationFactor(
+                abs(delta.deltaPitch), verticalSpeed, directionChange, settings.modernInterpolationMidpoint
+            )
+
+            modelRotation.towardsLinear(
+                targetRotation,
+                horizontalFactor * abs(delta.deltaYaw),
+                verticalFactor * abs(delta.deltaPitch),
+            )
+        }
     }
 
     /** Two-layer learned-curve approximation with normalized inputs and a bounded output. */

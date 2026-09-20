@@ -22,14 +22,6 @@ import java.awt.Color
 
 object Rotations : Module("Rotations", Category.CLIENT, Category.SubCategory.CLIENT_GENERAL, gameDetecting = false) {
 
-    /**
-     * Global rotation engine override. "Per-Module" keeps each module's own Engine choice; "Modern"
-     * forces every rotation through the modern engine; "Legacy" forces the classic one. This is how
-     * you make the modern engine definitive across the whole client from one place.
-     */
-    val engine by choices("Engine", arrayOf("Per-Module", "Modern", "Legacy"), "Modern")
-        .describe("Which rotation engine modules use globally.")
-
     private val realistic by boolean("Realistic", true)
         .describe("Mimic the game head and body rotation logic.")
     private val body by boolean("Body", true) { !realistic }
@@ -61,7 +53,7 @@ object Rotations : Module("Rotations", Category.CLIENT, Category.SubCategory.CLI
     }.describe("Color of the server-aim direction vector.")
 
     init {
-        group("Behavior", "Engine", "Realistic", "Body", "SmoothRotations", "SmoothFactor")
+        group("Behavior", "Realistic", "Body", "SmoothRotations", "SmoothFactor")
         group("Ghost", "Ghost", "Color")
         group(
             "Debug",

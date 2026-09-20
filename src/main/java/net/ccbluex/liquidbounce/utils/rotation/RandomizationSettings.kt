@@ -51,7 +51,7 @@ class RandomizationSettings(owner: Module, val generalApply: () -> Boolean = { t
     val randomizationChosen
         get() = randomizationPattern != "None" && generalApply()
 
-    fun processNextSpot(box: AxisAlignedBB, rotation: Rotation, eyes: Vec3, range: Double) {
+    fun processNextSpot(box: AxisAlignedBB, rotation: Rotation, eyes: Vec3, range: Double): Rotation {
         val intercept = box.calculateIntercept(eyes, eyes + getVectorForRotation(lastRotations.random()) * range)
 
         // Smooth out randomized rotation pattern using previous rotation to simulate natural movement
@@ -79,11 +79,10 @@ class RandomizationSettings(owner: Module, val generalApply: () -> Boolean = { t
         } else 0f
 
         if (isZizZagActive || intercept?.hitVec == null) {
-            rotation.yaw += yawIncrease
-            rotation.pitch += pitchIncrease
-
-            rotation.fixedSensitivity()
+            return Rotation(rotation.yaw + yawIncrease, rotation.pitch + pitchIncrease).fixedSensitivity()
         }
+
+        return rotation
     }
 
     /** Restores this legacy-flat settings bundle as a real nested configurable. */

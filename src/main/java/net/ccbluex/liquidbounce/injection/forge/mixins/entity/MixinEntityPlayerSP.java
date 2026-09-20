@@ -230,7 +230,10 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer impl
                 positionUpdateTicks = 0;
             }
 
-            if (!FreeCam.INSTANCE.shouldDisableRotations()) {
+            // Rotating packets already advance theoretical history in RotationUtils.onPacket.
+            // Only copy the unchanged look here for a non-rotating movement tick; otherwise every
+            // real look is inserted twice and velocity/short-stop simulation reads a false history.
+            if (!FreeCam.INSTANCE.shouldDisableRotations() && !rotated) {
                 RotationUtils.INSTANCE.setServerRotation(new Rotation(yaw, pitch));
             }
 
@@ -409,7 +412,8 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer impl
 
         RotationSettings settings = utils.getActiveSettings();
 
-        utils.setModifiedInput(settings != null && !settings.getStrict() ? modifiedInput : movementInput);
+        utils.setModifiedInput(settings != null && "Silent".equals(settings.getModernMovementCorrection())
+                ? modifiedInput : movementInput);
 
         pushOutOfBlocks(posX - width * 0.35, getEntityBoundingBox().minY + 0.5, posZ + width * 0.35);
         pushOutOfBlocks(posX - width * 0.35, getEntityBoundingBox().minY + 0.5, posZ - width * 0.35);
