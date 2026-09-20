@@ -14,6 +14,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.attack.CPSCounter
 import net.ccbluex.liquidbounce.utils.block.*
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
+import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.blocksAmount
@@ -38,6 +39,7 @@ import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.toRotation
 import net.ccbluex.liquidbounce.utils.simulation.SimulatedPlayer
 import net.ccbluex.liquidbounce.utils.timing.*
 import net.minecraft.block.BlockBush
+import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.init.Blocks.air
 import net.minecraft.item.ItemBlock
@@ -79,6 +81,12 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
         "ScaffoldMode", arrayOf("Normal", "Rewinside", "Expand", "Telly", "GodBridge", "Sprint", "Breezily", "Jump", "Sneak"), "Normal"
     )
         .describe("Bridging technique to use.")
+
+    private val ticksUntilRotation by intRange("TicksUntilRotation", 3..3, 1..8) { scaffoldMode == "Telly" }
+        .describe("Hold the natural look for this many air ticks after the jump before aiming at the block. Keeping the look still on the ground is what lets the jump fire, and aiming only once airborne is what puts the block under you. Raise if blocks land behind you, lower if the bridge feels slow.")
+
+    private val tellyDebug by boolean("TellyDebug", false)
+        .describe("Log Telly jump/place timing to the client log for debugging.")
 
     // Breezily
     private val breezilyEdge by float("BreezilyEdge", 0.22f, 0.05f..0.45f) { scaffoldMode == "Breezily" }
@@ -135,11 +143,6 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
         .describe("Look downward while bridging.")
     private val autoJump by boolean("AutoJump", false) { scaffoldMode !in arrayOf("GodBridge", "Telly") }
         .describe("Automatically jump while bridging.")
-
-    private val ticksUntilRotation by intRange("TicksUntilRotation", 3..3, 1..8) {
-        scaffoldMode == "Telly"
-    }
-        .describe("Ticks to wait before rotating in Telly mode.")
 
     // GodBridge mode sub-values
     private val waitForRots by boolean("WaitForRotations", false) { supportsGodBridgeRotations }
@@ -272,21 +275,13 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
         .describe("Static pitch for the Advanced Static pitch mode.")
 
     private val options: RotationSettingsWithRotationModes = RotationSettingsWithRotationModes(this, modeList).apply {
-        strictValue.excludeWithState()
-        resetTicksValue.setSupport { it && scaffoldMode != "Telly" }
+        modernTicksUntilResetValue.setSupport { it && scaffoldMode != "Telly" }
         withRequestPriority(RotationPriority.HIGH)
         rotationModeProvider = { this@Scaffold.activeRotationMode }
         rotationsActiveProvider = { this@Scaffold.hasConfiguredRotations }
     }
 
-    private val rotationConsiderInventory by boolean("ConsiderInventory", false) {
-        options.useModernRotations
-    }
-        .describe("Keep rotating while an inventory is open.")
-
-    private val rotationTiming by choices("RotationTiming", arrayOf("Normal", "OnTick", "OnTickSnap"), "Normal") {
-        options.useModernRotations
-    }
+    private val rotationTiming by choices("RotationTiming", arrayOf("Normal", "OnTick", "OnTickSnap"), "Normal")
         .describe("When the rotation is applied each tick.")
 
     // Search options
@@ -373,7 +368,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
             "AutoBlock", "SortByHighestAmount", "EarlySwitch", "SlotAmountBeforeSwitch")
 
         moveValues(modesGroup,
-            "BreezilyEdge", "OmniDirectionalExpand", "ExpandLength", "TicksUntilRotation",
+            "BreezilyEdge", "OmniDirectionalExpand", "ExpandLength",
             "StartHorizontally", "HorizontalPlacementsRange", "VerticalPlacementsRange", "JumpTicksRange")
 
         moveValues(godBridgeGroup,
@@ -563,6 +558,8 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
         blocksToJump = blocksToJumpRange.random()
         godBridgeTargetRotation = null
         placeRotation = null
+        ticksUntilJump = 0
+        jumpTicks = jumpTicksRange.random()
     }
 
     // Events
@@ -706,11 +703,29 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
         }
 
         // Jumping needs to be done here, so it doesn't get detected by movement-sensitive anti-cheats.
-        if (scaffoldMode == "Telly" && player.onGround && player.isMoving && currRotation == player.rotation && ticksUntilJump >= jumpTicks) {
+        // The look has to still be the player's own: TicksUntilRotation keeps it that way on the ground,
+        // and anything aiming early would hold this gate shut for good.
+        val tellyReadyToJump = scaffoldMode == "Telly" && player.onGround && player.isMoving && !Tower.isTowering
+        // Compared within one quantization step, not for equality: the engine hands the look back
+        // snapped to the sensitivity GCD, so an untouched look still reads one step off and an exact
+        // match never holds. A look that is actually moving travels several steps per tick, so this
+        // still keeps the gate shut while aiming.
+        val tellyLookIdle = rotationDifference(currRotation, player.rotation) <= getFixedAngleDelta()
+
+        if (tellyReadyToJump && tellyLookIdle && ticksUntilJump >= jumpTicks) {
+            if (tellyDebug) LOGGER.info(
+                "[TellyDbg] JUMP airTicks=${player.airTicks} tuj=$ticksUntilJump jt=$jumpTicks " +
+                    "placeRot=${placeRotation != null}"
+            )
             player.tryJump()
 
             ticksUntilJump = 0
             jumpTicks = jumpTicksRange.random()
+        } else if (tellyReadyToJump && tellyDebug) {
+            LOGGER.info(
+                "[TellyDbg] JUMP-BLOCKED curRot=$currRotation playerRot=${player.rotation} " +
+                    "tuj=$ticksUntilJump jt=$jumpTicks"
+            )
         }
 
         // Sprint: keep momentum up while bridging forwards.
@@ -733,13 +748,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
 
         update()
 
-        val ticks = if (options.useModernRotations) {
-            options.effectiveResetTicks
-        } else if (options.keepRotation) {
-            if (scaffoldMode == "Telly") 1 else options.resetTicks
-        } else {
-            if (shouldUseGodBridgeRotations) options.resetTicks else RotationUtils.resetTicks.coerceAtLeast(1)
-        }
+        val ticks = if (scaffoldMode == "Telly") 1 else options.effectiveResetTicks
 
         if (!Tower.isTowering && shouldUseGodBridgeRotations && currentRotationsActive) {
             generateGodBridgeRotations(ticks)
@@ -748,7 +757,16 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
         }
 
         if (currentRotationsActive) {
-            this.placeRotation?.rotation?.let { setRotation(it, ticks) }
+            val placeRot = this.placeRotation
+
+            if (placeRot != null) {
+                setRotation(placeRot.rotation, ticks)
+            } else if (scaffoldMode == "Telly" && RotationUtils.currentRotation != null) {
+                // Target gone (block placed or nothing to place): flick back instantly like a real
+                // telly player instead of letting the reset path crawl for several ticks, which kept
+                // the engine busy and blocked the next jump.
+                RotationUtils.cancelTargetRotation(options, immediate = true)
+            }
         }
     }
 
@@ -763,11 +781,6 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
          *
          * @see net.minecraft.client.Minecraft.runTick Line 1345
          */
-        if (shouldUseModernOnTickRotation && rotationConsiderInventory &&
-            (InventoryUtils.serverOpenContainer || InventoryUtils.serverOpenInventory)) {
-            return@handler
-        }
-
         val onTickRotation = if (shouldUseModernOnTickRotation && target != null) {
             placeRotation?.rotation?.copy()?.fixedSensitivity()
         } else {
@@ -782,8 +795,13 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
         // to place but never appears, and stricter anticheat flags the mismatch). We only place once the
         // smoothed rotation has genuinely reached the block on the server side; the engine keeps driving
         // the rotation toward the target through the normal setRotation path, so convergence is quick.
+        //
+        // Telly is the exception: it picks a new block and flicks to it within the same jump, so the
+        // rotation the server holds is always the previous one and this raycast would test last tick's
+        // aim against this tick's target — which never matches, and nothing is ever placed.
         val raycastRotation = onTickRotation
-            ?: (RotationUtils.serverRotation.copy().takeIf { raycastProperly && target != null })
+            ?: (RotationUtils.serverRotation.copy()
+                .takeIf { raycastProperly && target != null && scaffoldMode != "Telly" })
             ?: currRotation
         val raycast = performBlockRaytrace(raycastRotation, mc.playerController.blockReachDistance)
 
@@ -814,7 +832,29 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
         }
 
         raycast.let {
-            if (!currentRotationsActive || it != null && it.typeOfHit.isBlock && it.blockPos == target.blockPos && (!raycastProperly || it.sideHit == target.enumFacing)) {
+            // Telly places PRE-flying (this GameTickEvent runs before the tick's movement packet), so
+            // no extra packet is needed and Grim's Post check stays happy. The server re-runs the place
+            // raytrace from the rotation it already holds (serverRotation, which is what we raycast
+            // from), so we require the raycast to actually land on the intended target; the hit face
+            // and hitVec come from our own raytrace so they are identical to the server's. Placing at
+            // whatever the raytrace happened to hit (looser) made the server disagree on the block and
+            // flooded RotationPlace, because the player's position drifts ahead of what the server has.
+            // Telly is exempt from the face check: the block is chosen mid-jump while the position is
+            // still moving, so the face the raytrace lands on is often a neighbouring one even when the
+            // block itself matches. Requiring the exact face here drops almost every placement.
+            val sideOk = !raycastProperly || it?.sideHit == target.enumFacing || scaffoldMode == "Telly"
+            val gatePass = !currentRotationsActive || it != null && it.typeOfHit.isBlock &&
+                it.blockPos == target.blockPos && sideOk
+
+            if (tellyDebug && scaffoldMode == "Telly") {
+                LOGGER.info(
+                    "[TellyDbg] GATE pass=$gatePass airTicks=${mc.thePlayer?.airTicks} onGround=${mc.thePlayer?.onGround} " +
+                        "hit=${it?.blockPos} target=${target.blockPos} side=${it?.sideHit}/${target.enumFacing} " +
+                        "srvRot=${RotationUtils.serverRotation}"
+                )
+            }
+
+            if (gatePass) {
                 val result = if (raycastProperly && it != null) {
                     PlaceInfo(it.blockPos, it.sideHit, it.hitVec)
                 } else {
@@ -929,15 +969,19 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
     private fun setRotation(rotation: Rotation, ticks: Int) {
         val player = mc.thePlayer ?: return
 
-        if (options.useModernRotations && rotationConsiderInventory &&
-            (InventoryUtils.serverOpenContainer || InventoryUtils.serverOpenInventory)) {
-            return
-        }
-
-        if (scaffoldMode == "Telly" && player.isMoving) {
+        // Telly aims late on purpose. While the look is untouched the jump gate below sees the engine
+        // matching the player's own rotation and fires; the moment something aims down, that gate stops
+        // matching and the jump never happens. Holding the aim for the first air ticks also means the
+        // block is chosen from where the jump actually took us, not from mid-rotation.
+        if (scaffoldMode == "Telly" && player.isMoving && !Tower.isTowering) {
             if (player.airTicks < ticksUntilRotation.random() && ticksUntilJump >= jumpTicks) {
                 return
             }
+
+            // Snap once the hold is over. Smoothing walks the aim toward the block a few degrees per
+            // tick, so the raytrace keeps landing on whatever is under the old aim and the placement
+            // gate never sees the target before the jump is spent — the aim has to arrive at once.
+            options.instant = true
         }
 
         if (shouldUseModernOnTickRotation) {
@@ -948,7 +992,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
     }
 
     private val shouldUseModernOnTickRotation: Boolean
-        get() = options.useModernRotations && rotationTiming != "Normal"
+        get() = rotationTiming != "Normal"
 
     private fun applyModernOnTickRotation(rotation: Rotation): Boolean {
         val player = mc.thePlayer ?: return false
@@ -1013,10 +1057,36 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
     }
 
     // Search for new target block
+    private fun searchExpand(player: EntityPlayerSP, blockPosition: BlockPos, area: Boolean) {
+        val yaw = player.rotationYaw.toRadiansD()
+        val x = if (omniDirectionalExpand) -sin(yaw).roundToInt() else player.horizontalFacing.directionVec.x
+        val z = if (omniDirectionalExpand) cos(yaw).roundToInt() else player.horizontalFacing.directionVec.z
+
+        repeat(expandLength) {
+            if (search(blockPosition.add(x * it, 0, z * it), false, area)) return
+        }
+        placeRotation = null
+    }
+
+    /**
+     * Airborne Telly pins the target to the level it jumped from, so the bridge stays flat instead of
+     * following the jump arc upwards and stacking into a tower. Towering wants that climb, so it keeps
+     * the level tracking the player, otherwise the target stays under the old floor and nothing can be
+     * placed to stand on.
+     */
+    private val tellyPinsLaunchLevel: Boolean
+        get() {
+            val player = mc.thePlayer ?: return false
+
+            return scaffoldMode == "Telly" && !player.onGround && !Tower.isTowering
+        }
+
     private fun findBlock(expand: Boolean, area: Boolean) {
         val player = mc.thePlayer ?: return
 
-        if (!shouldKeepLaunchPosition) launchY = player.posY.roundToInt()
+        if (!shouldKeepLaunchPosition && !tellyPinsLaunchLevel) {
+            launchY = player.posY.roundToInt()
+        }
 
         val blockPosition = if (shouldGoDown) {
             if (isHalfBlockLevel(player.posY)) {
@@ -1026,27 +1096,34 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
             }
         } else if (shouldKeepLaunchPosition && launchY <= player.posY) {
             BlockPos(player.posX, launchY - 1.0, player.posZ)
+        } else if (tellyPinsLaunchLevel) {
+            BlockPos(player.posX, launchY - 1.0, player.posZ)
         } else if (isHalfBlockLevel(player.posY)) {
             BlockPos(player)
         } else {
             BlockPos(player).down()
         }
 
-        if (!expand && (!blockPosition.isReplaceable || search(
-                blockPosition, !shouldGoDown, area, shouldPlaceHorizontally
-            ))
-        ) {
-            return
+        // Every "nothing to place" exit must clear the previous target: a stale placeRotation keeps
+        // the engine aiming at an unreachable old block, which locks the Telly jump gate (the engine
+        // never goes idle) and feeds the placement gate a target the raycast can never hit again.
+        if (!expand) {
+            if (blockPosition.isReplaceable) {
+                if (search(blockPosition, !shouldGoDown, area, shouldPlaceHorizontally)) {
+                    return
+                }
+            } else if (scaffoldMode != "Telly") {
+                // A solid anchor means nothing to fill right here. For Telly that just means we are
+                // standing over the bridge, so fall through to the box search below to find the
+                // leading-edge air cell ahead; clamping the anchor to the (solid) launch level was
+                // otherwise bailing out before ever finding the next block to place.
+                placeRotation = null
+                return
+            }
         }
 
         if (expand) {
-            val yaw = player.rotationYaw.toRadiansD()
-            val x = if (omniDirectionalExpand) -sin(yaw).roundToInt() else player.horizontalFacing.directionVec.x
-            val z = if (omniDirectionalExpand) cos(yaw).roundToInt() else player.horizontalFacing.directionVec.z
-
-            repeat(expandLength) {
-                if (search(blockPosition.add(x * it, 0, z * it), false, area)) return
-            }
+            searchExpand(player, blockPosition, area)
             return
         }
 
@@ -1063,10 +1140,15 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
         ).sortedBy {
             BlockUtils.getCenterDistance(it)
         }.forEach {
+            // A solid candidate near the center means the bridge is continuous there; keep the last
+            // valid target (the direct fill search above can fail on odd face angles for a tick or
+            // two) instead of nulling, or the target flickers and the engine never converges.
             if (it.canBeClicked() || search(it, !shouldGoDown, area, shouldPlaceHorizontally)) {
                 return
             }
         }
+
+        placeRotation = null
     }
 
     private fun place(placeInfo: PlaceInfo) {
@@ -1450,13 +1532,11 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
         }
 
         val raytrace = performBlockRaytrace(rotationForPlacement, maxReach) ?: return null
+        val validTarget = raytrace.typeOfHit.isBlock && raytrace.blockPos == offsetPos
+        val validSide = !raycast || raytrace.sideHit == side.opposite
+        val rotationReady = canUpdateRotation(currRotation, rotationForPlacement, 1)
 
-        val multiplier = if (options.legitimize) 3 else 1
-
-        if (raytrace.typeOfHit.isBlock && raytrace.blockPos == offsetPos && (!raycast || raytrace.sideHit == side.opposite) && canUpdateRotation(
-                currRotation, rotationForPlacement, multiplier
-            )
-        ) {
+        if (validTarget && validSide && rotationReady) {
             return PlaceRotation(
                 PlaceInfo(
                     raytrace.blockPos, side.opposite, modifyVec(raytrace.hitVec, side, Vec3(offsetPos), !raycast)
