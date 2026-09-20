@@ -1,14 +1,36 @@
 <script lang="ts">
     import {listen} from "../../../integration/ws";
-    import type {PlayerData, Scoreboard} from "../../../integration/types";
+    import type {PlayerData, Scoreboard, TextComponent as TTextComponent} from "../../../integration/types";
     import TextComponent from "../../menu/common/TextComponent.svelte";
     import type {ClientPlayerDataEvent} from "../../../integration/events";
+    import {createGlobalRegex, replaceTextComponent} from "../../../util/regex_replace";
 
     export let settings: { [name: string]: any };
 
-    const cSettings = settings as HudScoreboardSettings;
+    let cSettings: HudScoreboardSettings;
+
+    $: cSettings = settings as HudScoreboardSettings;
 
     let scoreboard: Scoreboard | null = null;
+    let replaceRegex: RegExp | null = null;
+    let processedScoreboard: Scoreboard | null = null;
+
+    $: replaceRegex = createGlobalRegex(cSettings?.replaceRegex);
+    $: processedScoreboard = processScoreboard(scoreboard, replaceRegex, cSettings?.replaceWith ?? "");
+
+    function processScoreboard(scoreboard: Scoreboard | null, regex: RegExp | null, replacement: string): Scoreboard | null {
+        if (!scoreboard || !regex) {
+            return scoreboard;
+        }
+
+        return {
+            header: replaceTextComponent(scoreboard.header, regex, replacement) as TTextComponent,
+            entries: scoreboard.entries.map(({name, score}) => ({
+                name: replaceTextComponent(name, regex, replacement) as TTextComponent,
+                score: replaceTextComponent(score, regex, replacement) as TTextComponent
+            }))
+        };
+    }
 
     listen("clientPlayerData", (e: ClientPlayerDataEvent) => {
         const playerData: PlayerData = e.playerData;
@@ -16,20 +38,20 @@
     });
 </script>
 
-{#if scoreboard}
-    <div class="scoreboard">
-        {#if scoreboard.header && cSettings.show.includes('Header')}
+{#if processedScoreboard}
+    <div class="scoreboard" class:with-shadow={cSettings.shadow} class:without-rect={!cSettings.rect} style="font-family: {cSettings.font ?? 'Inter'}, sans-serif; border-radius: {cSettings.radius ?? 5}px;">
+        {#if processedScoreboard.header && cSettings.show.includes('Header')}
             <div class="header">
-                <TextComponent fontSize={14} allowPreformatting={true} textComponent={scoreboard.header}/>
+                <TextComponent fontSize={14} allowPreformatting={true} textComponent={processedScoreboard.header}/>
             </div>
         {/if}
         <div class="entries">
-            {#each scoreboard.entries as {name, score}}
+            {#each processedScoreboard.entries as {name, score}}
                 <div class="row">
                     {#if cSettings.show.includes('Name')}
                         <TextComponent fontSize={14} allowPreformatting={true} textComponent={name}/>
                     {/if}
-                    {#if cSettings.show.includes('Score')}
+                    {#if cSettings.number !== false && cSettings.show.includes('Score')}
                         <TextComponent fontSize={14} allowPreformatting={true} textComponent={score}/>
                     {/if}
                 </div>
@@ -63,4 +85,6 @@
     background-color: var(--scoreboard-header-background-color);
     padding: 7px 10px;
   }
+  .with-shadow { text-shadow: 0 1px 3px #000; }
+  .without-rect .entries { background: transparent; }
 </style>

@@ -6,7 +6,9 @@
 
     export let settings: { [name: string]: any };
 
-    const cSettings = settings as HudBlockCounterSettings;
+    let cSettings: HudBlockCounterSettings;
+
+    $: cSettings = settings as HudBlockCounterSettings;
 
     let nextBlock: string | undefined = undefined;
     let count: number | undefined = undefined;
@@ -26,7 +28,7 @@
 </script>
 
 {#if count !== undefined}
-    <div class="counter" style="color: {mapToColor(count)}; flex-direction: {FLEX_DIRECTION[cSettings.iconPosition]}" in:fly={{ y: -5, duration: 200 }}
+    <div class="counter" class:text-shadow={cSettings.shadowText} style="color: {cSettings.textColor !== undefined ? `rgba(${(cSettings.textColor >> 16) & 255},${(cSettings.textColor >> 8) & 255},${cSettings.textColor & 255},${((cSettings.textColor >>> 24) & 255) / 255})` : mapToColor(count)}; flex-direction: {FLEX_DIRECTION[cSettings.iconPosition]}; font-family: {cSettings.font ?? 'Inter'}, sans-serif; border-radius: {cSettings.radius ?? 5}px" in:fly={{ y: -5, duration: 200 }}
          out:fly={{ y: -5, duration: 200 }}>
         {#if nextBlock && cSettings.iconPosition !== "None"}
             <img class="icon" src={itemTextureUrl(nextBlock)} alt={nextBlock}/>
@@ -56,4 +58,5 @@
     width: 24px;
     height: 24px;
   }
+  .text-shadow { text-shadow: 0 1px 3px #000; }
 </style>

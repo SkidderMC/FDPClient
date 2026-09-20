@@ -20,6 +20,7 @@ import org.lwjgl.opengl.GL11
 class NextGenClickGuiScreen(
     private val virtualRoute: String = "clickgui",
     private val nativeFallback: GuiScreen? = null,
+    private val openHudEditor: Boolean = false,
 ) : GuiScreen() {
 
     private var currentUrl = ""
@@ -36,10 +37,12 @@ class NextGenClickGuiScreen(
 
     override fun initGui() {
         Keyboard.enableRepeatEvents(true)
+        if (virtualRoute == "clickgui") NextGenHudComponentManager.setHudEditorSelected(false)
         pressedButtonMask = 0
         focusApplied = false
         NextGenClickGuiServer.start()
-        currentUrl = ThemeManager.url(virtualRoute)
+        currentUrl = ThemeManager.url(virtualRoute) +
+            if (virtualRoute == "clickgui" && openHudEditor) "?tab=hud-editor" else ""
         ThemeManager.open(virtualRoute)
         layoutButtons()
 
@@ -278,6 +281,7 @@ class NextGenClickGuiScreen(
     }
 
     override fun onGuiClosed() {
+        if (virtualRoute == "clickgui") NextGenHudComponentManager.setHudEditorSelected(false)
         ThemeManager.close(virtualRoute)
         NextGenBrowserRuntime.detach()
         Keyboard.enableRepeatEvents(false)

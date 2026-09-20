@@ -8,6 +8,8 @@
     import TextComponent from "../../../menu/common/TextComponent.svelte";
     import type {ClientPlayerDataEvent, OverlayMessageEvent} from "../../../../integration/events";
 
+    export let settings: { [name: string]: any } = {};
+
     let lastSlot = 0;
     let currentSlot = 0;
     let playerData: PlayerData | null = null;
@@ -71,12 +73,12 @@
                 <TextComponent fontSize={14} textComponent={overlayMessage.text} allowPreformatting={true} />
             </div>
         {/if}
-        {#if showItemStackName && itemStackName !== null}
+        {#if settings.showItemName !== false && showItemStackName && itemStackName !== null}
             <div class="item-name" out:fade={{duration: 200}}>
                 <TextComponent fontSize={14} textComponent={itemStackName}/>
             </div>
         {/if}
-        <div class="status">
+        {#if settings.showStatus !== false}<div class="status">
 
             <div class="pair">
                 {#if playerData.armor > 0}
@@ -142,11 +144,11 @@
                 />
             {/if}
 
-        </div>
+        </div>{/if}
 
         <div class="hotbar-elements">
-            <div class="slider" style="left: {currentSlot * 45}px"></div>
-            <div class="slots" bind:this={slotsElement}>
+            <div class="slider" class:smooth={settings.smoothHotbarSlot} style="left: {currentSlot * (settings.slotSize ?? 45)}px; --slot-size: {settings.slotSize ?? 45}px"></div>
+            <div class="slots" bind:this={slotsElement} style="--slot-size: {settings.slotSize ?? 45}px">
                 <div class="slot"></div>
                 <div class="slot"></div>
                 <div class="slot"></div>
@@ -189,8 +191,8 @@
 
     .slider {
       border: solid 2px var(--hotbar-slot-border-color);
-      height: 45px;
-      width: 45px;
+      height: var(--slot-size, 45px);
+      width: var(--slot-size, 45px);
       position: absolute;
       border-radius: 5px;
       /* transition: linear left 0.05s; TODO: Animation is possible but annoying */
@@ -201,10 +203,11 @@
     }
 
     .slot {
-      height: 45px;
-      width: 45px;
+      height: var(--slot-size, 45px);
+      width: var(--slot-size, 45px);
     }
   }
+  .slider.smooth { transition: left 80ms ease-out; }
 
   .offhand-slot {
     height: 45px;

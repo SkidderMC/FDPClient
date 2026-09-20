@@ -25,7 +25,7 @@ import net.ccbluex.liquidbounce.ui.client.gui.GuiUpdate
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.font.fontmanager.api.FontRenderer
 import net.ccbluex.liquidbounce.ui.font.fontmanager.GuiFontManager
-import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
+import net.ccbluex.liquidbounce.features.module.modules.client.HudDesigner
 import net.ccbluex.liquidbounce.ui.client.keybind.KeyBindManager
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.GlStateManager
@@ -187,7 +187,7 @@ class NeverloseGui : GuiScreen() {
 
         val headerIcons = listOf(
             HeaderIcon("GitHub", "G") { MiscUtils.showURL(CLIENT_GITHUB) },
-            HeaderIcon("Edit", "E") { mc.displayGuiScreen(GuiHudDesigner()) },
+            HeaderIcon("Edit", "E") { HudDesigner.openSelected() },
             HeaderIcon("Viewer", "V") {
                 viewerOpen = !viewerOpen
                 if (viewerOpen) {

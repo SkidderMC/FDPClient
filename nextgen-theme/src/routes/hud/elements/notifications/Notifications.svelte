@@ -5,6 +5,8 @@
     import Notification from "./Notification.svelte";
     import type {NotificationEvent} from "../../../../integration/events";
 
+    export let settings: { [name: string]: any } = {};
+
     interface TNotification {
         animationKey: number;
         id: number;
@@ -39,7 +41,7 @@
         
         setTimeout(() => {
             notifications = notifications.filter((n) => n.id !== id);
-        }, 3000);
+        }, settings.duration ?? 3000);
     }
 
     listen("notification", (e: NotificationEvent) => {
@@ -47,7 +49,7 @@
     });
 </script>
 
-<div class="notifications">
+<div class="notifications" class:align-left={settings.position === "Left"} style="--notification-background-color: {settings.background === 'None' ? 'transparent' : 'var(--effects-background-color)'}">
     {#each notifications as {title, message, severity, animationKey} (animationKey)}
         <div
                 animate:flip={{ duration: 200 }}
@@ -58,3 +60,8 @@
         </div>
     {/each}
 </div>
+
+<style>
+  .notifications { display: flex; flex-direction: column; align-items: flex-end; }
+  .align-left { align-items: flex-start; }
+</style>

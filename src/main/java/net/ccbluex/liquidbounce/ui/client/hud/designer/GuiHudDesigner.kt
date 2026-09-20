@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.ui.client.hud.designer
 
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColor
+import net.ccbluex.liquidbounce.features.module.modules.client.HudDesigner
 import net.ccbluex.liquidbounce.file.FileManager.hudConfig
 import net.ccbluex.liquidbounce.file.FileManager.saveConfig
 import net.ccbluex.liquidbounce.ui.client.hud.HUD
@@ -13,12 +14,17 @@ import net.ccbluex.liquidbounce.ui.client.hud.designer.EditorPanel.ElementEditab
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.utils.render.RenderEffects.drawBloom
 import net.minecraft.client.gui.GuiScreen
+import net.minecraft.client.gui.GuiButton
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
 import java.awt.Color
 import kotlin.math.min
 
 class GuiHudDesigner : GuiScreen() {
+
+    private companion object {
+        const val MODERN_HUD_BUTTON = 1337
+    }
 
     private var editorPanel = EditorPanel(this, 2, 2)
 
@@ -36,6 +42,7 @@ class GuiHudDesigner : GuiScreen() {
     override fun initGui() {
         Keyboard.enableRepeatEvents(true)
         editorPanel = EditorPanel(this, width / 2, height / 2)
+        buttonList.add(GuiButton(MODERN_HUD_BUTTON, width - 132, 8, 124, 20, "Modern HUD"))
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
@@ -48,6 +55,7 @@ class GuiHudDesigner : GuiScreen() {
         val wheel = Mouse.getDWheel()
 
         editorPanel.drawPanel(mouseX, mouseY, wheel)
+        super.drawScreen(mouseX, mouseY, partialTicks)
 
         if (wheel != 0) {
             for (element in HUD.elements) {
@@ -63,6 +71,12 @@ class GuiHudDesigner : GuiScreen() {
         }
 
         drawBloom(mouseX - 5, mouseY - 5, 10, 10, 16, Color(guiColor))
+    }
+
+    override fun actionPerformed(button: GuiButton) {
+        if (button.id == MODERN_HUD_BUTTON) {
+            HudDesigner.openModern()
+        }
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {

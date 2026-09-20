@@ -1,5 +1,6 @@
 {
   "name": "Watermark",
+  "description": "Displays FDP branding, player, performance, server and world information.",
   "enabled": true,
   "singleton": true,
   "alignment": {
@@ -7,5 +8,26 @@
     "horizontalOffset": 15,
     "verticalAlignment": "Top",
     "verticalOffset": 15
-  }
+  },
+  "values": [
+    { "type": "CHOOSE", "name": "Style", "value": "Chips", "choices": ["Chips", "Compact", "Panel"] },
+    { "type": "BOOLEAN", "name": "Show Logo", "value": true },
+    { "type": "BOOLEAN", "name": "Show Player Name", "value": true },
+    { "type": "BOOLEAN", "name": "Show FPS", "value": false },
+    { "type": "BOOLEAN", "name": "Show Position", "value": true },
+    { "type": "BOOLEAN", "name": "Show Ping", "value": true },
+    { "type": "BOOLEAN", "name": "Show TPS", "value": true },
+    { "type": "BOOLEAN", "name": "Show BPS", "value": true },
+    { "type": "BOOLEAN", "name": "Show Anticheat", "value": true },
+    { "type": "BOOLEAN", "name": "Show Online", "value": true },
+    { "type": "BOOLEAN", "name": "Show Biome + Light", "value": true },
+    { "type": "BOOLEAN", "name": "Show Dimension", "value": true },
+    { "type": "COLOR", "name": "Accent Color", "value": 4278239231 },
+    { "type": "COLOR", "name": "Background Color", "value": 2853180704 },
+    { "type": "COLOR", "name": "Text Color", "value": 4294967295 },
+    { "type": "INT", "name": "Radius", "value": 7, "range": { "min": 0, "max": 20 }, "suffix": "px" },
+    { "type": "INT", "name": "Font Size", "value": 13, "range": { "min": 8, "max": 24 }, "suffix": "px" },
+    { "type": "BOOLEAN", "name": "Shadow", "value": true },
+    { "type": "BOOLEAN", "name": "Blur", "value": true }
+  ]
 }

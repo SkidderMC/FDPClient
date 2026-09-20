@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.features.module.modules.client.SpotifyModule
 import net.ccbluex.liquidbounce.ui.client.clickgui.sidegui.SideGui
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.round.RoundedUtil
 import net.ccbluex.liquidbounce.ui.client.gui.GuiUpdate
-import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
+import net.ccbluex.liquidbounce.features.module.modules.client.HudDesigner
 import net.ccbluex.liquidbounce.ui.client.keybind.KeyBindManager
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.font.fontmanager.GuiFontManager
@@ -76,7 +76,7 @@ object ClickGuiHeader : MinecraftInstance {
     }
 
     private fun action(name: String, sideGui: SideGui, parent: GuiScreen): () -> Unit = when (name) {
-        "HUD Designer" -> { { mc.displayGuiScreen(GuiHudDesigner()) } }
+        "HUD Designer" -> { { HudDesigner.openSelected() } }
         "Theme & Colors" -> { { sideGui.openCategory("Color") } }
         "Spotify" -> { { SpotifyModule.openPlayerScreen() } }
         "Font Manager" -> { { mc.displayGuiScreen(GuiFontManager(parent)) } }

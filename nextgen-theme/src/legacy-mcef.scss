@@ -48,6 +48,39 @@ body,
     background-color: transparent !important;
 }
 
+@supports not (color: color-mix(in srgb, red 50%, blue)) {
+    :root {
+        --clickgui-hud-editor-grid-color: rgba(128, 128, 128, 0.25);
+        --clickgui-hud-editor-anchor-zone-border-color: rgba(255, 255, 255, 0.15);
+        --clickgui-hud-editor-anchor-zone-background-color: rgba(255, 255, 255, 0.03);
+        --clickgui-hud-editor-anchor-zone-active-border-color: var(--accent-color, #4677ff);
+        --clickgui-hud-editor-anchor-zone-active-background-color: rgba(70, 119, 255, 0.18);
+        --clickgui-hud-editor-anchor-point-color: #d3d3d3;
+        --clickgui-hud-editor-anchor-point-active-color: var(--accent-color, #4677ff);
+        --clickgui-hud-editor-anchor-point-active-ring-color: var(--accent-color, #4677ff);
+        --clickgui-hud-editor-anchor-point-active-shadow-color: rgba(70, 119, 255, 0.75);
+        --clickgui-hud-editor-magnetic-guide-color: var(--accent-color, #4677ff);
+        --clickgui-hud-editor-magnetic-guide-shadow-color: rgba(70, 119, 255, 0.70);
+        --clickgui-hud-editor-magnetic-reference-background-color: rgba(70, 119, 255, 0.55);
+        --clickgui-hud-editor-draggable-element-outline-color: var(--accent-color, #4677ff);
+        --clickgui-hud-editor-draggable-element-background-color: rgba(70, 119, 255, 0.30);
+        --clickgui-hud-editor-draggable-element-position-outline-color: var(--accent-color, #4677ff);
+        --clickgui-hud-editor-draggable-element-position-background-color: rgba(70, 119, 255, 0.30);
+        --clickgui-hud-editor-component-settings-background-color: rgba(0, 0, 0, 0.80);
+        --clickgui-hud-editor-component-settings-shadow-color: rgba(0, 0, 0, 0.50);
+        --clickgui-hud-editor-drawer-toggle-button-background-color: var(--accent-color, #4677ff);
+        --clickgui-hud-editor-drawer-toggle-button-color: #ffffff;
+        --clickgui-hud-editor-drawer-background-color: rgba(0, 0, 0, 0.80);
+        --clickgui-hud-editor-drawer-shadow-color: rgba(0, 0, 0, 0.50);
+        --clickgui-hud-editor-drawer-component-background-color: rgba(0, 0, 0, 0.85);
+        --clickgui-hud-editor-drawer-component-border-color: rgba(0, 0, 0, 0.85);
+        --clickgui-hud-editor-drawer-component-hover-background-color: rgba(70, 119, 255, 0.12);
+        --clickgui-hud-editor-drawer-component-hover-border-color: var(--accent-color, #4677ff);
+        --clickgui-hud-editor-drawer-component-name-color: #ffffff;
+        --clickgui-hud-editor-drawer-component-description-color: #d3d3d3;
+    }
+}
+
 .tabbed-clickgui.grid {
     background-image:
         linear-gradient(to right, rgba(128, 128, 128, 0.25) 1px, transparent 1px),

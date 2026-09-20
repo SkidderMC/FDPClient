@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element.Companion.MAX_GRADIENT_COLORS
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nextgen.NextGenBrowserRuntime
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nextgen.NextGenClickGuiScreen
 import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils
 import net.ccbluex.liquidbounce.utils.client.ServerObserver
 import net.ccbluex.liquidbounce.utils.render.*
@@ -22,8 +23,11 @@ import java.awt.Color
 
 object HUDModule : Module("HUD", Category.CLIENT, Category.SubCategory.CLIENT_GENERAL) {
 
-    private val renderer by choices("Renderer", arrayOf("Native", "Web", "Both"), "Native")
-        .describe("Select the native HUD, the live browser HUD, or both renderers.")
+    var elements by choices("Elements", arrayOf("Legacy", "Modern"), "Legacy")
+        .describe("Choose between the classic FDP HUD elements and the modern web HUD.")
+
+    val modernElements: Boolean
+        get() = elements == "Modern"
 
     val customHotbar by boolean("CustomHotbar", true)
         .describe("Replace the vanilla hotbar with a custom one.")
@@ -98,17 +102,23 @@ object HUDModule : Module("HUD", Category.CLIENT, Category.SubCategory.CLIENT_GE
         if (mc.currentScreen is GuiHudDesigner)
             return@handler
 
-        if (renderer != "Web") hud.render(false)
-        if (renderer != "Native") NextGenBrowserRuntime.renderHudOverlay()
+        if (!modernElements) {
+            hud.render(false)
+        } else if (mc.currentScreen !is NextGenClickGuiScreen) {
+            NextGenBrowserRuntime.renderHudOverlay()
+        }
     }
 
     val onUpdate = handler<UpdateEvent> {
-        if (renderer != "Web") hud.update()
-        NextGenBrowserRuntime.setHudVisible(renderer != "Native" && mc.theWorld != null && mc.thePlayer != null)
+        if (!modernElements) hud.update()
+        NextGenBrowserRuntime.setHudVisible(
+            modernElements && mc.theWorld != null && mc.thePlayer != null &&
+                mc.currentScreen !is NextGenClickGuiScreen
+        )
     }
 
     val onKey = handler<KeyStateEvent> { event ->
-        if (!event.pressed) return@handler
+        if (modernElements || !event.pressed) return@handler
         hud.handleKey('a', event.key)
     }
 
@@ -135,7 +145,7 @@ object HUDModule : Module("HUD", Category.CLIENT, Category.SubCategory.CLIENT_GE
         group("HotbarEffects", "Rainbow-X", "Rainbow-Y", "Gradient-X", "Gradient-Y")
         group("UIEffects", "UIEffect", "ShadowButton", "UIEffectMode")
         group("Screen", "Blur", "InventoryParticle")
-        group("Interface", "Renderer", "Bloom Color", "Color")
+        group("Interface", "Elements", "Bloom Color", "Color")
     }
 
     override fun onDisable() {

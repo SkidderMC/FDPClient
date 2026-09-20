@@ -19,6 +19,7 @@ import net.ccbluex.liquidbounce.file.gson.GsonProfiles
 import net.ccbluex.liquidbounce.handler.combat.CombatManager
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.ScaledResolution
 import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
 import java.io.EOFException
@@ -49,6 +50,7 @@ object UiEventSocket : Listenable {
     private var lastInventoryHash = 0
     private var lastBlockCounterHash = 0
     private var lastTargetId: Int? = null
+    private var lastScaleFactor = -1
 
     val port: Int
         @Synchronized get() = serverSocket?.localPort ?: -1
@@ -62,6 +64,7 @@ object UiEventSocket : Listenable {
         lastInventoryHash = 0
         lastBlockCounterHash = 0
         lastTargetId = null
+        lastScaleFactor = -1
         ClientChangeBus.publish(ClientChange.WorldState(event.worldClient != null))
     }
 
@@ -69,6 +72,12 @@ object UiEventSocket : Listenable {
 
     val onUpdate = handler<UpdateEvent>(always = true) {
         if (clients.isEmpty()) return@handler
+
+        val scaleFactor = ScaledResolution(Minecraft.getMinecraft()).scaleFactor
+        if (scaleFactor != lastScaleFactor) {
+            lastScaleFactor = scaleFactor
+            publish("scaleFactorChange", JsonObject().apply { addProperty("scaleFactor", scaleFactor) })
+        }
 
         updateCounter++
         if (updateCounter % 2 == 0 && Minecraft.getMinecraft().thePlayer != null) {
@@ -111,9 +120,18 @@ object UiEventSocket : Listenable {
 
     val onKey = handler<KeyStateEvent>(always = true) { event ->
         if (clients.isEmpty()) return@handler
+        val key = NextGenClickGuiBridge.minecraftKey(event.key)
         publish("key", JsonObject().apply {
-            addProperty("key", NextGenClickGuiBridge.minecraftKey(event.key))
+            addProperty("key", key)
             addProperty("action", if (event.pressed) 1 else 0)
+        })
+        publish("keyboardKey", JsonObject().apply {
+            addProperty("keyCode", event.key)
+            addProperty("scanCode", 0)
+            addProperty("action", if (event.pressed) 1 else 0)
+            addProperty("mods", 0)
+            addProperty("key", key)
+            add("screen", JsonNull.INSTANCE)
         })
     }
 

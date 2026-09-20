@@ -5,10 +5,10 @@
  */
 package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nextgen
 
+import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpServer
-import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import java.io.File
 import java.net.InetSocketAddress
@@ -19,6 +19,7 @@ import java.util.concurrent.Executors
 object NextGenClickGuiServer {
 
     private const val RESOURCE_ROOT = "/assets/minecraft/fdpclient/nextgen-clickgui"
+    private val json = GsonBuilder().setPrettyPrinting().create()
 
     private var server: HttpServer? = null
     private var executor: ExecutorService? = null
@@ -97,6 +98,12 @@ object NextGenClickGuiServer {
     private fun handleApi(exchange: HttpExchange) {
         val method = exchange.requestMethod.uppercase()
         val path = exchange.requestURI.path.removePrefix("/api/v1")
+        val componentSegments = path.takeIf { it.startsWith("/client/components/") }
+            ?.removePrefix("/client/components/")
+            ?.split('/')
+            ?.filter(String::isNotBlank)
+            ?.map(::decode)
+            .orEmpty()
 
         when {
             method == "GET" && path == "/client/modules" ->
@@ -128,6 +135,9 @@ object NextGenClickGuiServer {
 
             method == "GET" && path == "/client/window" ->
                 sendJson(exchange, NextGenClickGuiBridge.gameWindow())
+
+            method == "PUT" && path == "/client/hud-editor" ->
+                sendMutationResult(exchange, NextGenHudComponentManager.setHudEditorSelected(exchange.bodyText()))
 
             method == "GET" && path.startsWith("/client/theme/") ->
                 sendJson(exchange, NextGenClickGuiBridge.theme(decode(path.removePrefix("/client/theme/"))))
@@ -177,17 +187,53 @@ object NextGenClickGuiServer {
             method == "GET" && path == "/client/session" ->
                 sendJson(exchange, NextGenHudBridge.session())
 
+            method == "GET" && path.startsWith("/client/registry/") ->
+                sendJson(exchange, NextGenHudBridge.registry(decode(path.removePrefix("/client/registry/"))))
+
             method == "GET" && path == "/client/components" ->
                 sendJson(exchange, NextGenHudBridge.components(null))
 
-            method == "GET" && path.startsWith("/client/components/") ->
-                sendJson(exchange, NextGenHudBridge.components(decode(path.removePrefix("/client/components/"))))
+            method == "GET" && path == "/client/components/native" ->
+                sendJson(exchange, NextGenHudBridge.nativeComponents())
+
+            method == "GET" && componentSegments.size == 2 && componentSegments[1] == "catalog" ->
+                sendJson(exchange, NextGenHudBridge.componentCatalog(componentSegments[0]))
+
+            method == "POST" && componentSegments.size == 2 && componentSegments[1] == "alignment" ->
+                sendMutationResult(
+                    exchange,
+                    NextGenHudComponentManager.updateAlignment(componentSegments[0], exchange.bodyText())
+                )
+
+            method == "GET" && componentSegments.size == 2 && componentSegments[1] == "settings" -> {
+                val settings = NextGenHudComponentManager.componentSettings(componentSegments[0])
+                if (settings == null) {
+                    sendJson(exchange, JsonObject().apply { addProperty("error", "HUD component not found") }, 404)
+                } else {
+                    sendJson(exchange, settings)
+                }
+            }
+
+            method == "PUT" && componentSegments.size == 2 && componentSegments[1] == "settings" ->
+                sendMutationResult(
+                    exchange,
+                    NextGenHudComponentManager.updateSettings(componentSegments[0], exchange.bodyText())
+                )
+
+            method == "POST" && componentSegments.size == 1 && path != "/client/components/native" ->
+                sendMutationResult(exchange, NextGenHudComponentManager.addComponent(componentSegments[0]))
+
+            method == "GET" && componentSegments.size == 1 ->
+                sendJson(exchange, NextGenHudBridge.components(componentSegments[0]))
 
             method == "GET" && path == "/client/resource/itemTexture" ->
                 sendPng(exchange, NextGenHudBridge.itemTexture(query(exchange, "id") ?: "minecraft:air"))
 
             method == "GET" && path == "/client/resource/effectTexture" ->
                 sendPng(exchange, NextGenHudBridge.effectTexture(query(exchange, "id") ?: ""))
+
+            method == "GET" && path == "/client/resource/skin" ->
+                sendPng(exchange, NextGenHudBridge.skin(query(exchange, "uuid") ?: ""))
 
             method == "GET" && path == "/client/spotify" ->
                 sendJson(exchange, NextGenClickGuiBridge.spotifyNowPlaying())
@@ -440,7 +486,7 @@ object NextGenClickGuiServer {
     private fun HttpExchange.bodyText(): String = requestBody.bufferedReader(Charsets.UTF_8).use { it.readText() }
 
     private fun sendJson(exchange: HttpExchange, body: Any, status: Int = 200) {
-        val bytes = FileManager.PRETTY_GSON.toJson(body).toByteArray(Charsets.UTF_8)
+        val bytes = json.toJson(body).toByteArray(Charsets.UTF_8)
         exchange.responseHeaders.set("Content-Type", "application/json; charset=utf-8")
         exchange.sendResponseHeaders(status, bytes.size.toLong())
         exchange.responseBody.use { it.write(bytes) }
@@ -448,6 +494,30 @@ object NextGenClickGuiServer {
 
     private fun sendNoContent(exchange: HttpExchange) {
         exchange.sendResponseHeaders(204, -1)
+    }
+
+    private fun sendMutationResult(
+        exchange: HttpExchange,
+        result: NextGenHudComponentManager.MutationResult,
+    ) {
+        when (result) {
+            NextGenHudComponentManager.MutationResult.UPDATED -> sendNoContent(exchange)
+            NextGenHudComponentManager.MutationResult.NOT_FOUND -> sendJson(
+                exchange,
+                JsonObject().apply { addProperty("error", "HUD component not found") },
+                404,
+            )
+            NextGenHudComponentManager.MutationResult.CONFLICT -> sendJson(
+                exchange,
+                JsonObject().apply { addProperty("error", "HUD component cannot be added") },
+                409,
+            )
+            NextGenHudComponentManager.MutationResult.INVALID -> sendJson(
+                exchange,
+                JsonObject().apply { addProperty("error", "Invalid HUD component payload") },
+                400,
+            )
+        }
     }
 
     private fun sendPng(exchange: HttpExchange, bytes: ByteArray) {

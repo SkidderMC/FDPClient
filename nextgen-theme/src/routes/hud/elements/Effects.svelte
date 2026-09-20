@@ -4,6 +4,8 @@
     import type {StatusEffect} from "../../../integration/types";
     import {effectTextureUrl} from "../../../integration/rest";
 
+    export let settings: { [name: string]: any } = {};
+
     let effects: StatusEffect[] = [];
 
     listen("clientPlayerData", (event: ClientPlayerDataEvent) => {
@@ -32,13 +34,20 @@
 </script>
 
 {#if effects.length > 0}
-    <div class="effects">
+    <div class="effects mode-{String(settings.mode ?? 'FDP').toLowerCase()}" style="font-family: {settings.font ?? 'Inter'}, sans-serif; text-align: {String(settings.titleAlign ?? 'Left').toLowerCase()};">
         {#each effects as e}
             <div class="effect">
+                {#if settings.icon !== false}
                 <img class="effect-icon" src={effectTextureUrl(e.effect)} alt={e.localizedName}/>
+                {/if}
+                {#if settings.name !== false}
                 <span class="name">{e.localizedName}  <span
                         class="amplifier">{formatAmplifier(e.amplifier)}</span></span>
+                {/if}
                 <span class="duration">{formatTime(e.duration)}</span>
+                {#if settings.durationBar !== false && e.duration > 0}
+                    <span class="duration-bar" style="--duration-progress: {Math.min(100, e.duration / 12)}%"></span>
+                {/if}
             </div>
         {/each}
     </div>
@@ -56,6 +65,7 @@
   }
 
   .effect {
+    position: relative;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -85,4 +95,7 @@
       font-size: 12px;
     }
   }
+  .duration-bar { position: absolute; left: 0; bottom: -2px; width: var(--duration-progress); height: 1px; background: var(--accent-color); }
+  .mode-compact .effect-icon { display: none; }
+  .mode-classic { border-radius: 0; }
 </style>

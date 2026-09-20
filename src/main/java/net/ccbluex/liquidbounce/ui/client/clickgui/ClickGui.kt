@@ -24,7 +24,7 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.elements.ModuleElement
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.Style
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.BlackStyle
 import net.ccbluex.liquidbounce.ui.client.hud.HUD
-import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
+import net.ccbluex.liquidbounce.features.module.modules.client.HudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
@@ -221,7 +221,7 @@ object ClickGui : GuiScreen() {
         if (search.mouseClicked(x, y, mouseButton)) return
 
         if (mouseButton == 0 && x in 5..50 && y in height - 50..height - 5) {
-            mc.displayGuiScreen(GuiHudDesigner())
+            HudDesigner.openSelected()
             return
         }
 

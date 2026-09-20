@@ -22,6 +22,7 @@ export interface Module {
     category: string;
     keyBind: InputBind;
     enabled: boolean;
+    active?: boolean;
     description: string;
     hidden: boolean;
     aliases: string[];
@@ -219,9 +220,19 @@ export interface Scoreboard {
 export interface PlayerData {
     username: string;
     uuid: string;
+    isPlayer?: boolean;
     position: Vec3;
     blockPosition: Vec3;
     velocity: Vec3;
+    fps?: number;
+    ping?: number;
+    tps?: number;
+    bps?: number;
+    onlinePlayers?: number;
+    biome?: string;
+    light?: number;
+    dimension?: string;
+    anticheat?: string;
     selectedSlot: number;
     gameMode: string;
     health: number,
@@ -395,8 +406,19 @@ export interface Theme {
 
 export interface HudComponent {
     name: string;
+    description: string;
     id: string;
     settings: { [name: string]: any };
+    width?: number;
+    height?: number;
+}
+
+export interface HudComponentCatalogEntry {
+    name: string;
+    description: string;
+    id: string;
+    singleton: boolean;
+    canAdd: boolean;
 }
 
 export interface Alignment {

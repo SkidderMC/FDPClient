@@ -48,6 +48,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleBindAction
 import net.ccbluex.liquidbounce.features.module.ModuleBindModifier
 import net.ccbluex.liquidbounce.features.module.ModuleManager
 import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule
+import net.ccbluex.liquidbounce.features.module.modules.client.HudDesigner
 import net.ccbluex.liquidbounce.features.module.modules.client.SpotifyModule
 import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.file.SettingsFiles
@@ -55,7 +56,6 @@ import net.ccbluex.liquidbounce.ui.client.gui.GuiUpdate
 import net.ccbluex.liquidbounce.ui.client.hud.HUD
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
-import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.keybind.KeyBindManager
 import net.ccbluex.liquidbounce.ui.font.fontmanager.GuiFontManager
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
@@ -260,7 +260,9 @@ object NextGenClickGuiBridge : MinecraftInstance {
 
         runOnMinecraftThread {
             when (action) {
-                "hud-designer" -> mc.displayGuiScreen(GuiHudDesigner())
+                "hud-designer" -> HudDesigner.openSelected()
+                "legacy-hud-designer" -> HudDesigner.openLegacy()
+                "modern-hud-designer" -> HudDesigner.openModern()
                 "spotify-player" -> SpotifyModule.openPlayerScreen()
                 "spotify-settings" -> SpotifyModule.openConfigScreen()
                 "spotify-connect" -> SpotifyModule.connectWebApi()
@@ -405,6 +407,7 @@ object NextGenClickGuiBridge : MinecraftInstance {
         addProperty("category", categoryName(module.category))
         add("keyBind", inputBind(module))
         addProperty("enabled", module.state)
+        addProperty("active", module.handleEvents())
         addProperty("description", description)
         addProperty("hidden", module.isHidden)
         add("aliases", JsonArray().apply {

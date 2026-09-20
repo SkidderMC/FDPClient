@@ -120,6 +120,8 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
     private var hudUrl = ""
     private var hudTextureFrames = 0
     private var lastHudTextureId = 0
+    private var lastHudResizeWidth = 0
+    private var lastHudResizeHeight = 0
 
     private val onGameLoop = handler<GameLoopEvent>(always = true, priority = Byte.MIN_VALUE) {
         tickPersistentBrowser()
@@ -792,6 +794,7 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
     fun renderHudOverlay(): Boolean {
         if (!hudRequested || state != State.READY || mc.currentScreen != null) return false
         val browser = hudBrowser ?: return false
+        if (runCatching { browser.isPageLoading }.getOrDefault(true)) return false
         val textureId = runCatching { browser.getTextureID() }.getOrDefault(0)
         if (textureId <= 0 || hudTextureFrames < BROWSER_WARMUP_FRAMES) return false
 
@@ -853,11 +856,13 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
         if (!hudRequested || state != State.READY) return
         ensureHudBrowser()
         val browser = hudBrowser ?: return
-        if (lastResizeWidth != mc.displayWidth || lastResizeHeight != mc.displayHeight) {
-            lastResizeWidth = mc.displayWidth
-            lastResizeHeight = mc.displayHeight
+        if (lastHudResizeWidth != mc.displayWidth || lastHudResizeHeight != mc.displayHeight) {
+            lastHudResizeWidth = mc.displayWidth
+            lastHudResizeHeight = mc.displayHeight
+            hudTextureFrames = 0
+            runCatching { browser.resize(mc.displayWidth, mc.displayHeight) }
+                .onFailure { LOGGER.error("[NextGen] Web HUD resize failed", it) }
         }
-        runCatching { browser.resize(mc.displayWidth, mc.displayHeight) }
 
         val textureId = runCatching { browser.getTextureID() }.getOrDefault(0)
         if (textureId <= 0) return
@@ -872,7 +877,11 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
         if (hudBrowser != null || hudUrl.isBlank()) return
         val api = readyApi() ?: return
         hudBrowser = runCatching {
-            api.createBrowser(hudUrl, true).also { it.resize(mc.displayWidth, mc.displayHeight) }
+            api.createBrowser(hudUrl, true).also {
+                lastHudResizeWidth = mc.displayWidth
+                lastHudResizeHeight = mc.displayHeight
+                it.resize(lastHudResizeWidth, lastHudResizeHeight)
+            }
         }.getOrElse {
             LOGGER.error("[NextGen] Could not create the web HUD browser", it)
             null
@@ -966,6 +975,8 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
         hudBrowser = null
         hudTextureFrames = 0
         lastHudTextureId = 0
+        lastHudResizeWidth = 0
+        lastHudResizeHeight = 0
     }
 
     private val REQUIRED_NATIVE_FILES = arrayOf(

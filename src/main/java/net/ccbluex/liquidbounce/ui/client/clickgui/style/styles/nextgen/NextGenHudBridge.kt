@@ -9,9 +9,12 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonNull
 import com.google.gson.JsonObject
-import com.google.gson.JsonParser
 import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule
+import net.ccbluex.liquidbounce.features.module.modules.other.AnticheatDetector
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
+import net.minecraft.client.entity.AbstractClientPlayer
+import net.minecraft.client.resources.DefaultPlayerSkin
 import net.minecraft.client.resources.I18n
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.enchantment.EnchantmentHelper
@@ -24,16 +27,17 @@ import net.minecraft.potion.Potion
 import net.minecraft.potion.PotionEffect
 import net.minecraft.scoreboard.ScorePlayerTeam
 import net.minecraft.util.MovingObjectPosition
+import net.minecraft.util.BlockPos
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.input.Keyboard
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
+import java.net.URLEncoder
+import java.util.UUID
 import javax.imageio.ImageIO
 
 /** Adapts the live 1.8.9 game state to the browser HUD protocol. */
 object NextGenHudBridge : MinecraftInstance {
-
-    private val parser = JsonParser()
 
     fun playerData(): JsonObject = mc.thePlayer?.let(::playerData) ?: emptyPlayerData()
 
@@ -97,15 +101,31 @@ object NextGenHudBridge : MinecraftInstance {
         addProperty("uuid", session?.playerID ?: "")
     }
 
-    fun components(@Suppress("UNUSED_PARAMETER") themeId: String?): JsonArray = JsonArray().apply {
-        componentNames().forEachIndexed { index, componentName ->
-            val definition = readJson("components/${componentName.lowercase()}.json") ?: return@forEachIndexed
-            add(JsonObject().apply {
-                addProperty("name", definition.get("name")?.asString ?: componentName)
-                addProperty("id", "${componentName.lowercase()}-$index")
-                add("settings", componentSettings(definition))
-            })
-        }
+    fun components(themeId: String?): JsonArray = NextGenHudComponentManager.components(themeId)
+
+    fun nativeComponents(): JsonArray = NextGenHudComponentManager.nativeComponents()
+
+    fun componentCatalog(themeId: String): JsonArray = NextGenHudComponentManager.catalog(themeId)
+
+    fun registry(name: String): JsonObject = JsonObject().apply {
+        if (!name.equals("item", true) && !name.equals("items", true)) return@apply
+
+        Item.itemRegistry.keys
+            .filterIsInstance<ResourceLocation>()
+            .sortedBy(ResourceLocation::toString)
+            .forEach { identifier ->
+                val item = Item.itemRegistry.getObject(identifier) ?: return@forEach
+                val displayName = runCatching { ItemStack(item).displayName }
+                    .getOrDefault(identifier.toString())
+                add(identifier.toString(), JsonObject().apply {
+                    addProperty("name", displayName)
+                    addProperty(
+                        "icon",
+                        "/api/v1/client/resource/itemTexture?id=" +
+                            URLEncoder.encode(identifier.toString(), Charsets.UTF_8.name())
+                    )
+                })
+            }
     }
 
     fun blockCounter(): JsonObject {
@@ -150,6 +170,28 @@ object NextGenHudBridge : MinecraftInstance {
         return atlas.getSubimage(x, y, 18, 18).toPng()
     }
 
+    fun skin(uuidText: String): ByteArray {
+        val uuid = runCatching { UUID.fromString(uuidText) }.getOrNull()
+            ?: return defaultSkin(null)
+        val player = mc.theWorld?.playerEntities
+            ?.filterIsInstance<AbstractClientPlayer>()
+            ?.firstOrNull { it.uniqueID == uuid }
+        val locations = listOfNotNull(player?.locationSkin, DefaultPlayerSkin.getDefaultSkin(uuid)).distinct()
+
+        for (location in locations) {
+            val texture = runCatching { mc.textureManager.getTexture(location) }.getOrNull()
+            val cachedImage = texture?.let(::findBufferedImage)
+            if (cachedImage != null) return cachedImage.toPng()
+
+            val resourceImage = runCatching {
+                mc.resourceManager.getResource(location).inputStream.use(ImageIO::read)
+            }.getOrNull()
+            if (resourceImage != null) return resourceImage.toPng()
+        }
+
+        return defaultSkin(uuid)
+    }
+
     fun resource(identifier: String): ByteArray = runCatching {
         val location = net.minecraft.util.ResourceLocation(identifier)
         mc.resourceManager.getResource(location).inputStream.use { it.readBytes() }
@@ -167,11 +209,37 @@ object NextGenHudBridge : MinecraftInstance {
         add("offHandStack", itemStack(null))
         add("armorItems", stacks(player.inventory.armorInventory.asIterable()))
         add("scoreboard", if (player === mc.thePlayer) scoreboard() else JsonNull.INSTANCE)
+        if (player === mc.thePlayer) addHudStatistics(this, player)
+    }
+
+    private fun addHudStatistics(target: JsonObject, player: EntityPlayer) {
+        val blockPos = BlockPos(player.posX, player.posY, player.posZ)
+        val dimensionId = mc.theWorld?.provider?.dimensionId ?: 0
+        val dimension = when (dimensionId) {
+            -1 -> "Nether"
+            0 -> "Overworld"
+            1 -> "End"
+            else -> "Dim $dimensionId"
+        }
+        target.addProperty("fps", net.minecraft.client.Minecraft.getDebugFPS())
+        target.addProperty("ping", runCatching {
+            mc.netHandler?.getPlayerInfo(player.uniqueID)?.responseTime ?: 0
+        }.getOrDefault(0))
+        target.addProperty("tps", HUDModule.tps.finite())
+        target.addProperty("bps", (kotlin.math.hypot(player.motionX, player.motionZ) * 20.0).finite())
+        target.addProperty("onlinePlayers", mc.netHandler?.playerInfoMap?.size ?: 1)
+        target.addProperty("biome", runCatching {
+            mc.theWorld?.getBiomeGenForCoords(blockPos)?.biomeName ?: "Unknown"
+        }.getOrDefault("Unknown"))
+        target.addProperty("light", runCatching { mc.theWorld?.getLight(blockPos) ?: 0 }.getOrDefault(0))
+        target.addProperty("dimension", dimension)
+        target.addProperty("anticheat", AnticheatDetector.detectedACName.ifEmpty { "Unknown" })
     }
 
     private fun livingData(entity: EntityLivingBase): JsonObject = JsonObject().apply {
         addProperty("username", entity.name ?: "Entity")
         addProperty("uuid", entity.uniqueID?.toString() ?: "")
+        addProperty("isPlayer", entity is EntityPlayer)
         add("position", vector(entity.posX, entity.posY, entity.posZ))
         add("blockPosition", vector(entity.position.x.toDouble(), entity.position.y.toDouble(), entity.position.z.toDouble()))
         add("velocity", vector(entity.motionX, entity.motionY, entity.motionZ))
@@ -206,6 +274,7 @@ object NextGenHudBridge : MinecraftInstance {
     private fun livingDataFallback(): JsonObject = JsonObject().apply {
         addProperty("username", mc.session?.username ?: "Player")
         addProperty("uuid", mc.session?.playerID ?: "")
+        addProperty("isPlayer", true)
         add("position", vector(0.0, 0.0, 0.0))
         add("blockPosition", vector(0.0, 0.0, 0.0))
         add("velocity", vector(0.0, 0.0, 0.0))
@@ -309,47 +378,6 @@ object NextGenHudBridge : MinecraftInstance {
         }
     }
 
-    private fun componentNames(): List<String> {
-        val metadata = readJson("metadata.json") ?: return emptyList()
-        return metadata.getAsJsonArray("components")?.mapNotNull {
-            runCatching { it.asString }.getOrNull()
-        }.orEmpty()
-    }
-
-    private fun componentSettings(definition: JsonObject): JsonObject = JsonObject().apply {
-        addProperty("enabled", definition.get("enabled")?.asBoolean ?: false)
-        add("alignment", definition.get("alignment")?.let(::copyJson) ?: JsonObject())
-        definition.getAsJsonArray("values")?.forEach { element ->
-            val setting = element.asJsonObject
-            val name = setting.get("name")?.asString ?: return@forEach
-            add(protocolName(name), settingValue(setting))
-        }
-    }
-
-    private fun settingValue(setting: JsonObject): JsonElement {
-        val direct = setting.get("value")?.let(::copyJson)
-        if (direct != null) return direct
-        val nested = setting.getAsJsonArray("values") ?: return JsonNull.INSTANCE
-        return JsonObject().apply {
-            nested.forEach { element ->
-                val child = element.asJsonObject
-                val childName = child.get("name")?.asString ?: return@forEach
-                add(protocolName(childName), settingValue(child))
-            }
-        }
-    }
-
-    private fun protocolName(name: String): String =
-        name.replace("-", "").replace(" ", "").replaceFirstChar { it.lowercase() }
-
-    private fun readJson(path: String): JsonObject? = runCatching {
-        NextGenHudBridge::class.java.getResourceAsStream(
-            "/assets/minecraft/fdpclient/nextgen-clickgui/$path"
-        )?.bufferedReader(Charsets.UTF_8)?.use { parser.parse(it).asJsonObject }
-    }.getOrNull()
-
-    private fun copyJson(element: JsonElement): JsonElement = parser.parse(element.toString())
-
     private fun vector(x: Double, y: Double, z: Double): JsonObject = JsonObject().apply {
         addProperty("x", x.finite())
         addProperty("y", y.finite())
@@ -365,4 +393,29 @@ object NextGenHudBridge : MinecraftInstance {
     }
 
     private fun transparentPng(): ByteArray = BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB).toPng()
+
+    private fun defaultSkin(uuid: UUID?): ByteArray {
+        val location = DefaultPlayerSkin.getDefaultSkin(uuid ?: UUID(0L, 0L))
+        return runCatching {
+            mc.resourceManager.getResource(location).inputStream.use(ImageIO::read).toPng()
+        }.getOrElse { transparentPng() }
+    }
+
+    private fun findBufferedImage(texture: Any): BufferedImage? {
+        var type: Class<*>? = texture.javaClass
+        while (type != null && type != Any::class.java) {
+            val field = type.declaredFields.firstOrNull {
+                BufferedImage::class.java.isAssignableFrom(it.type)
+            }
+            if (field != null) {
+                val image = runCatching {
+                    field.isAccessible = true
+                    field.get(texture) as? BufferedImage
+                }.getOrNull()
+                if (image != null) return image
+            }
+            type = type.superclass
+        }
+        return null
+    }
 }

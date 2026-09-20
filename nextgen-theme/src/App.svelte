@@ -21,6 +21,11 @@
     import Menu from "./routes/menu/common/Menu.svelte";
     import MenuContent from "./routes/menu/common/MenuContent.svelte";
 
+    // The off-screen HUD browser is a permanent overlay. It must never follow
+    // menu/ClickGUI virtual-screen events emitted for the interactive browser.
+    const initialHashRoute = window.location.hash.split("?")[0].replace(/^#/, "");
+    const dedicatedHudOverlay = initialHashRoute === "/hud";
+
     const menuRoutes = {
         "/title": Title,
         "/multiplayer": Multiplayer,
@@ -121,7 +126,7 @@
             }
         });
 
-        if (isStatic) {
+        if (isStatic || dedicatedHudOverlay) {
             return;
         }
 

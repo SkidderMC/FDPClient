@@ -15,7 +15,7 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.sidegui.SideGui
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.category.yzyCategory
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.manager.GUIManager
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.Panel
-import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
+import net.ccbluex.liquidbounce.features.module.modules.client.HudDesigner
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.ccbluex.liquidbounce.utils.render.Pair
 import net.ccbluex.liquidbounce.utils.render.RenderEffects.drawBloom
@@ -197,7 +197,7 @@ class YzYGui(private val clickGui: ClickGUIModule) : GuiScreen() {
             sideGui.mouseClicked(mouseX, mouseY, mouseButton)
 
             if (mouseX in 9 until 41 && mouseY in (height - 41) until height) {
-                mc.displayGuiScreen(GuiHudDesigner())
+                HudDesigner.openSelected()
             }
         } catch (e: Exception) {
             println("Error during mouse click handling: ${e.message}")

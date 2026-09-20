@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.features.module.modules.client
 
 import net.ccbluex.liquidbounce.FDPClient.clickGui
+import net.ccbluex.liquidbounce.config.ToggleableValueGroup
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
@@ -106,6 +107,11 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Category.SubCategory
     ) { style == "NextGen" }
         .describe("Native screens rendered by the active web theme, each with an automatic native fallback.")
 
+    private val snapping = ToggleableValueGroup("Snapping", enabled = true) { style == "NextGen" }.apply {
+        gatedInt("GridSize", 10, 1..100, "px")
+            .describe("Distance between grid snap points in the ClickGUI and HUD editor.")
+    }
+
     // Momentary action: flips on, kicks off a fresh asset download/retry, then bounces back off so it
     // reads like a button. Stays visible after a failure (even from another style) so the in-game
     // browser can always be recovered, and a failed attempt's reason is shown on the NextGen fallback
@@ -141,6 +147,7 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Category.SubCategory
         }
 
     init {
+        addValue(snapping)
         group(
             "General",
             "Style", "Scale", "MaxElements", "FadeSpeed",
@@ -152,7 +159,10 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Category.SubCategory
             "Header Color", "Outline", "RoundedRect-Radius", "Background Accent",
             "Scroll Mode", "Setting Accent", "Tab Height"
         )
-        group("NextGen", "Open In Browser", "Virtual Screens", "Re-download Assets", "Clean Reinstall")
+        group(
+            "NextGen",
+            "Open In Browser", "Virtual Screens", "Snapping", "Re-download Assets", "Clean Reinstall"
+        )
     }
 
     override fun onEnable() {

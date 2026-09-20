@@ -19,7 +19,7 @@ import net.ccbluex.liquidbounce.utils.animations.impl.EaseBackIn
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.normal.Main
 import net.ccbluex.liquidbounce.utils.render.*
 import net.ccbluex.liquidbounce.utils.render.RenderEffects.drawBloom
-import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
+import net.ccbluex.liquidbounce.features.module.modules.client.HudDesigner
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.ScaledResolution
@@ -93,7 +93,7 @@ class FDPDropdownClickGUI : GuiScreen() {
         try {
             assumeNonVolatile {
                 if (Mouse.isButtonDown(0) && mouseX in 5..50 && mouseY in (height - 50)..(height - 5)) {
-                    mc.displayGuiScreen(GuiHudDesigner())
+                    HudDesigner.openSelected()
                 }
                 RenderUtils.drawImage(hudIcon, 9, height - 41, 32, 32)
                 if (openingAnimation.isDone && openingAnimation.direction == Direction.BACKWARDS) {

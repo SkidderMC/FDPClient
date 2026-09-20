@@ -35,10 +35,21 @@ interface HudInventoryStatisticsSettings {
 
 interface HudBlockCounterSettings {
     iconPosition: "None" | "Left" | "Right" | "Top" | "Bottom";
+    textColor?: number;
+    font?: string;
+    shadowText?: boolean;
+    radius?: number;
 }
 
 interface HudScoreboardSettings {
     show: ("Header" | "Name" | "Score")[];
+    replaceRegex: string;
+    replaceWith: string;
+    number?: boolean;
+    shadow?: boolean;
+    rect?: boolean;
+    radius?: number;
+    font?: string;
 }
 
 interface HudTextSettings {

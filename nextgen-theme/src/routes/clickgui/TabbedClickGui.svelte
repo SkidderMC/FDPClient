@@ -2,19 +2,28 @@
     import ClickGui from "./ClickGui.svelte";
     import GlobalSettings from "./tabs/GlobalSettings.svelte";
     import Tabs from "./tabs/Tabs.svelte";
-    import {gridSize, os, scaleFactor, showGrid, snappingEnabled} from "./clickgui_store";
-    import type {ConfigurableSetting, TogglableSetting} from "../../integration/types";
+    import {darken, gridSize, os, scaleFactor, snappingEnabled} from "./clickgui_store";
+    import type {ConfigurableSetting, ModuleSetting, TogglableSetting} from "../../integration/types";
     import {onMount} from "svelte";
-    import {getClientInfo, getGameWindow, getModuleSettings, setTyping} from "../../integration/rest";
+    import {
+        getClientInfo,
+        getGameWindow,
+        getModuleSettings,
+        setHudEditorSelected,
+        setTyping
+    } from "../../integration/rest";
     import {listen} from "../../integration/ws";
     import type {ClickGuiValueChangeEvent, ScaleFactorChangeEvent} from "../../integration/events";
+    import HudEditor from "./tabs/hud_editor/HudEditor.svelte";
+    import {getHashParams} from "../../integration/util";
 
     const tabs = [
         {title: "ClickGUI", content: ClickGui},
+        {title: "HUD Editor", content: HudEditor},
         {title: "Settings", content: GlobalSettings}
     ];
 
-    let activeTab = $state(0);
+    let activeTab = $state(getHashParams().get("tab") === "hud-editor" ? 1 : 0);
     let minecraftScaleFactor = $state(2);
     let clickGuiScaleFactor = $state(1);
 
@@ -23,8 +32,8 @@
     });
 
     function applyValues(configurable: ConfigurableSetting) {
-        const scaleValue = configurable.value.find(v => v.name === "Scale");
-        const snappingValue = configurable.value.find(v => v.name === "Snapping") as TogglableSetting | undefined;
+        const scaleValue = findSetting(configurable.value, "Scale");
+        const snappingValue = findSetting(configurable.value, "Snapping") as TogglableSetting | undefined;
 
         if (scaleValue) {
             clickGuiScaleFactor = scaleValue.value as number;
@@ -36,7 +45,20 @@
         }
     }
 
+    function findSetting(settings: ModuleSetting[], name: string): ModuleSetting | undefined {
+        for (const setting of settings) {
+            if (setting.name === name) return setting;
+            if ((setting.valueType === "CONFIGURABLE" || setting.valueType === "TOGGLEABLE") &&
+                Array.isArray(setting.value)) {
+                const nested = findSetting(setting.value as ModuleSetting[], name);
+                if (nested) return nested;
+            }
+        }
+        return undefined;
+    }
+
     onMount(async () => {
+        await setHudEditorSelected(false);
         $os = (await getClientInfo()).os;
 
         const gameWindow = await getGameWindow();
@@ -59,33 +81,24 @@
 
 <div
         class="tabbed-clickgui"
-        class:grid={$showGrid}
-        style="
-    transform: scale({$scaleFactor * 50}%);
-    width: {2 / $scaleFactor * 100}vw;
-    height: {2 / $scaleFactor * 100}vh;
-    background-size: {$gridSize}px {$gridSize}px;
-  "
+        class:darken={$darken}
 >
     <Tabs {tabs} bind:activeTab/>
 </div>
 
 <style lang="scss">
 
-  $GRID_SIZE: 10px;
-
   .tabbed-clickgui {
-    background-color: var(--clickgui-overlay-background-color);
     overflow: hidden;
     position: absolute;
-    will-change: opacity;
-    transform-origin: top left;
-    left: 0;
     top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    transition: ease background-color .2s;
 
-    &.grid {
-      background-image: linear-gradient(to right, var(--clickgui-grid-color) 1px, transparent 1px),
-      linear-gradient(to bottom, var(--clickgui-grid-color) 1px, transparent 1px);
+    &.darken {
+      background-color: var(--clickgui-overlay-background-color);
     }
   }
 </style>

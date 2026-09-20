@@ -10,6 +10,8 @@
     import Module from "./Module.svelte";
     import type {KeyEvent, ModuleToggleEvent} from "../../../../integration/events";
 
+    export let settings: { [name: string]: any } = {};
+
     let modules: TModule[] = [];
     let groupedModules: GroupedModules = {};
     let categories: string[] = [];
@@ -93,15 +95,15 @@
     });
 </script>
 
-<div class="tabgui">
-    <div class="categories" bind:this={categoriesElement}>
+<div class="tabgui" style="font-family: {settings.font ?? 'Inter'}, sans-serif; text-transform: {settings.upperCase ? 'uppercase' : 'none'};">
+    <div class="categories" class:with-border={settings.border} bind:this={categoriesElement} style="min-width: {settings.width ?? 100}px; border-color: var(--accent-color); border-width: {settings.borderStrength ?? 1}px;">
         {#each categories as name, index}
             <Category {name} selected={index === selectedCategoryIndex} />
         {/each}
     </div>
 
     {#if renderedModules.length > 0}
-        <div class="modules" transition:fly={{ x: -10, duration: 200 }} style="height: {categoriesElement.offsetHeight}px">
+        <div class="modules" transition:fly={{ x: -10, duration: 200 }} style="height: {categoriesElement.offsetHeight}px; min-width: {settings.width ?? 100}px">
             {#each renderedModules as { name, enabled }, index}
                 <Module {name} {enabled} selected={selectedModuleIndex === index} />
             {/each}
@@ -122,6 +124,7 @@
         border-radius: 5px;
         overflow: hidden;
     }
+    .with-border { border-style: solid; }
 
     .modules {
       background-clip: content-box;

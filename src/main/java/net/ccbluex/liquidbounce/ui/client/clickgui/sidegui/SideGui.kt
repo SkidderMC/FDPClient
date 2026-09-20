@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule.ge
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColor
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule
 import net.ccbluex.liquidbounce.features.module.modules.client.SpotifyModule
-import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
+import net.ccbluex.liquidbounce.features.module.modules.client.HudDesigner
 import net.ccbluex.liquidbounce.ui.font.fontmanager.GuiFontManager
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager
 import net.ccbluex.liquidbounce.ui.client.gui.GuiCapeManager
@@ -260,7 +260,7 @@ class SideGui : GuiPanel() {
 
     private val uiActions: List<Triple<String, () -> Boolean, () -> Unit>>
         get() = listOf(
-            Triple("HUD Designer", { false }, { MinecraftInstance.mc.displayGuiScreen(GuiHudDesigner()) }),
+            Triple("HUD Designer", { false }, { HudDesigner.openSelected() }),
             Triple("Font Manager", { false }, { MinecraftInstance.mc.currentScreen?.let { p -> MinecraftInstance.mc.displayGuiScreen(GuiFontManager(p)) } }),
             Triple("Alt Manager", { false }, { MinecraftInstance.mc.currentScreen?.let { p -> MinecraftInstance.mc.displayGuiScreen(GuiAltManager(p)) } }),
             Triple("Capes", { false }, { MinecraftInstance.mc.displayGuiScreen(GuiCapeManager) }),

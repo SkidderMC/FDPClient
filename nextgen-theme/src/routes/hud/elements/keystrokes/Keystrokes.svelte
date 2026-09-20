@@ -5,6 +5,8 @@
     import type {MinecraftKeybind} from "../../../../integration/types";
     import {listen} from "../../../../integration/ws";
 
+    export let settings: { [name: string]: any } = {};
+
     let keyForward: MinecraftKeybind | undefined;
     let keyBack: MinecraftKeybind | undefined;
     let keyLeft: MinecraftKeybind | undefined;
@@ -26,7 +28,7 @@
     listen("keybindChange", updateKeybinds)
 </script>
 
-<div class="keystrokes">
+<div class="keystrokes" class:with-border={settings.renderBorder} class:text-shadow={settings.textShadow} style="--key-size: {settings.keySize ?? 50}px; --key-border: {settings.borderWidth ?? 1}px; font-family: {settings.font ?? 'Inter'}, sans-serif;">
     <Key key={keyForward} gridArea="a" />
     <Key key={keyLeft} gridArea="b" />
     <Key key={keyBack} gridArea="c" />
@@ -41,7 +43,10 @@
         ". a ."
         "b c d"
         "e e e";
-      grid-template-columns: repeat(3, 50px);
+      grid-template-columns: repeat(3, var(--key-size));
       gap: 5px;
     }
+    .keystrokes :global(.key) { height: var(--key-size); font-family: inherit; }
+    .with-border :global(.key) { border: var(--key-border) solid var(--accent-color); }
+    .text-shadow :global(.key) { text-shadow: 0 1px 3px #000; }
 </style>

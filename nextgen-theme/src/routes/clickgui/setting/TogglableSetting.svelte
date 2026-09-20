@@ -7,6 +7,14 @@
     import {setItem} from "../../../integration/persistent_storage";
     import {convertToSpacedString, spaceSeperatedNames} from "../../../theme/theme_config";
 
+    interface $$Slots {
+        default: Record<string, never>;
+        control: {
+            disable: () => void;
+            label: string;
+        };
+    }
+
     export let setting: ModuleSetting;
     export let path: string;
 

@@ -7,8 +7,11 @@
     import HealthProgress from "./HealthProgress.svelte";
     import type {TargetChangeEvent} from "../../../../integration/events";
 
+    export let settings: { [name: string]: any } = {};
+
     let target: PlayerData | null = null;
     let visible = true;
+    let skinFailed = false;
 
     let hideTimeout: number;
 
@@ -19,8 +22,16 @@
     }
 
     listen("targetChange", (data: TargetChangeEvent) => {
+        if (data.target === null) {
+            startHideTimeout();
+            return;
+        }
+        if (settings.onlyPlayer !== false && data.target.isPlayer === false) {
+            return;
+        }
         target = data.target;
         visible = true;
+        skinFailed = false;
         clearTimeout(hideTimeout);
         startHideTimeout();
     });
@@ -29,11 +40,25 @@
 </script>
 
 {#if visible && target != null}
-    <div class="targethud" transition:fly={{ y: -10, duration: 200 }}>
+    <div
+        class="targethud style-{String(settings.style ?? 'Modern').toLowerCase()}"
+        transition:fly={{
+            x: settings.animation === "Slide" ? 24 : 0,
+            y: settings.animation === "Fade" ? 0 : -10,
+            duration: Math.max(40, (settings.animationSpeed ?? .2) * 1000)
+        }}
+    >
         <div class="main-wrapper">
-            <div class="avatar">
-                <img src="{REST_BASE}/api/v1/client/resource/skin?uuid={target.uuid}" alt="avatar" />
-            </div>
+            {#if settings.showAvatar !== false}<div class="avatar">
+                <span class="avatar-fallback">{target.username.slice(0, 1).toUpperCase()}</span>
+                {#if !skinFailed}
+                    <img
+                        src="{REST_BASE}/api/v1/client/resource/skin?uuid={encodeURIComponent(target.uuid)}"
+                        alt=""
+                        on:error={() => skinFailed = true}
+                    />
+                {/if}
+            </div>{/if}
     
             <div class="name">{target.username}</div>
             <div class="health-stats">
@@ -64,7 +89,7 @@
                     />
                 </div>
             </div>
-            <div class="armor-stats">
+            {#if settings.showArmor !== false}<div class="armor-stats">
                 {#if target.armorItems[3].count > 0}
                     <ArmorStatus itemStack={target.armorItems[3]} />
                 {/if}
@@ -77,10 +102,14 @@
                 {#if target.armorItems[0].count > 0}
                     <ArmorStatus itemStack={target.armorItems[0]} />
                 {/if}
-            </div>
+            </div>{/if}
         </div>    
         
-        <HealthProgress maxHealth={target.maxHealth + target.absorption} health={target.actualHealth + target.absorption} />
+        <HealthProgress
+            maxHealth={target.maxHealth + target.absorption}
+            health={target.actualHealth + target.absorption}
+            speed={settings.healthSpeed ?? .2}
+        />
     </div>
 {/if}
 
@@ -91,6 +120,9 @@
         border-radius: 5px;
         overflow: hidden;
     }
+    .style-compact .armor-stats { display: none; }
+    .style-compact .main-wrapper { padding: 7px 10px; }
+    .style-classic { border: 1px solid var(--accent-color); border-radius: 0; }
 
     .main-wrapper {
         display: grid;
@@ -143,11 +175,28 @@
         border-radius: 5px;
         overflow: hidden;
 
+        .avatar-fallback {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--targethud-text-color);
+            font-size: 22px;
+            font-weight: 700;
+        }
+
         img {
             position: absolute;
-            scale: 6.25;
-            left: 118px;
-            top: 118px;
+            width: 400px;
+            height: 400px;
+            max-width: none;
+            left: -50px;
+            top: -50px;
+            image-rendering: pixelated;
         }
     }
 </style>
