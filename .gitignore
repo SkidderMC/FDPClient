@@ -58,3 +58,7 @@ tmp_*.py
 tmp_*/
 tmp.*/
 libs-test/
+
+# local launcher
+run-fdp.cmd
+tools/
