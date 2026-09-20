@@ -33,11 +33,30 @@ object TabGUIModule : Module("TabGUI", Category.CLIENT, Category.SubCategory.CLI
         .describe("Scale of the tab list overlay.")
     val tabSorting by choices(
         "Sorting",
-        arrayOf("Vanilla", "Ping", "NameLength", "DisplayNameLength", "Alphabetical", "ReverseAlphabetical"),
+        arrayOf(
+            "Vanilla", "Ping", "NameLength", "DisplayNameLength",
+            "Alphabetical", "ReverseAlphabetical", "None"
+        ),
         "Vanilla"
     ).describe("Reorder the player list by the chosen criterion.")
     val tabMaxPlayers by int("Max Players", 80, 1..1000)
-        .describe("Raise the cap on how many players the tab list can show.")
+        .describe("Maximum number of players the tab list can show.")
+    val tabColumnHeight by int("Column Height", 20, 1..100)
+        .describe("Maximum player rows per column before another column is created.")
+    val tabShowGameMode by boolean("Show Game Mode", true)
+        .describe("Append each player's current game mode to their tab name.")
+    val tabHidePlayers by boolean("Hide Players", false)
+        .describe("Hide tab entries whose selected name matches the configured regular expression.")
+    val tabHideFilterBy by choices(
+        "Hide Filter By", arrayOf("PlayerName", "DisplayName"), "PlayerName"
+    ) { tabHidePlayers }.describe("Choose which tab name representation is tested by the hide filter.")
+
+    private var hidePattern = Regex("(?!)")
+    val tabHideNameRegex by text("Hide Name Regex", "") { tabHidePlayers }.onChange { old, new ->
+        runCatching { Regex(new, RegexOption.IGNORE_CASE) }
+            .onSuccess { hidePattern = it }
+            .fold(onSuccess = { new }, onFailure = { old })
+    }.describe("Regular expression used by Hide Players. Invalid expressions are rejected.")
 
     var flagRenderTabOverlay = false
         get() = field && tabShowPlayerSkin
@@ -48,7 +67,17 @@ object TabGUIModule : Module("TabGUI", Category.CLIENT, Category.SubCategory.CLI
             "Show Player Heads", "Move Self To Top", "Show Friends", "Show Enemies", "Show Health"
         )
         group("Ping", "Show Ping Numbers", "Show Ping MS Tag", "Ping Text Shadow")
-        group("Layout", "Show Header", "Show Footer", "Scale", "Sorting", "Max Players")
+        group(
+            "Layout",
+            "Show Header", "Show Footer", "Scale", "Sorting", "Max Players", "Column Height", "Show Game Mode"
+        )
+        group("Player Hider", "Hide Players", "Hide Filter By", "Hide Name Regex")
+    }
+
+    fun shouldHidePlayer(playerName: String, displayName: String): Boolean {
+        if (!tabHidePlayers || tabHideNameRegex.isBlank()) return false
+        val candidate = if (tabHideFilterBy == "DisplayName") displayName else playerName
+        return hidePattern.containsMatchIn(candidate)
     }
 
     override fun onDisable() {

@@ -155,6 +155,13 @@ public class MixinGuiPlayerTabOverlay {
 
             for (NetworkPlayerInfo info : list) {
                 String playerName = info.getGameProfile().getName();
+                String displayName = info.getDisplayName() == null
+                        ? ScorePlayerTeam.formatPlayerName(info.getPlayerTeam(), playerName)
+                        : info.getDisplayName().getFormattedText();
+
+                if (TabGUIModule.INSTANCE.shouldHidePlayer(playerName, displayName)) {
+                    continue;
+                }
 
                 if (TabGUIModule.INSTANCE.getTabMoveSelfToTop() && playerName.equals(mc.thePlayer.getName())) {
                     self = info;
@@ -187,6 +194,10 @@ public class MixinGuiPlayerTabOverlay {
             String playerName = info.getGameProfile().getName();
             ScorePlayerTeam team = info.getPlayerTeam();
             String base = ScorePlayerTeam.formatPlayerName(team, playerName);
+            if (TabGUIModule.INSTANCE.getTabShowGameMode()) {
+                String gameMode = info.getGameType().getName();
+                base += " \u00A78[" + Character.toUpperCase(gameMode.charAt(0)) + "]";
+            }
 
             String healthText = "";
             if (TabGUIModule.INSTANCE.getTabShowHealth() && mc.theWorld != null) {
@@ -256,7 +267,13 @@ public class MixinGuiPlayerTabOverlay {
     @ModifyConstant(method = "renderPlayerlist", constant = @Constant(intValue = 80))
     private int fdp$expandPlayerCap(int original) {
         if (!TabGUIModule.INSTANCE.handleEvents()) return original;
-        return Math.max(original, TabGUIModule.INSTANCE.getTabMaxPlayers());
+        return TabGUIModule.INSTANCE.getTabMaxPlayers();
+    }
+
+    @ModifyConstant(method = "renderPlayerlist", constant = @Constant(intValue = 20), require = 1)
+    private int fdp$changeColumnHeight(int original) {
+        if (!TabGUIModule.INSTANCE.handleEvents()) return original;
+        return TabGUIModule.INSTANCE.getTabColumnHeight();
     }
 
     @Unique
@@ -277,6 +294,8 @@ public class MixinGuiPlayerTabOverlay {
             case "ReverseAlphabetical":
                 return java.util.Comparator.comparing(
                         (NetworkPlayerInfo info) -> info.getGameProfile().getName(), String.CASE_INSENSITIVE_ORDER).reversed();
+            case "None":
+                return (first, second) -> 0;
             default:
                 return null;
         }
