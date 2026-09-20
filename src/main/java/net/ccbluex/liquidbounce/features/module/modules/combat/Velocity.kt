@@ -60,7 +60,7 @@ private val VELOCITY_MODES = arrayOf(
     "IntaveReduce", "Intave", "Delay", "Delayed", "Grim", "GrimC03", "Grim1.17", "GrimC07", "GrimDamage",
     "Hypixel", "HypixelAir", "HypixelBoost",
     "Click", "BlocksMC", "GrimVertical", "AttackReduce", "Spoof", "Tick", "AAC4Reduce", "AAC5Reduce",
-    "AAC5.2.0", "AAC5.2.0Combat", "Cancel", "Minemen", "Phase", "SideStrafe", "Polar", "Sentinel"
+    "AAC5.2.0", "AAC5.2.0Combat", "Cancel", "Minemen", "Phase", "SideStrafe", "Polar", "Sentinel", "Reduce"
 )
 
 /**
@@ -290,6 +290,14 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
     private val swingMode by choices("SwingMode", arrayOf("Off", "Normal", "Packet"), "Normal") { mode == "Click" }
         .describe("How to swing when clicking in Click mode.")
 
+    // Reduce mode options (from LiquidBounceNextGen VelocityReduce)
+    private val reduceAttackCount by intRange("ReduceAttackCount", 3..3, 0..20) { mode == "Reduce" }
+    private val reduceLagTargetRange by floatRange("ReduceLagTargetRange", 2f..6f, 0f..20f) { mode == "Reduce" }
+    private val reduceLagMaxDelay by int("ReduceLagMaxDelay", 10, 1..1000) { mode == "Reduce" }
+    private val reduceLagRequireKillAura by boolean("ReduceLagRequireKillAura", false) { mode == "Reduce" }
+    private val reduceHorizontal by float("ReduceHorizontal", 0.6f, 0f..1f) { mode == "Reduce" }
+    private val reduceVertical by float("ReduceVertical", 1.0f, 0f..1f) { mode == "Reduce" }
+
     private val generalGroup = Configurable("General")
     private val reverseGroup = Configurable("Reverse")
     private val aacGroup = Configurable("AAC")
@@ -298,6 +306,7 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
     private val tickGroup = Configurable("Tick")
     private val grimGroup = Configurable("Grim")
     private val miscGroup = Configurable("Misc")
+    private val reduceGroup = Configurable("Reduce")
 
     init {
         moveValues(generalGroup,
@@ -336,9 +345,13 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
             "Clicks", "HurtTimeToClick", "WhenFacingEnemyOnly", "IgnoreBlocking", "ClickRange",
             "SwingMode")
 
+        moveValues(reduceGroup,
+            "ReduceAttackCount", "ReduceLagTargetRange", "ReduceLagMaxDelay",
+            "ReduceLagRequireKillAura", "ReduceHorizontal", "ReduceVertical")
+
         addValues(listOf(
             generalGroup, reverseGroup, aacGroup, jumpGroup, delayGroup, tickGroup,
-            grimGroup, miscGroup,
+            grimGroup, miscGroup, reduceGroup,
         ))
     }
     /**
@@ -404,6 +417,29 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
     // Pause On Explosion
     private var pauseTicks = 0
 
+    // Reduce mode state
+    private var reduceTarget: Entity? = null
+    private var reduceRemainingAttackCount = 0
+    private var reduceCurrentGameTick = 0L
+    private var reduceForwardInputAttackGameTick = -1L
+    private var reduceReceiveDamage = false
+    private var reduceLagTicks = -1
+    private var reduceReleaseReason: ReduceReleaseReason? = null
+    private var reduceLastTargetPos: Vec3? = null
+    private var reduceLastHurtTime = 0
+    private var reduceLagBlink = false
+
+    private val reduceCanLag: Boolean
+        get() = !reduceLagRequireKillAura || KillAura.handleEvents()
+
+    private enum class ReduceReleaseReason(val debugSuffix: String?) {
+        TARGET_REACHED(null),
+        FLAG("flag"),
+        SPECTATOR("spectator"),
+        OUT_OF_RANGE("out of range"),
+        MAX_DELAY("max delay"),
+    }
+
     override val tag
         get() = if (mode == "Simple" || mode == "Legit") {
             val horizontalPercentage = (horizontal * 100).toInt()
@@ -445,6 +481,11 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
         if (shouldUnblink && BlinkUtils.isBlinking) {
             BlinkUtils.unblink()
         }
+        // Reduce cleanup
+        if (reduceLagBlink) {
+            BlinkUtils.unblink()
+        }
+        resetReduceState()
         reset()
     }
 
@@ -476,6 +517,7 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
         }
 
         when (mode.lowercase()) {
+            "reduce" -> handleReduceUpdate(thePlayer)
             "tick" -> {
                 if (velocityInput) {
                     velocityTick++
@@ -865,6 +907,54 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
 
         mc.theWorld ?: return@handler
 
+        // ---- Reduce mode tick processing ----
+        if (mode == "Reduce") {
+            // 1. Damage detection: hurtTime transition to 10
+            val currentHurtTime = thePlayer.hurtTime
+            if (currentHurtTime == 10 && reduceLastHurtTime < 10) {
+                reduceReceiveDamage = true
+            }
+            reduceLastHurtTime = currentHurtTime
+
+            reduceCurrentGameTick++
+
+            // 2. Attack path execution
+            if (reduceRemainingAttackCount > 0) {
+                if (hasLostReduceTarget()) {
+                    reduceRemainingAttackCount = 0
+                    reduceTarget = null
+                    return@handler
+                }
+                thePlayer.isSprinting = false
+                // Attack entity (mimics LBNG's attackEntity without swing hide)
+                sendPacket(C02PacketUseEntity(reduceTarget!!, C02PacketUseEntity.Action.ATTACK))
+                sendPacket(C0APacketAnimation())
+                reduceForwardInputAttackGameTick = reduceCurrentGameTick
+                thePlayer.motionX *= reduceHorizontal.toDouble()
+                thePlayer.motionZ *= reduceHorizontal.toDouble()
+                thePlayer.motionY *= reduceVertical.toDouble()
+                reduceRemainingAttackCount--
+                if (reduceRemainingAttackCount == 0) {
+                    reduceTarget = null
+                }
+            }
+
+            // 3. Lag release handling
+            reduceReleaseReason?.let { reason ->
+                if (reduceLagBlink) {
+                    BlinkUtils.unblink()
+                    reduceLagBlink = false
+                }
+                reduceLagTicks = -1
+                reduceLastTargetPos = null
+                if (reason == ReduceReleaseReason.TARGET_REACHED) {
+                    reduceRemainingAttackCount = reduceAttackCount.random()
+                }
+                reduceReleaseReason = null
+            }
+        }
+
+        // ---- Original Click mode logic ----
         if (mode != "Click" || thePlayer.hurtTime != hurtTimeToClick || ignoreBlocking && (thePlayer.isBlocking || KillAura.blockStatus))
             return@handler
 
@@ -974,6 +1064,12 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
             if (event.isCancelled) {
                 return@handler
             }
+        }
+
+        // Reduce mode packet handling
+        if (mode == "Reduce") {
+            handleReducePacket(event, thePlayer)
+            if (event.isCancelled) return@handler
         }
 
         if (mode == "MatrixSimple") {
@@ -1492,6 +1588,11 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
         if (shouldUnblink && BlinkUtils.isBlinking) {
             BlinkUtils.unblink()
         }
+        // Reduce cleanup
+        if (reduceLagBlink) {
+            BlinkUtils.unblink()
+        }
+        resetReduceState()
     }
 
     val onGameLoop = handler<GameLoopEvent> {
@@ -1949,5 +2050,120 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
         return mc.theWorld.loadedEntityList.filter {
             isSelected(it, true) && player.getDistanceToEntityBox(it) <= range
         }.minByOrNull { player.getDistanceToEntityBox(it) }
+    }
+
+    // ===================== Reduce mode specific logic =====================
+
+    private fun resetReduceState() {
+        reduceTarget = null
+        reduceRemainingAttackCount = 0
+        reduceCurrentGameTick = 0L
+        reduceForwardInputAttackGameTick = -1L
+        reduceReceiveDamage = false
+        reduceLagTicks = -1
+        reduceReleaseReason = null
+        reduceLastTargetPos = null
+        reduceLastHurtTime = 0
+        reduceLagBlink = false
+    }
+
+    private fun findReduceTarget() {
+        if (!reduceCanLag && reduceLagTicks >= 0) return
+
+        // Use KillAura target if available
+        if (KillAura.handleEvents() && CombatManager.target != null) {
+            val kaTarget = CombatManager.target!!
+            if (!reduceCanLag || kaTarget.getDistanceSqToEntity(mc.thePlayer) <= reduceLagTargetRange.start.sq()) {
+                reduceTarget = kaTarget
+            }
+            return
+        }
+
+        // Raytrace target
+        reduceTarget = RaycastUtils.findEntityInCrosshair(
+            (if (reduceCanLag) reduceLagTargetRange.start.toDouble() else 3.0),
+            RotationUtils.currentRotation ?: mc.thePlayer.rotation
+        ) { entity -> !entity.isDead && EntityUtils.isSelected(entity, true) }?.entityHit
+
+        if (reduceTarget != null) return
+
+        // Nearest entity within max range
+        reduceTarget = getNearestEntityInRange(reduceLagTargetRange.endInclusive)
+    }
+
+    private fun hasLostReduceTarget(): Boolean {
+        val target = reduceTarget ?: return true
+        if (!KillAura.handleEvents()) return false
+        val kaTarget = CombatManager.target ?: return true
+        return kaTarget.entityId != target.entityId
+    }
+
+    private fun Entity.getDistanceSqToEntity(other: net.minecraft.entity.Entity): Double {
+        val dx = posX - other.posX
+        val dz = posZ - other.posZ
+        return dx * dx + dz * dz
+    }
+
+    private fun handleReduceUpdate(player: net.minecraft.client.entity.EntityPlayerSP) {
+        // Lag phase: force forward movement and check exit conditions
+        if (reduceLagTicks > 0 && reduceReleaseReason == null) {
+            reduceLagTicks--
+            findReduceTarget()
+
+            when {
+                player.capabilities.isFlying -> reduceReleaseReason = ReduceReleaseReason.SPECTATOR
+                reduceTarget != null -> {
+                    player.movementInput.moveForward = 1f
+                    player.movementInput.moveStrafe = 0f
+                    reduceReleaseReason = ReduceReleaseReason.TARGET_REACHED
+                }
+                reduceLastTargetPos != null && player.getDistanceSq(reduceLastTargetPos) > reduceLagTargetRange.endInclusive.sq() -> {
+                    reduceReleaseReason = ReduceReleaseReason.OUT_OF_RANGE
+                }
+                reduceLagTicks == 0 -> reduceReleaseReason = ReduceReleaseReason.MAX_DELAY
+            }
+        }
+
+        // Attack path: inject forward input on the tick attack was performed
+        if (reduceCurrentGameTick == reduceForwardInputAttackGameTick) {
+            player.movementInput.moveForward = 1f
+            player.movementInput.moveStrafe = 0f
+        }
+    }
+
+    private fun handleReducePacket(event: PacketEvent, player: net.minecraft.client.entity.EntityPlayerSP) {
+        val packet = event.packet
+        if (event.eventType != EventState.RECEIVE) return
+
+        // Lag blink active: queue all incoming packets using BlinkUtils
+        if (reduceLagBlink) {
+            if (packet is S08PacketPlayerPosLook) {
+                reduceReleaseReason = ReduceReleaseReason.FLAG
+            }
+            BlinkUtils.blink(packet, event, sent = false, receive = true)
+            return
+        }
+
+        // Normal state: detect valid knockback (damage flag + velocity packet)
+        if (packet is S12PacketEntityVelocity && packet.entityID == player.entityId) {
+            if (reduceReceiveDamage) {
+                reduceReceiveDamage = false
+                if (player.isUsingItem || Scaffold.handleEvents()) return
+
+                findReduceTarget()
+
+                // Decision: Lag or Attack
+                if ((reduceTarget == null && reduceCanLag) || (reduceTarget != null && !player.isSprinting)) {
+                    // Enter Lag
+                    reduceLagTicks = reduceLagMaxDelay
+                    reduceLastTargetPos = Vec3(player.posX, player.posY, player.posZ)
+                    reduceLagBlink = true
+                    BlinkUtils.blink(packet, event, sent = false, receive = true) // queue the velocity packet itself
+                } else if (reduceTarget != null) {
+                    // Enter Attack
+                    reduceRemainingAttackCount = reduceAttackCount.random()
+                }
+            }
+        }
     }
 }
