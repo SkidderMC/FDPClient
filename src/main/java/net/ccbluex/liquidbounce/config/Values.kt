@@ -760,7 +760,7 @@ class KeyBindValue(
         if (actionMode == action) return false
         actionMode = action
         net.ccbluex.liquidbounce.file.FileManager.saveConfig(net.ccbluex.liquidbounce.file.FileManager.valuesConfig)
-        owner?.let { ClientChangeBus.publish(ClientChange.ValueState(it.name, name)) }
+        owner?.let { ClientChangeBus.publish(ClientChange.ValueState(it.rootOwnerName(), name)) }
         return true
     }
 

@@ -42,4 +42,15 @@ class ConfigurableLookupTest {
         assertTrue(range.owner === group)
     }
 
+    @Test
+    fun `nested value changes resolve the root configurable owner`() {
+        val root = Configurable("ClickGUI")
+        val section = Configurable("NextGen").also(root::addValue)
+        val snapping = ToggleableValueGroup("Snapping", true).also(section::addValue)
+        snapping.gatedInt("GridSize", 10, 1..100)
+
+        assertEquals("ClickGUI", snapping.rootOwnerName())
+        assertEquals("ClickGUI", snapping.enabledValue.owner!!.rootOwnerName())
+    }
+
 }

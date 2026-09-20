@@ -11,6 +11,8 @@ import net.ccbluex.liquidbounce.file.FileManager.valuesConfig
 import net.ccbluex.liquidbounce.event.ClientChange
 import net.ccbluex.liquidbounce.event.ClientChangeBus
 import net.ccbluex.liquidbounce.handler.lang.translation
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import org.apache.logging.log4j.LogManager
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
@@ -20,12 +22,26 @@ private typealias OnChangedHandler<T> = (new: T) -> Unit
 
 private val VALUE_LOGGER = LogManager.getLogger("ValueSystem")
 
+internal fun Configurable.rootOwnerName(): String {
+    var current = this
+    repeat(64) {
+        val parent = current.owner ?: return current.name
+        if (parent === current) return current.name
+        current = parent
+    }
+    return current.name
+}
+
 sealed class Value<T>(
     val name: String,
     var value: T,
     val suffix: String? = null,
     protected var default: T = value,
 ) : ReadWriteProperty<Any?, T> {
+
+    private val stateFlow = MutableStateFlow(value)
+
+    fun asStateFlow(): StateFlow<T> = stateFlow
 
     /**
      * The owner of this value.
@@ -41,9 +57,14 @@ sealed class Value<T>(
     var hidden: Boolean = false
         private set
 
+    var immutable: Boolean = false
+        private set
+
     fun subjective() = apply { subjective = true }
 
     fun hide() = apply { hidden = true }
+
+    fun immutable() = apply { immutable = true }
 
     var aliases: List<String> = emptyList()
         private set
@@ -89,13 +110,22 @@ sealed class Value<T>(
     }
 
     fun setAndUpdateDefault(new: T): Boolean {
-        default = new
+        if (new == value) {
+            default = validate(new)
+            return false
+        }
 
-        return set(new)
+        val changed = set(new)
+        if (changed) default = value
+        return changed
     }
 
+    @Synchronized
     fun set(newValue: T, saveImmediately: Boolean = true): Boolean {
         if (newValue == value || excluded || hidden) {
+            return false
+        }
+        if (immutable) {
             return false
         }
 
@@ -109,15 +139,9 @@ sealed class Value<T>(
                 return false
             }
 
-            changeValue(handledValue)
-            onChangedListeners.forEach { it.invoke(handledValue) }
-
-            if (saveImmediately) {
-                saveConfig(valuesConfig)
-            }
-            return true
+            return commitValue(oldValue, handledValue, saveImmediately)
         } catch (e: Exception) {
-            VALUE_LOGGER.error("[$name]: ${e.javaClass.name} (${e.message}) [$oldValue >> $newValue]")
+            VALUE_LOGGER.error("[$name]: ${e.javaClass.name} (${e.message}) [$oldValue >> $newValue]", e)
             return false
         }
     }
@@ -141,13 +165,44 @@ sealed class Value<T>(
 
     fun get() = value
 
+    @Synchronized
     fun changeValue(newValue: T) {
         if (value == newValue) return
         value = newValue
+        stateFlow.value = newValue
+        publishChange()
+    }
+
+    private fun publishChange() {
         // Suppress per-value notifications during bulk config loading; a single Configuration
         // event is emitted once the load finishes, so the UI refreshes wholesale instead of per value.
         if (!ConfigSystem.isLoadingConfig) {
-            owner?.let { ClientChangeBus.publish(ClientChange.ValueState(it.name, name)) }
+            owner?.let { ClientChangeBus.publish(ClientChange.ValueState(it.rootOwnerName(), name)) }
+        }
+    }
+
+    /**
+     * Commits one already validated mutation. Listeners observe the candidate value, but any listener
+     * or persistence failure restores both the scalar and observable state before returning failure.
+     */
+    @Suppress("TooGenericExceptionCaught")
+    private fun commitValue(oldValue: T, newValue: T, saveImmediately: Boolean): Boolean {
+        value = newValue
+        return try {
+            onChangedListeners.forEach { it.invoke(newValue) }
+            if (saveImmediately && !ConfigSystem.isLoadingConfig) saveConfig(valuesConfig)
+            stateFlow.value = newValue
+            publishChange()
+            true
+        } catch (throwable: Throwable) {
+            value = oldValue
+            stateFlow.value = oldValue
+            VALUE_LOGGER.error(
+                "[$name]: mutation rolled back after ${throwable.javaClass.name} (${throwable.message}) " +
+                    "[$oldValue >> $newValue]",
+                throwable,
+            )
+            false
         }
     }
 
@@ -159,25 +214,36 @@ sealed class Value<T>(
     protected abstract fun fromJsonF(element: JsonElement): T?
     protected abstract fun fromTextF(text: String): T?
 
+    @Synchronized
     fun fromJson(element: JsonElement): Boolean {
         val raw = runCatching { fromJsonF(element) }.getOrNull() ?: return false
         return applyDeserialized(raw)
     }
 
+    @Synchronized
     fun fromText(text: String): Boolean {
         val raw = runCatching { fromTextF(text) }.getOrNull() ?: return false
         return applyDeserialized(raw)
     }
 
+    @Suppress("TooGenericExceptionCaught")
     private fun applyDeserialized(raw: T): Boolean {
         val safe = runCatching { validate(raw) }.getOrElse {
             VALUE_LOGGER.error("[$name]: rejected serialized value '$raw' (${it.message})")
             return false
         }
 
-        changeValue(safe)
-        onChangedListeners.forEach { it.invoke(safe) }
-        return true
+        if (safe == value || immutable) return false
+
+        val oldValue = value
+        var handledValue = safe
+        return try {
+            onChangeInterceptors.forEach { handledValue = it(oldValue, handledValue) }
+            if (handledValue == oldValue) false else commitValue(oldValue, handledValue, saveImmediately = false)
+        } catch (throwable: Throwable) {
+            VALUE_LOGGER.error("[$name]: rejected serialized value '$raw' (${throwable.message})", throwable)
+            false
+        }
     }
 
     // Serializations END
