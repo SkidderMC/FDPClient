@@ -140,8 +140,8 @@ dependencies {
 
     implementation fileTree(include: ["*.jar"], dir: "libs")
 
-    implementation "org.apache.logging.log4j:log4j-core:2.0-beta9"
-    implementation "org.apache.logging.log4j:log4j-api:2.0-beta9"
+    implementation "org.apache.logging.log4j:log4j-core:3.0.0-beta3"
+    implementation "org.apache.logging.log4j:log4j-api:3.0.0-beta3"
 }
 
 tasks.register("verifyRotations", JavaExec) {
