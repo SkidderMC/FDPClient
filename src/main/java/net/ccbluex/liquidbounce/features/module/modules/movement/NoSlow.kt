@@ -33,6 +33,7 @@ import net.minecraft.network.play.server.S2FPacketSetSlot
 import net.minecraft.network.status.client.C00PacketServerQuery
 import net.minecraft.network.status.client.C01PacketPing
 import net.minecraft.network.status.server.S01PacketPong
+import net.minecraft.potion.Potion
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 import kotlin.math.sqrt
@@ -44,7 +45,7 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
         arrayOf(
             "None", "NCP", "UpdatedNCP", "AAC4", "AAC5", "SwitchItem", "InvalidC08",
             "Blink", "Grim2371", "OldIntave", "Medusa", "HypixelNew", "SpamItemChange",
-            "SpamPlace", "SpamEmptyPlace", "Matrix", "GrimAC"
+            "SpamPlace", "SpamEmptyPlace", "Matrix", "GrimAC", "Prediction", "Prediction2"
         ),
         "None"
     )
@@ -80,7 +81,8 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
         "ConsumeMode",
         arrayOf(
             "None", "UpdatedNCP", "AAC4", "AAC5", "SwitchItem", "InvalidC08", "Intave",
-            "Drop", "Grim2371", "HypixelNew", "SpamItemChange", "SpamPlace", "SpamEmptyPlace", "Medusa"
+            "Drop", "Grim2371", "HypixelNew", "SpamItemChange", "SpamPlace", "SpamEmptyPlace", "Medusa",
+            "Prediction"
         ),
         "None"
     )
@@ -116,6 +118,28 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
     private val bowStrafeMultiplier by float("BowStrafeMultiplier", 1f, 0.2F..1f)
         .describe("Strafe speed multiplier while drawing a bow.")
 
+    // ── Prediction ───────────────────────────────────────────────────────────
+    // Sword blocking / eating share one fixed cadence, taken from SpiterSemi's GrimTick beat: the
+    // counter walks up while the item is in use, and every Nth tick is the one that cancels the
+    // vanilla 0.2x. The ticks in between keep the real slowdown — the fast tick is the rare one.
+    private val predictionForceSprint by boolean("ForceSprint", false) {
+        swordMode == "Prediction" || consumeMode == "Prediction"
+    }
+        .describe("Keep sprinting while using the item, instead of letting the 0.2x input drop it.")
+    private val predictionSlowInterval by int("Slow Interval", 4, 2..8) {
+        swordMode == "Prediction" || consumeMode == "Prediction"
+    }
+        .describe("How many ticks of real 0.2x slowdown sit between two full-speed ticks.")
+
+    // ── Prediction2 ──────────────────────────────────────────────────────────
+    // Grim2374 "Blink Block" cycle: every cycle re-blocks with a C08, holds all outgoing action
+    // packets for `BlinkTicks` ticks (server keeps itemInUse frozen = real blocking, client runs
+    // full speed), then seals the batch with a slot change so the backlog is predicted un-slowed.
+    private val prediction2BlinkTicks by int("BlinkTicks", 3, 1..8) {
+        swordMode == "Prediction2"
+    }
+        .describe("Ticks each Blink Block cycle holds packets for.")
+
     // Blocks
     val soulSand by boolean("SoulSand", true)
         .describe("Ignore the slowdown from soul sand.")
@@ -149,6 +173,8 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
     private val blocksGroup = Configurable("Blocks")
     private val teleportGroup = Configurable("Teleport")
     private val generalGroup = Configurable("General")
+    private val predictionGroup = Configurable("Prediction")
+    private val prediction2Group = Configurable("Prediction2")
 
     init {
         moveValues(swordGroup,
@@ -171,8 +197,13 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
 
         moveValues(generalGroup, "AntiSwitchItem", "OnlyGround", "OnlyMove")
 
+        moveValues(predictionGroup, "ForceSprint", "Slow Interval")
+
+        moveValues(prediction2Group, "BlinkTicks")
+
         addValues(listOf(
-            swordGroup, consumeGroup, bowGroup, aac4Group, blocksGroup, teleportGroup, generalGroup
+            swordGroup, consumeGroup, bowGroup, aac4Group, blocksGroup, teleportGroup, generalGroup,
+            predictionGroup, prediction2Group
         ))
     }
     private var shouldSwap = false
@@ -196,6 +227,43 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
     private var lastBlockingState = false
     private var medusaCanStopSprint = true
 
+    // ───────────────────────────── Prediction ─────────────────────────────
+    /** Cadence counter; only advances while the item Prediction owns is actually in use. */
+    private var predictionTick = 0
+
+    // ──────────────────────────── Prediction2 ─────────────────────────────
+    private enum class BlinkPhase { NONE, AWAY, BACK }
+
+    /** Movement budget the server grants per position packet, in milliseconds. */
+    private const val TICK_MS = 50.0
+
+    /**
+     * Packets held by the current Blink Block window. Sends happen on the main thread but incoming
+     * packets are handled on the netty thread, so the queue is guarded by a lock and the flags the
+     * network thread raises are volatile.
+     */
+    private val blinkLock = Any()
+    private val blinkQueue = mutableListOf<Packet<*>>()
+    @Volatile private var blinkHolding = false
+    private var blinkHeldFlying = 0
+    private var blinkStartNano = 0L
+    @Volatile private var blinkAbort = false
+    @Volatile private var blinkKb = false
+    @Volatile private var blinkReleased = false
+    private var blinkDoneThisCycle = false
+
+    /** Hotbar slot this mode last put on the wire, plus the shape the server was left in. */
+    private var blinkPhase = BlinkPhase.NONE
+    private var blinkRunning = false
+    private var grimSlot = 0
+    private var blinkCyclePos = 0
+    /** A foreign attack or slot/block packet landed in the open window: freeze instead of guessing. */
+    private var windowDirty = false
+
+    /** Slowdown ruling for this tick, decided at the head of the update before input is scaled. */
+    private var blinkFullTick = true
+    private var blinkUseActive = false
+
     override fun onDisable() {
         shouldSwap = false
         shouldBlink = true
@@ -208,6 +276,11 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
         matrixBuffering = false
         lastBlockingState = false
         medusaCanStopSprint = true
+        predictionTick = 0
+        flushBlink()
+        stopResync()
+        blinkFullTick = true
+        blinkUseActive = false
     }
 
     val onMotion = handler<MotionEvent> { event ->
@@ -757,6 +830,27 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
             return@handler
         }
 
+        // Prediction: SpiterSemi's beat. The tick whose counter lands on the interval cancels the
+        // slowdown outright and runs at full speed; every other tick keeps the real 0.2x. Returning
+        // here also skips the multiplier defaults below, which would erase those slow ticks.
+        if (predictionActive(heldItem)) {
+            if (predictionTick % predictionSlowInterval == 0) {
+                event.forward = 1.0f
+                event.strafe = 1.0f
+            }
+            return@handler
+        }
+
+        // Prediction2: ruled per tick. The hold window, the slot-change tick and the re-block tick
+        // all run un-slowed; the cold start and frozen ticks stay at the real 0.2x.
+        if (swordMode == "Prediction2" && heldItem is ItemSword) {
+            if (blinkFullTick && blinkUseActive) {
+                event.forward = 1.0f
+                event.strafe = 1.0f
+            }
+            return@handler
+        }
+
         if ((swordMode == "Grim2371" && heldItem is ItemSword) ||
             (consumeMode == "Grim2371" && (heldItem is ItemFood || heldItem is ItemPotion || heldItem is ItemBucketMilk)) ||
             (bowPacket == "Grim2371" && heldItem is ItemBow)) {
@@ -781,6 +875,450 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
 
         event.forward = getMultiplier(heldItem, true)
         event.strafe = getMultiplier(heldItem, false)
+    }
+
+    // ═══════════════════════════════ Prediction ═══════════════════════════════
+
+    /**
+     * Advances the cadence at the head of the player update, which is before the vanilla input
+     * scaling [onSlowDown] rewrites, so the ruling later in the same tick reads a current counter.
+     *
+     * The counter only runs while the item is really in use, and stops the moment the use ends. The
+     * beat depends on that: the tick that pays out has to be reached from the start of the use, so
+     * the first tick of every block stays a slow one — merely holding the sword must not walk the
+     * counter into the fast tick of a later block.
+     */
+    val onPredictionUpdate = handler<UpdateEvent> {
+        val player = mc.thePlayer ?: return@handler
+        if (!usingItemFunc() || !predictionActive(player.heldItem?.item)) {
+            predictionTick = 0
+            return@handler
+        }
+        predictionTick++
+    }
+
+    /**
+     * Sprint is rebuilt after the three vanilla stop conditions have run. The 0.2x input the slow
+     * tick leaves behind sits below the 0.8 forward threshold, so vanilla would always drop sprint
+     * there; forcing it back keeps sprint on both kinds of tick.
+     */
+    val onPredictionSprint = handler<PostSprintUpdateEvent> {
+        val player = mc.thePlayer ?: return@handler
+        if (!predictionForceSprint || !predictionActive(player.heldItem?.item)) return@handler
+        if (predictionSprintSafe(player)) player.isSprinting = true
+    }
+
+    /**
+     * Only sprint where the server would accept it: hunger, blindness, sneaking and being blocked
+     * or in a fluid each have their own check, and forcing sprint through them is what gets flagged
+     * rather than the speed it buys.
+     */
+    private fun predictionSprintSafe(player: net.minecraft.client.entity.EntityPlayerSP): Boolean =
+        player.movementInput.moveForward > 0f &&
+            (player.foodStats.foodLevel > 6 || player.capabilities.allowFlying) &&
+            !player.isSneaking && !mc.gameSettings.keyBindSneak.isKeyDown &&
+            !player.isPotionActive(Potion.blindness) &&
+            !player.isCollidedHorizontally &&
+            !player.isInWater && !player.isInLava
+
+    /** True while the held item is one the Prediction cadence owns. */
+    private fun predictionActive(item: Item?): Boolean = when {
+        item is ItemSword -> swordMode == "Prediction"
+
+        item is ItemFood -> consumeMode == "Prediction" && consumeFoodOnly
+
+        item is ItemPotion || item is ItemBucketMilk -> consumeMode == "Prediction" && consumeDrinkOnly
+
+        else -> false
+    }
+
+    // ══════════════════════════════ Prediction2 ═══════════════════════════════
+
+    /**
+     * Head of the tick. Takes the use snapshot the slowdown ruling reads, then either advances the
+     * block cycle or tears the hold window down.
+     */
+    val onPrediction2Update = handler<UpdateEvent> {
+        val player = mc.thePlayer ?: return@handler
+        if (swordMode != "Prediction2" && !blinkHolding && blinkPhase == BlinkPhase.NONE) return@handler
+
+        blinkUseActive = prediction2Active(player)
+
+        if (!blinkUseActive) {
+            blinkFullTick = true
+            // The first held tick has no position packet queued yet, so flushing here would replay
+            // a batch with nothing to close its window. Hold one more tick and let it fill up.
+            if (blinkHolding && blinkHeldFlying == 0) return@handler
+            flushBlink()
+            stopResync()
+            return@handler
+        }
+
+        val sealed = if (blinkHolding) blinkTick() else false
+        if (blinkHolding || sealed) {
+            blinkFullTick = true
+        } else {
+            resyncTick()
+        }
+    }
+
+    /**
+     * Opens the hold window once this tick's own position packet is already on the wire, so the
+     * packet that clears the server's blocking state is never itself held back.
+     */
+    val onPrediction2PostMotion = handler<MotionEvent> { event ->
+        if (event.eventState != EventState.POST || swordMode != "Prediction2") return@handler
+        if (!blinkHolding) tryStartBlink()
+    }
+
+    val onPrediction2Packet = handler<PacketEvent> { event ->
+        if (event.eventType != EventState.SEND || event.isCancelled) return@handler
+        if (swordMode != "Prediction2" && !blinkHolding) return@handler
+
+        val packet = event.packet
+
+        if (blinkHolding) {
+            when {
+                isHeldPacket(packet) -> synchronized(blinkLock) {
+                    // Re-checked under the lock: the main thread may have flushed while we waited,
+                    // in which case this packet simply goes out normally.
+                    if (blinkHolding) {
+                        blinkQueue += packet
+                        if (packet is C03PacketPlayer) blinkHeldFlying++
+                        event.cancelEvent()
+                        return@handler
+                    }
+                }
+
+                // The player let go: swallow the release so the flush can synthesise an equivalent
+                // one behind a position packet, instead of letting it land in the open window.
+                packet is C07PacketPlayerDigging && packet.status == RELEASE_USE_ITEM -> {
+                    event.cancelEvent()
+                    blinkAbort = true
+                    blinkReleased = true
+                    return@handler
+                }
+
+                // Foreign blocking packet: the frozen window already keeps the item in use, so this
+                // buys nothing and would re-arm the slow state for the packets held behind it.
+                packet is C08PacketPlayerBlockPlacement -> {
+                    event.cancelEvent()
+                    return@handler
+                }
+
+                // Foreign slot switch breaks the slot the seal relies on.
+                packet is C09PacketHeldItemChange -> blinkAbort = true
+            }
+        }
+
+        // Every position packet opens a fresh window on the server and closes the previous one.
+        if (packet is C03PacketPlayer) {
+            windowDirty = false
+            return@handler
+        }
+
+        if (!blinkRunning && blinkPhase == BlinkPhase.NONE) return@handler
+
+        when {
+            packet is C02PacketUseEntity && packet.action == C02PacketUseEntity.Action.ATTACK ->
+                windowDirty = true
+
+            packet is C09PacketHeldItemChange -> {
+                windowDirty = true
+                grimSlot = packet.slotId
+            }
+
+            packet is C08PacketPlayerBlockPlacement -> windowDirty = true
+
+            packet is C07PacketPlayerDigging && packet.status == RELEASE_USE_ITEM -> {
+                blinkAbort = true
+                blinkReleased = true
+                stopResync()
+            }
+        }
+    }
+
+    /**
+     * Knockback is resolved against a transaction boundary, so a frozen window must not be gambled
+     * on: ending it immediately is cheaper than a desynced velocity prediction.
+     */
+    val onPrediction2Receive = handler<PacketEvent> { event ->
+        if (event.eventType != EventState.RECEIVE || event.isCancelled || !blinkHolding) return@handler
+
+        when (val packet = event.packet) {
+            is S12PacketEntityVelocity -> if (packet.entityID == mc.thePlayer?.entityId) blinkKb = true
+
+            is S27PacketExplosion -> blinkKb = true
+        }
+    }
+
+    /** The queued packets belong to the old connection, so they are dropped rather than replayed. */
+    val onPrediction2WorldChange = handler<WorldChangeEvent> {
+        discardBlink()
+        resetResync()
+    }
+
+    /**
+     * True while a sword block owned by Prediction2 is up. Uses the module-wide [usingItemFunc]
+     * instead of the vanilla item-in-use flag so a block started by KillAura's auto block runs the
+     * cycle as well — every other sword mode already keys off that helper.
+     */
+    private fun prediction2Active(player: net.minecraft.client.entity.EntityPlayerSP): Boolean =
+        swordMode == "Prediction2" && usingItemFunc() && player.heldItem?.item is ItemSword
+
+    /**
+     * Advances the block cycle by one tick.
+     *
+     * Cold start (the tick the player right-clicks) deliberately sends nothing: the real blocking
+     * packet is already in this window and a slot change next to it trips the server's packet-order
+     * check. That tick runs at the true 0.2x to collect a reward, and from the next tick the cycle
+     * alternates:
+     *  - AWAY moves the slot off the sword, so the server predicts the tick un-slowed (full speed);
+     *  - BACK moves it back and re-sends the block packet, so the server blocks again. It still runs
+     *    full speed, because the slot change one tick earlier armed the exemption that clears the
+     *    flag the full-speed trajectory would otherwise raise.
+     */
+    private fun resyncTick() {
+        val player = mc.thePlayer ?: return
+        val local = player.inventory.currentItem
+
+        if (blinkPhase == BlinkPhase.NONE) {
+            grimSlot = local
+            blinkRunning = true
+            blinkFullTick = false
+            // Must leave NONE: the server is already blocking from the real packet, and staying
+            // here would re-enter this branch every tick and make the cycle unreachable.
+            blinkPhase = BlinkPhase.BACK
+            return
+        }
+
+        if (windowDirty) {
+            // A foreign action packet shares this window. Reuse the previous tick's shape rather
+            // than guess where the server state landed; two un-slowed ticks in a row is exactly
+            // what the anticheat flags, so a frozen BACK tick stays at the real 0.2x.
+            blinkFullTick = blinkPhase == BlinkPhase.AWAY
+            return
+        }
+
+        if (blinkCyclePos == 0) {
+            // AWAY: the target slot must differ from the one the server currently has, otherwise
+            // the packet is dropped as a duplicate.
+            var target = (local + 1) % 9
+            if (target == grimSlot) target = (local + 2) % 9
+            sendSlot(target)
+            blinkPhase = BlinkPhase.AWAY
+            blinkFullTick = true
+            blinkCyclePos = 1
+            return
+        }
+
+        // BACK: re-block, then immediately open the next cycle's hold window after this tick.
+        if (grimSlot != local) sendSlot(local)
+        player.heldItem?.let { sendBlock(it) }
+        blinkPhase = BlinkPhase.BACK
+        blinkFullTick = true
+        blinkDoneThisCycle = false
+        blinkCyclePos = 0
+    }
+
+    /** Leaves the cycle cleanly, moving the server's slot back if the tick stopped on AWAY. */
+    private fun stopResync() {
+        val player = mc.thePlayer
+        val needCutBack = player != null && blinkRunning && blinkPhase == BlinkPhase.AWAY &&
+            grimSlot != player.inventory.currentItem && !windowDirty
+
+        blinkPhase = BlinkPhase.NONE
+        blinkRunning = false
+        blinkCyclePos = 0
+
+        if (needCutBack) sendSlot(player.inventory.currentItem)
+    }
+
+    private fun resetResync() {
+        blinkPhase = BlinkPhase.NONE
+        blinkRunning = false
+        windowDirty = false
+        blinkCyclePos = 0
+        grimSlot = 0
+        blinkDoneThisCycle = false
+    }
+
+    private fun tryStartBlink() {
+        val player = mc.thePlayer ?: return
+        if (blinkHolding || blinkDoneThisCycle || windowDirty) return
+        if (!blinkRunning || blinkPhase != BlinkPhase.BACK) return
+        if (!prediction2Active(player)) return
+
+        synchronized(blinkLock) {
+            blinkQueue.clear()
+            blinkHeldFlying = 0
+            blinkAbort = false
+            blinkKb = false
+            blinkReleased = false
+            blinkStartNano = System.nanoTime()
+            // Opened last, inside the lock: packets arriving from another thread must either queue
+            // before this point (and be drained by the flush) or go straight out.
+            blinkHolding = true
+        }
+        blinkDoneThisCycle = true
+    }
+
+    /**
+     * Ruling of an open window. It closes once [prediction2BlinkTicks] position packets are queued
+     * and enough real time has passed for the server's movement budget to absorb the whole batch at
+     * once; an abort ends it immediately through the plain flush instead.
+     *
+     * @return true when the seal ran, meaning the caller must not advance the cycle again this tick
+     */
+    private fun blinkTick(): Boolean {
+        if (!blinkHolding) return false
+
+        val want = maxOf(1, prediction2BlinkTicks)
+        val heldMs = (System.nanoTime() - blinkStartNano) / 1.0e6
+        val timeBudgetOk = heldMs + pingMs() >= blinkHeldFlying * TICK_MS
+        val abort = blinkAbort || blinkKb || blinkReleased
+
+        if (!abort) {
+            if (blinkHeldFlying >= want && timeBudgetOk) {
+                flushBlinkSeal()
+                return true
+            }
+            return false
+        }
+
+        // Aborted before this tick's position packet was queued: replaying now would leave the
+        // synthesised release with nothing behind it. Hold one more tick, then flush normally.
+        if (blinkHeldFlying == 0) return false
+
+        flushBlink()
+        return false
+    }
+
+    /**
+     * Normal end of a window. Moves the slot off the sword and replays the backlog in its original
+     * order: the first queued position packet arrives on a mismatched slot, which both clears the
+     * server's blocking state and arms the exemption, and this tick then runs un-slowed as well.
+     */
+    private fun flushBlinkSeal() {
+        if (!blinkHolding) return
+
+        val out = drainBlink() ?: return
+        // Drained above, so the window is closed either way; with no session left there is nobody
+        // to replay the batch to.
+        val player = mc.thePlayer ?: return
+
+        val local = player.inventory.currentItem
+        var target = (local + 1) % 9
+        if (target == grimSlot) target = (local + 2) % 9
+        sendSlot(target)
+
+        for (packet in out) sendPacket(packet, false)
+
+        blinkPhase = BlinkPhase.AWAY
+        blinkCyclePos = 1
+        blinkFullTick = true
+    }
+
+    /**
+     * Abort flush. Unlike the seal it prepends a release packet, because the backlog may have been
+     * queued while the server still had the item in use and has to be predicted un-slowed.
+     */
+    private fun flushBlink() {
+        val out = drainBlink() ?: return
+
+        // A head release is only worth sending when a position packet travels with it, because that
+        // packet is what closes the release's window. The position packet does not have to be the
+        // first entry of the batch — dispatchFlush hoists the tick's own action packets in front of
+        // it — so ask whether the batch carries one at all. A batch without one holds nothing that
+        // needs un-slowing, and releasing there would drop a block the player still has up.
+        dispatchFlush(out, out.any { it is C03PacketPlayer })
+    }
+
+    /**
+     * Replays a drained batch in its original order.
+     *
+     * @param headRelease whether a release packet should open the batch. It is only worth sending
+     *                    in front of a position packet, since that is what closes its window.
+     */
+    private fun dispatchFlush(out: MutableList<Packet<*>>, headRelease: Boolean) {
+        var firstFlying = -1
+
+        if (headRelease) {
+            sendPacket(C07PacketPlayerDigging(RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN), false)
+            firstFlying = out.indexOfFirst { it is C03PacketPlayer }
+        }
+
+        if (firstFlying < 0) {
+            // Nothing to close the release window with, so the batch just goes out in order.
+            for (packet in out) sendPacket(packet, false)
+            return
+        }
+
+        // Sprint and sneak toggles belong to the tick they were queued in: send them ahead of the
+        // position packet that closes the release window, otherwise that tick is predicted with the
+        // previous sprint state.
+        for (index in 0 until firstFlying) {
+            if (out[index] is C0BPacketEntityAction) sendPacket(out[index], false)
+        }
+
+        sendPacket(out.removeAt(firstFlying), false)
+
+        for ((index, packet) in out.withIndex()) {
+            if (index < firstFlying && packet is C0BPacketEntityAction) continue
+            sendPacket(packet, false)
+        }
+    }
+
+    /** Closes the window and hands back everything it held; null when it was already closed. */
+    private fun drainBlink(): MutableList<Packet<*>>? = synchronized(blinkLock) {
+        if (!blinkHolding) return null
+
+        blinkHolding = false
+        val out = blinkQueue.toMutableList()
+        blinkQueue.clear()
+        blinkHeldFlying = 0
+        blinkAbort = false
+        blinkKb = false
+        blinkReleased = false
+        blinkStartNano = 0L
+        out
+    }
+
+    private fun discardBlink() {
+        synchronized(blinkLock) {
+            blinkHolding = false
+            blinkQueue.clear()
+            blinkHeldFlying = 0
+            blinkAbort = false
+            blinkKb = false
+            blinkReleased = false
+            blinkStartNano = 0L
+            blinkDoneThisCycle = false
+        }
+    }
+
+    /**
+     * The packets the window delays. Everything else goes out live — transaction confirmations in
+     * particular, since they are what closes the window on the server and holding them would leave
+     * it open for the whole cycle.
+     */
+    private fun isHeldPacket(packet: Packet<*>): Boolean =
+        packet is C03PacketPlayer || packet is C0BPacketEntityAction ||
+            packet is C02PacketUseEntity || packet is C0APacketAnimation
+
+    /** Silent slot switch: the local hotbar slot is deliberately left where the player put it. */
+    private fun sendSlot(slot: Int) {
+        sendPacket(C09PacketHeldItemChange(slot), false)
+        grimSlot = slot
+    }
+
+    private fun sendBlock(stack: ItemStack) = sendPacket(C08PacketPlayerBlockPlacement(stack), false)
+
+    /** Tab-list ping, or 0 when unknown, which is the conservative end of the hold-time budget. */
+    private fun pingMs(): Double {
+        val player = mc.thePlayer ?: return 0.0
+        val info = mc.netHandler?.getPlayerInfo(player.uniqueID) ?: return 0.0
+        return info.responseTime.toDouble()
     }
 
     private fun getMultiplier(item: Item?, isForward: Boolean) = when (item) {
