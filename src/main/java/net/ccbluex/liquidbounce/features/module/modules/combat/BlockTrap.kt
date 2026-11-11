@@ -37,7 +37,7 @@ import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.MovingObjectPosition
 import net.minecraft.util.Vec3
-import net.minecraftforge.event.ForgeEventFactory
+import net.ccbluex.liquidbounce.injection.lunar.ForgeCompat
 import java.awt.Color
 import kotlin.math.floor
 
@@ -327,7 +327,7 @@ object BlockTrap : Module("BlockTrap", Category.COMBAT, Category.SubCategory.COM
 
             if (stack.stackSize <= 0) {
                 player.inventory.mainInventory[SilentHotbar.currentSlot] = null
-                ForgeEventFactory.onPlayerDestroyItem(player, stack)
+                ForgeCompat.onPlayerDestroyItem(player, stack)
             } else if (stack.stackSize != prevSize || mc.playerController.isInCreativeMode) {
                 mc.entityRenderer.itemRenderer.resetEquippedProgress()
             }

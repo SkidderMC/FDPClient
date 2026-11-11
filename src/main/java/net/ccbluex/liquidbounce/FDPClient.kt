@@ -110,6 +110,12 @@ object FDPClient {
 
     var isStarting = true
 
+    var isStarted = false
+        private set
+
+    var startupFailure: Throwable? = null
+        private set
+
     // Managers
     val moduleManager = ModuleManager
     val commandManager = CommandManager
@@ -171,7 +177,9 @@ object FDPClient {
      * Execute if client will be started
      */
     fun startClient() {
+        if (isStarted) return
         isStarting = true
+        startupFailure = null
 
         LOGGER.info("Launching...")
 
@@ -282,7 +290,9 @@ object FDPClient {
 
             // Load background
             FileManager.loadBackground()
+            isStarted = true
         } catch (e: Exception) {
+            startupFailure = e
             LOGGER.error("Failed to start client: ${e.message}")
             e.showErrorPopup()
         } finally {
@@ -301,8 +311,10 @@ object FDPClient {
                 }
             }
 
-            eventManager.call(StartupEvent)
-            LOGGER.info("Successfully started client")
+            if (isStarted) {
+                eventManager.call(StartupEvent)
+                LOGGER.info("Successfully started client")
+            }
         }
     }
 

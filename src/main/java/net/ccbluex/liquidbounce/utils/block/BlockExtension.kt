@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.utils.block
 
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance.Companion.mc
+import net.ccbluex.liquidbounce.injection.lunar.ForgeCompat
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.isBlockBBValid
 import net.ccbluex.liquidbounce.utils.extensions.ceilInt
 import net.ccbluex.liquidbounce.utils.extensions.floorInt
@@ -55,7 +56,7 @@ fun BlockPos.canBeClicked(): Boolean {
         this !in world.worldBorder -> false
         !block.canCollideCheck(state, false) -> false
         block.material.isReplaceable -> false
-        block.hasTileEntity(state) -> false
+        ForgeCompat.hasTileEntity(block, state) -> false
         !isBlockBBValid(this, state, supportSlabs = true, supportPartialBlocks = true) -> false
         world.loadedEntityList.any { it is EntityFallingBlock && it.position == this } -> false
         block is BlockContainer || block is BlockWorkbench -> false

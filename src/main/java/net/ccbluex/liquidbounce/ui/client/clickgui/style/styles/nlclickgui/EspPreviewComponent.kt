@@ -290,6 +290,8 @@ class EspPreviewComponent(private val gui: NeverloseGui) : MinecraftInstance {
 
         RoundedUtil.drawRound(playerAreaX.toFloat(), playerAreaY.toFloat(), playerAreaWidth, playerAreaHeight - 8f, 3f, Color(0, 0, 0, 35))
 
+        val player = mc.thePlayer ?: return
+
         val hoveringPlayer = isHovering(playerAreaX.toFloat(), playerAreaY.toFloat(), playerAreaWidth, playerAreaHeight - 25f, mouseX, mouseY)
 
         if (hoveringPlayer && (Mouse.isButtonDown(0) || Mouse.isButtonDown(1))) {
@@ -309,8 +311,11 @@ class EspPreviewComponent(private val gui: NeverloseGui) : MinecraftInstance {
         val entityY = (playerAreaY + playerAreaHeight - 28f).toInt()
         GlStateManager.pushMatrix()
 
-        drawEntityOnScreen(entityX, entityY, customScale.toInt(), customYaw, customPitch, mc.thePlayer)
-        GlStateManager.popMatrix()
+        try {
+            drawEntityOnScreen(entityX, entityY, customScale.toInt(), customYaw, customPitch, player)
+        } finally {
+            GlStateManager.popMatrix()
+        }
 
         drawEspPreview(entityX, entityY, backgroundColor)
     }

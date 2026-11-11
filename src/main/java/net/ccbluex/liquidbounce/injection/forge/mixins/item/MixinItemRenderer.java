@@ -134,33 +134,25 @@ public abstract class MixinItemRenderer {
             } else if (abstractclientplayer.getItemInUseCount() > 0 || isForceBlocking) {
                 EnumAction enumaction = isForceBlocking ? EnumAction.BLOCK : itemToRender.getItemUseAction();
 
-                switch (enumaction) {
-                    case NONE:
-                        transformFirstPersonItem(f, 0f);
-                        break;
-                    case EAT:
-                    case DRINK:
-                        performDrinking(abstractclientplayer, partialTicks);
-                        transformFirstPersonItem(f, f1);
-                        break;
-                    case BLOCK:
-                        final Animation animation;
-
-                        if (animations.handleEvents()) {
-                            animation = animations.getAnimation();
-                        } else { // Use 1.7 animation
-                            animation = animations.getDefaultAnimation();
-                        }
-
-                        if (animation != null) {
-                            animation.transform(f1, f, abstractclientplayer);
-                        }
-
-                        break;
-                    case BOW:
-                        transformFirstPersonItem(f, f1);
-                        doBowTransformations(partialTicks, abstractclientplayer);
-                        break;
+                // Enum switches create a package-private helper that the transformed host cannot access.
+                if (enumaction == EnumAction.NONE) {
+                    transformFirstPersonItem(f, 0f);
+                } else if (enumaction == EnumAction.EAT || enumaction == EnumAction.DRINK) {
+                    performDrinking(abstractclientplayer, partialTicks);
+                    transformFirstPersonItem(f, f1);
+                } else if (enumaction == EnumAction.BLOCK) {
+                    final Animation animation;
+                    if (animations.handleEvents()) {
+                        animation = animations.getAnimation();
+                    } else { // Use 1.7 animation
+                        animation = animations.getDefaultAnimation();
+                    }
+                    if (animation != null) {
+                        animation.transform(f1, f, abstractclientplayer);
+                    }
+                } else if (enumaction == EnumAction.BOW) {
+                    transformFirstPersonItem(f, f1);
+                    doBowTransformations(partialTicks, abstractclientplayer);
                 }
             } else {
 

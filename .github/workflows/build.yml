@@ -30,8 +30,24 @@ jobs:
           ./gradlew --no-daemon setupCiWorkspace
           ./gradlew --no-daemon clean check build
 
-      - uses: actions/upload-artifact@v4
+      - name: Name the inject build
+        id: inject
+        run: |
+          VERSION="$(sed -n 's/^mod_version[[:space:]]*=[[:space:]]*//p' gradle.properties | tr -d '[:space:]')"
+          test -n "$VERSION"
+          FILE="build/inject/fdpclient-inject-${VERSION}-${GITHUB_SHA::7}.jar"
+          mkdir -p build/inject
+          cp "build/libs/fdpclient-inject-${VERSION}.jar" "$FILE"
+          echo "file=$FILE" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/upload-artifact@v7
         with:
           name: FDPClient-${{ github.sha }}
-          path: build/libs/*.jar
+          path: build/libs/FDPClient-*.jar
+          if-no-files-found: error
+
+      - uses: actions/upload-artifact@v7
+        with:
+          path: ${{ steps.inject.outputs.file }}
+          archive: false
           if-no-files-found: error

@@ -26,6 +26,7 @@ import net.montoyo.mcef.MCEF
 import net.montoyo.mcef.api.API
 import net.montoyo.mcef.api.IBrowser
 import net.montoyo.mcef.api.MCEFApi
+import net.ccbluex.liquidbounce.injection.lunar.McefCompat
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
@@ -43,8 +44,8 @@ import org.lwjgl.opengl.GL11
  *
  * The native runtime (~160 MB) is fetched once and cached in the game directory. The download runs
  * on a background thread so a fresh install never freezes the render thread; the browser itself is
- * single-threaded with a manual message loop, so it is initialized, pumped and uploaded all on the
- * render thread.
+ * single-threaded with a manual message loop, so initialization, pumping and uploads stay on the
+ * render thread. Lunar receives the frame callbacks through McefCompat.
  */
 object NextGenBrowserRuntime : MinecraftInstance, Listenable {
 
@@ -123,14 +124,18 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
     private var lastHudResizeWidth = 0
     private var lastHudResizeHeight = 0
 
+    @Suppress("unused")
     private val onGameLoop = handler<GameLoopEvent>(always = true, priority = Byte.MIN_VALUE) {
+        if (state == State.READY) McefCompat.tick()
         tickPersistentBrowser()
         tickHudBrowser()
     }
 
+    @Suppress("unused")
     private val onShutdown = handler<ClientShutdownEvent>(always = true) {
         closePersistentBrowser()
         closeHudBrowser()
+        McefCompat.shutdown()
         NextGenClickGuiServer.stop()
     }
 
@@ -702,6 +707,10 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
         }
     }
     private fun invokeMcefOnInit(proxyClass: Class<*>, instance: Any) {
+        if (java.lang.Boolean.getBoolean("fdpclient.lunar.early")) {
+            proxyClass.getMethod("onInit").invoke(instance)
+            return
+        }
         val loaderClass = Class.forName("net.minecraftforge.fml.common.Loader")
         val loadControllerClass = Class.forName("net.minecraftforge.fml.common.LoadController")
         val loader = loaderClass.getMethod("instance").invoke(null)

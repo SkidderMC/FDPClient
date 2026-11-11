@@ -20,7 +20,7 @@ import net.ccbluex.liquidbounce.utils.io.MiscUtils;
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils;
 import net.minecraft.client.gui.*;
 import net.minecraft.util.ChatComponentText;
-import net.minecraftforge.fml.client.config.GuiSlider;
+import net.ccbluex.liquidbounce.injection.lunar.ClientSlider;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -38,7 +38,7 @@ public abstract class MixinGuiDisconnected extends MixinGuiScreen {
     private int field_175353_i;
 
     private GuiButton reconnectButton;
-    private GuiSlider autoReconnectDelaySlider;
+    private ClientSlider autoReconnectDelaySlider;
     private GuiButton forgeBypassButton;
     private int reconnectTimer;
 
@@ -121,7 +121,7 @@ public abstract class MixinGuiDisconnected extends MixinGuiScreen {
 
     private void drawReconnectDelaySlider() {
         buttonList.add(autoReconnectDelaySlider =
-                new GuiSlider(2, width / 2 + 2, height / 2 + field_175353_i / 2
+                new ClientSlider(2, width / 2 + 2, height / 2 + field_175353_i / 2
                         + fontRendererObj.FONT_HEIGHT + 22, 98, 20, "AutoReconnect: ",
                         "ms", AutoReconnect.MIN, AutoReconnect.MAX, AutoReconnect.INSTANCE.getDelay(), false, true,
                         guiSlider -> {

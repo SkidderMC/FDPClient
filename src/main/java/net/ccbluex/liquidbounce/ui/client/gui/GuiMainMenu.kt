@@ -44,7 +44,7 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.client.resources.DefaultPlayerSkin
 import net.minecraft.util.ResourceLocation
-import net.minecraftforge.fml.client.GuiModList
+import net.ccbluex.liquidbounce.injection.lunar.ForgeCompat
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.GL11
@@ -87,7 +87,7 @@ class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
             javaVersion?.let {
                 when {
                     it.major == 1 && it.minor == 8 && it.update < 100 -> showOutdatedJava8Warning()
-                    it.major > 8 -> showJava11Warning()
+                    it.major > 8 && !java.lang.Boolean.getBoolean("fdpclient.lunar.early") -> showJava11Warning()
                 }
             }
             if (FileManager.firstStart) {
@@ -164,7 +164,7 @@ class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
         Util(13, "L", "Language"),
         Util(14, "M", "Forge Mods"),
         Util(16, "Q", "ClickGUI")
-    )
+    ).filter { it.id != 14 || !java.lang.Boolean.getBoolean("fdpclient.lunar.early") }
 
     private data class Social(val glyph: String, val url: String, val label: String)
 
@@ -828,7 +828,7 @@ class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
             11 -> mc.displayGuiScreen(GuiCommitInfo())
             12 -> mc.displayGuiScreen(GuiOptions(this, mc.gameSettings))
             13 -> mc.displayGuiScreen(GuiLanguage(this, mc.gameSettings, mc.languageManager))
-            14 -> mc.displayGuiScreen(GuiModList(this))
+            14 -> mc.displayGuiScreen(ForgeCompat.modList(this))
             16 -> openClickGui()
         }
     }

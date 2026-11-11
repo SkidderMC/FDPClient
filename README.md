@@ -9,6 +9,8 @@ Discord: <a href="https://discord.gg/WV6qPzyqTx">discord.gg/fdpclient </a><br>
 ## Installing FDPClient
 Click [here](docs/INSTALLING.md) for instructions on how to install FDPClient
 
+For official Lunar Client 1.8.9, use `fdpclient-inject-<version>.jar` with ZAVZ. See [Lunar setup](docs/LUNAR.md). The existing Forge installation is preserved.
+
 ## The staff team
 Click [here](docs/TEAM.md) to find learn about FDPClient's team
 

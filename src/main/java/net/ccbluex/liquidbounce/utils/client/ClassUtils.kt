@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.utils.client
 
 import net.ccbluex.liquidbounce.config.Value
-import org.apache.logging.log4j.core.config.plugins.ResolverUtil
+import net.ccbluex.liquidbounce.injection.bootstrap.ClassInventory
 import java.lang.reflect.Modifier
 
 object ClassUtils {
@@ -46,27 +46,15 @@ object ClassUtils {
     }.filterIsInstance<Value<*>>()
 
     /**
-     * scan classes with specified superclass like what Reflections do but with log4j [ResolverUtil]
+     * Scan classes with a specified superclass using the owning class loader's package inventory.
      * @author liulihaocai
      */
     fun <T : Any> resolvePackage(packagePath: String, klass: Class<T>): List<Class<out T>> {
-        // use resolver in log4j to scan classes in target package
-        val resolver = ResolverUtil()
-
-        // set class loader
-        resolver.classLoader = klass.classLoader
-
-        // set package to scan
-        resolver.findInPackage(object : ResolverUtil.ClassTest() {
-            override fun matches(type: Class<*>): Boolean {
-                return true
-            }
-        }, packagePath)
-
         // use a list to cache classes
         val list = mutableListOf<Class<out T>>()
 
-        for(resolved in resolver.classes) {
+        for (name in ClassInventory.names(klass.classLoader, packagePath)) {
+            val resolved = Class.forName(name, false, klass.classLoader)
             resolved.declaredMethods.find {
                 Modifier.isNative(it.modifiers)
             }?.let {

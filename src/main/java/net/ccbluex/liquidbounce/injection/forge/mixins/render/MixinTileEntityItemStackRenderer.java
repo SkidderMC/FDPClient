@@ -20,6 +20,7 @@ import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.tileentity.TileEntityEnderChest;
 import net.minecraft.tileentity.TileEntitySkull;
 import net.minecraft.util.EnumFacing;
+import net.ccbluex.liquidbounce.injection.lunar.ForgeCompat;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.asm.mixin.Mixin;
@@ -89,7 +90,7 @@ public class MixinTileEntityItemStackRenderer {
             } else if (block == Blocks.trapped_chest) {
                 TileEntityRendererDispatcher.instance.renderTileEntityAt(field_147718_c, 0, 0, 0, 0f);
             } else if (block != Blocks.chest)
-                net.minecraftforge.client.ForgeHooksClient.renderTileItem(itemStackIn.getItem(), itemStackIn.getMetadata());
+                ForgeCompat.renderTileItem(itemStackIn.getItem(), itemStackIn.getMetadata());
             else {
                 TileEntityRendererDispatcher.instance.renderTileEntityAt(field_147717_b, 0, 0, 0, 0f);
             }

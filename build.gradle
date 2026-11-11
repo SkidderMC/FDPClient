@@ -12,7 +12,20 @@ plugins {
 repositories {
     mavenCentral()
     maven { url = "https://repo.spongepowered.org/repository/maven-public/" }
+    maven { url = "https://repo.spongepowered.org/maven/" }
     maven { url = "https://jitpack.io/" }
+}
+
+// ForgeGradle prepends Forge's Maven mirror. Resolve ordinary libraries from their
+// publishers instead: large Kotlin downloads from that mirror can be truncated.
+repositories.all { repository ->
+    if (repository instanceof MavenArtifactRepository && repository.url.host == "maven.minecraftforge.net") {
+        repository.content {
+            includeGroupByRegex "net\\.minecraftforge(\\..*)?"
+            includeGroupByRegex "de\\.oceanlabs(\\..*)?"
+            includeGroup "net.minecraft"
+        }
+    }
 }
 
 archivesBaseName = project.archives_base_name
@@ -72,13 +85,108 @@ minecraft {
 }
 
 configurations {
+    lunarMixin
+    lunarEngineLibraries
+    lunarAsm
+    lunarScriptEngine
     external
     compile.extendsFrom(external)
 
     runtimeOnly.canBeResolved = true
 }
 
+// The injection boundary has no dependency on FDP's Kotlin classes or Forge initialization.
+sourceSets {
+    lunar {
+        java.srcDir "src/lunar/java"
+        compileClasspath += sourceSets.main.compileClasspath
+    }
+    lunarTest {
+        java.srcDir "src/lunarTest/java"
+        compileClasspath += sourceSets.lunar.output + sourceSets.lunar.compileClasspath
+        runtimeClasspath += output + compileClasspath
+    }
+    lunarEngine {
+        java.srcDir "src/lunarEngine/java"
+        compileClasspath = configurations.lunarMixin + sourceSets.lunar.compileClasspath + sourceSets.lunar.output
+    }
+}
+
+tasks.register("generateLunarEngineServices") {
+    def directory = file("${buildDir}/generated/lunarEngine/META-INF/services")
+    outputs.dir(directory)
+    doLast {
+        directory.mkdirs()
+        new File(directory, "net.ccbluex.liquidbounce.libraries.mixin.service.IMixinService").text =
+            "net.ccbluex.liquidbounce.injection.lunar.engine.RuntimeMixinService\n"
+        new File(directory, "net.ccbluex.liquidbounce.libraries.mixin.service.IGlobalPropertyService").text =
+            "net.ccbluex.liquidbounce.injection.lunar.engine.RuntimeProperties\n"
+    }
+}
+sourceSets.lunarEngine.resources.srcDir("${buildDir}/generated/lunarEngine")
+tasks.named("processLunarEngineResources") { dependsOn("generateLunarEngineServices") }
+
+sourceSets.main.compileClasspath += sourceSets.lunar.output
+sourceSets.main.runtimeClasspath += sourceSets.lunar.output
+sourceSets.test.runtimeClasspath += sourceSets.lunar.output
+
+tasks.register("generateLunarMixins") {
+    def source = file("src/main/resources/fdpclient.forge.mixins.json")
+    def output = file("${buildDir}/generated/lunar/fdpclient.lunar.mixins.json")
+    inputs.file(source)
+    outputs.file(output)
+    doLast {
+        def config = new groovy.json.JsonSlurper().parse(source)
+        config.minVersion = "0.8"
+        config.refmap = "fdpclient.lunar.refmap.json"
+        config.mixins.removeAll { it in ["gui.MixinGuiButtonExt", "gui.MixinGuiSlider"] }
+        config.client.removeAll { it == "client.MixinMcefExampleMod" }
+        config.injectors = [defaultRequire: 0]
+        output.parentFile.mkdirs()
+        output.text = groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(config))
+    }
+}
+
+sourceSets.lunar.resources.srcDir("${buildDir}/generated/lunar")
+tasks.named("processLunarResources") { dependsOn("generateLunarMixins") }
+tasks.named("compileKotlin") { dependsOn("lunarClasses") }
+tasks.named("compileJava") { dependsOn("lunarClasses") }
+
+tasks.register("verifyLunarBridge", JavaExec) {
+    group = "verification"
+    description = "Checks Lunar mapping parsing, bytecode adaptation and payload class-loader isolation."
+    dependsOn("lunarTestClasses")
+    classpath = sourceSets.lunarTest.runtimeClasspath
+    main = "net.ccbluex.liquidbounce.injection.bootstrap.LunarBridgeVerification"
+}
+
+check.dependsOn("verifyLunarBridge")
+
+tasks.register("verifyLunarArtifact", Exec) {
+    group = "verification"
+    description = "Verifies that the production JAR preserves Forge and includes the Lunar entry and remapped hooks."
+    dependsOn("lunarAgentJar", "lunarBundleJar")
+    commandLine System.getProperty("os.name").toLowerCase().contains("windows") ? "python" : "python3",
+        "verification/verify_lunar_artifact.py", "${buildDir}/libs/${archivesBaseName}-${project.version}.jar",
+        "--agent", "${buildDir}/lunar-engine/fdpclient-inject-bootstrap.jar",
+        "--bundle", "${buildDir}/libs/fdpclient-inject-${project.version}.jar"
+}
+
+check.dependsOn("verifyLunarArtifact")
+
 dependencies {
+    implementation("org.ow2.asm:asm:9.7.1")
+    implementation("org.ow2.asm:asm-tree:9.7.1")
+    implementation("org.ow2.asm:asm-commons:9.7.1")
+    implementation("org.ow2.asm:asm-util:9.7.1")
+    lunarAsm "org.ow2.asm:asm:9.7.1"
+    lunarAsm "org.ow2.asm:asm-tree:9.7.1"
+    lunarAsm "org.ow2.asm:asm-commons:9.7.1"
+    lunarAsm "org.ow2.asm:asm-util:9.7.1"
+    lunarMixin("org.spongepowered:mixin:0.8.7") { transitive = false }
+    lunarScriptEngine "org.openjdk.nashorn:nashorn-core:15.7"
+    lunarEngineLibraries("com.google.guava:guava:21.0") { transitive = false }
+    lunarEngineLibraries("com.google.code.gson:gson:2.10.1") { transitive = false }
     annotationProcessor("org.spongepowered:mixin:0.7.11-SNAPSHOT")
     implementation("org.spongepowered:mixin:0.7.11-SNAPSHOT") {
         transitive = false
@@ -228,6 +336,10 @@ tasks.register("verifyBundledLibraries") {
 check.dependsOn("verifyBundledLibraries")
 
 shadowJar {
+    exclude "META-INF/*.SF", "META-INF/*.RSA", "META-INF/*.DSA"
+    from sourceSets.lunar.output
+    // Forge's Mixin remapper must share Forge's org.objectweb.asm type identity.
+    // The Lunar runtime copy and its separate agent isolate ASM instead.
     archiveClassifier.set("")
     duplicatesStrategy DuplicatesStrategy.EXCLUDE
 
@@ -245,6 +357,12 @@ shadowJar {
     // FML scans every .class entry with ASM 5, which rejects class files newer than Java 8
     // (major > 52) and then ignores the WHOLE mod jar. Fail the build instead.
     doLast {
+        def packagedClient = archiveFile.get().asFile
+        project.javaexec {
+            classpath = sourceSets.lunar.output + project.configurations.lunarAsm
+            main = "net.ccbluex.liquidbounce.injection.bootstrap.McefJarCompat"
+            args packagedClient.absolutePath
+        }
         def badClasses = []
         def zip = new java.util.zip.ZipFile(archiveFile.get().asFile)
         try {
@@ -339,6 +457,7 @@ jar {
             "TweakOrder": "0",
             "FMLAT": "fdpclient_at.cfg",
             "Main-Class": "net.setup.FDPInstructionsKt",
+            "FDP-Lunar-Mode": "javaagent-1.8.9",
     )
 
     enabled = false
@@ -368,7 +487,105 @@ configurations {
 }
 
 tasks.reobfShadowJar.mustRunAfter("shadowJar")
-tasks.reobfJar.dependsOn("shadowJar")
+// jar is disabled above; only the shaded artifact may own production reobfuscation.
+tasks.reobfJar.enabled = false
+tasks.assemble.dependsOn("reobfShadowJar")
+
+// The separate Lunar agent can carry Java 11 scripting classes; the Forge mod remains Java 8.
+tasks.register("lunarScriptsJar", com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
+    archiveClassifier.set("lunar-scripts")
+    destinationDirectory.set(file("${buildDir}/lunar-engine"))
+    configurations = [project.configurations.lunarScriptEngine]
+    exclude "META-INF/*.SF", "META-INF/*.RSA", "META-INF/*.DSA", "module-info.class", "META-INF/versions/**"
+    relocate "org.objectweb.asm", "net.ccbluex.liquidbounce.libraries.lunar.scriptAsm"
+}
+
+tasks.register("lunarAgentJar", com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
+    group = "build"
+    description = "Builds the small early-start agent for Lunar, alongside the unchanged Forge mod JAR."
+    dependsOn("reobfShadowJar", "lunarScriptsJar")
+    archiveFileName.set("fdpclient-inject-bootstrap.jar")
+    destinationDirectory.set(file("${buildDir}/lunar-engine"))
+    doFirst {
+        delete fileTree(file("${buildDir}/libs")) {
+            include "${archivesBaseName}-*-lunar-agent.jar", "${archivesBaseName}-*-lunar.jar"
+        }
+    }
+    configurations = []
+    exclude "META-INF/*.SF", "META-INF/*.RSA", "META-INF/*.DSA"
+    exclude "module-info.class", "META-INF/versions/**"
+    from sourceSets.lunarEngine.output
+    from(sourceSets.lunar.output) { include "net/ccbluex/liquidbounce/injection/bootstrap/**" }
+    from({ zipTree(tasks.lunarScriptsJar.archiveFile.get().asFile) }) { exclude "META-INF/MANIFEST.MF" }
+    from({ project.configurations.lunarAsm.collect { zipTree(it) } }) { exclude "META-INF/MANIFEST.MF" }
+    from({ project.configurations.lunarMixin.collect { zipTree(it) } }) {
+        exclude "META-INF/MANIFEST.MF", "META-INF/services/**", "META-INF/versions/**"
+        exclude "org/spongepowered/tools/**"
+        exclude "org/spongepowered/asm/launch/MixinLaunchPlugin.class"
+        exclude "org/spongepowered/asm/launch/MixinTransformationService.class"
+        exclude "org/spongepowered/asm/launch/platform/container/ContainerHandleModLauncherEx*.class"
+    }
+    from({ project.configurations.lunarEngineLibraries.collect { zipTree(it) } }) {
+        exclude "META-INF/MANIFEST.MF", "META-INF/services/**"
+    }
+    relocate "org.spongepowered.asm", "net.ccbluex.liquidbounce.libraries.mixin"
+    relocate "org.objectweb.asm", "net.ccbluex.liquidbounce.libraries.asm"
+    relocate "com.google.common", "net.ccbluex.liquidbounce.libraries.mixinGuava"
+    relocate "com.google.gson", "net.ccbluex.liquidbounce.libraries.mixinGson"
+    manifest.attributes(
+        "Premain-Class": "net.ccbluex.liquidbounce.injection.bootstrap.LunarAgent",
+        "Agent-Class": "net.ccbluex.liquidbounce.injection.bootstrap.LunarAgent",
+        "FDP-Payload-File": "${archivesBaseName}-${project.version}.jar"
+    )
+}
+
+tasks.build.dependsOn("lunarAgentJar")
+
+tasks.register("lunarBundleJar", Jar) {
+    group = "build"
+    description = "Packages the current Lunar agent and its payload for ZAVZ native delivery."
+    dependsOn("lunarAgentJar", "reobfShadowJar")
+    archiveClassifier.set("lunar")
+    archiveFileName.set("fdpclient-inject-${project.version}.jar")
+    from({ zipTree(tasks.lunarAgentJar.archiveFile.get().asFile) }) { exclude "META-INF/MANIFEST.MF" }
+    from(tasks.shadowJar.archiveFile) { rename { "FDPClient.jar" } }
+    manifest.attributes(
+        "Premain-Class": "net.ccbluex.liquidbounce.injection.bootstrap.LunarAgent",
+        "Agent-Class": "net.ccbluex.liquidbounce.injection.bootstrap.LunarAgent",
+        "FDP-Lunar-Bundle": "1.8.9",
+        "FDP-Payload-Resource": "FDPClient.jar"
+    )
+}
+tasks.build.dependsOn("lunarBundleJar")
+
+// Keep the optional sibling ZAVZ checkout on the same payload after every build.
+tasks.register("stageLunarForZavz", Copy) {
+    group = "build"
+    description = "Updates the current Lunar bundle in an existing YZYInjector checkout."
+    dependsOn("lunarBundleJar")
+    def zavz = file(findProperty("zavzDir") ?: "../YZYInjector")
+    onlyIf { new File(zavz, "src-tauri/Cargo.toml").isFile() }
+    from(tasks.lunarBundleJar.archiveFile) { rename { "fdpclient-inject.jar" } }
+    into(new File(zavz, "src/load"))
+}
+tasks.build.dependsOn("stageLunarForZavz")
+
+tasks.register("verifyLunarShadedBridge", JavaExec) {
+    group = "verification"
+    description = "Runs the injection checks against the actual shaded agent, including descriptor relocation."
+    dependsOn("lunarAgentJar", "lunarTestClasses")
+    classpath = files(tasks.lunarAgentJar.archiveFile) + sourceSets.lunarTest.runtimeClasspath
+    main = "net.ccbluex.liquidbounce.injection.bootstrap.LunarBridgeVerification"
+}
+check.dependsOn("verifyLunarShadedBridge")
+
+tasks.register("writeSmokeClasspath") {
+    group = "verification"
+    description = "Writes the mapped compile classpath for real-game compatibility probes."
+    def output = file("${buildDir}/smoke-classpath.txt")
+    outputs.file(output)
+    doLast { output.text = sourceSets.main.compileClasspath.asPath }
+}
 
 tasks.register('copyZipInclude', Copy) {
     from 'zip_include/'

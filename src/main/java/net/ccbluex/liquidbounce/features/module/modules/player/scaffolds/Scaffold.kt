@@ -50,7 +50,7 @@ import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
 import net.minecraft.potion.Potion
 import net.minecraft.util.*
 import net.minecraft.world.WorldSettings
-import net.minecraftforge.event.ForgeEventFactory
+import net.ccbluex.liquidbounce.injection.lunar.ForgeCompat
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 import kotlin.math.*
@@ -1650,7 +1650,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
 
             if (stack.stackSize <= 0) {
                 thePlayer.inventory.mainInventory[SilentHotbar.currentSlot] = null
-                ForgeEventFactory.onPlayerDestroyItem(thePlayer, stack)
+                ForgeCompat.onPlayerDestroyItem(thePlayer, stack)
             } else if (!suppressFirstPersonSwitchAnimation && (stack.stackSize != prevSize || mc.playerController.isInCreativeMode)) {
                 mc.entityRenderer.itemRenderer.resetEquippedProgress()
             }

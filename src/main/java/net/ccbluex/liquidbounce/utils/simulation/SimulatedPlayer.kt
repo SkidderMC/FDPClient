@@ -37,7 +37,7 @@ import net.minecraft.world.biome.BiomeGenBase
 import net.minecraft.world.border.WorldBorder
 import net.minecraft.world.chunk.Chunk
 import net.minecraft.world.chunk.IChunkProvider
-import net.minecraftforge.common.ForgeModContainer
+import net.ccbluex.liquidbounce.injection.lunar.ForgeCompat
 import kotlin.math.abs
 import kotlin.math.ceil
 
@@ -1209,7 +1209,7 @@ class SimulatedPlayer(
         val isSpectator = this.isSpectator
         return if (isSpectator) {
             false
-        } else if (!ForgeModContainer.fullBoundingBoxLadders) {
+        } else if (!ForgeCompat.fullBoundingBoxLadders()) {
             block != null && block.isLadder(world, pos, entity)
         } else {
             val bb = this.box

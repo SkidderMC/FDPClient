@@ -6,9 +6,7 @@
 package net.ccbluex.liquidbounce.utils.attack
 
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.runTimeTicks
-import net.minecraftforge.client.event.MouseEvent
-import net.minecraftforge.common.MinecraftForge
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper
+import net.ccbluex.liquidbounce.injection.lunar.ForgeCompat
 import org.lwjgl.input.Mouse
 import java.nio.ByteBuffer
 
@@ -42,14 +40,9 @@ object CPSCounter {
     }
 
     fun setMouseButtonState(mouseButton: Int, held: Boolean) {
-        val m = MouseEvent()
-        ObfuscationReflectionHelper.setPrivateValue(MouseEvent::class.java, m, mouseButton, "button")
-        ObfuscationReflectionHelper.setPrivateValue(MouseEvent::class.java, m, held, "buttonstate")
-        MinecraftForge.EVENT_BUS.post(m)
-        val buttons = ObfuscationReflectionHelper.getPrivateValue<ByteBuffer, Mouse?>(
-            Mouse::class.java, null, "buttons"
-        )
+        ForgeCompat.postMouseEvent(mouseButton, held)
+        val field = Mouse::class.java.getDeclaredField("buttons").apply { isAccessible = true }
+        val buttons = field.get(null) as ByteBuffer
         buttons.put(mouseButton, (if (held) 1 else 0).toByte())
-        ObfuscationReflectionHelper.setPrivateValue<Mouse?, ByteBuffer>(Mouse::class.java, null, buttons, "buttons")
     }
 }

@@ -35,6 +35,12 @@ object Remapper {
     fun loadSrg() {
         if (mappingsLoaded) return
 
+        // Lunar's installed mappings already expose MCP names to scripts.
+        if (java.lang.Boolean.getBoolean("fdpclient.lunar.early")) {
+            mappingsLoaded = true
+            return
+        }
+
         synchronized(this) {
             if (mappingsLoaded) return
 

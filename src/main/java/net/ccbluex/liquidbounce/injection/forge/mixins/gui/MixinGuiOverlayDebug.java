@@ -19,7 +19,7 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.ccbluex.liquidbounce.injection.lunar.ForgeCompat;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -84,21 +84,14 @@ public abstract class MixinGuiOverlayDebug {
             EnumFacing enumfacing = entity.getHorizontalFacing();
             String s = "Invalid";
 
-            switch (enumfacing) {
-                case NORTH:
-                    s = "Towards negative Z";
-                    break;
-                case SOUTH:
-                    s = "Towards positive Z";
-                    break;
-                case WEST:
-                    s = "Towards negative X";
-                    break;
-                case EAST:
-                    s = "Towards positive X";
-                    break;
-                default:
-                    break;
+            if (enumfacing == EnumFacing.NORTH) {
+                s = "Towards negative Z";
+            } else if (enumfacing == EnumFacing.SOUTH) {
+                s = "Towards positive Z";
+            } else if (enumfacing == EnumFacing.WEST) {
+                s = "Towards negative X";
+            } else if (enumfacing == EnumFacing.EAST) {
+                s = "Towards positive X";
             }
 
             list.add("Minecraft 1.8.9 (1.8.9/" + ClientBrandRetriever.getClientModName() + ")");
@@ -216,7 +209,7 @@ public abstract class MixinGuiOverlayDebug {
 
         if (!this.isReducedDebug()) {
             if (brandSpoofer.handleEvents() && lunarSelected) {
-                list.removeAll(FMLCommonHandler.instance().getBrandings(false));
+                list.removeAll(ForgeCompat.brandings());
                 for (int i = 0; i < list.size(); i++) {
                     String line = list.get(i);
                     if (line.startsWith("Java:")) {

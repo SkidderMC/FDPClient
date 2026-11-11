@@ -6,6 +6,8 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.client;
 
 import net.ccbluex.liquidbounce.FDPClient;
+import net.ccbluex.liquidbounce.injection.lunar.LunarRuntime;
+import net.ccbluex.liquidbounce.injection.lunar.ForgeCompat;
 import net.ccbluex.liquidbounce.features.module.modules.combat.HitSelect;
 import net.ccbluex.liquidbounce.features.module.modules.combat.NoMissCooldown;
 import net.ccbluex.liquidbounce.features.module.modules.combat.TickBase;
@@ -104,6 +106,7 @@ public abstract class MixinMinecraft {
 
     @Inject(method = "run", at = @At("HEAD"))
     private void init(CallbackInfo callbackInfo) {
+        LunarRuntime.prepareEarly();
         if (displayWidth < 1067) displayWidth = 1067;
 
         if (displayHeight < 622) displayHeight = 622;
@@ -180,9 +183,16 @@ public abstract class MixinMinecraft {
 
     @Unique
     private long fdp$lastFrame = fdp$getTime();
+    @Unique
+    private boolean fdp$runtimeReady;
 
     @Inject(method = "runGameLoop", at = @At("HEAD"))
     private void runGameLoop(final CallbackInfo callbackInfo) {
+        if (!fdp$runtimeReady) {
+            fdp$runtimeReady = true;
+            System.setProperty("fdpclient.ready", "true");
+            if (Boolean.getBoolean("fdpclient.lunar.early")) System.setProperty("fdpclient.lunar.ready", "true");
+        }
         final long currentTime = fdp$getTime();
         final int deltaTime = (int) (currentTime - fdp$lastFrame);
         fdp$lastFrame = currentTime;
@@ -302,7 +312,7 @@ public abstract class MixinMinecraft {
             IBlockState blockState = theWorld.getBlockState(blockPos);
             // Don't spam-click when interacting with a TileEntity (chests, ...)
             // Doesn't prevent spam-clicking anvils, crafting tables, ... (couldn't figure out a non-hacky way)
-            if (blockState.getBlock().hasTileEntity(blockState)) return;
+            if (ForgeCompat.hasTileEntity(blockState.getBlock(), blockState)) return;
             // Return if not facing a block
         } else if (fastPlace.getFacingBlocks()) return;
 

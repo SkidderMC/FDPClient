@@ -10,6 +10,9 @@ Latest [github-actions](https://github.com/SkidderMC/FDPClient/actions/workflows
 Discord: [dsc.gg/fdpdiscord](https://dsc.gg/fdpdiscord)
 
 ## Setting up a Workspace
+
+Use Java 8 for the Gradle wrapper and Python 3 for the packaging checks. On Windows, set `JAVA_HOME` or add `java.home=C:/path/to/jdk8` to an ignored `local.properties` file. `gradlew.bat check build` produces the Forge mod and the self-contained FDPClient Inject bundle. See [Lunar setup](LUNAR.md).
+
 FDPClient uses gradle, so make sure that it is installed properly. Instructions can be found on [Gradle's website](https://gradle.org/install/).
 1. Clone the repository using `git clone https://github.com/SkidderMC/FDPClient.git` (Make sure you have git or Github Desktop installed on your system).
 2. CD into the local repository folder.

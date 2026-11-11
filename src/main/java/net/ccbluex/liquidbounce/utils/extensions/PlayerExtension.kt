@@ -39,7 +39,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.*
-import net.minecraftforge.event.ForgeEventFactory
+import net.ccbluex.liquidbounce.injection.lunar.ForgeCompat
 import kotlin.math.cos
 
 /**
@@ -266,7 +266,7 @@ fun EntityPlayerSP.onPlayerRightClick(
 
     val item = stack?.item
 
-    if (item?.onItemUseFirst(stack, this, worldObj, clickPos, side, facingX, facingY, facingZ) == true)
+    if (ForgeCompat.onItemUseFirst(item, stack, this, worldObj, clickPos, side, facingX, facingY, facingZ))
         return true
 
     val blockState = clickPos.state
@@ -302,7 +302,7 @@ fun EntityPlayerSP.onPlayerRightClick(
             stack.itemDamage = prevMetadata
             stack.stackSize = prevSize
         } else if (stack.stackSize <= 0) {
-            ForgeEventFactory.onPlayerDestroyItem(this, stack)
+            ForgeCompat.onPlayerDestroyItem(this, stack)
         }
     }
 }
@@ -323,7 +323,7 @@ fun EntityPlayerSP.sendUseItem(stack: ItemStack): Boolean {
     return if (newStack != stack || newStack.stackSize != prevSize) {
         if (newStack.stackSize <= 0) {
             mc.thePlayer.inventory.mainInventory[SilentHotbar.currentSlot] = null
-            ForgeEventFactory.onPlayerDestroyItem(mc.thePlayer, newStack)
+            ForgeCompat.onPlayerDestroyItem(mc.thePlayer, newStack)
         } else
             mc.thePlayer.inventory.mainInventory[SilentHotbar.currentSlot] = newStack
 

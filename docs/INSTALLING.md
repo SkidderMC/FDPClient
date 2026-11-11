@@ -10,6 +10,9 @@ Latest [github-actions](https://github.com/SkidderMC/FDPClient/actions/workflows
 Discord: [dsc.gg/fdpdiscord](https://dsc.gg/fdpdiscord)
 
 ## How To Install FDP?
+
+For Lunar Client 1.8.9, follow [the Lunar instructions](LUNAR.md). The steps below remain the Forge installation.
+
 - **Step 1:** Install Java 8 [here](https://www.java.com/en/download/) (Skip if you have Java 8)
 - **Step 2:** Install Forge 1.8.9 [here](https://maven.minecraftforge.net/net/minecraftforge/forge/1.8.9-11.15.1.2318-1.8.9/forge-1.8.9-11.15.1.2318-1.8.9-installer.jar) (Skip if you have Forge)
 - **Step 3:** Start Forge and then close it

@@ -37,7 +37,7 @@ import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.C0APacketAnimation
 import net.minecraft.util.*
-import net.minecraftforge.event.ForgeEventFactory
+import net.ccbluex.liquidbounce.injection.lunar.ForgeCompat
 import kotlin.math.min
 
 object MLG : NoFallMode("MLG") {
@@ -281,7 +281,7 @@ object MLG : NoFallMode("MLG") {
 
             if (stack.stackSize <= 0) {
                 player.inventory.mainInventory[SilentHotbar.currentSlot] = null
-                ForgeEventFactory.onPlayerDestroyItem(player, stack)
+                ForgeCompat.onPlayerDestroyItem(player, stack)
             } else if (stack.stackSize != prevSize || mc.playerController.isInCreativeMode) {
                 mc.entityRenderer.itemRenderer.resetEquippedProgress()
             }
