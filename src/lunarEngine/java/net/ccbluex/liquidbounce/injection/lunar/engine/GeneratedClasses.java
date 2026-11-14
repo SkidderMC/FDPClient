@@ -38,18 +38,26 @@ final class GeneratedClasses {
             byte[] generated = transformer.generateClass(MixinEnvironment.getCurrentEnvironment(), name);
             if (generated == null) continue;
             try {
-                Path root = Paths.get(System.getProperty("fdpclient.lunar.generatedClasses")).toAbsolutePath().normalize();
-                Path file = root.resolve(name.replace('.', '/') + ".class").normalize();
-                if (!file.startsWith(root)) throw new IOException("Invalid generated class name: " + name);
-                Files.createDirectories(file.getParent());
-                Files.write(file, generated);
-                byte[] existing = cache().putIfAbsent(name, generated);
-                if (existing != null && !Arrays.equals(existing, generated)) throw new IOException("Generated class collision: " + name);
-                REGISTERED.add(name);
+                publish(name, generated);
             } catch (ReflectiveOperationException | IOException failure) {
                 throw new IllegalStateException("Cannot publish Mixin helper " + name, failure);
             }
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    static void publish(String name, byte[] generated) throws ReflectiveOperationException, IOException {
+        if (REGISTERED.contains(name)) return;
+        Path root = Paths.get(System.getProperty("fdpclient.lunar.generatedClasses")).toAbsolutePath().normalize();
+        Path file = root.resolve(name.replace('.', '/') + ".class").normalize();
+        if (!file.startsWith(root)) throw new IOException("Invalid generated class name: " + name);
+        Files.createDirectories(file.getParent());
+        Files.write(file, generated);
+        byte[] existing = cache().putIfAbsent(name, generated);
+        if (existing != null && !Arrays.equals(existing, generated)) throw new IOException("Generated class collision: " + name);
+        Object metadata = System.getProperties().get("fdpclient.lunar.bakedClasses");
+        if (metadata instanceof Map) ((Map<String, byte[]>) metadata).put(name, generated);
+        REGISTERED.add(name);
     }
 
     @SuppressWarnings("unchecked")

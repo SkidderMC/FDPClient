@@ -47,6 +47,9 @@ public final class MemberAccess {
                 if (method.getName().equals(name) && MethodType.methodType(method.getReturnType(), method.getParameterTypes())
                     .toMethodDescriptorString().equals(descriptor)) return method;
             }
+        }
+        // Class implementations take precedence over inherited abstract interface declarations.
+        for (Class<?> current = type; current != null; current = current.getSuperclass()) {
             for (Class<?> itf : current.getInterfaces()) {
                 try { return method(itf, name, descriptor); } catch (NoSuchMethodException next) { }
             }

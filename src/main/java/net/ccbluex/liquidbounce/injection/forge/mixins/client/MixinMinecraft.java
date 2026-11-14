@@ -116,6 +116,7 @@ public abstract class MixinMinecraft {
 
     @Inject(method = "runGameLoop", at = @At(value = "INVOKE", target = "Lnet/minecraft/profiler/Profiler;startSection(Ljava/lang/String;)V", ordinal = 1))
     private void hook(CallbackInfo ci) {
+        LunarRuntime.frame();
         EventManager.INSTANCE.call(GameLoopEvent.INSTANCE);
     }
 

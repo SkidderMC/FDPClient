@@ -55,4 +55,43 @@ final class MemberMetadata {
         TYPES.put(owner, parsed);
         return parsed;
     }
+
+    static String commonSuperClass(String first, String second) {
+        if (first.equals(second)) return first;
+        try {
+            if (first.startsWith("[") && second.startsWith("[")) {
+                String a = first.substring(1), b = second.substring(1);
+                if ((a.startsWith("L") || a.startsWith("[")) && (b.startsWith("L") || b.startsWith("["))) {
+                    String aa = a.startsWith("L") ? a.substring(1, a.length() - 1) : a;
+                    String bb = b.startsWith("L") ? b.substring(1, b.length() - 1) : b;
+                    String common = commonSuperClass(aa, bb);
+                    return common.startsWith("[") ? "[" + common : "[L" + common + ";";
+                }
+                return "java/lang/Object";
+            }
+            if (first.startsWith("[") || second.startsWith("[")) {
+                String other = first.startsWith("[") ? second : first;
+                return other.equals("java/lang/Cloneable") || other.equals("java/io/Serializable") ? other : "java/lang/Object";
+            }
+            if (assignable(first, second, new HashSet<>())) return first;
+            if (assignable(second, first, new HashSet<>())) return second;
+            String parent = first;
+            while (!parent.equals("java/lang/Object")) {
+                Info metadata = type(parent);
+                if ((metadata.access & org.objectweb.asm.Opcodes.ACC_INTERFACE) != 0 || metadata.parents.isEmpty()) return "java/lang/Object";
+                parent = metadata.parents.get(0);
+                if (assignable(parent, second, new HashSet<>())) return parent;
+            }
+            return parent;
+        } catch (Exception failure) {
+            throw new IllegalStateException("Cannot compute Lunar stack frames for " + first + " and " + second, failure);
+        }
+    }
+
+    private static boolean assignable(String target, String source, Set<String> seen) throws Exception {
+        if (target.equals(source) || target.equals("java/lang/Object")) return true;
+        if (!seen.add(source)) return false;
+        for (String parent : type(source).parents) if (assignable(target, parent, seen)) return true;
+        return false;
+    }
 }

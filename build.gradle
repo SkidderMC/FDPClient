@@ -535,6 +535,8 @@ tasks.register("lunarAgentJar", com.github.jengelman.gradle.plugins.shadow.tasks
     manifest.attributes(
         "Premain-Class": "net.ccbluex.liquidbounce.injection.bootstrap.LunarAgent",
         "Agent-Class": "net.ccbluex.liquidbounce.injection.bootstrap.LunarAgent",
+        "Can-Redefine-Classes": "true",
+        "Can-Retransform-Classes": "true",
         "FDP-Payload-File": "${archivesBaseName}-${project.version}.jar"
     )
 }
@@ -552,8 +554,11 @@ tasks.register("lunarBundleJar", Jar) {
     manifest.attributes(
         "Premain-Class": "net.ccbluex.liquidbounce.injection.bootstrap.LunarAgent",
         "Agent-Class": "net.ccbluex.liquidbounce.injection.bootstrap.LunarAgent",
+        "Can-Redefine-Classes": "true",
+        "Can-Retransform-Classes": "true",
         "FDP-Lunar-Bundle": "1.8.9",
-        "FDP-Payload-Resource": "FDPClient.jar"
+        "FDP-Payload-Resource": "FDPClient.jar",
+        "FDP-Lunar-Runtime-Attach": "true"
     )
 }
 tasks.build.dependsOn("lunarBundleJar")

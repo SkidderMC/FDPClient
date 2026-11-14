@@ -17,6 +17,7 @@ import java.security.*;
 import java.util.*;
 import java.util.jar.*;
 import java.util.regex.*;
+import java.util.concurrent.*;
 
 /** Early entry: the small agent JAR deliberately contains no FDP application or Minecraft classes. */
 public final class LunarAgent implements ClassFileTransformer {
@@ -31,6 +32,10 @@ public final class LunarAgent implements ClassFileTransformer {
     private volatile Throwable failure;
     private Method mixinTransform;
     private Method memberAccess;
+    private Method lateMinecraft;
+    private Method latePayload;
+    private volatile boolean lateMode;
+    private volatile boolean lateCancelled;
 
     private LunarAgent(Instrumentation instrumentation, File payload) {
         this.instrumentation = instrumentation;
@@ -41,22 +46,26 @@ public final class LunarAgent implements ClassFileTransformer {
         install(argument, instrumentation);
     }
 
-    /** Native delivery still happens before Minecraft: loaded mixin targets cannot change their schema. */
+    /** Uses schema-preserving companions when Minecraft classes are already loaded. */
     public static void agentmain(String argument, Instrumentation instrumentation) throws Exception {
         try {
             boolean lunar = false;
+            ClassLoader loadedGame = null;
             for (Class<?> loaded : instrumentation.getAllLoadedClasses()) {
                 String name = loaded.getName();
                 if (name.startsWith("com.moonsworth.lunar.genesis.")) lunar = true;
-                if (name.startsWith("net.minecraft.") && !name.startsWith("net.minecraft.launchwrapper.")) {
-                    throw new IllegalStateException("Minecraft has already initialized. Start the ZAVZ Lunar watcher before launching the game; no late mixin injection was attempted.");
-                }
+                if (loadedGame == null && name.startsWith("net.minecraft.") && !name.startsWith("net.minecraft.launchwrapper.") &&
+                    !loaded.isArray() && name.indexOf('/') < 0) loadedGame = loaded.getClassLoader();
+                if (name.equals("net.minecraft.client.Minecraft")) loadedGame = loaded.getClassLoader();
             }
             if (!lunar) throw new IllegalStateException("The native FDP loader supports Lunar Client 1.8.9 only.");
-            install(argument, instrumentation);
-        } catch (Exception failure) {
-            nativeFailure = failure.toString();
-            throw failure;
+            if (loadedGame == null) install(argument, instrumentation);
+            else installLate(argument, instrumentation, loadedGame);
+        } catch (Throwable failure) {
+            Throwable cause = unwrap(failure);
+            nativeFailure = cause.toString();
+            if (cause instanceof Exception) throw (Exception) cause;
+            throw new IllegalStateException("FDPClient runtime attachment failed", cause);
         }
     }
 
@@ -65,14 +74,26 @@ public final class LunarAgent implements ClassFileTransformer {
         LunarAgent agent = active;
         if (agent == null) return "error: FDP's Lunar agent was not registered";
         if (agent.failure != null) return "error: " + agent.failure;
-        if (Boolean.getBoolean("fdpclient.ready") || Boolean.getBoolean("fdpclient.lunar.ready")) return "ok";
+        if ((!agent.lateMode || LateRuntime.active()) &&
+            (Boolean.getBoolean("fdpclient.ready") || Boolean.getBoolean("fdpclient.lunar.ready"))) return "ok";
         return "waiting";
     }
 
     private static synchronized void install(String argument, Instrumentation instrumentation) throws Exception {
+        requireUnregistered();
+        LunarAgent agent = new LunarAgent(instrumentation, resolvePayload(argument));
+        instrumentation.addTransformer(agent);
+        active = agent;
+        System.setProperty("fdpclient.lunar.agentRegistered", "true");
+    }
+
+    private static void requireUnregistered() {
         if (active != null || System.getProperties().containsKey("fdpclient.lunar.agentRegistered")) {
-            throw new IllegalStateException("FDP's Lunar agent is already loaded. Restart Lunar without the -javaagent argument before using the native loader.");
+            throw new IllegalStateException("FDPClient is already loaded in this game process.");
         }
+    }
+
+    private static File resolvePayload(String argument) throws Exception {
         File self = new File(LunarAgent.class.getProtectionDomain().getCodeSource().getLocation().toURI());
         File payload;
         if (argument != null && !argument.trim().isEmpty()) {
@@ -90,10 +111,157 @@ public final class LunarAgent implements ClassFileTransformer {
             }
         }
         if (!payload.isFile()) throw new FileNotFoundException("Keep the FDPClient JAR beside its Lunar agent: " + payload);
-        LunarAgent agent = new LunarAgent(instrumentation, payload);
-        instrumentation.addTransformer(agent);
+        return payload;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static synchronized void installLate(String argument, Instrumentation instrumentation, ClassLoader loader) throws Exception {
+        requireUnregistered();
+        if (!instrumentation.isRedefineClassesSupported() || !instrumentation.isRetransformClassesSupported())
+            throw new IllegalStateException("Choose the current FDPClient Inject bundle: this agent has no runtime redefinition capability.");
+        LunarAgent agent = new LunarAgent(instrumentation, resolvePayload(argument));
+        agent.lateMode = true;
+        agent.game = loader;
         active = agent;
         System.setProperty("fdpclient.lunar.agentRegistered", "true");
+        List<ClassDefinition> restore = new ArrayList<>();
+        boolean registered = false;
+        boolean redefined = false;
+        long deadline = System.nanoTime() + TimeUnit.MINUTES.toNanos(4);
+        System.getProperties().put("fdpclient.lunar.late.deadline", deadline);
+        LunarRuntimeDiagnostics diagnostics = LunarRuntimeDiagnostics.start();
+        String stage = "capturing loaded Minecraft classes";
+        try {
+            Map<String, byte[]> originals = new LinkedHashMap<>();
+            Map<String, byte[]> cacheSnapshot = new ConcurrentHashMap<>(agent.gameCache(loader));
+            for (Map.Entry<String, byte[]> entry : cacheSnapshot.entrySet()) {
+                if (entry.getKey().startsWith("net.minecraft.") && !entry.getKey().startsWith("net.minecraft.launchwrapper."))
+                    originals.put(entry.getKey().replace('.', '/'), entry.getValue());
+            }
+            Map<String, byte[]> actual = agent.captureLoaded(loader);
+            originals.putAll(actual);
+            if (originals.isEmpty()) throw new IllegalStateException("Lunar has no Minecraft bytecode cache for runtime attachment");
+            Map<String, String> names = LunarNames.load(loader);
+            stage = "preparing runtime mixins";
+            File runtime = agent.runtimeJar(names);
+            System.setProperty("fdpclient.lunar.runtimeJar", runtime.getAbsolutePath());
+            System.setProperty("fdpclient.lunar.early", "true"); // Existing Lunar compatibility switches also apply to runtime delivery.
+            System.setProperty("fdpclient.lunar.late", "true");
+            System.clearProperty("fdpclient.lunar.bakeCache");
+            System.getProperties().put("fdpclient.lunar.gameLoader", loader);
+            Map<String, byte[]> metadata = new ConcurrentHashMap<>(cacheSnapshot);
+            for (Map.Entry<String, byte[]> entry : originals.entrySet()) metadata.put(entry.getKey().replace('/', '.'), entry.getValue());
+            System.getProperties().put("fdpclient.lunar.bakedClasses", metadata);
+            Class<?> engine = agent.initializeEngine(loader, runtime);
+            Map<String, byte[]> definitions = (Map<String, byte[]>) engine.getMethod("prepareLate", Map.class).invoke(null, originals);
+            agent.lateMinecraft = engine.getMethod("transformLate", String.class, byte[].class);
+            agent.latePayload = engine.getMethod("adaptLatePayload", byte[].class);
+            agent.configured = true;
+            remaining(deadline);
+            instrumentation.addTransformer(agent, true);
+            registered = true;
+            List<ClassDefinition> replacements = new ArrayList<>();
+            for (Class<?> type : instrumentation.getAllLoadedClasses()) {
+                if (type.getClassLoader() != loader) continue;
+                String name = type.getName().replace('.', '/');
+                byte[] changed = definitions.get(name);
+                if (changed == null) continue;
+                if (!instrumentation.isModifiableClass(type)) throw new IllegalStateException("Lunar class cannot be redefined: " + type.getName());
+                replacements.add(new ClassDefinition(type, changed));
+                restore.add(new ClassDefinition(type, originals.get(name)));
+            }
+            stage = "replacing loaded Minecraft classes";
+            instrumentation.redefineClasses(replacements.toArray(new ClassDefinition[0]));
+            redefined = true;
+            stage = "starting FDPClient on the game thread";
+            agent.startLate(names, deadline);
+        } catch (Throwable failure) {
+            agent.lateCancelled = true;
+            agent.failure = unwrap(failure);
+            LateRuntime.activate(false);
+            if (registered) instrumentation.removeTransformer(agent);
+            if (redefined && !restore.isEmpty()) {
+                try { instrumentation.redefineClasses(restore.toArray(new ClassDefinition[0])); }
+                catch (Throwable rollback) { agent.failure.addSuppressed(rollback); }
+            }
+            System.err.println("[FDPCLIENT] Runtime attachment failed while " + stage);
+            agent.failure.printStackTrace();
+            throw new IllegalStateException("FDPClient runtime attachment failed while " + stage + ": " + agent.failure + diagnostics.location(), agent.failure);
+        } finally {
+            diagnostics.close();
+        }
+    }
+
+    private Map<String, byte[]> captureLoaded(ClassLoader loader) throws Exception {
+        Map<String, byte[]> captured = new ConcurrentHashMap<>();
+        List<Class<?>> classes = new ArrayList<>();
+        for (Class<?> type : instrumentation.getAllLoadedClasses()) {
+            String name = type.getName();
+            if (type.getClassLoader() == loader && !type.isArray() && name.indexOf('/') < 0 &&
+                name.startsWith("net.minecraft.") && !name.startsWith("net.minecraft.launchwrapper.") && instrumentation.isModifiableClass(type)) classes.add(type);
+        }
+        ClassFileTransformer capture = new ClassFileTransformer() {
+            public byte[] transform(ClassLoader current, String name, Class<?> redefining, ProtectionDomain domain, byte[] bytes) {
+                if (current == loader && redefining != null) captured.put(name, bytes.clone());
+                return null;
+            }
+        };
+        instrumentation.addTransformer(capture, true);
+        try { instrumentation.retransformClasses(classes.toArray(new Class<?>[0])); }
+        finally { instrumentation.removeTransformer(capture); }
+        return captured;
+    }
+
+    private void startLate(Map<String, String> names, long deadline) throws Exception {
+        String gameLoop = names.get("func_71411_J");
+        boolean running = false;
+        while (!running) {
+            for (StackTraceElement[] stack : Thread.getAllStackTraces().values()) {
+                for (StackTraceElement frame : stack)
+                    if (frame.getClassName().equals("net.minecraft.client.Minecraft") && frame.getMethodName().equals(gameLoop)) running = true;
+            }
+            if (!running) { remaining(deadline); Thread.sleep(25); }
+        }
+        Class<?> minecraft = Class.forName("net.minecraft.client.Minecraft", false, game);
+        Object instance = minecraft.getDeclaredMethod(names.get("func_71410_x")).invoke(null);
+        Method schedule = minecraft.getMethod(names.get("func_152344_a"), Runnable.class);
+        CompletableFuture<Future<?>> preloaded = new CompletableFuture<>();
+        schedule.invoke(instance, (Runnable) () -> {
+            if (lateCancelled) return;
+            try {
+                Class<?> client = Class.forName("net.ccbluex.liquidbounce.FDPClient", true, game);
+                preloaded.complete((Future<?>) client.getMethod("preload").invoke(client.getField("INSTANCE").get(null)));
+            } catch (Throwable problem) { preloaded.completeExceptionally(unwrap(problem)); }
+        });
+        Future<?> preload = preloaded.get(remaining(deadline), TimeUnit.NANOSECONDS);
+        preload.get(remaining(deadline), TimeUnit.NANOSECONDS);
+        CompletableFuture<Void> started = new CompletableFuture<>();
+        schedule.invoke(instance, (Runnable) () -> {
+            if (lateCancelled) return;
+            try {
+                Class<?> runtime = Class.forName("net.ccbluex.liquidbounce.injection.lunar.LunarRuntime", true, game);
+                runtime.getMethod("startLate").invoke(null);
+                if (lateCancelled) throw new IllegalStateException("Runtime attachment was cancelled before activation");
+                LateRuntime.activate(true);
+                runtime.getMethod("finishLate").invoke(null);
+                System.setProperty("fdpclient.ready", "true");
+                System.setProperty("fdpclient.lunar.ready", "true");
+                started.complete(null);
+            } catch (Throwable problem) { started.completeExceptionally(unwrap(problem)); }
+        });
+        started.get(remaining(deadline), TimeUnit.NANOSECONDS);
+        System.out.println("[FDPCLIENT] Runtime attachment completed on the Minecraft client thread");
+    }
+
+    private static long remaining(long deadline) throws TimeoutException {
+        long remaining = deadline - System.nanoTime();
+        if (remaining <= 0) throw new TimeoutException("FDPClient did not initialize within the runtime attachment deadline");
+        return remaining;
+    }
+
+    private static Throwable unwrap(Throwable failure) {
+        while ((failure instanceof InvocationTargetException || failure instanceof ExecutionException) && failure.getCause() != null) failure = failure.getCause();
+        return failure;
     }
 
     private static File extractPayload(JarFile bundle, String name) throws Exception {
@@ -131,10 +299,10 @@ public final class LunarAgent implements ClassFileTransformer {
                     }
                 }
             }
-            if (failure != null && loader == game && name.startsWith("net/minecraft/")) return new byte[]{0};
+            if (failure != null && loader == game && name.startsWith("net/minecraft/")) return lateMode ? null : new byte[]{0};
             if (loader == game && mixinTransform != null && name.startsWith("net/minecraft/") &&
                 !name.startsWith("net/minecraft/launchwrapper/")) {
-                return (byte[]) mixinTransform.invoke(null, name.replace('/', '.'), bytes);
+                return (byte[]) (lateMode ? lateMinecraft : mixinTransform).invoke(null, name.replace('/', '.'), bytes);
             }
             if (loader == game && name.startsWith("net/montoyo/mcef/")) {
                 byte[] adapted = LunarMcefTransformer.transform(bytes);
@@ -154,12 +322,17 @@ public final class LunarAgent implements ClassFileTransformer {
             problem.printStackTrace();
             // ClassFileTransformer exceptions are swallowed by the JVM. Invalid bytes ensure the
             // client cannot continue with only a fraction of the required patches installed.
+            if (lateMode) { LateRuntime.activate(false); return null; }
             return new byte[]{0};
         }
         return null;
     }
 
     private byte[] adaptMembers(byte[] bytes, ClassLoader loader) {
+        if (lateMode) {
+            try { bytes = (byte[]) latePayload.invoke(null, bytes); }
+            catch (ReflectiveOperationException problem) { throw new IllegalStateException("Cannot adapt FDP runtime bytecode", unwrap(problem)); }
+        }
         return LunarAccessTransformer.transform(bytes, loader, (owner, member, descriptor, method) -> {
             try { return (int[]) memberAccess.invoke(null, owner, member, descriptor, method); }
             catch (ReflectiveOperationException problem) { throw new IllegalStateException("Cannot inspect Lunar member " + owner + "." + member, problem); }
@@ -180,6 +353,11 @@ public final class LunarAgent implements ClassFileTransformer {
             System.getProperties().put("fdpclient.lunar.bakedClasses", liveCache(loader, first, firstBytes));
             System.out.println("[FDPCLIENT] Using Lunar's live bytecode cache during first-launch baking");
         }
+        initializeEngine(loader, runtime);
+        System.out.println("[FDPCLIENT] Registered Lunar mixins before " + first + " using " + loader.getClass().getName());
+    }
+
+    private Class<?> initializeEngine(ClassLoader loader, File runtime) throws Exception {
         addURL(loader, runtime.toURI().toURL());
         // Injected callback descriptors must also be resolvable by Genesis' isolated game loader.
         addURL(loader, LunarAgent.class.getProtectionDomain().getCodeSource().getLocation());
@@ -191,11 +369,20 @@ public final class LunarAgent implements ClassFileTransformer {
         engine.getMethod("initialize").invoke(null);
         mixinTransform = engine.getMethod("transform", String.class, byte[].class);
         memberAccess = engine.getMethod("memberAccess", String.class, String.class, String.class, boolean.class);
-        System.out.println("[FDPCLIENT] Registered Lunar mixins before " + first + " using " + loader.getClass().getName());
+        return engine;
     }
 
     @SuppressWarnings("unchecked")
     private Map<String, byte[]> liveCache(ClassLoader loader, String first, byte[] bytes) throws Exception {
+        Map<String, byte[]> cache = gameCache(loader);
+        if (cache == null || !Arrays.equals(bytes, cache.get(first.replace('/', '.')))) {
+            throw new IOException("Lunar live bytecode cache does not match " + first);
+        }
+        return cache;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, byte[]> gameCache(ClassLoader loader) throws Exception {
         Method found = null;
         for (Method method : loader.getClass().getMethods()) {
             if (method.getParameterTypes().length == 0 && java.util.concurrent.ConcurrentMap.class.isAssignableFrom(method.getReturnType())) {
@@ -206,11 +393,6 @@ public final class LunarAgent implements ClassFileTransformer {
         if (found == null) throw new IOException("Lunar has no live bytecode cache API");
         found.setAccessible(true);
         Map<String, byte[]> cache = (Map<String, byte[]>) found.invoke(loader);
-        // Metadata must describe exactly the bytecode that Genesis is defining,
-        // rather than the unmodified resources exposed by its parent loader.
-        if (cache == null || !Arrays.equals(bytes, cache.get(first.replace('/', '.')))) {
-            throw new IOException("Lunar live bytecode cache does not match " + first);
-        }
         return cache;
     }
 
