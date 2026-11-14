@@ -1,0 +1,25 @@
+/* FDPClient Lunar native loader by opZywl | https://lucas-lima.xyz */
+#include <windows.h>
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,0
+ PRODUCTVERSION 1,0,0,0
+ FILEOS VOS_NT_WINDOWS32
+ FILETYPE VFT_DLL
+BEGIN
+ BLOCK "StringFileInfo"
+ BEGIN
+  BLOCK "040904B0"
+  BEGIN
+   VALUE "CompanyName", "opZywl\0"
+   VALUE "FileDescription", "FDPClient Inject native loader\0"
+   VALUE "FileVersion", "1.0.0.0\0"
+   VALUE "LegalCopyright", "opZywl | lucas-lima.xyz | FDPClient contributors\0"
+   VALUE "OriginalFilename", "fdp-lunar.dll\0"
+   VALUE "ProductName", "FDPClient Inject\0"
+  END
+ END
+ BLOCK "VarFileInfo"
+ BEGIN
+  VALUE "Translation", 0x0409, 1200
+ END
+END

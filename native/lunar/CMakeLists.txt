@@ -1,0 +1,16 @@
+# FDPClient - Lunar native loader by opZywl
+# https://github.com/SkidderMC/FDPClient/ | https://lucas-lima.xyz
+cmake_minimum_required(VERSION 3.20)
+project(FdpLunarLoader LANGUAGES CXX RC)
+if(NOT WIN32 OR NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
+    message(FATAL_ERROR "The Lunar loader requires 64-bit Windows")
+endif()
+find_package(JNI REQUIRED)
+add_library(fdp-lunar SHARED loader.cpp version.rc)
+target_compile_features(fdp-lunar PRIVATE cxx_std_17)
+target_include_directories(fdp-lunar PRIVATE ${JNI_INCLUDE_DIRS})
+target_compile_definitions(fdp-lunar PRIVATE UNICODE _UNICODE WIN32_LEAN_AND_MEAN NOMINMAX)
+if(MSVC)
+    set_property(TARGET fdp-lunar PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+    target_compile_options(fdp-lunar PRIVATE /W4 /EHsc)
+endif()
