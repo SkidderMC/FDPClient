@@ -71,6 +71,12 @@ def verify(path, agent=None, bundle=None):
     if agent:
         with zipfile.ZipFile(agent) as jar:
             names = set(jar.namelist())
+            manifest = jar.read("META-INF/MANIFEST.MF").decode("utf-8").replace("\r\n ", "").replace("\n ", "")
+            attributes = dict(line.split(": ", 1) for line in manifest.splitlines() if ": " in line)
+            for capability in ("Can-Redefine-Classes", "Can-Retransform-Classes"):
+                assert attributes.get(capability) == "true", f"Missing runtime capability: {capability}"
+            for helper in ("LateRuntime", "LateSchemaTransformer"):
+                assert f"net/ccbluex/liquidbounce/injection/bootstrap/{helper}.class" in names, f"Missing {helper}"
             assert not any(n.upper().endswith((".SF", ".RSA", ".DSA")) for n in names), "Agent has invalidated dependency signatures"
             assert "net/ccbluex/liquidbounce/FDPClient.class" not in names, "The agent must not load the application in the system loader"
             assert "net/ccbluex/liquidbounce/injection/lunar/engine/EngineBootstrap.class" in names
@@ -95,6 +101,9 @@ def verify(path, agent=None, bundle=None):
             assert attributes.get("Premain-Class") == entry, "Early agent entry is missing"
             assert attributes.get("FDP-Lunar-Bundle") == "1.8.9", "Wrong native bundle contract"
             assert attributes.get("FDP-Payload-Resource") == "FDPClient.jar", "Embedded payload contract is missing"
+            assert attributes.get("FDP-Lunar-Runtime-Attach") == "true", "Runtime attachment contract is missing"
+            for capability in ("Can-Redefine-Classes", "Can-Retransform-Classes"):
+                assert attributes.get(capability) == "true", f"Missing runtime capability: {capability}"
             with open(path, "rb") as payload:
                 assert hashlib.sha256(jar.read("FDPClient.jar")).digest() == hashlib.sha256(payload.read()).digest(), "Bundle contains an outdated payload"
             if agent:
@@ -102,7 +111,7 @@ def verify(path, agent=None, bundle=None):
                     for name in separate.namelist():
                         if not name.endswith("/") and name != "META-INF/MANIFEST.MF":
                             assert jar.read(name) == separate.read(name), f"Bundle contains an outdated agent entry: {name}"
-        print("Lunar native bundle verified: current agent, exact current payload and startup manifest")
+        print("Lunar native bundle verified: current agent, exact current payload and runtime attachment manifest")
 
 
 if __name__ == "__main__":
