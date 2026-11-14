@@ -136,6 +136,10 @@ class Script(val scriptFile: File) : MinecraftInstance {
      */
     @Suppress("unused")
     fun registerTab(tabObject: JSObject) {
+        if (java.lang.Boolean.getBoolean("fdpclient.lunar.late")) {
+            LOGGER.warn("[$scriptName] Creative tabs are unavailable after runtime attachment; load FDPClient during Lunar startup to use them.")
+            return
+        }
         ScriptTab(tabObject)
     }
 
