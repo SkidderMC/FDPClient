@@ -162,6 +162,49 @@ tasks.register("verifyLunarBridge", JavaExec) {
 
 check.dependsOn("verifyLunarBridge")
 
+tasks.register("lunarLateVerificationAgent", Jar) {
+    dependsOn("lunarTestClasses")
+    archiveFileName.set("fdp-late-verification-agent.jar")
+    destinationDirectory.set(file("${buildDir}/lunar-tests"))
+    from(sourceSets.lunarTest.output) { include "**/LunarLateVerification*.class" }
+    manifest.attributes("Premain-Class": "net.ccbluex.liquidbounce.injection.bootstrap.LunarLateVerification",
+        "Can-Redefine-Classes": "true", "Can-Retransform-Classes": "true")
+}
+
+tasks.register("verifyLunarLate", JavaExec) {
+    group = "verification"
+    description = "Uses real Java 17 class redefinition to verify runtime mixin state and schema preservation."
+    dependsOn("lunarLateVerificationAgent")
+    classpath = sourceSets.lunarTest.runtimeClasspath
+    executable = project.findProperty("lunarJavaExecutable") ?: "java"
+    main = "net.ccbluex.liquidbounce.injection.bootstrap.LunarLateVerification"
+    jvmArgs "-javaagent:${buildDir}/lunar-tests/fdp-late-verification-agent.jar"
+}
+
+tasks.register("verifyLunarLateAudit", JavaExec) {
+    group = "verification"
+    description = "Audits an installed Lunar bake cache without starting Minecraft or accessing an account."
+    dependsOn("lunarAgentJar", "lunarTestClasses")
+    classpath = sourceSets.lunarTest.runtimeClasspath
+    maxHeapSize = "1G"
+    executable = project.findProperty("lunarJavaExecutable") ?: "java"
+    main = "net.ccbluex.liquidbounce.injection.bootstrap.LunarLateAudit"
+    if (project.hasProperty("lunarAuditHotSwap")) {
+        dependsOn("lunarLateVerificationAgent")
+        systemProperty "fdpclient.audit.hotswap", "true"
+        jvmArgs "-javaagent:${buildDir}/lunar-tests/fdp-late-verification-agent.jar",
+            "-Xlog:redefine+class*=debug:file=build/lunar-tests/installed-hotswap.log"
+    }
+    doFirst {
+        if (!project.hasProperty("lunarBakeCache") || !project.hasProperty("lunarMappings"))
+            throw new GradleException("Pass -PlunarBakeCache and -PlunarMappings for the installed Lunar profile.")
+        args tasks.shadowJar.archiveFile.get().asFile.absolutePath,
+            tasks.lunarAgentJar.archiveFile.get().asFile.absolutePath,
+            project.property("lunarBakeCache"), project.property("lunarMappings"),
+            "${buildDir}/lunar-tests/audit", project.findProperty("lunarClassPath") ?: ""
+    }
+}
+
 tasks.register("verifyLunarArtifact", Exec) {
     group = "verification"
     description = "Verifies that the production JAR preserves Forge and includes the Lunar entry and remapped hooks."

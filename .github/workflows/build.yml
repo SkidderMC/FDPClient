@@ -30,6 +30,17 @@ jobs:
           ./gradlew --no-daemon setupCiWorkspace
           ./gradlew --no-daemon clean check build
 
+      - name: Remember the Forge build JDK
+        run: echo "FORGE_BUILD_JAVA_HOME=$JAVA_HOME" >> "$GITHUB_ENV"
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Verify runtime attachment on Java 17
+        run: JAVA_HOME="$FORGE_BUILD_JAVA_HOME" ./gradlew --no-daemon verifyLunarLate "-PlunarJavaExecutable=$JAVA_HOME/bin/java"
+
       - name: Name the inject build
         id: inject
         run: |
