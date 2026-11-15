@@ -47,7 +47,7 @@ object AnticheatModeAdvisor {
     private val velocity = mapOf(
         AnticheatProfile.GENERIC to Compatibility(
             listOf("Legit", "Simple", "Jump", "Tick", "Reverse", "SmoothReverse"),
-            listOf("Delay", "Delayed", "Cancel", "Spoof")
+            listOf("Watchdog", "Delay", "Delayed", "Cancel", "Spoof")
         ),
         AnticheatProfile.NCP to Compatibility(
             listOf("Simple", "Legit", "Jump", "Tick", "Reverse"),
@@ -67,7 +67,7 @@ object AnticheatModeAdvisor {
         ),
         AnticheatProfile.WATCHDOG to Compatibility(
             listOf("Hypixel", "HypixelAir", "Legit"),
-            listOf("HypixelBoost", "Jump")
+            listOf("Watchdog", "HypixelBoost", "Jump")
         ),
         AnticheatProfile.VERUS to Compatibility(
             listOf("Legit", "Jump"),
