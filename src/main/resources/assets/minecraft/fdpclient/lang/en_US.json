@@ -74,6 +74,7 @@
     "module.clickRecorder.description": "Records click timing and saves it as a chart for analysis.",
     "module.clickTp.description": "Teleports to the selected block when the configured click action is used.",
     "module.combineMobs.description": "Combines labels for groups of entities occupying the same area.",
+    "module.cornerTrap.description": "Traps enemies in a corner, then pours lava and water on them.",
     "module.crystalView.description": "Customizes how end crystal models are rendered.",
     "module.dankBobbing.description": "Amplifies the first-person view bobbing effect.",
     "module.debugOverlay.description": "Displays configurable client, movement, rotation, network and server diagnostics.",
