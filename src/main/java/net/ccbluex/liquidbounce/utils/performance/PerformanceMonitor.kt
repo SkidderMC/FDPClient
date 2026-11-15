@@ -9,8 +9,9 @@ import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.minecraft.client.Minecraft
 import java.lang.management.ManagementFactory
-import java.lang.management.OperatingSystemMXBean
+import com.sun.management.OperatingSystemMXBean
 import java.text.DecimalFormat
+import java.util.concurrent.Executors
 import java.util.concurrent.locks.ReentrantReadWriteLock
 import kotlin.concurrent.read
 import kotlin.concurrent.write
@@ -58,7 +59,18 @@ object PerformanceMonitor : MinecraftInstance, Listenable {
     private var _threadCount = 0
 
     // CPU tracking
-    private val osMxBean: OperatingSystemMXBean = ManagementFactory.getOperatingSystemMXBean()
+    private val osMxBean = ManagementFactory.getOperatingSystemMXBean() as? OperatingSystemMXBean
+    private val cpuSampler = CpuLoadSampler(Executors.newSingleThreadExecutor { task ->
+        Thread(task, "FDP-CPU-Monitor").apply {
+            isDaemon = true
+            priority = Thread.MIN_PRIORITY
+        }
+    }) {
+        CpuLoad(
+            runCatching { osMxBean?.processCpuLoad ?: -1.0 }.getOrDefault(-1.0),
+            runCatching { osMxBean?.systemCpuLoad ?: -1.0 }.getOrDefault(-1.0)
+        )
+    }
     private var lastCpuCheck = 0L
     private var _processCpuLoad = 0.0
     private var _systemCpuLoad = 0.0
@@ -303,27 +315,10 @@ object PerformanceMonitor : MinecraftInstance, Listenable {
      */
     private fun updateCpuStats() {
         _threadCount = Thread.activeCount()
-
-        // Try to get CPU load if available
-        try {
-            val method = osMxBean.javaClass.getMethod("getProcessCpuLoad")
-            val cpuLoad = method.invoke(osMxBean) as? Double
-            if (cpuLoad != null && cpuLoad >= 0) {
-                _processCpuLoad = cpuLoad
-            }
-        } catch (e: Exception) {
-            // Method not available, skip
-        }
-
-        try {
-            val method = osMxBean.javaClass.getMethod("getSystemCpuLoad")
-            val cpuLoad = method.invoke(osMxBean) as? Double
-            if (cpuLoad != null && cpuLoad >= 0) {
-                _systemCpuLoad = cpuLoad
-            }
-        } catch (e: Exception) {
-            // Method not available, skip
-        }
+        val latest = cpuSampler.latest
+        _processCpuLoad = latest.process
+        _systemCpuLoad = latest.system
+        cpuSampler.requestUpdate()
     }
 
     /**

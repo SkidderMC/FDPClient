@@ -18,6 +18,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 /** Test-only agent: observes the real startup, then exercises the client in its own sandbox. */
 public final class LunarSmokeAgent {
     private static final Map<Object, AtomicInteger> OBSERVED_PACKETS = new ConcurrentHashMap<>();
+    private static final List<Double> FRAME_INTERVALS = new ArrayList<>();
+    private static boolean measuring;
+    private static long frameAt;
     public static void premain(String ignored, Instrumentation instrumentation) {
         Thread worker = new Thread(() -> run(instrumentation), "FDP Lunar smoke");
         worker.setDaemon(true);
@@ -31,6 +34,8 @@ public final class LunarSmokeAgent {
             long startupSeconds = Long.getLong("fdp.smoke.startupSeconds", 180L);
             long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(startupSeconds);
             Object instance = null;
+            boolean nativeLate = Boolean.getBoolean("fdp.smoke.nativeLate");
+            if (nativeLate) injectLate(instrumentation, report, deadline);
             while (System.nanoTime() < deadline) {
                 // Do not resolve Minecraft's method signatures while Genesis is still defining its UI classes.
                 if ((Boolean.getBoolean("fdp.smoke.early") || Boolean.getBoolean("fdp.smoke.forge")) &&
@@ -128,13 +133,18 @@ public final class LunarSmokeAgent {
                 Object player = host.getField("thePlayer").get(mc);
                 if (player == null) throw new IllegalStateException("The sandbox world did not open");
                 for (String name : new String[]{"IMixinEntity", "IMixinEntityPlayerSP"}) {
-                    if (!Class.forName("net.ccbluex.liquidbounce.injection.implementations." + name, false, game).isInstance(player)) {
+                    String interfaceName = "net.ccbluex.liquidbounce.injection.implementations." + name;
+                    boolean implemented = nativeLate
+                        ? (Boolean) Class.forName("net.ccbluex.liquidbounce.injection.bootstrap.LateRuntime", true, game)
+                            .getMethod("isInstance", Object.class, String.class).invoke(null, player, interfaceName.replace('.', '/'))
+                        : Class.forName(interfaceName, false, game).isInstance(player);
+                    if (!implemented) {
                         throw new IllegalStateException("The local player has no " + name + " mixin");
                     }
                 }
-                host.getField("timer"); // Must be public, as on Forge.
+                if (!nativeLate) host.getField("timer"); // Runtime HotSwap preserves the original field modifiers.
                 Class<?> vector = Class.forName("net.minecraft.util.Vec3", false, game);
-                if (Modifier.isFinal(vector.getField("xCoord").getModifiers())) throw new IllegalStateException("Vec3 access rules were not applied");
+                if (!nativeLate && Modifier.isFinal(vector.getField("xCoord").getModifiers())) throw new IllegalStateException("Vec3 access rules were not applied");
                 String probeJar = System.getProperty("fdp.smoke.probeJar");
                 if (probeJar != null) {
                     game.getClass().getMethod("addURL", URL.class).invoke(game, new File(probeJar).toURI().toURL());
@@ -174,7 +184,26 @@ public final class LunarSmokeAgent {
                 stack.getMethod("addEnchantment", enchantment, int.class).invoke(armor, enchantment.getField("protection").get(null), 1);
                 player.getClass().getMethod("setCurrentItemOrArmor", int.class, stack).invoke(player, 3, armor);
             });
-            Thread.sleep(4000);
+            onGameThread(host, mc, () -> {
+                FRAME_INTERVALS.clear();
+                frameAt = 0;
+                measuring = true;
+                write(report, "MEASURE_START " + java.time.Instant.now() + "\n");
+            });
+            Thread.sleep(Long.getLong("fdp.smoke.observeMillis", 4000L));
+            onGameThread(host, mc, () -> {
+                measuring = false;
+                List<Double> sorted = new ArrayList<>(FRAME_INTERVALS);
+                Collections.sort(sorted);
+                if (sorted.isEmpty()) throw new IllegalStateException("No real game frames measured");
+                int count = sorted.size();
+                write(report, "MEASURE_END " + java.time.Instant.now() + "\nFRAMES " + count
+                    + " p50_ms=" + sorted.get((count - 1) / 2)
+                    + " p99_ms=" + sorted.get((int) ((count - 1) * 0.99))
+                    + " max_ms=" + sorted.get(count - 1)
+                    + " over50ms=" + sorted.stream().filter(value -> value > 50).count()
+                    + " over100ms=" + sorted.stream().filter(value -> value > 100).count() + "\n");
+            });
             onGameThread(host, mc, () -> {
                 Object player = host.getField("thePlayer").get(mc);
                 Object renderer = host.getMethod("getItemRenderer").invoke(mc);
@@ -246,6 +275,32 @@ public final class LunarSmokeAgent {
 
     private interface Action { void run() throws Exception; }
 
+    private static void injectLate(Instrumentation instrumentation, Path report, long deadline) throws Exception {
+        Class<?> host = null;
+        while (System.nanoTime() < deadline) {
+            for (Class<?> loaded : instrumentation.getAllLoadedClasses()) {
+                if (loaded.getName().equals("net.minecraft.client.Minecraft")) { host = loaded; break; }
+            }
+            if (host != null) {
+                try {
+                    Object mc = host.getMethod("getMinecraft").invoke(null);
+                    if (mc != null && host.getField("currentScreen").get(mc) != null) break;
+                } catch (ReflectiveOperationException notReady) { }
+            }
+            Thread.sleep(200);
+        }
+        if (host == null || System.nanoTime() >= deadline) throw new IllegalStateException("Vanilla Lunar main menu did not open before attachment");
+        Thread.sleep(3000);
+        String pid = java.lang.management.ManagementFactory.getRuntimeMXBean().getName().split("@", 2)[0];
+        Path plan = Paths.get(System.getProperty("user.home"), ".zywl", "injector", "plans", pid + ".ini");
+        Files.createDirectories(plan.getParent());
+        String selection = "\uFEFF[selection]\r\nversion=1\r\npid=" + pid + "\r\ncount=1\r\nmultiple=0\r\n"
+            + "[payload0]\r\nid=fdplunar\r\njar=" + System.getProperty("fdp.native.jar") + "\r\n";
+        Files.write(plan, selection.getBytes(StandardCharsets.UTF_16LE));
+        write(report, "ATTACH real Lunar main menu initialized before native DLL load\n");
+        System.load(System.getProperty("fdp.native.dll"));
+    }
+
     private static void openStyle(ClassLoader loader, String name) throws Exception {
         Class<?> menu = Class.forName("net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule", true, loader);
         Object singleton = menu.getField("INSTANCE").get(null);
@@ -277,6 +332,11 @@ public final class LunarSmokeAgent {
             Object callback = java.lang.reflect.Proxy.newProxyInstance(loader, new Class<?>[]{action}, (proxy, method, arguments) -> {
                 if (method.getName().equals("invoke")) {
                     count.incrementAndGet();
+                    if (name.equals("GameLoopEvent") && measuring) {
+                        long now = System.nanoTime();
+                        if (frameAt != 0) FRAME_INTERVALS.add((now - frameAt) / 1_000_000.0);
+                        frameAt = now;
+                    }
                     if (name.equals("PacketEvent") && arguments[0].getClass().getMethod("getEventType").invoke(arguments[0]).toString().equals("SEND")) {
                         Object packet = arguments[0].getClass().getMethod("getPacket").invoke(arguments[0]);
                         AtomicInteger tracked = OBSERVED_PACKETS.get(packet);

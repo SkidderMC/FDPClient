@@ -58,11 +58,14 @@ def main():
     delivery = parser.add_mutually_exclusive_group(required=True)
     delivery.add_argument("--agent", type=Path, help="Production early-start Lunar agent")
     delivery.add_argument("--native-dll", type=Path, help="Deliver the current Lunar bundle through its real Windows DLL")
+    parser.add_argument("--runtime-attach", action="store_true", help="Load the native DLL after the real Lunar main menu opens")
     parser.add_argument("--probe-classpath-file", type=Path, help="Compile the Forge API probe using writeSmokeClasspath's output")
     parser.add_argument("--browser", action="store_true", help="Also download/start NextGen's embedded browser")
     parser.add_argument("--browser-assets-from", type=Path, help="Reuse a previous smoke profile's verified browser cache")
     parser.add_argument("--cold-cache", action="store_true", help="Bake in an isolated copy without using Lunar's existing class cache")
     args = parser.parse_args()
+    if args.runtime_attach and not args.native_dll:
+        parser.error("--runtime-attach requires --native-dll")
     root = Path(__file__).resolve().parents[1]
     jar = args.jar.resolve(strict=True)
     with zipfile.ZipFile(jar) as archive:
@@ -156,8 +159,11 @@ def main():
         command.insert(1, f"-javaagent:{production_agent}={jar}")
         command.insert(2, "-Dfdp.smoke.early=true")
     if args.native_dll:
-        main_index = command.index("com.moonsworth.lunar.genesis.Genesis")
-        command[main_index] = "NativeLunarLaunch"
+        if args.runtime_attach:
+            command.insert(1, "-Dfdp.smoke.nativeLate=true")
+        else:
+            main_index = command.index("com.moonsworth.lunar.genesis.Genesis")
+            command[main_index] = "NativeLunarLaunch"
         classpath_index = command.index("-cp") + 1
         command[classpath_index] += os.pathsep + str(agent)
         command[1:1] = ["-Dfdp.smoke.early=true", f"-Dfdp.native.jar={jar}",
