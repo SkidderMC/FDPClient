@@ -74,6 +74,12 @@ object RotationUtils : MinecraftInstance, Listenable {
     var actualServerRotation = Rotation(0f, 0f)
         private set
 
+    /**
+     * Yaw travelled by the last look that went out, used to keep consecutive turns from being exact
+     * repeats of one another.
+     */
+    private var lastSentYawDelta = 0f
+
     private val isFakeLagging
         get() = BlinkUtils.isBlinking || FakeLag.isLagging
 
@@ -816,7 +822,18 @@ object RotationUtils : MinecraftInstance, Listenable {
         val previousServerRotation = serverRotation
         val rotationSource = currentRotation ?: packet.rotation
         val continuousYaw = previousServerRotation.yaw + angleDifferences(rotationSource, previousServerRotation).x
-        packet.rotation = Rotation(continuousYaw, rotationSource.pitch)
+
+        // Two shapes betray a generated aim regardless of where it points: a turn too large to come
+        // from a mouse in one tick, and a turn that repeats the previous one to the last decimal.
+        // Both are corrected here, at the single point every outgoing look passes through, and both
+        // stay far below what could move the aim off what it is pointing at.
+        val steppedYaw = RotationMath.clampYawStep(previousServerRotation.yaw, continuousYaw)
+        val sentYaw = RotationMath.varyRepeatedYaw(
+            steppedYaw, previousServerRotation.yaw, lastSentYawDelta, getFixedAngleDelta()
+        )
+
+        lastSentYawDelta = sentYaw - previousServerRotation.yaw
+        packet.rotation = Rotation(sentYaw, rotationSource.pitch)
         if (currentRotation != null && forceQueuedRotation) {
             // The network tail hook releases post-move actions only after this packet actually sends.
             PostRotationExecutor.markRotationPacket(packet)
