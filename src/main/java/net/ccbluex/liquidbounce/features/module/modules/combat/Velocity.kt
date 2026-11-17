@@ -1038,8 +1038,15 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
 
         mc.theWorld ?: return@handler
 
-        if (mode != "Click" || thePlayer.hurtTime != hurtTimeToClick || ignoreBlocking && isBlockingNow())
+        // Split into two guards on purpose: the combined condition trips detekt's Complexity rule
+        // without being any easier to read. Both guards keep the original short-circuit order.
+        if (mode != "Click" || thePlayer.hurtTime != hurtTimeToClick) {
             return@handler
+        }
+
+        if (ignoreBlocking && isBlockingNow()) {
+            return@handler
+        }
 
         var entity = mc.objectMouseOver?.entityHit
 
@@ -1135,7 +1142,13 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
     val onWatchdogPacket = handler<PacketEvent>(priority = 3) { event ->
         val thePlayer = mc.thePlayer ?: return@handler
 
-        if (!isWatchdogMode || handleEvents().not() || watchdogReleasing || event.isCancelled) {
+        // Split into two guards on purpose: the combined condition trips detekt's Complexity rule
+        // without being any easier to read. Both guards keep the original short-circuit order.
+        if (!isWatchdogMode || !handleEvents()) {
+            return@handler
+        }
+
+        if (watchdogReleasing || event.isCancelled) {
             return@handler
         }
 

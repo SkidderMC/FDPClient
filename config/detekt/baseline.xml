@@ -1250,6 +1250,7 @@
     <ID>TooManyFunctions:NextGenHudBridge.kt$NextGenHudBridge : MinecraftInstance</ID>
     <ID>TooManyFunctions:NlModule.kt$NlModule</ID>
     <ID>TooManyFunctions:NoFallMode.kt$NoFallMode : MinecraftInstanceNamedMode</ID>
+    <ID>TooManyFunctions:NoSlow.kt$NoSlow : Module</ID>
     <ID>TooManyFunctions:PacketDebugger.kt$PacketDebugger : Module</ID>
     <ID>TooManyFunctions:Panel.kt$Panel</ID>
     <ID>TooManyFunctions:Panel.kt$Panel : MinecraftInstance</ID>
