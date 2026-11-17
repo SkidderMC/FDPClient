@@ -32,6 +32,23 @@ object PacketUtils : MinecraftInstance, Listenable {
     private val queuedPackets = ArrayDeque<Packet<*>>()
     private val queueLock = ReentrantLock()
 
+    private val scheduledPacketProcessing = ThreadLocal<Boolean>()
+
+    /**
+     * True while a packet queued through [schedulePacketProcess] is handed back to its event
+     * handlers by [onGameLoop]. Such a packet has already been applied to the client, so a handler
+     * must not treat its [PacketEvent] as a fresh receive: Velocity's Watchdog hold would cancel an
+     * event whose knockback is already on the player and replay it a second time.
+     *
+     * The replay runs on the main thread, while a fresh receive is dispatched on the network
+     * thread, so the flag is thread-confined and a packet that really just arrived is never skipped.
+     */
+    var processingScheduledPacket: Boolean
+        get() = scheduledPacketProcessing.get() == true
+        private set(value) {
+            scheduledPacketProcessing.set(value)
+        }
+
     fun schedulePacketProcess(elements: Collection<Packet<*>>): Boolean = queueLock.withLock {
         queuedPackets.addAll(elements)
     }
@@ -102,8 +119,17 @@ object PacketUtils : MinecraftInstance, Listenable {
         for (packet in scheduled) {
             handlePacket(packet)
             val packetEvent = PacketEvent(packet, EventState.RECEIVE)
-            EventManager.call(packetEvent, FakeLag)
-            EventManager.call(packetEvent, Velocity)
+
+            // The packet is already applied at this point; mark the re-delivered event so handlers
+            // that react to the original receive (Velocity's Watchdog hold) do not replay it again.
+            processingScheduledPacket = true
+
+            try {
+                EventManager.call(packetEvent, FakeLag)
+                EventManager.call(packetEvent, Velocity)
+            } finally {
+                processingScheduledPacket = false
+            }
         }
     }
 
