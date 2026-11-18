@@ -619,4 +619,1257 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
     /**
      * Tick event
      */
-    val onTick = handler<Gam
+    val onTick = handler<GameTickEvent>(priority = 2) {
+        val player = mc.thePlayer ?: return@handler
+
+        // KeepSprint "Watchdog": advance the stop/hit/resume cycle before anything can attack this tick.
+        if (keepSprintMode == "Watchdog") {
+            tickWatchdogSprintReset(player)
+        } else if (sprintResetStage != SprintResetStage.IDLE) {
+            // The mode changed mid-cycle - never leave the player stuck at walking speed.
+            finishSprintReset(player)
+        }
+
+        // The click that opened the reset window is carried into this tick, so the hit lands on the
+        // tick right after the STOP. Without it the window would stay open - and the player at
+        // walking speed - until the CPS pattern happens to produce the next click.
+        if (sprintResetCarryClick) {
+            sprintResetCarryClick = false
+            if (clicks < 1) clicks = 1
+        }
+
+        if (blockStatus && player.heldItem?.item !is ItemSword) {
+            blockStatus = false
+            renderBlocking = false
+            return@handler
+        }
+
+        if (shouldPrioritize()) {
+            target = null
+            renderBlocking = false
+            return@handler
+        }
+
+        if (clickOnly && !mc.gameSettings.keyBindAttack.isKeyDown) {
+            clicks = 0
+            return@handler
+        }
+
+        if (blockStatus && autoBlock == "Packet" && releaseAutoBlock && !ignoreTickRule) {
+            clicks = 0
+            stopBlocking()
+            return@handler
+        }
+
+        if (cancelRun) {
+            target = null
+            hittable = false
+            stopBlocking()
+            return@handler
+        }
+
+        val inventoryOpen = mc.currentScreen is GuiContainer
+        val inventoryDelayActive = System.currentTimeMillis() - containerOpen < noInventoryDelay
+        if (noInventoryAttack && (inventoryOpen || inventoryDelayActive)) {
+            target = null
+            hittable = false
+            if (inventoryOpen) containerOpen = System.currentTimeMillis()
+            return@handler
+        }
+
+        if (simulateCooldown && getAttackCooldownProgress() < 1f) {
+            return@handler
+        }
+
+        if (target == null && !blockStopInDead) {
+            blockStopInDead = true
+            stopBlocking()
+            return@handler
+        }
+
+        if (blinkAutoBlock) {
+            when (player.ticksExisted % (blinkBlockTicks + 1)) {
+                0 -> {
+                    if (blockStatus && !blinked && !BlinkUtils.isBlinking) {
+                        blinked = true
+                    }
+                }
+
+                1 -> {
+                    if (blockStatus && blinked && BlinkUtils.isBlinking) {
+                        stopBlocking()
+                    }
+                }
+
+                blinkBlockTicks -> {
+                    if (!blockStatus && blinked && BlinkUtils.isBlinking) {
+                        BlinkUtils.unblink()
+                        blinked = false
+
+                        startBlocking(target!!, interactAutoBlock, autoBlock == "Fake") // block again
+                    }
+                }
+            }
+        }
+
+        if (target != null) {
+            if (player.getDistanceToEntityBox(target!!) > blockMaxRange && blockStatus) {
+                stopBlocking(true)
+                return@handler
+            } else {
+                if (autoBlock != "Off" && !releaseAutoBlock) {
+                    renderBlocking = true
+                }
+            }
+
+            // Usually when you butterfly click, you end up clicking two (and possibly more) times in a single tick.
+            // Sometimes you also do not click. The positives outweigh the negatives, however.
+            val extraClicks = if (simulateDoubleClicking && !simulateCooldown) nextInt(-1, 1) else 0
+
+            // Generate clicks based on distance from us to target.
+            val generatedClicks = if (generateClicksBasedOnDist) {
+                val distance = player.getDistanceToEntityBox(target!!)
+                ((distance / distanceFactor.random()) * cpsMultiplier.random()).roundToInt()
+            } else 0
+
+            var maxClicks = clicks + extraClicks + generatedClicks
+
+            val prevHittable = hittable
+
+            updateHittable()
+
+            if (!prevHittable && hittable && maxClicks == 0 && forceFirstHit) {
+                maxClicks++
+            }
+
+            repeat(maxClicks) {
+                val wasBlocking = blockStatus
+
+                runAttack(it == 0, it + 1 == maxClicks)
+                if (clicks > 0) clicks--
+
+                if (wasBlocking && !blockStatus && (releaseAutoBlock && !ignoreTickRule || autoBlock == "Off")) {
+                    return@handler
+                }
+            }
+        } else {
+            renderBlocking = false
+        }
+    }
+
+    /**
+     * Render event
+     */
+    val onRender3D = handler<Render3DEvent> {
+        handleFailedSwings()
+
+        drawAimPointBox()
+
+        renderRangeIndicator()
+
+        if (cancelRun) {
+            target = null
+            hittable = false
+            return@handler
+        }
+
+        if (noInventoryAttack && (mc.currentScreen is GuiContainer || System.currentTimeMillis() - containerOpen < noInventoryDelay)) {
+            target = null
+            hittable = false
+            if (mc.currentScreen is GuiContainer) containerOpen = System.currentTimeMillis()
+            return@handler
+        }
+
+        target ?: return@handler
+
+        if (attackTimer.hasTimePassed(attackDelay)) {
+            if (cps.last > 0) clicks++
+            attackTimer.reset()
+            attackDelay = clicker.nextDelay(clickPattern, cps.first, cps.last)
+        } else if (shouldQueuePredictedExitClick()) {
+            clicks++
+            attackTimer.reset()
+            attackDelay = clicker.nextDelay(clickPattern, cps.first, cps.last)
+        }
+    }
+
+    /**
+     * Render event
+     */
+    val onRender2D = handler<Render2DEvent> {
+        if (displayDebug) {
+            val sr = ScaledResolution(mc)
+            val blockingStatus = blockStatus
+            val maxRange = this.maxRange
+
+            val reach = if (target != null) {
+                mc.thePlayer.getDistanceToEntityBox(target!!)
+            } else {
+                0.0
+            }
+
+            val formattedReach = String.format("%.2f", reach)
+
+            val rangeString = "Range: $maxRange"
+            val reachString = "Reach: $formattedReach"
+
+            val cpsString = textElement.getReplacement("cps")
+            val status = "Blocking: ${if (blockingStatus) "Yes" else "No"}, CPS: $cpsString, $reachString, $rangeString"
+            Fonts.minecraftFont.drawStringWithShadow(
+                status,
+                sr.scaledWidth / 2f - Fonts.minecraftFont.getStringWidth(status) / 2f,
+                sr.scaledHeight / 2f - 60f,
+                Color.orange.rgb
+            )
+        }
+    }
+
+    /**
+     * Attack enemy
+     */
+    private fun runAttack(isFirstClick: Boolean, isLastClick: Boolean) {
+        val currentTarget = this.target ?: return
+
+        val player = mc.thePlayer ?: return
+        val world = mc.theWorld ?: return
+
+        if (noConsumeAttack == "NoHits" && isConsumingItem()) {
+            return
+        }
+
+        // Settings
+        val multi = targetMode == "Multi"
+        val manipulateInventory = simulateClosingInventory && !noInventoryAttack && serverOpenInventory
+
+        if (hittable && currentTarget.hurtTime > hurtTime) {
+            return
+        }
+
+        // Check if enemy is not hittable
+        if (!hittable && options.rotationsActive) {
+            if (swing && failSwing) {
+                val rotation = currentRotation ?: player.rotation
+
+                // Can humans keep click consistency when performing massive rotation changes?
+                // (10-30 rotation difference/doing large mouse movements for example)
+                // Maybe apply to attacks too?
+                if (rotationDifference(rotation) > maxRotationDifferenceToSwing) {
+                    // At the same time there is also a chance of the user clicking at least once in a while
+                    // when the consistency has dropped a lot.
+                    val shouldIgnore = swingWhenTicksLate.isActive() && ticksSinceClick() >= ticksLateToSwing
+
+                    if (!shouldIgnore) {
+                        return
+                    }
+                }
+
+                runWithModifiedRaycastResult(rotation, range.toDouble(), throughWallsRange.toDouble()) {
+                    if (swingOnlyInAir && !it.typeOfHit.isMiss) {
+                        return@runWithModifiedRaycastResult
+                    }
+
+                    // Left click miss cool-down logic:
+                    // When you click and miss, you receive a 10 tick cool down.
+                    // It decreases gradually (tick by tick) when you hold the button.
+                    // If you click and then release the button, the cool down drops from where it was immediately to 0.
+                    // Most humans will release the button 1-2 ticks max after clicking, leaving them with an average of 10 CPS.
+                    // The maximum CPS allowed when you miss a hit is 20 CPS, if you click and release immediately, which is highly unlikely.
+                    // With that being said, we force an average of 10 CPS by doing this below, since 10 CPS when missing is possible.
+                    if (respectMissCooldown && ticksSinceClick() <= 1 && it.typeOfHit.isMiss) {
+                        return@runWithModifiedRaycastResult
+                    }
+
+                    val shouldEnterBlockBreakProgress =
+                        !shouldDelayClick(it.typeOfHit) || attackTickTimes.lastOrNull()?.first?.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK
+
+                    if (shouldEnterBlockBreakProgress) {
+                        // Close inventory when open
+                        if (manipulateInventory && isFirstClick) serverOpenInventory = false
+                    }
+
+                    val prevCooldown = mc.leftClickCounter
+
+                    // Is any GUI coming from our client?
+                    val isAnyClientGuiActive = mc.currentScreen?.javaClass?.`package`?.name?.contains(
+                        FDPClient.CLIENT_NAME, ignoreCase = true
+                    ) == true
+
+                    if (isAnyClientGuiActive) {
+                        mc.leftClickCounter = 0
+                    }
+
+                    if (!shouldDelayClick(it.typeOfHit)) {
+                        attackTickTimes += it to runTimeTicks
+
+                        if (it.typeOfHit.isEntity) {
+                            val entity = it.entityHit
+
+                            // Use own function instead of clickMouse() to maintain keep sprint, auto block, etc
+                            if (entity is EntityLivingBase && isSelected(entity, true)) {
+                                attackEntity(entity, isLastClick)
+                            } else attackTickTimes -= it to runTimeTicks
+                        } else {
+                            // Imitate game click
+                            mc.clickMouse()
+
+                            if (soundOnSwingFail) {
+                                mc.thePlayer.playSound("gui.button.press", swingFailSoundVolume, swingFailSoundPitch)
+                            }
+
+                            if (renderBoxOnSwingFail) {
+                                synchronized(swingFails) {
+                                    val centerDistance = (currentTarget.hitBox.center - player.eyes).lengthVector()
+                                    val spot = player.eyes + getVectorForRotation(rotation) * centerDistance
+
+                                    swingFails += SwingFailData(spot, System.currentTimeMillis())
+                                }
+                            }
+                        }
+                    }
+
+                    if (shouldEnterBlockBreakProgress && isLastClick) {
+                        /**
+                         * This is used to update the block breaking progress, resulting in sending an animation packet.
+                         *
+                         * Setting this function's parameter to [false] would still obey vanilla clicking logic,
+                         * but only if you were releasing the click button immediately after pressing. Does not seem legit
+                         * in the long term, right? This is why we are going to set it to [true], so it can send the animation packet.
+                         */
+                        mc.sendClickBlockToController(true)
+                        /**
+                         * Since we want to simulate proper clicking behavior, we schedule the block break progress stop
+                         * in the next tick, since that is a doable action by the average player.
+                         */
+                        nextTick {
+                            mc.sendClickBlockToController(false)
+
+                            // Swings are sent a tick after stopping the block break progress.
+                            clicks = 0
+
+                            // [manipulateInventory] could have been changed at that point, but it is okay because
+                            // serverOpenInventory's backing fields check for same values.
+                            if (manipulateInventory) serverOpenInventory = true
+                        }
+                    }
+
+                    if (isAnyClientGuiActive) {
+                        mc.leftClickCounter = prevCooldown
+                    }
+                }
+            }
+
+            return
+        }
+
+        // Close inventory when open
+        if (manipulateInventory && isFirstClick) serverOpenInventory = false
+
+        blockStopInDead = false
+
+        if (!multi) {
+            dispatchAttack(currentTarget, isLastClick)
+        } else {
+            var targets = 0
+
+            for (entity in world.loadedEntityList.toList()) {
+                val distance = player.getDistanceToEntityBox(entity)
+
+                if (entity is EntityLivingBase && isSelected(entity, true) && distance <= getRange(entity)) {
+                    dispatchAttack(entity, isLastClick)
+
+                    targets += 1
+
+                    if (limitedMultiTargets != 0 && limitedMultiTargets <= targets) break
+                }
+            }
+        }
+
+        if (!isLastClick) return
+
+        val switchMode = targetMode == "Switch"
+
+        if (switchMode && switchTimer.hasTimePassed(switchDelay)) {
+            prevTargetEntities += currentTarget.entityId
+            switchTimer.reset()
+        }
+
+        // Open inventory
+        if (manipulateInventory) serverOpenInventory = true
+    }
+
+    /**
+     * Update current target
+     */
+    private fun updateTarget() {
+        if (shouldPrioritize()) return
+
+        val switchMode = targetMode == "Switch"
+
+        val thePlayer = mc.thePlayer ?: return
+
+        val previousTarget = target?.takeIf { stickyTarget && targetMode == "Single" }
+
+        // Reset fixed target to null
+        target = null
+
+        val selectedPriority = TargetPriority.fromName(priority) ?: TargetPriority.ARMOR
+        targetTracker.priorities(TargetPriority.TYPE, selectedPriority, TargetPriority.DISTANCE)
+
+        if (previousTarget != null && isSelected(previousTarget, true) &&
+            thePlayer.getDistanceToEntityBox(previousTarget) <= maxRange &&
+            (fov >= 180f || thePlayer.isLookingOn(previousTarget, fov.toDouble())) &&
+            Backtrack.runWithNearestTrackedDistance(previousTarget) { updateRotations(previousTarget) }
+        ) {
+            target = previousTarget
+            return
+        }
+
+        targetTracker.select(
+            predicate = { entity ->
+                val distance = Backtrack.runWithNearestTrackedDistance(entity) {
+                    thePlayer.getDistanceToEntityBox(entity)
+                }
+                (!switchMode || entity.entityId !in prevTargetEntities) &&
+                    (!switchMode || distance <= range || prevTargetEntities.isEmpty()) &&
+                    (!switchMode || thePlayer.isLookingOn(entity, maxSwitchFOV.toDouble()))
+            }
+        ) { candidate ->
+            if (Backtrack.runWithNearestTrackedDistance(candidate) { updateRotations(candidate) }) candidate else null
+        }?.let { selected ->
+            target = selected
+            return
+        }
+
+        if (prevTargetEntities.isNotEmpty()) {
+            prevTargetEntities.clear()
+            updateTarget()
+        }
+    }
+
+    /**
+     * KeepSprint "Watchdog" reset gate.
+     *
+     * tick N-1: drop sprint locally, send C0B STOP, do not hit (the reset window opens)
+     * tick N:   hit at walking speed - no sprint knockback bonus and no 0.6 motion cut
+     * tick N+1: sprint comes back, so the sprint acceleration returns
+     *
+     * Only local sprint state and the regular C0B sprint action are used. No position, motion or
+     * attack packet is fabricated, so the server simply sees a player who stopped sprinting for
+     * one tick before the hit and started again one tick after it.
+     *
+     * @return whether the caller may hit on this tick
+     */
+    private fun passWatchdogSprintGate(player: EntityPlayerSP): Boolean {
+        val now = runTimeTicks
+
+        // One hit per cycle: an extra click in the same tick would land with the window already spent.
+        if (sprintResetAttackTick == now) return false
+
+        return when (sprintResetStage) {
+            SprintResetStage.IDLE -> {
+                if (!player.isSprinting) {
+                    // Already walking, there is no sprint state to reset - hit right away.
+                    sprintResetAttackTick = now
+                    true
+                } else if (now <= sprintResumeTick) {
+                    // Sprint was restored last tick: let the acceleration actually come back for a
+                    // full tick instead of immediately closing the next window in the same tick.
+                    false
+                } else {
+                    // tick N-1: stop sprinting and sync it to the server, do not hit.
+                    beginSprintReset(player)
+                    sprintResetStage = SprintResetStage.STOPPED
+                    sprintResetTick = now
+                    // The click is not wasted: it is re-issued on the next tick, where the gate
+                    // lets it through as the actual hit.
+                    sprintResetCarryClick = true
+                    false
+                }
+            }
+
+            // tick N: the server has seen the STOP for a full tick - hit at walking speed.
+            SprintResetStage.STOPPED -> {
+                if (now > sprintResetTick) {
+                    sprintResetAttackTick = now
+                    // The hit is happening now, sprint may only come back on the next tick.
+                    sprintResetStage = SprintResetStage.ATTACKED
+                    true
+                } else {
+                    false
+                }
+            }
+
+            // tick N+1 has not arrived yet, keep the window closed.
+            SprintResetStage.ATTACKED -> false
+        }
+    }
+
+    private fun beginSprintReset(player: EntityPlayerSP) {
+        // Remember that sprint really was on. Restoring must not later depend on transient state
+        // such as a movement input vanilla already scaled down for auto-blocking.
+        sprintResetWantSprint = player.isSprinting
+
+        MovementUtils.sprintResetActive = true
+        player.isSprinting = false
+
+        // Send the stop now instead of waiting for onUpdateWalkingPlayer, and keep serverSprintState
+        // in sync so the same packet is not queued a second time later in the tick.
+        if (player.serverSprintState) {
+            sendPacket(C0BPacketEntityAction(player, C0BPacketEntityAction.Action.STOP_SPRINTING))
+            player.serverSprintState = false
+        }
+    }
+
+    private fun tickWatchdogSprintReset(player: EntityPlayerSP) {
+        if (sprintResetStage == SprintResetStage.IDLE) {
+            sprintResetCarryClick = false
+            return
+        }
+
+        // No target left - close the window right away instead of waiting for the timeout.
+        if (target == null) {
+            finishSprintReset(player)
+            return
+        }
+
+        when (sprintResetStage) {
+            // tick N: the window is due. Keep the carried click alive until the hit really happens;
+            // if it cannot happen, the timeout below hands sprint back.
+            SprintResetStage.STOPPED -> {
+                sprintResetCarryClick = true
+
+                if (runTimeTicks - sprintResetTick > SPRINT_RESET_TIMEOUT_TICKS) {
+                    finishSprintReset(player)
+                }
+            }
+
+            // tick N+1: restore sprint one tick after the hit.
+            SprintResetStage.ATTACKED -> {
+                if (runTimeTicks > sprintResetAttackTick) {
+                    finishSprintReset(player)
+                }
+            }
+
+            else -> {}
+        }
+    }
+
+    private fun finishSprintReset(player: EntityPlayerSP) {
+        val wasActive = sprintResetStage != SprintResetStage.IDLE
+        val restoreSprint = wasActive && sprintResetWantSprint
+        clearSprintResetState()
+
+        if (!restoreSprint || !canRestoreSprint(player)) return
+
+        player.isSprinting = true
+        // Re-assert it in Sprint.correctSprintState, after vanilla's own sprint block has run, so
+        // the restore survives this tick and actually emits START_SPRINTING with the movement.
+        MovementUtils.sprintRestoreTick = runTimeTicks
+        // Give the restored sprint one full tick before the next window may open.
+        sprintResumeTick = runTimeTicks
+    }
+
+    /**
+     * Decides whether sprint may be handed back right now.
+     *
+     * Deliberately does not use [EntityPlayerSP.moveForward] or the plain item-use flag: while
+     * auto-blocking, vanilla scales `movementInput.moveForward` to 0.2 and the entity field lags a
+     * tick behind, so both would reject a perfectly valid restore and the player would stay at
+     * walking speed for the rest of the fight.
+     */
+    private fun canRestoreSprint(player: EntityPlayerSP): Boolean {
+        if (player.foodStats.foodLevel <= 6 && !player.capabilities.allowFlying) return false
+        if (player.isInWater || player.isRiding || player.isSneaking) return false
+        if (player.isPotionActive(Potion.blindness)) return false
+        // Real item use blocks sprint; the fake sword block of KillAura does not count.
+        if (player.isUsingItem && !player.isBlocking) return false
+
+        return mc.gameSettings.keyBindForward.isKeyDown ||
+            player.movementInput.moveForward >= 0.8f ||
+            player.moveForward >= 0.8f
+    }
+
+    private fun clearSprintResetState() {
+        sprintResetStage = SprintResetStage.IDLE
+        sprintResetTick = 0
+        sprintResetAttackTick = -1
+        sprintResumeTick = -1
+        sprintResetWantSprint = false
+        sprintResetCarryClick = false
+        MovementUtils.sprintResetActive = false
+        MovementUtils.sprintRestoreTick = -1
+    }
+
+    /**
+     * Attack [entity]
+     */
+    private fun attackEntity(entity: EntityLivingBase, isLastClick: Boolean) {
+        val thePlayer = mc.thePlayer
+
+        if (shouldPrioritize()) return
+
+        if (thePlayer.isBlocking && (autoBlock == "Off" && blockStatus || autoBlock == "Packet" && releaseAutoBlock)) {
+            stopBlocking()
+
+            if (!ignoreTickRule || autoBlock == "Off") {
+                return
+            }
+        }
+
+        // The function is only called when we are facing an entity
+        if (shouldDelayClick(MovingObjectPosition.MovingObjectType.ENTITY)) {
+            return
+        }
+
+        if (!blinkAutoBlock || !BlinkUtils.isBlinking) {
+            // KeepSprint "Watchdog": the hit may only happen inside the opened sprint-reset window.
+            if (keepSprintMode == "Watchdog" && !passWatchdogSprintGate(thePlayer)) {
+                return
+            }
+
+            val affectSprint = when (keepSprintMode) {
+                // Watchdog already hits without sprint, so vanilla must run unmodified.
+                "Watchdog" -> null
+                else -> false.takeIf { KeepSprint.handleEvents() || keepSprintMode == "Standard" }
+            }
+
+            // The swing (C0A) must always immediately precede the attack (C02) — that is the vanilla
+            // 1.8 order GrimAC's PacketOrderB enforces ("did not swing for attack"). The old airborne
+            // skip (only swing when onGround under FailSwing) meant a jump-attack sent the attack with
+            // no preceding swing, spamming PacketOrderB. FailSwing only swings on the miss path (which
+            // never reaches a real attack), so swinging here every hit cannot double-swing.
+            if (swing) {
+                thePlayer.swingItem()
+            }
+            thePlayer.attackEntityWithModifiedSprint(entity, affectSprint) {}
+        }
+
+        // Start blocking after attack
+        if (autoBlock != "Off" && (thePlayer.isBlocking || canBlock) && (!blinkAutoBlock && isLastClick || blinkAutoBlock && (!blinked || !BlinkUtils.isBlinking))) {
+            startBlocking(entity, interactAutoBlock, autoBlock == "Fake")
+        }
+
+        resetLastAttackedTicks()
+    }
+
+    /**
+     * Dispatches the attack either inline or, when [postRotationAttack] is enabled, right after our
+     * rotation reaches the server (post-move) so the hit is processed with the synced rotation.
+     */
+    private fun dispatchAttack(entity: EntityLivingBase, isLastClick: Boolean) {
+        // Hitblock's attack (C02) and block-place (C08) must stay inline, before this tick's flying
+        // packet. Post-moving them pushes them past the flying boundary into the next tick's bucket,
+        // alongside the C07 release -> GrimAC PacketOrderI (invalid combat/use/release tick order) +
+        // setback. Keep post-move only for the pure no-autoblock attack, where it is Grim-safe.
+        if (postRotationAttack && autoBlock == "Off") {
+            PostRotationExecutor.runPostMove { attackEntity(entity, isLastClick) }
+        } else {
+            attackEntity(entity, isLastClick)
+        }
+    }
+
+    /**
+     * Update rotations to enemy
+     */
+    private fun updateRotations(entity: Entity): Boolean {
+        val player = mc.thePlayer ?: return false
+        
+        // Early exit if shouldn't rotate
+        if (shouldPrioritize() || !options.rotationsActive) {
+            return player.getDistanceToEntityBox(entity) <= range
+        }
+
+        if (!options.rotationsActive) {
+            return player.getDistanceToEntityBox(entity) <= range
+        }
+
+        val predictedPosition = PositionExtrapolation.getBestForEntity(entity)
+            .getPositionInTicks(predictEnemyPosition.toDouble())
+        val prediction = predictedPosition.subtract(entity.currPos)
+
+        val boundingBox = entity.hitBox.offset(prediction)
+        val (currPos, oldPos) = player.currPos to player.prevPos
+
+        val simPlayer = SimulatedPlayer.fromClientPlayer(RotationUtils.modifiedInput)
+
+        simPlayer.rotationYaw = (currentRotation ?: player.rotation).yaw
+
+        var pos = currPos
+
+        repeat(predictClientMovement) {
+            val previousPos = simPlayer.pos
+
+            simPlayer.tick()
+
+            if (predictOnlyWhenOutOfRange) {
+                player.setPosAndPrevPos(simPlayer.pos)
+
+                val currDist = player.getDistanceToEntityBox(entity)
+
+                player.setPosAndPrevPos(previousPos)
+
+                val prevDist = player.getDistanceToEntityBox(entity)
+
+                player.setPosAndPrevPos(currPos, oldPos)
+                pos = simPlayer.pos
+
+                if (currDist <= range && currDist <= prevDist) {
+                    return@repeat
+                }
+            }
+
+            pos = previousPos
+        }
+
+        player.setPosAndPrevPos(pos)
+
+        val rotation = if (usePointTracker) {
+            pointTracker.findBestPoint(entity, player.eyes, currentRotation)?.let { toRotation(it, false) }
+        } else searchCenter(
+            boundingBox,
+            generateSpotBasedOnDistance,
+            outBorder && !attackTimer.hasTimePassed(attackDelay / 2),
+            randomization,
+            predict = false,
+            lookRange = range + scanRange,
+            attackRange = range,
+            throughWallsRange = throughWallsRange,
+            bodyPoints = listOf(highestBodyPointToTarget, lowestBodyPointToTarget),
+            horizontalSearch = horizontalBodySearchRange,
+            preferLastPoint = stickyAim
+        )
+
+        if (rotation == null) {
+            player.setPosAndPrevPos(currPos, oldPos)
+
+            return false
+        }
+
+        RotationUtils.aimTargetEntity = entity
+        setTargetRotation(rotation, options = options)
+
+        player.setPosAndPrevPos(currPos, oldPos)
+
+        return true
+    }
+
+    private fun ticksSinceClick() = runTimeTicks - (attackTickTimes.lastOrNull()?.second ?: 0)
+
+    /**
+     * Check if enemy is hittable with current rotations
+     */
+private fun rolledRangeFor(): Float {
+    if (rangeChance >= 100) return range
+    if (rolledRange < 0f || --rangeRollCounter <= 0) {
+        rolledRange = if (Math.random() * 100.0 < rangeChance) range else minOf(range, 3f)
+        rangeRollCounter = 10
+    }
+    return minOf(rolledRange, range)
+}
+
+private fun willExitRange(ticks: Double): Boolean {
+    val player = mc.thePlayer ?: return false
+    val currentTarget = target ?: return false
+
+    val futureSelf = PositionExtrapolation.getBestForEntity(player).getPositionInTicks(ticks)
+    val futureTarget = PositionExtrapolation.getBestForEntity(currentTarget).getPositionInTicks(ticks)
+
+    val futureEyes = futureSelf.addVector(0.0, player.eyeHeight.toDouble(), 0.0)
+    val delta = futureTarget.subtract(currentTarget.currPos)
+    val futureBox = currentTarget.hitBox.offset(delta.xCoord, delta.yCoord, delta.zCoord)
+    val futureDist = futureEyes.distanceTo(getNearestPointBB(futureEyes, futureBox))
+
+    return futureDist > getRange(currentTarget).toDouble()
+}
+
+private fun updateHittable() {
+    val player = mc.thePlayer ?: return
+    val target = this.target ?: run {
+        hittable = false
+        return
+    }
+
+    val effRange = rolledRangeFor()
+
+    if (shouldPrioritize()) {
+        hittable = false
+        return
+    }
+    
+    if (!options.rotationsActive) {
+        hittable = player.getDistanceToEntityBox(target) <= effRange
+        return
+    }
+    
+    val eyes = player.eyes
+    val rotation = currentRotation ?: player.rotation
+    val lookVec = getVectorForRotation(rotation)
+    val distance = player.getDistanceToEntityBox(target)
+    
+    if (distance > effRange) {
+        hittable = false
+        return
+    }
+    
+    val targetBox = if (predictEnemyPosition > 0) {
+        val targetMotionX = target.posX - target.prevPosX
+        val targetMotionY = target.posY - target.prevPosY
+        val targetMotionZ = target.posZ - target.prevPosZ
+        
+        target.entityBoundingBox.offset(
+            targetMotionX * predictEnemyPosition,
+            targetMotionY * predictEnemyPosition,
+            targetMotionZ * predictEnemyPosition
+        )
+    } else {
+        target.entityBoundingBox
+    }
+    
+    if (raycast) {
+        val raycastEntity = raycastEntity(
+            effRange.toDouble(), rotation.yaw, rotation.pitch
+        ) { entity -> !livingRaycast || entity is EntityLivingBase && entity !is EntityArmorStand }
+        
+        if (raycastEntity != null && raycastEntity is EntityLivingBase && (!(raycastEntity is EntityPlayer && raycastEntity.isClientFriend()))) {
+            if (raycastIgnored && target != raycastEntity && isSelected(raycastEntity, true)) {
+                this.target = raycastEntity
+            }
+            
+            hittable = this.target == raycastEntity
+            return
+        }
+        
+        hittable = false
+
+        // Strict: the raytrace is the final word — only attack when the ray actually lands on the
+        // target. Skip the lenient through-walls/intercept fallback below. Normal keeps that fallback.
+        if (raytraceMode == "Strict") {
+            return
+        }
+    } else {
+        hittable = isRotationFaced(target, range.toDouble(), rotation)
+        
+        if (!hittable && predictEnemyPosition > 0) {
+            val rayEnd = Vec3(
+                eyes.xCoord + lookVec.xCoord * range.toDouble(),
+                eyes.yCoord + lookVec.yCoord * range.toDouble(),
+                eyes.zCoord + lookVec.zCoord * range.toDouble()
+            )
+            val intercept = targetBox.calculateIntercept(eyes, rayEnd)
+            hittable = intercept != null
+        }
+    }
+    
+    var specialTrackingApplied = false
+    
+    if (ForwardTrack.handleEvents()) {
+        ForwardTrack.includeEntityTruePos(target) {
+            checkIfAimingAtBox(target, rotation, eyes, onSuccess = {
+                hittable = true
+                specialTrackingApplied = true
+            })
+        }
+    }
+    
+    if (!hittable && !specialTrackingApplied && Backtrack.handleEvents()) {
+        Backtrack.loopThroughBacktrackData(target) {
+            var result = false
+            
+            checkIfAimingAtBox(target, rotation, eyes, onSuccess = {
+                hittable = true
+                result = true
+            }, onFail = {
+                result = false
+            })
+            
+            return@loopThroughBacktrackData result
+        }
+    }
+
+    if (!hittable && !specialTrackingApplied) {
+        if (targetBox.isVecInside(eyes)) {
+            hittable = true
+            return
+        }
+
+        val rayEnd = Vec3(
+            eyes.xCoord + lookVec.xCoord * range.toDouble(),
+            eyes.yCoord + lookVec.yCoord * range.toDouble(),
+            eyes.zCoord + lookVec.zCoord * range.toDouble()
+        )
+        val intercept = targetBox.calculateIntercept(eyes, rayEnd)
+        
+        hittable = intercept != null && (isVisible(intercept.hitVec) || distance <= throughWallsRange)
+    }
+}
+
+    /**
+     * Start blocking
+     */
+    private fun startBlocking(interactEntity: Entity, interact: Boolean, fake: Boolean = false) {
+        val player = mc.thePlayer ?: return
+
+        if (blockStatus && (!uncpAutoBlock || !blinkAutoBlock) || shouldPrioritize()) return
+
+        if (mc.thePlayer.isBlocking) {
+            blockStatus = true
+            renderBlocking = true
+            return
+        }
+
+        if (unblockMode == "Empty" && player.inventory.firstEmptyStack !in 0..8) {
+            return
+        }
+
+        if (!fake) {
+            if (!(blockRate > 0 && nextInt(endExclusive = 100) <= blockRate)) return
+
+            if (interact) {
+                val positionEye = player.eyes
+
+                val boundingBox = interactEntity.hitBox
+
+                val (yaw, pitch) = currentRotation ?: player.rotation
+
+                val vec = getVectorForRotation(Rotation(yaw, pitch))
+
+                val lookAt = positionEye.add(vec * maxRange.toDouble())
+
+                val movingObject = boundingBox.calculateIntercept(positionEye, lookAt) ?: return
+                val hitVec = movingObject.hitVec
+
+                sendPackets(
+                    C02PacketUseEntity(interactEntity, hitVec - interactEntity.positionVector),
+                    C02PacketUseEntity(interactEntity, INTERACT)
+                )
+
+            }
+
+            if (switchStartBlock) {
+                switchToSlot((SilentHotbar.currentSlot + 1) % 9)
+            }
+
+            sendPacket(C08PacketPlayerBlockPlacement(player.heldItem))
+            blockStatus = true
+        }
+
+        renderBlocking = true
+
+        CPSCounter.registerClick(CPSCounter.MouseButton.RIGHT)
+    }
+
+    /**
+     * Stop blocking
+     */
+    private fun stopBlocking(forceStop: Boolean = false) {
+        val player = mc.thePlayer ?: return
+
+        if (!forceStop) {
+            if (blockStatus && !mc.thePlayer.isBlocking) {
+
+                when (unblockMode.lowercase()) {
+                    "stop" -> {
+                        sendPacket(C07PacketPlayerDigging(RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN))
+                    }
+
+                    "switch" -> {
+                        switchToSlot((SilentHotbar.currentSlot + 1) % 9)
+                    }
+
+                    "empty" -> {
+                        player.inventory.firstEmptyStack.takeIf { it in 0..8 }.let {
+                            if (it == null) {
+                                sendPacket(C07PacketPlayerDigging(RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN))
+                                return@let
+                            }
+                            switchToSlot(it)
+                        }
+                    }
+                }
+
+                blockStatus = false
+            }
+        } else {
+            if (blockStatus) {
+                sendPacket(C07PacketPlayerDigging(RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN))
+            }
+
+            blockStatus = false
+        }
+
+        renderBlocking = false
+    }
+
+    val onPacket = handler<PacketEvent> { event ->
+        val player = mc.thePlayer ?: return@handler
+        val packet = event.packet
+
+        if (autoBlock == "Off" || !blinkAutoBlock || !blinked) return@handler
+
+        if (player.isDead || player.ticksExisted < 20) {
+            BlinkUtils.unblink()
+            return@handler
+        }
+
+        if (Blink.blinkingSend() || Blink.blinkingReceive()) {
+            BlinkUtils.unblink()
+            return@handler
+        }
+
+        BlinkUtils.blink(packet, event)
+    }
+
+    /**
+     * Checks if raycast landed on a different object
+     *
+     * The game requires at least 1 tick of cool-down on raycast object type change (miss, block, entity)
+     * We are doing the same thing here but allow more cool-down.
+     */
+    private fun shouldDelayClick(currentType: MovingObjectPosition.MovingObjectType): Boolean {
+        if (!useHitDelay) {
+            return false
+        }
+
+        val lastAttack = attackTickTimes.lastOrNull()
+
+        return lastAttack != null && lastAttack.first.typeOfHit != currentType && runTimeTicks - lastAttack.second <= hitDelayTicks
+    }
+
+    private fun checkIfAimingAtBox(
+        targetToCheck: Entity, currentRotation: Rotation, eyes: Vec3, onSuccess: () -> Unit,
+        onFail: () -> Unit = { },
+    ) {
+        if (targetToCheck.hitBox.isVecInside(eyes)) {
+            onSuccess()
+            return
+        }
+
+        // Recreate raycast logic
+        val intercept = targetToCheck.hitBox.calculateIntercept(
+            eyes, eyes + getVectorForRotation(currentRotation) * range.toDouble()
+        )
+
+        if (intercept != null) {
+            // Is the entity box raycast vector visible? If not, check through-wall range
+            hittable =
+                isVisible(intercept.hitVec) || mc.thePlayer.getDistanceToEntityBox(targetToCheck) <= throughWallsRange
+
+            if (hittable) {
+                onSuccess()
+                return
+            }
+        }
+
+        onFail()
+    }
+
+    private fun switchToSlot(slot: Int) {
+        SilentHotbar.selectSlotSilently(this, slot, immediate = true)
+        SilentHotbar.resetSlot(this, true)
+    }
+
+    private fun shouldPrioritize(): Boolean = when {
+        !onScaffold && (Scaffold.handleEvents() && (Scaffold.placeRotation != null || currentRotation != null) || Tower.handleEvents() && Tower.isTowering) -> true
+
+        !onDestroyBlock && (Fucker.handleEvents() && !Fucker.noHit && Fucker.pos != null && !Fucker.isOwnBed || Nuker.handleEvents()) -> true
+
+        activationSlot && SilentHotbar.currentSlot != preferredSlot - 1 -> true
+
+        else -> false
+    }
+
+    private fun renderRangeIndicator() {
+        if (!rangeIndicator) return
+
+        val player = mc.thePlayer ?: return
+        if (noInventoryAttack && mc.currentScreen is GuiContainer) return
+
+        val pos = player.interpolatedPosition(player.prevPos)
+        val renderPos = mc.renderManager.renderPos
+        val x = pos.xCoord - renderPos.xCoord
+        val y = pos.yCoord - renderPos.yCoord + 0.02
+        val z = pos.zCoord - renderPos.zCoord
+        val radius = maxRange.toDouble()
+
+        val ringColor = if (hittable && target != null) rangeIndicatorActiveColor else rangeIndicatorColor
+        val steps = 60
+
+        GL11.glPushMatrix()
+        GL11.glEnable(GL11.GL_BLEND)
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+        GL11.glDisable(GL11.GL_TEXTURE_2D)
+        GL11.glEnable(GL11.GL_LINE_SMOOTH)
+        GL11.glDisable(GL11.GL_DEPTH_TEST)
+        GL11.glDisable(GL11.GL_LIGHTING)
+        GL11.glDepthMask(false)
+
+        GL11.glColor4f(ringColor.red / 255f, ringColor.green / 255f, ringColor.blue / 255f, ringColor.alpha / 255f * 0.35f)
+        GL11.glBegin(GL11.GL_TRIANGLE_FAN)
+        GL11.glVertex3d(x, y, z)
+        for (i in 0..steps) {
+            val angle = 2.0 * Math.PI * i / steps
+            GL11.glVertex3d(x + cos(angle) * radius, y, z + sin(angle) * radius)
+        }
+        GL11.glEnd()
+
+        if (rangeIndicatorOutline) {
+            GL11.glLineWidth(2f)
+            GL11.glColor4f(ringColor.red / 255f, ringColor.green / 255f, ringColor.blue / 255f, ringColor.alpha / 255f)
+            GL11.glBegin(GL11.GL_LINE_LOOP)
+            for (i in 0 until steps) {
+                val angle = 2.0 * Math.PI * i / steps
+                GL11.glVertex3d(x + cos(angle) * radius, y, z + sin(angle) * radius)
+            }
+            GL11.glEnd()
+        }
+
+        GL11.glDepthMask(true)
+        GL11.glEnable(GL11.GL_DEPTH_TEST)
+        GL11.glDisable(GL11.GL_LINE_SMOOTH)
+        GL11.glEnable(GL11.GL_TEXTURE_2D)
+        GL11.glDisable(GL11.GL_BLEND)
+        GL11.glPopMatrix()
+        GL11.glColor4f(1f, 1f, 1f, 1f)
+    }
+
+    private fun shouldQueuePredictedExitClick(): Boolean {
+        if (!predictExitingRange || !hittable || cps.last <= 0) return false
+        return willExitRange(exitPredictTicks.toDouble())
+    }
+
+    private fun handleFailedSwings() {
+        if (!renderBoxOnSwingFail) return
+
+        val box = AxisAlignedBB(0.0, 0.0, 0.0, 0.05, 0.05, 0.05)
+
+        synchronized(swingFails) {
+            val fadeSeconds = renderBoxFadeSeconds * 1000L
+            val colorSettings = renderBoxColor
+
+            val renderManager = mc.renderManager
+
+            swingFails.removeAll {
+                val timestamp = System.currentTimeMillis() - it.startTime
+                val transparency = (0f..255f).lerpWith(1 - (timestamp / fadeSeconds).coerceAtMost(1.0F))
+
+                val offsetBox = box.offset(it.vec3 - renderManager.renderPos)
+
+                Render3D.drawAxisAlignedBB(offsetBox, colorSettings.color(a = transparency.roundToInt()))
+
+                timestamp > fadeSeconds
+            }
+        }
+    }
+
+    private fun drawAimPointBox() {
+        val player = mc.thePlayer ?: return
+        val target = this.target ?: return
+
+        if (!renderAimPointBox) {
+            return
+        }
+
+        val f = aimPointBoxSize.toDouble()
+
+        val box = AxisAlignedBB(0.0, 0.0, 0.0, f, f, f)
+
+        val renderManager = mc.renderManager
+
+        runWithSimulatedPosition(player, player.interpolatedPosition(player.prevPos)) {
+            runWithSimulatedPosition(target, target.interpolatedPosition(target.prevPos)) {
+                val rotationVec = player.eyes + getVectorForRotation(
+                    serverRotation.lerpWith(currentRotation ?: player.rotation, mc.timer.renderPartialTicks)
+                ) * player.getDistanceToEntityBox(target).coerceAtMost(range.toDouble())
+
+                val offSetBox = box.offset(rotationVec - renderManager.renderPos)
+
+                Render3D.drawAxisAlignedBB(offSetBox, aimPointBoxColor)
+            }
+        }
+    }
+
+    /**
+     * Check if run should be cancelled
+     */
+    private val cancelRun inline get(): Boolean {
+        return mc.thePlayer.isSpectator
+                || !isAlive(mc.thePlayer)
+                || noConsumeAttack == "NoRotation" && isConsumingItem()
+                || shouldCancelDueToModuleState()
+                || isEatingDisallowed()
+                || isBlockingDisallowed()
+    }
+
+    private fun shouldCancelDueToModuleState(): Boolean {
+        return (blinkCheck && FDPClient.moduleManager[Blink::class.java.simpleName]?.state == true)
+                || (noScaffold && FDPClient.moduleManager[Scaffold::class.java.simpleName]?.state == true)
+                || (noFly && FDPClient.moduleManager[Flight::class.java.simpleName]?.state == true)
+                || (onSwording && mc.thePlayer.heldItem?.item !is ItemSword)
+    }
+
+    private fun isEatingDisallowed(): Boolean {
+        return noEat && mc.thePlayer.isUsingItem && (
+                mc.thePlayer.heldItem?.item is ItemFood || mc.thePlayer.heldItem?.item is ItemBucketMilk || mc.thePlayer.heldItem?.item is ItemPotion)
+    }
+
+    private fun isBlockingDisallowed(): Boolean {
+        return noBlocking && mc.thePlayer.isUsingItem && mc.thePlayer.heldItem?.item is ItemBlock
+    }
+
+    /**
+     * Check if [entity] is alive
+     */
+    private fun isAlive(entity: EntityLivingBase) = entity.isEntityAlive && entity.health > 0
+
+    /**
+     * Check if player is able to block
+     */
+    private val canBlock: Boolean
+        get() {
+            val player = mc.thePlayer ?: return false
+
+            if (target != null && player.heldItem?.item is ItemSword) {
+                if (smartAutoBlock) {
+                    if (player.isMoving && forceBlock) return false
+
+                    if (checkWeapon && target?.heldItem?.item !is ItemSword && target?.heldItem?.item !is ItemAxe) return false
+
+                    if (player.hurtTime > maxOwnHurtTime) return false
+
+                    val rotationToPlayer = toRotation(player.hitBox.center, true, target!!)
+
+                    if (rotationDifference(rotationToPlayer, target!!.rotation) > maxDirectionDiff) return false
+
+                    if (target!!.swingProgressInt > maxSwingProgress) return false
+
+                    if (target!!.getDistanceToEntityBox(player) > blockRange) return false
+                }
+
+                if (player.getDistanceToEntityBox(target!!) > blockMaxRange) return false
+
+                return true
+            }
+
+            return false
+        }
+
+    /**
+     * Range
+     */
+    private val maxRange
+        get() = max(range + scanRange, throughWallsRange)
+
+    private fun getRange(entity: Entity) =
+        (if (mc.thePlayer.getDistanceToEntityBox(entity) >= throughWallsRange) range + scanRange else throughWallsRange) - if (mc.thePlayer.isSprinting) rangeSprintReduction else 0F
+
+    /**
+     * HUD Tag
+     */
+    override val tag
+        get() = targetMode
+
+    val isBlockingChestAura
+        get() = handleEvents() && target != null
+}
+
+data class SwingFailData(val vec3: Vec3, val startTime: Long)
