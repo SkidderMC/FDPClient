@@ -34,6 +34,26 @@ object MovementUtils : MinecraftInstance, Listenable {
 
     var affectSprintOnAttack: Boolean? = null
 
+    /**
+     * Set while [net.ccbluex.liquidbounce.features.module.modules.combat.KillAura]'s KeepSprint
+     * "Watchdog" mode holds sprint off for a hit. Sprint.correctSprintState forces the local
+     * sprint flag off while this is true, so vanilla auto-sprint cannot re-enable sprinting in
+     * the same tick after the stop.
+     */
+    var sprintResetActive: Boolean = false
+
+    /**
+     * Tick on which [net.ccbluex.liquidbounce.features.module.modules.combat.KillAura]'s KeepSprint
+     * "Watchdog" mode hands sprint back. Sprint.correctSprintState re-asserts the restored sprint
+     * after vanilla's own sprint block already ran, otherwise item use, a stale movement multiplier
+     * or a horizontal collision would cancel the restore in the same tick and no START_SPRINTING
+     * packet would ever be sent.
+     *
+     * Stored as a tick instead of a boolean so a request that is never consumed (Sprint disabled)
+     * expires on its own instead of firing on a much later tick.
+     */
+    var sprintRestoreTick: Int = -1
+
     var speed
         get() = mc.thePlayer?.run { sqrt(motionX * motionX + motionZ * motionZ).toFloat() } ?: .0f
         set(value) {
