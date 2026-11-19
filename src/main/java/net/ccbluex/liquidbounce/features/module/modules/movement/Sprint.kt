@@ -88,6 +88,15 @@ object Sprint : Module("Sprint", Category.MOVEMENT, Category.SubCategory.MOVEMEN
     fun correctSprintState(movementInput: MovementInput, isUsingItem: Boolean) {
         val player = mc.thePlayer ?: return
 
+        // InvMove's Buffer(SprintMode=Off) and Tick modes own the sprint state inside a screen.
+        // This has to run before the watchdog, otherwise the controller below re-enables sprint as
+        // soon as the player moves inside the container.
+        if (InvMove.blocksSprint()) {
+            player setSprintSafely false
+            isSprinting = false
+            return
+        }
+
         // KeepSprint "Watchdog" owns the sprint state for this tick, let it decide.
         if (handleWatchdogSprint(player)) return
 
