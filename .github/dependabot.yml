@@ -8,3 +8,12 @@ updates:
     ignore:
       - dependency-name: "org.knowm.xchart:xchart"
         update-types: ["version-update:semver-major"]
+      # Minecraft 1.8.9 provides log4j 2.0-beta9 at runtime.
+      - dependency-name: "org.apache.logging.log4j:*"
+      # ForgeGradle for 1.8.9 needs Gradle 6.9 and Java 8; these majors require newer.
+      - dependency-name: "gradle-wrapper"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "com.github.johnrengelman.shadow"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "com.gorylenko.gradle-git-properties"
+        update-types: ["version-update:semver-major"]
