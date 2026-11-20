@@ -218,18 +218,18 @@ tasks.register("verifyLunarArtifact", Exec) {
 check.dependsOn("verifyLunarArtifact")
 
 dependencies {
-    implementation("org.ow2.asm:asm:9.7.1")
-    implementation("org.ow2.asm:asm-tree:9.7.1")
-    implementation("org.ow2.asm:asm-commons:9.7.1")
-    implementation("org.ow2.asm:asm-util:9.7.1")
-    lunarAsm "org.ow2.asm:asm:9.7.1"
-    lunarAsm "org.ow2.asm:asm-tree:9.7.1"
-    lunarAsm "org.ow2.asm:asm-commons:9.7.1"
-    lunarAsm "org.ow2.asm:asm-util:9.7.1"
+    implementation("org.ow2.asm:asm:9.11.1")
+    implementation("org.ow2.asm:asm-tree:9.11.1")
+    implementation("org.ow2.asm:asm-commons:9.11.1")
+    implementation("org.ow2.asm:asm-util:9.11.1")
+    lunarAsm "org.ow2.asm:asm:9.11.1"
+    lunarAsm "org.ow2.asm:asm-tree:9.11.1"
+    lunarAsm "org.ow2.asm:asm-commons:9.11.1"
+    lunarAsm "org.ow2.asm:asm-util:9.11.1"
     lunarMixin("org.spongepowered:mixin:0.8.7") { transitive = false }
     lunarScriptEngine "org.openjdk.nashorn:nashorn-core:15.7"
-    lunarEngineLibraries("com.google.guava:guava:21.0") { transitive = false }
-    lunarEngineLibraries("com.google.code.gson:gson:2.10.1") { transitive = false }
+    lunarEngineLibraries("com.google.guava:guava:23.0") { transitive = false }
+    lunarEngineLibraries("com.google.code.gson:gson:2.15.0") { transitive = false }
     annotationProcessor("org.spongepowered:mixin:0.7.11-SNAPSHOT")
     implementation("org.spongepowered:mixin:0.7.11-SNAPSHOT") {
         transitive = false
@@ -274,7 +274,7 @@ dependencies {
     implementation("org.knowm.xchart:xchart:3.8.8")
 
     // HTTP Client
-    implementation("com.squareup.okhttp3:okhttp:5.4.0") {
+    implementation("com.squareup.okhttp3:okhttp:5.5.1") {
         exclude module: "kotlin-stdlib"
     }
 
@@ -287,7 +287,7 @@ dependencies {
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
 
     // Swing LookAndFeel
-    implementation "com.formdev:flatlaf:3.7.2"
+    implementation "com.formdev:flatlaf:3.8"
 
     implementation fileTree(include: ["*.jar"], dir: "libs")
 
