@@ -219,11 +219,11 @@ check.dependsOn("verifyLunarArtifact")
 
 dependencies {
     implementation("org.ow2.asm:asm:9.7.1")
-    implementation("org.ow2.asm:asm-tree:9.7.1")
+    implementation("org.ow2.asm:asm-tree:9.11.1")
     implementation("org.ow2.asm:asm-commons:9.7.1")
     implementation("org.ow2.asm:asm-util:9.7.1")
     lunarAsm "org.ow2.asm:asm:9.7.1"
-    lunarAsm "org.ow2.asm:asm-tree:9.7.1"
+    lunarAsm "org.ow2.asm:asm-tree:9.11.1"
     lunarAsm "org.ow2.asm:asm-commons:9.7.1"
     lunarAsm "org.ow2.asm:asm-util:9.7.1"
     lunarMixin("org.spongepowered:mixin:0.8.7") { transitive = false }
