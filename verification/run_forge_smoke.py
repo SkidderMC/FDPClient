@@ -6,6 +6,7 @@
 import argparse
 import json
 import os
+import re
 from pathlib import Path
 import subprocess
 import shutil
@@ -42,7 +43,11 @@ def main():
             archive.write(path, path.relative_to(classes).as_posix())
     report = sandbox / "report.txt"
     # runClient asks shadowJar for MCP development names. Preserve the tested SRG artifact.
-    artifact = root / "build/libs/FDPClient-b17.jar"
+    properties = (root / "gradle.properties").read_text(encoding="utf-8")
+    version = re.search(r"(?m)^[ \t]*mod_version[ \t]*=[ \t]*(\S+)", properties)
+    if version is None:
+        raise SystemExit("Set mod_version in gradle.properties before running the Forge smoke test")
+    artifact = root / "build/libs" / f"FDPClient-{version.group(1)}.jar"
     snapshot = sandbox / "FDPClient-production.jar"
     shutil.copy2(artifact, snapshot)
     from verify_lunar_artifact import utf8_constants
