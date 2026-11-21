@@ -34,6 +34,12 @@ object MovementUtils : MinecraftInstance, Listenable {
 
     var affectSprintOnAttack: Boolean? = null
 
+    /** Set while KillAura's KeepSprint "Watchdog" mode holds sprint off for a hit. */
+    var sprintResetActive: Boolean = false
+
+    /** Tick on which KillAura's KeepSprint "Watchdog" mode hands sprint back. */
+    var sprintRestoreTick: Int = -1
+
     var speed
         get() = mc.thePlayer?.run { sqrt(motionX * motionX + motionZ * motionZ).toFloat() } ?: .0f
         set(value) {

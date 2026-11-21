@@ -12,11 +12,14 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.combat.SuperKnockback
 import net.ccbluex.liquidbounce.features.module.modules.player.scaffolds.Scaffold
+import net.ccbluex.liquidbounce.utils.client.ClientUtils.runTimeTicks
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.extensions.setSprintSafely
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.serverOpenInventory
+import net.ccbluex.liquidbounce.utils.movement.MovementUtils
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.activeSettings
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.currentRotation
+import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.network.play.client.C0BPacketEntityAction
 import net.minecraft.potion.Potion
 import net.minecraft.util.MovementInput
@@ -84,6 +87,19 @@ object Sprint : Module("Sprint", Category.MOVEMENT, Category.SubCategory.MOVEMEN
 
     fun correctSprintState(movementInput: MovementInput, isUsingItem: Boolean) {
         val player = mc.thePlayer ?: return
+
+        // InvMove's Buffer(SprintMode=Off) and Tick modes own the sprint state inside a screen.
+        // This has to run before the watchdog, otherwise the controller below re-enables sprint as
+        // soon as the player moves inside the container.
+        if (InvMove.blocksSprint()) {
+            player setSprintSafely false
+            isSprinting = false
+            return
+        }
+
+        // KeepSprint "Watchdog" owns the sprint state for this tick, let it decide.
+        if (handleWatchdogSprint(player)) return
+
         val scaffoldActive = Scaffold.handleEvents()
         val scaffoldControlsSprint = scaffoldActive && Scaffold.sprint
 
@@ -141,6 +157,33 @@ object Sprint : Module("Sprint", Category.MOVEMENT, Category.SubCategory.MOVEMEN
                 }
             }
         }
+    }
+
+    /**
+     * Handles the sprint state while KillAura's KeepSprint "Watchdog" mode owns it.
+     *
+     * This runs after vanilla's own sprint block (item use, horizontal collision, a movement
+     * multiplier scaled down for auto-block) already executed, so the restore has to be re-applied
+     * here - otherwise the restored sprint would be cancelled again and no START_SPRINTING packet
+     * would be sent with the movement packet.
+     */
+    private fun handleWatchdogSprint(player: EntityPlayerSP): Boolean {
+        if (MovementUtils.sprintRestoreTick == runTimeTicks) {
+            MovementUtils.sprintRestoreTick = -1
+            player setSprintSafely true
+            isSprinting = true
+            return true
+        }
+
+        // Auto-sprint must not undo the pre-hit stop inside the same tick; this runs right before
+        // EntityPlayerSP moves the player, so the whole window is walked at walking speed.
+        if (MovementUtils.sprintResetActive) {
+            player setSprintSafely false
+            isSprinting = false
+            return true
+        }
+
+        return false
     }
 
     private fun shouldStopSprinting(movementInput: MovementInput, isUsingItem: Boolean, ignoreDirectionCheck: Boolean = false): Boolean {

@@ -35,6 +35,7 @@ import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.serverOpenInvento
 import net.ccbluex.liquidbounce.utils.inventory.ItemUtils.isConsumingItem
 import net.ccbluex.liquidbounce.utils.inventory.SilentHotbar
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextInt
+import net.ccbluex.liquidbounce.utils.movement.MovementUtils
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
 import net.ccbluex.liquidbounce.utils.render.Render3D
 import net.ccbluex.liquidbounce.utils.rotation.RandomizationSettings
@@ -61,6 +62,7 @@ import net.ccbluex.liquidbounce.utils.timing.TickedActions.nextTick
 import net.ccbluex.liquidbounce.utils.timing.ClickPattern
 import net.ccbluex.liquidbounce.utils.timing.ClickPatterns
 import net.ccbluex.liquidbounce.utils.timing.Clicker
+import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.entity.Entity
@@ -70,6 +72,7 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.*
 import net.minecraft.network.play.client.C02PacketUseEntity
 import net.minecraft.network.play.client.C02PacketUseEntity.Action.*
+import net.minecraft.network.play.client.C0BPacketEntityAction
 import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraft.network.play.client.C07PacketPlayerDigging.Action.RELEASE_USE_ITEM
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
@@ -173,8 +176,11 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
     // Bypass
     private val swing by boolean("Swing", true)
         .describe("Swing the arm when attacking.")
-    private val keepSprint by boolean("KeepSprint", true)
-        .describe("Keep sprinting after attacking.")
+    private val keepSprintMode by choices("KeepSprint", arrayOf("Standard", "Watchdog", "Off"), "Standard")
+        .describe(
+            "Standard: keep sprinting after the hit. Watchdog: stop sprinting one tick before the hit, " +
+                "hit at walking speed and resume one tick after. Off: vanilla cancels sprint."
+        )
 
     // Settings
     private val autoF5 by boolean("AutoF5", false)
@@ -501,6 +507,18 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
     private var clicks = 0
     private var attackTickTimes = mutableListOf<Pair<MovingObjectPosition, Int>>()
 
+    private enum class SprintResetStage { IDLE, STOPPED, ATTACKED }
+
+    private const val SPRINT_RESET_TIMEOUT_TICKS = 3
+
+    private var sprintResetStage = SprintResetStage.IDLE
+    private var sprintResetTick = 0
+    private var sprintResetAttackTick = -1
+    private var sprintResumeTick = -1
+
+    private var sprintResetWantSprint = false
+    private var sprintResetCarryClick = false
+
     // Container Delay
     private var containerOpen = -1L
 
@@ -531,6 +549,11 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
         attackTimer.reset()
         clicker.reset()
         clicks = 0
+
+        if (!state) {
+            val player = mc.thePlayer
+            if (player != null) finishSprintReset(player) else clearSprintResetState()
+        }
 
         if (blinkAutoBlock) {
             BlinkUtils.unblink()
@@ -566,6 +589,8 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
     val onWorld = handler<WorldEvent> {
         attackTickTimes.clear()
 
+        clearSprintResetState()
+
         if (blinkAutoBlock && BlinkUtils.isBlinking) BlinkUtils.unblink()
 
         synchronized(swingFails) {
@@ -573,11 +598,29 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
         }
     }
 
+    override fun onDisable() {
+        if (sprintResetStage == SprintResetStage.IDLE) return
+
+        val player = mc.thePlayer
+        if (player != null) finishSprintReset(player) else clearSprintResetState()
+    }
+
     /**
      * Tick event
      */
     val onTick = handler<GameTickEvent>(priority = 2) {
         val player = mc.thePlayer ?: return@handler
+
+        if (keepSprintMode == "Watchdog") {
+            tickWatchdogSprintReset(player)
+        } else if (sprintResetStage != SprintResetStage.IDLE) {
+            finishSprintReset(player)
+        }
+
+        if (sprintResetCarryClick) {
+            sprintResetCarryClick = false
+            if (clicks < 1) clicks = 1
+        }
 
         if (blockStatus && player.heldItem?.item !is ItemSword) {
             blockStatus = false
@@ -987,6 +1030,117 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
         }
     }
 
+    private fun passWatchdogSprintGate(player: EntityPlayerSP): Boolean {
+        val now = runTimeTicks
+
+        if (sprintResetAttackTick == now) return false
+
+        return when (sprintResetStage) {
+            SprintResetStage.IDLE -> {
+                if (!player.isSprinting) {
+                    sprintResetAttackTick = now
+                    true
+                } else if (now <= sprintResumeTick) {
+                    false
+                } else {
+                    beginSprintReset(player)
+                    sprintResetStage = SprintResetStage.STOPPED
+                    sprintResetTick = now
+                    sprintResetCarryClick = true
+                    false
+                }
+            }
+
+            SprintResetStage.STOPPED -> {
+                if (now > sprintResetTick) {
+                    sprintResetAttackTick = now
+                    sprintResetStage = SprintResetStage.ATTACKED
+                    true
+                } else {
+                    false
+                }
+            }
+
+            SprintResetStage.ATTACKED -> false
+        }
+    }
+
+    private fun beginSprintReset(player: EntityPlayerSP) {
+        sprintResetWantSprint = player.isSprinting
+
+        MovementUtils.sprintResetActive = true
+        player.isSprinting = false
+
+        if (player.serverSprintState) {
+            sendPacket(C0BPacketEntityAction(player, C0BPacketEntityAction.Action.STOP_SPRINTING))
+            player.serverSprintState = false
+        }
+    }
+
+    private fun tickWatchdogSprintReset(player: EntityPlayerSP) {
+        if (sprintResetStage == SprintResetStage.IDLE) {
+            sprintResetCarryClick = false
+            return
+        }
+
+        if (target == null) {
+            finishSprintReset(player)
+            return
+        }
+
+        when (sprintResetStage) {
+            SprintResetStage.STOPPED -> {
+                sprintResetCarryClick = true
+
+                if (runTimeTicks - sprintResetTick > SPRINT_RESET_TIMEOUT_TICKS) {
+                    finishSprintReset(player)
+                }
+            }
+
+            SprintResetStage.ATTACKED -> {
+                if (runTimeTicks > sprintResetAttackTick) {
+                    finishSprintReset(player)
+                }
+            }
+
+            else -> {}
+        }
+    }
+
+    private fun finishSprintReset(player: EntityPlayerSP) {
+        val wasActive = sprintResetStage != SprintResetStage.IDLE
+        val restoreSprint = wasActive && sprintResetWantSprint
+        clearSprintResetState()
+
+        if (!restoreSprint || !canRestoreSprint(player)) return
+
+        player.isSprinting = true
+        MovementUtils.sprintRestoreTick = runTimeTicks
+        sprintResumeTick = runTimeTicks
+    }
+
+    private fun canRestoreSprint(player: EntityPlayerSP): Boolean {
+        if (player.foodStats.foodLevel <= 6 && !player.capabilities.allowFlying) return false
+        if (player.isInWater || player.isRiding || player.isSneaking) return false
+        if (player.isPotionActive(Potion.blindness)) return false
+        if (player.isUsingItem && !player.isBlocking) return false
+
+        return mc.gameSettings.keyBindForward.isKeyDown ||
+            player.movementInput.moveForward >= 0.8f ||
+            player.moveForward >= 0.8f
+    }
+
+    private fun clearSprintResetState() {
+        sprintResetStage = SprintResetStage.IDLE
+        sprintResetTick = 0
+        sprintResetAttackTick = -1
+        sprintResumeTick = -1
+        sprintResetWantSprint = false
+        sprintResetCarryClick = false
+        MovementUtils.sprintResetActive = false
+        MovementUtils.sprintRestoreTick = -1
+    }
+
     /**
      * Attack [entity]
      */
@@ -1009,7 +1163,14 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
         }
 
         if (!blinkAutoBlock || !BlinkUtils.isBlinking) {
-            val affectSprint = false.takeIf { KeepSprint.handleEvents() || keepSprint }
+            if (keepSprintMode == "Watchdog" && !passWatchdogSprintGate(thePlayer)) {
+                return
+            }
+
+            val affectSprint = when (keepSprintMode) {
+                "Watchdog" -> null
+                else -> false.takeIf { KeepSprint.handleEvents() || keepSprintMode == "Standard" }
+            }
 
             // The swing (C0A) must always immediately precede the attack (C02) — that is the vanilla
             // 1.8 order GrimAC's PacketOrderB enforces ("did not swing for attack"). The old airborne
