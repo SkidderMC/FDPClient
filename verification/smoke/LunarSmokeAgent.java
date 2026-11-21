@@ -84,7 +84,11 @@ public final class LunarSmokeAgent {
                 subscribe(payload, events);
                 Class<?> manager = Class.forName("net.ccbluex.liquidbounce.features.module.ModuleManager", true, payload);
                 int count = ((Collection<?>) manager.getField("INSTANCE").get(null)).size();
-                if (count != 298) throw new IllegalStateException("Expected 298 built-in modules, got " + count);
+                Class<?> validator = Class.forName("net.ccbluex.liquidbounce.features.module.ModuleRegistryValidator", true, payload);
+                int expectedCount = validator.getField("EXPECTED_BUILT_IN_MODULES").getInt(null);
+                if (count != expectedCount) {
+                    throw new IllegalStateException("Expected " + expectedCount + " built-in modules, got " + count);
+                }
                 Class<?> menu = Class.forName("net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule", true, payload);
                 if (Boolean.getBoolean("fdpclient.lunar.early") && ((Integer) menu.getMethod("getKeyBind").invoke(menu.getField("INSTANCE").get(null))) != 157) {
                     throw new IllegalStateException("Lunar's menu must default to Right Control");
